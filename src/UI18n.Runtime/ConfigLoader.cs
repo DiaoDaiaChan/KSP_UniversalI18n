@@ -57,6 +57,49 @@ namespace UI18n.Runtime
                 {
                     config.MaxEntries = UI18nConfig.Default.MaxEntries;
                 }
+
+                // P2 的字体四项。枚举值非法时不阻断启动：记一条 Warn 后保持默认值（红线 6）。
+                string rawFontMode = ReadString(node, "FontMode", null);
+                if (!string.IsNullOrEmpty(rawFontMode))
+                {
+                    FontMode fontMode;
+                    if (ConfigEnums.TryParseFontMode(rawFontMode, out fontMode))
+                    {
+                        config.FontMode = fontMode;
+                    }
+                    else
+                    {
+                        Log.Warn("config key FontMode=\"" + rawFontMode + "\" is not recognised (Off | OsFont | Bundled), using "
+                                 + ConfigEnums.ToName(config.FontMode));
+                    }
+                }
+
+                string rawTmpMode = ReadString(node, "TmpMode", null);
+                if (!string.IsNullOrEmpty(rawTmpMode))
+                {
+                    TmpMode tmpMode;
+                    if (ConfigEnums.TryParseTmpMode(rawTmpMode, out tmpMode))
+                    {
+                        config.TmpMode = tmpMode;
+                    }
+                    else
+                    {
+                        Log.Warn("config key TmpMode=\"" + rawTmpMode + "\" is not recognised (Auto | KeepSource | Force), using "
+                                 + ConfigEnums.ToName(config.TmpMode));
+                    }
+                }
+
+                string osFontName = ReadString(node, "OsFontName", null);
+                if (!string.IsNullOrEmpty(osFontName))
+                {
+                    config.OsFontName = osFontName;
+                }
+
+                string bundledPath = ReadString(node, "BundledFontPath", null);
+                if (!string.IsNullOrEmpty(bundledPath))
+                {
+                    config.BundledFontPath = bundledPath;
+                }
             }
             catch (Exception ex)
             {
@@ -302,6 +345,24 @@ namespace UI18n.Runtime
 
             Log.Warn("config key " + key + "=\"" + raw + "\" is not a bool, using " + fallback);
             return fallback;
+        }
+
+        /// <summary>读字符串；键缺失或值为空白时返回 <paramref name="fallback"/>（不 Trim 掉有意义的内嵌空格，只 Trim 首尾）。</summary>
+        internal static string ReadString(ConfigNode node, string key, string fallback)
+        {
+            if (node == null || !node.HasValue(key))
+            {
+                return fallback;
+            }
+
+            string raw = node.GetValue(key);
+            if (raw == null)
+            {
+                return fallback;
+            }
+
+            string value = raw.Trim();
+            return value.Length == 0 ? fallback : value;
         }
 
         internal static int ReadInt(ConfigNode node, string key, int fallback)

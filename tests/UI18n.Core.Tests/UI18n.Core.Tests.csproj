@@ -1,7 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    UI18n.Core 单元测试（任务 T4）。**只读 Core 的公开 API，不改 src/ 任何文件。**
+    UI18n.Core 单元测试（T4 起；T13 迁到 xunit.v3）。
+    **只读 Core 的公开 API，不改 src/ 任何文件。**
+
+    为什么是 xunit.v3 + OutputType=Exe（而不是 Microsoft.NET.Test.Sdk + VSTest）：
+      本机 dotnet test / dotnet vstest 起不来 —— VSTest 的 testhost 在启动阶段就崩：
+        Unhandled exception. System.ComponentModel.Win32Exception (5): 拒绝访问。
+          at System.Diagnostics.ProcessManager.OpenProcess(Int32 processId, Int32 access, Boolean throwIfExited)
+          at System.Diagnostics.Process.EnsureWatchingForExit()
+          at Microsoft.VisualStudio.TestPlatform.TestHost.DefaultEngineInvoker.SetParentProcessExitCallback(...)
+      即 testhost 打不开父进程（vstest.console）的句柄，一条用例都执行不到。这是 testhost 与 vstest.console
+      这对进程之间的限制（非管理员也复现：同一 shell 里打开父进程句柄、挂 EnableRaisingEvents 都成功），
+      与测试代码无关、也无法在测试工程里规避 —— 只能换一条不经过 VSTest testhost 的执行路径。
+      xunit.v3 的测试程序集本身就是可执行文件、自带 in-proc runner：dotnet <dll> 直接跑、不经过 testhost，
+      退出码由 runner 给出（0 = 全过，1 = 有失败/有错）。入口见 tools/run-tests.ps1 与 docs/06。
 
     目标框架 net10.0 的理由：本机只装了 Microsoft.NETCore.App.Ref 10.0.12（没有 net8.0 参考包）。
     Core 是多目标（net472 + net10.0），从 net10.0 工程 ProjectReference 过去只会解析到 net10.0 目标，
@@ -9,18 +22,30 @@
   -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     <AssemblyName>UI18n.Core.Tests</AssemblyName>
     <RootNamespace>UI18n.Core.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <!--
+      xunit.v3 自动生成的入口程序用了较新的 C# 语法；根目录 Directory.Build.props 是 LangVersion 9.0，
+      这里只对本测试工程放宽（不影响 src/ 与 net472 产物）。
+    -->
+    <LangVersion>latest</LangVersion>
     <!-- 断言失败信息里带上中文/emoji 原文，方便定位是哪条向量挂了 -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
+  <!--
+    显式挡住 dotnet test：本机 VSTest 的 testhost 起不来（见文件头注释）。
+    若有人（或 CI）直接敲 dotnet test，这里立刻报错退出，绝不静默地 0 条用例通过。
+  -->
+  <Target Name="ExplainWhyNotDotnetTest" BeforeTargets="VSTest;VSTestNoBuild">
+    <Error Code="UI18N001" Text="本仓库不要用 dotnet test 跑单测：本机 VSTest 的 testhost 在启动阶段就崩（Win32Exception(5): 拒绝访问），一条用例都执行不到。请改用 tools\run-tests.ps1，或直接 dotnet tests\UI18n.Core.Tests\bin\Release\net10.0\UI18n.Core.Tests.dll（xunit.v3 自带 in-proc runner，退出码 0=全过 1=有失败）。原因见 docs/06。" />
+  </Target>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
   </ItemGroup>
 
   <ItemGroup>

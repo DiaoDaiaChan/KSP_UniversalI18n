@@ -14,7 +14,11 @@ namespace UI18n.Runtime.Patches
     /// <para>
     /// 红线 3：这里改的只是<b>传进来的值</b> <c>msg</c>（ref 参数的重写），没有碰 <c>ScreenMessage</c> 实例、
     /// 没有改 <c>ScreenMessages</c> 的静态状态、没有调任何玩法 API。也正因为是 string 而不是 GUIContent，
-    /// 它是本项目<b>唯一</b>允许改 <c>string</c> 参数的目标；其余目标一律只换 GUIContent 对象（红线 4）。
+    /// 它是本项目<b>唯一</b>允许改 <c>string</c> 参数的游戏侧目标；其余目标一律只换 GUIContent 对象（红线 4）。
+    /// </para>
+    /// <para>
+    /// 屏幕消息的字体不走 <see cref="Runtime.Fonts.FontResolver"/>：它由 KSP 自己的 <c>ScreenMessagesText</c>
+    /// 预制体提供，字体问题归 KSP 与语言包，不由本模块改；这里只统计调用/命中。
     /// </para>
     /// </summary>
     internal static class ScreenMessagesPatches
@@ -25,6 +29,9 @@ namespace UI18n.Runtime.Patches
         /// </summary>
         private static void MessagePrefix(ref string msg)
         {
+            PatchCounter counter = Counters.ScreenMessage;
+            counter.Touch();
+
             if (!Translator.HasAnyTranslation)
             {
                 return;
@@ -36,11 +43,12 @@ namespace UI18n.Runtime.Patches
                 if (translated != null)
                 {
                     msg = translated;
+                    counter.Hits++;
                 }
             }
             catch (Exception ex)
             {
-                Translator.ReportPrefixFailure("KSP.ScreenMessages", ex);
+                Translator.ReportPrefixFailure(PatchNames.ScreenMessage, ex);
             }
         }
     }

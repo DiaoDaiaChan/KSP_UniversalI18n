@@ -11,7 +11,11 @@
 依赖：python ≥ 3.10（本机 3.14.7）。GameData 默认由仓库位置推断（`tools/i18n_tools/` 往上四层 = 游戏根，
 再拼 `GameData`），也可用环境变量 `UI18N_GAMEDATA` 或命令行 `--gamedata DIR` 覆盖。
 
-在 `D:\Kerbal Space Program_newmod\UniversalI18n\tools` 目录下执行：
+仓库根已迁到 `C:\Users\43701\Documents\github\UniversalI18n`；旧的 `D:\Kerbal Space Program_newmod\UniversalI18n`
+现在是 junction（仍能用，但脚本一律按新根写）。**KSP 安装目录仍是 `D:\Kerbal Space Program_newmod`**，与本仓库位置无关，
+`GameData` 采样路径属环境事实，不要跟着仓库搬家改。
+
+在 `C:\Users\43701\Documents\github\UniversalI18n\tools` 目录下执行：
 
 | 目的 | 命令 | 期望 |
 | --- | --- | --- |
@@ -177,6 +181,12 @@ title = #autoLOC_500460 //#autoLOC_500460 = S1 SRB-KD25k "Kickback" Solid Fuel B
 
 `cfgFiles` / `locFiles` / `locKeysTotal` / `locKeysCovered` / `locKeysMissingZh` / `cfgFieldHits` / `zhCoveredAssignments` / `zhCoveredUnique` / `poolSize` / `skip`（除 empty）/ `poolBreakdown` / `modStats` / `topMods` **均与真值逐项一致**。
 
+**结论：inventory 记账不自洽时，一律以 `packs/pool.jsonl` 逐字节一致为准。**
+
+真值 inventory 自身对不上账：`cfgFieldHits 15,581` + `locKeysMissingZh 3,331` − `skip 6,109` = 12,803，而 `poolSize` = 12,792，差 11 条——说明上一轮清单的 `skip` 计数漏记了 11 条。本实现的账是平的：候选 `18,910 = 池 12,792 + skip 6,118`。
+
+因此本工具链的硬验收只有一条：**`packs/pool.jsonl` 与既有真值逐字节一致**（12,792 行 / 3,049,123 字节 / sha256 `FEF515EA…D4C`）；`inventory.json` 的 `skip` 只是过程计数器，`skip.empty` 取 **13**（而非真值的 4，明细见 §2.4）也以本条为准，不再为对齐 12,803 去调整任何过滤器——调了会让池行数偏离 12,792。
+
 ## 5 已知坑清单（都踩过）
 
 1. **Localization 按语言分文件** → 必须按 mod 目录求并集，否则 `en-us-Engines.cfg` 这类整块漏掉。
@@ -196,7 +206,7 @@ title = #autoLOC_500460 //#autoLOC_500460 = S1 SRB-KD25k "Kickback" Solid Fuel B
 ## 6 验收
 
 ```
-cd D:\Kerbal Space Program_newmod\UniversalI18n\tools
+cd C:\Users\43701\Documents\github\UniversalI18n\tools
 python -m i18n_tools.selftest                      # 79 项全绿，退出码 0，约 0.1 s
 python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl   # 完全一致，退出码 0，约 3 s
 python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节，退出码 0

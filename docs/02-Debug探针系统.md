@@ -349,9 +349,9 @@ L2 产物 (sites.jsonl + summary)
     ▼
 采集器归一化（去重、合并同一 textHash 的多 caller）
     ▼
-dict/en/*.json  →  LLM 翻译  →  dict/zh-cn/*.json
+packs/pool.jsonl  →  LLM 翻译  →  packs/zh-cn/<modId>.jsonl
     ▼
-CI 七条门禁  →  publish  →  游戏内加载
+CI 八条门禁  →  publish  →  GameData/UI18n/Packs/zh-cn/*.jsonl（游戏内加载，D34/D35）
 ```
 
 关键点：**探针的 `textHash` 必须和运行时字典的键是同一个算法**。否则采集到的和运行时查的不是一个键，闭环断在中间。这就是 §5.1 选 FNV-1a 而不是 `GetHashCode()` 的原因。

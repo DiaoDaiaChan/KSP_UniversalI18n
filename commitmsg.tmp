@@ -1,0 +1,15 @@
+docs+tests+tooling: v0.3 文档回写、xunit v3 测试运行器、harvest 路径回退、翻译补跑产物
+
+docs: 04 §11.2 JSONL 契约改写、§4.2 key-ref 实况、§8.3.2 旧数字作废推导、§12.2 模型四坑；
+05 §1.3 字体前提 + §3.4.1 十六个 patch 目标；06 新增 §6.5 Packs 两条部署判据 + 新仓库根与 junction 说明；
+03 里程碑实况 + 实测打翻的十条假设 + 本轮改动清单。
+
+tests: 迁 xunit v3 In-Process Runner。原因实测：VSTest testhost 在本机会在 parent-exit 监视处崩
+Win32Exception 5 拒绝访问（DefaultEngineInvoker.SetParentProcessExitCallback 打开父进程句柄失败），
+dotnet test / dotnet vstest 一条用例都执行不到。新增 tools/run-tests.ps1，236 通过 0 失败。
+
+tools: 仓库迁到 C:\Users\43701\Documents\github\UniversalI18n 后的路径修正；
+harvest.default_gamedata 改四级回退（迁移后原「仓库上一级\GameData」指向不存在路径，属迁移副作用回归）；
+inventory 记账不自洽的结论写死为「以 packs/pool.jsonl 逐字节一致为准」。
+
+reports: 全量翻译报告（9,846 行 / 41 个 mod 文件）+ 203 条失败补跑产物。

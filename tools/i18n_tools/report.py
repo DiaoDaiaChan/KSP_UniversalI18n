@@ -75,9 +75,10 @@ def print_summary(payload) -> None:
     print("输入    : pool {} 行 → 待译 {} 条 / 跳过 {} 条".format(
         payload.get("pool_rows", 0), build.get("items", 0),
         sum((build.get("skipped") or {}).values())))
-    print("批次    : {} 批 / 并发 {} / 字符预算 {} / 拆分 {} 次 / 单条重试 {} 次".format(
+    print("批次    : {} 批 / 并发 {} / 字符预算 {} / 拆分 {} 次 / 单条重试 {} 次 / 单条补发 {} 次".format(
         payload.get("batches", 0), payload.get("jobs", 0),
-        payload.get("max_chars", 0), stats.get("splits", 0), stats.get("retried", 0)))
+        payload.get("max_chars", 0), stats.get("splits", 0), stats.get("retried", 0),
+        stats.get("single_retries", 0)))
     print("结果    : 共处理 {} 条 → ok {} / official {} / rescue {} / keep {} / failed {}".format(
         total, ok, official, rescue, keep, failed))
     print("通过率  : {} （(ok+official+rescue)/(ok+official+rescue+failed)，keep 不计入分母）".format(
@@ -151,6 +152,19 @@ def print_summary(payload) -> None:
             print("      id={} mod={} {}".format(example.get("id"), example.get("mod"), example.get("why", "")))
             print("        源 {}".format(_clip(example.get("src"))))
             print("        译 {}".format(_clip(example.get("zh"))))
+
+    # 未译条目：不写库、运行时回退原文，但必须列清是哪几条被哪条门禁拦下
+    untranslated = payload.get("untranslated") or {}
+    if untranslated:
+        by_gate = untranslated.get("by_gate") or {}
+        print("")
+        print("-- 未译条目 untranslated " + "-" * 50)
+        print(" 共 {} 条不写库（运行时 TryGet miss → 回退原文，安全终态）".format(
+            untranslated.get("count", 0)))
+        print(" 清单 {}".format(untranslated.get("path", "-")))
+        for name in ("G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8"):
+            if by_gate.get(name):
+                print(" ! {:<2} {:<26} {:>5}".format(name, GATE_NAMES.get(name, ""), by_gate[name]))
 
     # 跳过原因
     skipped = build.get("skipped") or {}

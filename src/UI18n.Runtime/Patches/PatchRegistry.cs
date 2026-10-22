@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 using UI18n.Core.Dict;
+using UI18n.Core.Patching;
 using UnityEngine;
 
 namespace UI18n.Runtime.Patches
@@ -10,6 +11,11 @@ namespace UI18n.Runtime.Patches
     /// patch 注册表：16 个 hook 目标逐个安装，每个单独 try/catch。
     /// 任何一个失败都只记一条 <c>[UI18n] patch failed: {目标} → {原因}</c> 并继续装下一个（红线 6：
     /// 失败只 log 不抛，但必须计数并给出明确原因）。
+    /// <para>
+    /// 每个目标有自己的前缀方法（见 <see cref="TextPatches"/> / <see cref="ImGuiPatches"/> /
+    /// <see cref="ScreenMessagesPatches"/>）与自己的计数器（<see cref="Counters"/>），装之前用
+    /// <see cref="PrefixParameterMatcher"/> 核对参数名 —— Harmony 按参数名绑定 ref 参数，名字错不抛异常只静默失效。
+    /// </para>
     /// </summary>
     internal static class PatchRegistry
     {
@@ -42,6 +48,9 @@ namespace UI18n.Runtime.Patches
         {
             ok = 0;
             failed = 0;
+
+            // 计数器按表序创建（dump 顺序 = 表序，0 命中的目标也会出现在日志里）
+            Counters.Initialize();
 
             PatchSpec[] specs = BuildSpecs();
 
@@ -78,7 +87,7 @@ namespace UI18n.Runtime.Patches
 
             return new[]
             {
-                // ---- 文本层（uGUI 与 TMP）----
+                // ---- 文本层（uGUI 与 TMP）：前缀带 __instance 以便做字体判定 ----
                 Spec("UnityEngine.UI.Text.set_text(string value)",
                     "UnityEngine.UI.Text", "set_text", new[] { typeof(string) },
                     typeof(TextPatches), "UnityTextPrefix"),
@@ -89,57 +98,52 @@ namespace UI18n.Runtime.Patches
                 // ---- IMGUI：GUILayout 的 5 个私有实现（文本位 #0 / #0 / #0 / #1 / #3）----
                 Spec("GUILayout.DoLabel(GUIContent #0, GUIStyle, GUILayoutOption[])",
                     "UnityEngine.GUILayout", "DoLabel", contentSignature,
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "LayoutLabelPrefix"),
                 Spec("GUILayout.DoButton(GUIContent #0, GUIStyle, GUILayoutOption[])",
                     "UnityEngine.GUILayout", "DoButton", contentSignature,
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "LayoutButtonPrefix"),
                 Spec("GUILayout.DoRepeatButton(GUIContent #0, GUIStyle, GUILayoutOption[])",
                     "UnityEngine.GUILayout", "DoRepeatButton", contentSignature,
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "LayoutRepeatButtonPrefix"),
                 Spec("GUILayout.DoToggle(bool, GUIContent #1, GUIStyle, GUILayoutOption[])",
                     "UnityEngine.GUILayout", "DoToggle",
                     new[] { typeof(bool), typeof(GUIContent), typeof(GUIStyle), typeof(GUILayoutOption[]) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "LayoutTogglePrefix"),
                 Spec("GUILayout.DoWindow(int, Rect, GUI.WindowFunction, GUIContent #3, GUIStyle, GUILayoutOption[])",
                     "UnityEngine.GUILayout", "DoWindow",
                     new[] { typeof(int), typeof(Rect), typeof(GUI.WindowFunction), typeof(GUIContent), typeof(GUIStyle), typeof(GUILayoutOption[]) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "LayoutWindowPrefix"),
 
-                // ---- IMGUI：GUI 的公有入口（文本位 #1 / #1 / #1 / #2 / #3）----
+                // ---- IMGUI：GUI 的公有入口（文本位 #1 / #1 / #1 / #1 / #2 / #3）----
                 Spec("GUI.Label(Rect, GUIContent #1, GUIStyle)",
                     "UnityEngine.GUI", "Label", new[] { typeof(Rect), typeof(GUIContent), typeof(GUIStyle) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "LabelPrefix"),
                 Spec("GUI.Box(Rect, GUIContent #1, GUIStyle)",
                     "UnityEngine.GUI", "Box", new[] { typeof(Rect), typeof(GUIContent), typeof(GUIStyle) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "BoxPrefix"),
                 Spec("GUI.Button(Rect, GUIContent #1, GUIStyle)",
                     "UnityEngine.GUI", "Button", new[] { typeof(Rect), typeof(GUIContent), typeof(GUIStyle) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
-                Spec("GUI.Toggle(Rect, bool, GUIContent #2, GUIStyle)",
-                    "UnityEngine.GUI", "Toggle", new[] { typeof(Rect), typeof(bool), typeof(GUIContent), typeof(GUIStyle) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
-                Spec("GUI.Toggle(Rect, int, bool, GUIContent #3, GUIStyle)",
-                    "UnityEngine.GUI", "Toggle", new[] { typeof(Rect), typeof(int), typeof(bool), typeof(GUIContent), typeof(GUIStyle) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
-
-                // ---- IMGUI：T5b2 补的 3 个公有入口（文本位 #1 / #3 / #3）----
+                    typeof(ImGuiPatches), "ButtonPrefix"),
                 // GUI.RepeatButton 公开方法（GUILayout.DoRepeatButton 里走的是它，但 mod 也可能直接调 GUI.RepeatButton）。
                 Spec("GUI.RepeatButton(Rect, GUIContent #1, GUIStyle)",
                     "UnityEngine.GUI", "RepeatButton", new[] { typeof(Rect), typeof(GUIContent), typeof(GUIStyle) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
-                // 窗口标题走**私有漏斗** GUI.DoWindow：它同时是 GUI.Window(GUIContent) 与 GUI.Window(string) 的去处
-                // （string 重载直接 DoWindow(…, GUIContent.Temp(text), …)，不经公开 GUIContent 重载），
-                // 所以打它一个就覆盖全部 Window 重载。参数名 title → TitlePrefix。
+                    typeof(ImGuiPatches), "RepeatButtonPrefix"),
+                Spec("GUI.Toggle(Rect, bool, GUIContent #2, GUIStyle)",
+                    "UnityEngine.GUI", "Toggle", new[] { typeof(Rect), typeof(bool), typeof(GUIContent), typeof(GUIStyle) },
+                    typeof(ImGuiPatches), "TogglePrefix"),
+                Spec("GUI.Toggle(Rect, int, bool, GUIContent #3, GUIStyle)",
+                    "UnityEngine.GUI", "Toggle", new[] { typeof(Rect), typeof(int), typeof(bool), typeof(GUIContent), typeof(GUIStyle) },
+                    typeof(ImGuiPatches), "ToggleIntPrefix"),
+
+                // ---- 窗口标题：两个私有漏斗（参数名 title / content，IL 实测）----
                 Spec("GUI.DoWindow(int, Rect, GUI.WindowFunction, GUIContent #3 title, GUIStyle, GUISkin, bool)",
                     "UnityEngine.GUI", "DoWindow",
                     new[] { typeof(int), typeof(Rect), typeof(GUI.WindowFunction), typeof(GUIContent), typeof(GUIStyle), typeof(GUISkin), typeof(bool) },
-                    typeof(ImGuiPatches), "TitlePrefix"),
-                // ModalWindow 走的是**另一条**漏斗 GUI.DoModalWindow（经 Internal_DoModalWindow，不经 DoWindow）；
-                // 它的文本参数名是 content（System.Reflection.Metadata 实测，不是 title）→ 复用 ContentPrefix。
+                    typeof(ImGuiPatches), "DoWindowTitlePrefix"),
                 Spec("GUI.DoModalWindow(int, Rect, GUI.WindowFunction, GUIContent #3 content, GUIStyle, GUISkin)",
                     "UnityEngine.GUI", "DoModalWindow",
                     new[] { typeof(int), typeof(Rect), typeof(GUI.WindowFunction), typeof(GUIContent), typeof(GUIStyle), typeof(GUISkin) },
-                    typeof(ImGuiPatches), "ContentPrefix"),
+                    typeof(ImGuiPatches), "DoModalWindowPrefix"),
 
                 // ---- KSP 屏幕消息：只打 6 参私有重载（5 参版把 defaultColor 转给它，10 个公开重载全部汇到这两个）----
                 Spec("ScreenMessages.PostMessage(ScreenMessage, string #1 msg, ScreenMessagesText, float, ScreenMessageStyle, Color)",
@@ -159,43 +163,6 @@ namespace UI18n.Runtime.Patches
             spec.PrefixHolder = prefixHolder;
             spec.PrefixName = prefixName;
             return spec;
-        }
-
-        /// <summary>
-        /// 核对前缀方法的每个参数名是否都能在目标方法的参数名里找到；全部找到返回 null，否则返回第一个对不上的名字。
-        /// （前缀只允许出现目标方法自己的参数名；本项目的每个前缀都恰好只有一个 <c>ref</c> 参数。）
-        /// </summary>
-        private static string FindParamNameMismatch(MethodInfo prefix, MethodBase target)
-        {
-            ParameterInfo[] prefixParams = prefix.GetParameters();
-            ParameterInfo[] targetParams = target.GetParameters();
-
-            for (int i = 0; i < prefixParams.Length; i++)
-            {
-                string name = prefixParams[i].Name;
-                bool found = false;
-                for (int j = 0; j < targetParams.Length; j++)
-                {
-                    if (string.Equals(targetParams[j].Name, name, StringComparison.Ordinal))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    string available = string.Empty;
-                    for (int j = 0; j < targetParams.Length; j++)
-                    {
-                        available += (j == 0 ? string.Empty : ", ") + targetParams[j].Name;
-                    }
-
-                    return "'" + name + "' not in target parameters (" + available + ")";
-                }
-            }
-
-            return null;
         }
 
         private static void Install(Harmony harmony, PatchSpec spec, ref int ok, ref int failed)
@@ -250,9 +217,9 @@ namespace UI18n.Runtime.Patches
             }
 
             // Harmony 按「参数名」把 ref 参数绑到目标方法的参数上：名字对不上不会抛，而是这次注入静默失效。
-            // 这是本类历史上最容易踩的坑（title / content / msg 三个名字各不同），所以装之前自己核对一遍，
-            // 对不上就直接算安装失败并给出明确原因（红线 6：失败要计数 + 说清为什么）。
-            string mismatch = FindParamNameMismatch(prefix, target);
+            // 这是本项目历史上最容易踩的坑（title / content / msg 三个名字各不同），所以装之前自己核对一遍
+            // （__instance / __result 等魔法参数名由 PrefixParameterMatcher 白名单放行）。
+            string mismatch = PrefixParameterMatcher.FindMismatch(prefix, target);
             if (mismatch != null)
             {
                 failed++;

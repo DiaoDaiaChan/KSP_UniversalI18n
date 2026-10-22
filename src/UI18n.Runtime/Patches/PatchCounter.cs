@@ -25,9 +25,28 @@ namespace UI18n.Runtime.Patches
         /// <summary>命中译文但因字体无法显示而保留原文的次数。</summary>
         internal long KeptSource;
 
+        private bool _firstCallLogged;
+
         internal PatchCounter(string target)
         {
             Target = target;
+        }
+
+        /// <summary>
+        /// 计一次调用；本目标在本进程里<b>第一次</b>被调用时多打一行 <c>first call: {目标}</c>。
+        /// <para>
+        /// 为什么需要这一行：P1 第一次启动时进程被系统判为无响应后关闭，KSP.log 的尾部缓冲丢失，
+        /// 事后无法判断某个 hook 到底有没有被调用过。一行即时日志就能把「目标活着」和「目标从没被碰过」分开。
+        /// </para>
+        /// </summary>
+        internal void Touch()
+        {
+            Calls++;
+            if (!_firstCallLogged)
+            {
+                _firstCallLogged = true;
+                Log.Info("first call: " + Target);
+            }
         }
 
         /// <summary>一行统计片段：<c>GUI.Label=1234 hit=980</c>；<c>kept-src</c> 只在非零时出现。</summary>

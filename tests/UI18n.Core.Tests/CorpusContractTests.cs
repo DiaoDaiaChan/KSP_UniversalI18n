@@ -8,7 +8,6 @@ using UI18n.Core.Dict;
 using UI18n.Core.Hashing;
 using UI18n.Core.Text;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace UI18n.Core.Tests
 {

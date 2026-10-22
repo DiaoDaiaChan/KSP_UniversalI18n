@@ -558,19 +558,51 @@ def glossary_for(texts, glossary):
     return [(en, zh) for en, zh in found.items()]
 
 
+# 术语判定前要剥掉的东西：富文本标签、哨兵、KSP 占位符。
+# 否则 <color=white> 里的 white 会被当成术语 "White"，制造 96 条假漂移（实测）。
+_TERM_STRIP_RE = re.compile(r"<[^<>]{1,80}>|<<M\d+>>|<<\d+>>")
+
+
+def _plain_for_terms(text):
+    """剥标签/哨兵后的纯文本，专供术语匹配用（不参与输出，不改动原文）。"""
+    return _TERM_STRIP_RE.sub(" ", text or "")
+
+
 def locked_for(text, glossary=None):
-    """G7 的锁定集合（逐条实例化）：12 条专有约定 + 短语级官方术语，只取本文出现的。"""
-    out = []
+    """G7 的锁定集合（逐条实例化）：12 条专有约定 + 短语级官方术语，只取本文出现的。
+
+    两个必须的处理：
+
+    1. **只在剥掉标签/哨兵的纯文本上匹配**：术语若只出现在 <color=...> 属性里，就不该
+       产生 G7 义务（否则模型译文里不写"白色"是正确行为，却会被判术语漂移）。
+    2. **大小写变体合并成一条、变体译法全部接受**：官方译文记忆里 "electric charge"→电能
+       与 "Electric Charge"→电量 同时存在，而 _term_pattern 是 IGNORECASE 的 —— 不合并就会
+       要求模型在同一处同时写出两种译法，这一条永远不可能通过（实测 ModularLaunchPads
+       27 条长描述全因此判死）。返回值的 zh 因此是**元组**（任一出现即通过）。
+    """
+    plain = _plain_for_terms(text)
+    order = []
+    variants = {}
+
+    def _add(en, zh):
+        key = en.lower()
+        if key not in variants:
+            variants[key] = [en, []]
+            order.append(key)
+        buckets = variants[key][1]
+        if zh not in buckets:
+            buckets.append(zh)
+
     for en, zh in CONVENTIONS:
-        if _term_pattern(en).search(text):
-            out.append((en, zh))
+        if _term_pattern(en).search(plain):
+            _add(en, zh)
     if glossary is not None:
         for en, zh in glossary.locked.items():
             if en.lower() in _CONVENTION_LOWER:
                 continue        # 约定优先，已在上面加过
-            if _term_pattern(en).search(text):
-                out.append((en, zh))
-    return out
+            if _term_pattern(en).search(plain):
+                _add(en, zh)
+    return [(variants[key][0], tuple(variants[key][1])) for key in order]
 
 
 def drifts_of(item, restored, soft_pairs):
@@ -582,11 +614,12 @@ def drifts_of(item, restored, soft_pairs):
     if not restored:
         return []
     source = item["row"]["text"]
+    plain = _plain_for_terms(source)
     out = []
     for en, zh in soft_pairs:
         if zh in restored:
             continue
-        if _term_pattern(en).search(source):
+        if _term_pattern(en).search(plain):
             out.append({"id": item["id"], "term": en, "want": zh,
                         "src": source[:120], "zh": restored[:120]})
     return out
@@ -606,7 +639,16 @@ def system_prompt(glossary_pairs) -> str:
     return SYSTEM_PROMPT.replace("__GLOSSARY__", block)
 
 
-def user_message(batch) -> str:
+#: 补跑时追加的硬约束（--complete-hint）：全量跑实测 191/203 的失败是模型把某些 id
+#: 从响应里漏掉了——批里条目一多，它会把"看起来不用译"的专名直接略过。补跑时明说
+#: "每个 id 都必须出现，无需翻译就把原文作为 zh 抄回来"，模型就会用 t==s 回填（= keep，合法产物）。
+COMPLETE_HINT = ("EVERY id in the batch MUST appear exactly once in items, in the same order. "
+                 "If an entry needs no translation (proper name / model number / acronym / "
+                 "file path), still return that id with zh = the original English unchanged. "
+                 "Never omit an id, never merge two ids.")
+
+
+def user_message(batch, complete_hint=False) -> str:
     payload = {
         "batch": [
             {
@@ -618,6 +660,8 @@ def user_message(batch) -> str:
             for item in batch
         ]
     }
+    if complete_hint:
+        payload["rules"] = COMPLETE_HINT
     return json.dumps(payload, ensure_ascii=False)
 
 
@@ -708,15 +752,26 @@ def extract_items(content: str):
 # ---------------------------------------------------------------------------
 
 def _g7_accept(en, zh, restored):
-    """G7 单条判定：逐字出现即可；允许大小写差异（Δv/ΔV）与白名单里的同义写法。"""
+    """G7 单条判定：逐字出现即可；允许大小写差异（Δv/ΔV）、同术语多译法、白名单同义写法。"""
     if not restored:
         return False
-    if zh in restored or zh.lower() in restored.lower():
-        return True
+    wanted = zh if isinstance(zh, (tuple, list)) else (zh,)
+    for want in wanted:
+        if not want:
+            continue
+        if want in restored or want.lower() in restored.lower():
+            return True
     for alt in CONVENTION_ALIASES.get(en, ()):
         if alt in restored or alt.lower() in restored.lower():
             return True
     return False
+
+
+def _g7_label(zh):
+    """G7 备注里显示待选译法：单一译法不带斜杠，多译法写成 电能/电量。"""
+    if isinstance(zh, (tuple, list)):
+        return "/".join(str(item) for item in zh)
+    return str(zh)
 
 
 def _only_untouchable(masked_text):
@@ -797,7 +852,7 @@ def gate(item, zh_raw, locked_pairs):
             continue
         if not _g7_accept(en, zh, restored):
             failed.append("G7")
-            notes["G7"] = "术语 {}={} 未出现在译文".format(en, zh)
+            notes["G7"] = "术语 {}={} 未出现在译文".format(en, _g7_label(zh))
             break
 
     # G8：非空、非原文，且译文必须含中文——模型把英文抄回来不算译
@@ -812,6 +867,48 @@ def gate(item, zh_raw, locked_pairs):
         notes["G8"] = "译文无中文"
 
     return restored, failed, notes
+
+
+# G8 的"非原文"是防模型偷懒不译整句散文；但专名/型号/标识符被原样抄回是**正确**行为，
+# 对应 00 §4.1 的 keep（运行时 t == s → DictEntry.IsKeep 终止下沉）。判据必须收紧到
+# 短标签（≤40 字符且 ≤4 词），否则一整句散文抄回来也会被放过。
+_KEEP_ECHO_MAX_CHARS = 40
+_KEEP_ECHO_MAX_WORDS = 4
+_LOWER_WORD_RE = re.compile(r"^[a-z]{2,}$")
+
+
+def _prose_run(text):
+    """相邻两个纯小写单词（按空白切分）→ 像散文而不像专名。
+
+    用空白切分而不是正则取词：fx-alpha-noise-1 / PP-CustomEnds 这类连字符标识符
+    必须算"一个词"，否则 31 条资源名会被误判成散文。
+    """
+    tokens = (text or "").split()
+    for left, right in zip(tokens, tokens[1:]):
+        if _LOWER_WORD_RE.match(left) and _LOWER_WORD_RE.match(right):
+            return True
+    return False
+
+
+def echo_keep(source, restored):
+    """译文只是原文原样（含仅大小写差异）且源文是短标签 → 判 keep，不算门禁失败。
+
+    三重收紧，避免这条把"模型偷懒不译整句"也放过：
+    ① strip 后相等或仅大小写差异；② ≤40 字符且 ≤4 词；③ 不像散文（无相邻小写词）。
+    """
+    if not source or not restored:
+        return False
+    left = restored.strip()
+    right = source.strip()
+    if not left or not right:
+        return False
+    if left != right and left.lower() != right.lower():
+        return False
+    if len(right) > _KEEP_ECHO_MAX_CHARS or len(right.split()) > _KEEP_ECHO_MAX_WORDS:
+        return False
+    if _prose_run(right):
+        return False
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -884,7 +981,8 @@ class _OfflineResponse:
 
 class Runner:
     def __init__(self, config, glossary, cache, jobs=4, max_chars=DEFAULT_MAX_CHARS,
-                 log=print, temperature=0.2, dry_run=False, offline=False):
+                 log=print, temperature=0.2, dry_run=False, offline=False,
+                 complete_hint=False):
         self.config = config
         self.glossary = glossary
         self.cache = cache
@@ -894,6 +992,8 @@ class Runner:
         self.temperature = temperature
         self.dry_run = dry_run
         self.offline = offline
+        #: 补跑用：在 user message 里加 rules 硬约束，禁止模型漏 id（见 COMPLETE_HINT）
+        self.complete_hint = complete_hint
         self.client = LlmClient(config, log=log)
         self.stats = {
             "batches": 0,
@@ -912,6 +1012,7 @@ class Runner:
             "mixed_lang": 0,            # 半译：译文残留 ≥3 个英文单词
             "mixed_lang_examples": [],
             "mixed_lang_by_mod": {},    # 半译按 mod 分布（lead 要的 top 5）
+            "keeps_echo": 0,            # keep 的一种来源：模型把短原文抄回（专名/标识符）
             "keep_examples": [],        # keep 行样例（t == s，运行时靠它终止下沉）
             "drift_examples": [],
             "drift_counts": {},         # "term -> want" → {count, zh_samples}（lead 要的 top 10 冲突对）
@@ -923,6 +1024,7 @@ class Runner:
             "gate_examples": {name: [] for name in GATES},
             "failed": [],
             "retried": 0,
+            "single_retries": 0,        # 单条真重发次数（_split 命中单条时补发一次模型请求）
             "finish_reasons": {},
             "latencies": [],
             "latency_total": 0.0,
@@ -939,7 +1041,7 @@ class Runner:
             return _OfflineResponse(json.dumps(payload, ensure_ascii=False))
         messages = [
             {"role": "system", "content": system_prompt(glossary_pairs)},
-            {"role": "user", "content": user_message(items)},
+            {"role": "user", "content": user_message(items, complete_hint=self.complete_hint)},
         ]
         result = self.client.chat(messages, temperature=self.temperature)
         self.stats["calls"] += 1
@@ -981,12 +1083,24 @@ class Runner:
                 self.stats["items_locked"].add(item["id"])
             return pairs
 
+        def _eval(item, zh_raw):
+            """跑八门禁；"模型把短原文抄回"先翻译成 keep 语义，再交给 _finish。
+
+            keep-echo 只在**原文是短标签**时成立（echo_keep 内部判长度/词数），
+            并且只允许 G8 是唯一失败项 —— 只要还有 G2/G4/G7 之类，就仍按失败走。
+            """
+            restored, failed, notes = gate(item, zh_raw, _locked(item))
+            if failed and set(failed) <= {"G8"} and echo_keep(item["row"]["text"], zh_raw):
+                item["keep_echo"] = True
+                return item["row"]["text"], [], notes
+            return restored, failed, notes
+
         results = []
         pending = []
         for item in items:
             if item.get("curated") is not None:
-                restored, failed, notes = gate(
-                    item, item["curated"], _locked(item))
+                restored, failed, notes = _eval(
+                    item, item["curated"])
                 if not failed:
                     results.append(self._finish(item, restored, [], {}, batch["bucket"],
                                                 soft_pairs=soft_pairs, official=True))
@@ -996,8 +1110,8 @@ class Runner:
             hit = self.cache.get(key)
             if hit and hit.get("st") == "ok":
                 self.stats["cache_hits"] += 1
-                restored, failed, notes = gate(
-                    item, hit["zh"], _locked(item))
+                restored, failed, notes = _eval(
+                    item, hit["zh"])
                 results.append(self._finish(item, restored, failed, notes, batch["bucket"],
                                             soft_pairs=soft_pairs))
             else:
@@ -1033,8 +1147,7 @@ class Runner:
             if not zh_list:
                 retry.append((item, ["G1"], {"why": "模型未返回该 id"}))
                 continue
-            restored, failed, notes = gate(item, zh_list[0],
-                                           _locked(item))
+            restored, failed, notes = _eval(item, zh_list[0])
             if failed:
                 retry.append((item, failed, notes))
                 continue
@@ -1046,8 +1159,7 @@ class Runner:
         for item, last_gates, last_notes in retry:
             if depth >= 2 or len(pending) <= 2:
                 zh_raw = (by_id.get(item["id"]) or [""])[0]
-                restored, failed, notes = gate(item, zh_raw,
-                                               _locked(item))
+                restored, failed, notes = _eval(item, zh_raw)
                 if not failed:
                     results.append(self._finish(item, restored, [], {}, batch["bucket"],
                                                 response=response, soft_pairs=soft_pairs,
@@ -1067,6 +1179,17 @@ class Runner:
         """拆半重试；单条到底仍失败 → 记 failed（保留最后一次真实门禁名，不一律标 G1）。"""
         if len(items) == 1:
             item = items[0]
+            # 单条到底必须**真的再问一次模型**：全量跑里 191/203 的失败是模型在整批响应里
+            # 漏掉了某个 id，单独发出去它能正常返回（实测 probe_missing 8/8 都返回了）。
+            # 旧实现这里直接判死，等于这 191 条从来没获得第二次机会。
+            # item["single_retried"] 保证每条只补一次，杜绝 API 异常时的无限递归。
+            if not item.get("single_retried") and depth < 4:
+                item["single_retried"] = True
+                self.stats["single_retries"] = self.stats.get("single_retries", 0) + 1
+                sub = {"mod": batch["mod"], "bucket": batch["bucket"], "items": [item]}
+                out = self.process(sub, depth + 1)
+                if out:
+                    return out
             labels = list(last_gates or ["G1"])
             return [self._finish(item, None, labels,
                                  {"why": "重试后仍失败（{}）".format(reason)},
@@ -1100,11 +1223,17 @@ class Runner:
             if restored is not None and restored.strip() == source.strip():
                 status = "keep"
                 self.stats["items_keep"] += 1
-                if len(self.stats["keep_examples"]) < 5:
+                if item.get("keep_echo"):
+                    self.stats["keeps_echo"] += 1
+                    why = "模型抄回原文（专名/型号/标识符，无需求译）"
+                elif item.get("keep_auto"):
+                    why = "遮蔽后只剩不可翻译物"
+                else:
+                    why = "模型判定无需翻译"
+                if len(self.stats["keep_examples"]) < 8:
                     self.stats["keep_examples"].append({
                         "id": item["id"], "mod": row["mod"],
-                        "s": source[:120], "t": source[:120],
-                        "why": "遮蔽后只剩不可翻译物" if item.get("keep_auto") else "模型判定无需翻译"})
+                        "s": source[:120], "t": source[:120], "why": why})
                 # t 必须与 s 逐字节相同，否则 DictEntry.IsKeep（Ordinal 比较）不成立
                 entry = {
                     "h": hash_text(normalized),
@@ -1145,14 +1274,16 @@ class Runner:
                     drifts = drifts_of(item, restored, soft_pairs)
                     for one in drifts:
                         label = "{} -> {}".format(one["term"], one["want"])
-                        bucket = self.stats["drift_counts"].get(label)
-                        if bucket is None:
-                            bucket = {"term": one["term"], "want": one["want"],
-                                      "count": 0, "zh_samples": []}
-                            self.stats["drift_counts"][label] = bucket
-                        bucket["count"] += 1
-                        if len(bucket["zh_samples"]) < 3:
-                            bucket["zh_samples"].append(one["zh"])
+                        # 注意：不能叫 bucket —— 会遮蔽本函数的 bucket 形参，
+                        # 导致 sample 里每条带漂移的条目 bucket 字段被写成 drift 字典
+                        drift_rec = self.stats["drift_counts"].get(label)
+                        if drift_rec is None:
+                            drift_rec = {"term": one["term"], "want": one["want"],
+                                         "count": 0, "zh_samples": []}
+                            self.stats["drift_counts"][label] = drift_rec
+                        drift_rec["count"] += 1
+                        if len(drift_rec["zh_samples"]) < 3:
+                            drift_rec["zh_samples"].append(one["zh"])
                         if len(self.stats["drift_examples"]) < 20:
                             self.stats["drift_examples"].append(one)
                     if drifts:
@@ -1308,7 +1439,13 @@ def selftest(pool_rows=None):
         if back != row["text"]:
             failures.append(("往返", row["id"], row["text"][:80], back[:80]))
 
-    glossary = Glossary([("Apoapsis", "远地点"), ("Gimbal", "万向节")])
+    glossary = Glossary([("Apoapsis", "远地点"), ("Gimbal", "万向节"),
+                         ("electric charge", "电能"), ("Electric Charge", "电量")])
+    # 大小写变体必须合并成一条（zh 为元组），否则 G7 要求同一处同时出现两种译法
+    merged = locked_for("Uses electric charge", glossary)
+    checks += 1
+    if len(merged) != 1 or not isinstance(merged[0][1], tuple) or len(merged[0][1]) != 2:
+        failures.append(("locked_for.大小写合并", merged))
     probes = [
         ({'id': 1, 'mod': 'X', 'text': 'Apoapsis: <<1>> m'}, "Apoapsis: <<1>> m", {"G7", "G8"}),
         ({'id': 2, 'mod': 'X', 'text': 'Apoapsis: <<1>> m'}, "远地点: <<1>> m", set()),
@@ -1330,6 +1467,10 @@ def selftest(pool_rows=None):
          "2014-2018 年富氧分级燃烧发动机", set()),
         # Delta-V 的大小写变体 ΔV / Δv 都不能算漂移
         ({'id': 12, 'mod': 'X', 'text': 'Total Delta-V required'}, "所需总 ΔV", set()),
+        # 官方译文记忆里同一术语的大小写变体给了不同中文（electric charge→电能 / Electric Charge→电量）：
+        # 必须合并成一条"任一译法即通过"，否则这条门禁永远不可能通过（实测 27 条 ModularLaunchPads）
+        ({'id': 13, 'mod': 'X', 'text': 'Uses electric charge for the clamp'},
+         "支架消耗电能", set()),
     ]
     for raw, zh, expect in probes:
         res = masklib.mask(raw["text"])
@@ -1352,16 +1493,45 @@ def selftest(pool_rows=None):
         if got != expect:
             failures.append(("keep_auto", probe, got, expect, masklib.mask(probe).text))
 
+    # keep-echo：模型把短专名/标识符原样抄回 → 属 00 §4.1 的 keep，不是 G8 失败。
+    # 判据必须收紧，否则一整句散文抄回来也会被当成 keep 放过。
+    for source, zh, expect in (
+        ("rcs", "RCS", True),                    # 仅大小写差异（实测 id=3527）
+        ("Squad", "Squad", True),
+        ("PP-CustomEnds", "PP-CustomEnds", True),
+        ("Direct", "Direct", True),
+        ("ReStock 45", "ReStock 45", True),
+        ("fx-katniss-noise-2-blurred", "fx-katniss-noise-2-blurred", True),  # 连字符标识符算一个词
+        ("Hull Camera", "Hull Camera", True),
+        ("parts list", "parts list", False),                   # 两个相邻小写词 = 散文，不放过
+        ("Throttle up please", "Throttle up please", False),   # 3 词但可译，交给模型
+        ("After the fervorous response from fans we built a bigger tank", None, False),
+    ):
+        checks += 1
+        got = echo_keep(source, source if zh is None else zh)
+        if got != expect:
+            failures.append(("keep-echo", source[:40], zh, got, expect))
+
+    # keep-echo 只吃掉 G8：遮蔽整条剩下的标识符，门禁仍应报 G8，再由 _eval 转成 keep
+    checks += 1
+    probe_row = {"id": 14, "mod": "X", "text": "PP-CustomEnds"}
+    probe_res = masklib.mask(probe_row["text"])
+    probe_item = {"id": 14, "row": probe_row, "res": probe_res,
+                  "masked": probe_res.text, "role": "label"}
+    _r, _failed, _notes = gate(probe_item, probe_res.text,
+                               locked_for(probe_row["text"], glossary))
+    if set(_failed) != {"G8"} or not echo_keep(probe_row["text"], _r):
+        failures.append(("keep-echo 门禁", sorted(_failed), echo_keep(probe_row["text"], _r)))
+
     # 术语分层：短语级才锁 G7，单词/泛义词只做软参考（否则 Arm→启用 会被误判漂移）
     checks += 1
     if not _is_locked_term("Reaction Wheel") or _is_locked_term("Arm") or _is_locked_term("R"):
         failures.append(("术语分层", _is_locked_term("Reaction Wheel"),
                          _is_locked_term("Arm"), _is_locked_term("R")))
     checks += 1
-    if locked_for("Arm the parachute", glossary) or \
-            ("Reaction Wheel", "动量轮") not in locked_for("Reaction wheel torque", glossary):
-        failures.append(("G7 集合", locked_for("Arm the parachute", glossary),
-                         locked_for("Reaction wheel torque", glossary)))
+    wheel = dict(locked_for("Reaction wheel torque", glossary))
+    if locked_for("Arm the parachute", glossary) or wheel.get("Reaction Wheel") != ("动量轮",):
+        failures.append(("G7 集合", locked_for("Arm the parachute", glossary), wheel))
 
     # 官方译文直用：整句命中 exact、键引用命中 keyref 且需显式开关
     tm = Glossary([("Close", "关闭")], keyref={"#autoLOC_501653": "光年轮胎公司"},
@@ -1415,6 +1585,29 @@ def _write_sample(results, target, runner):
     return path
 
 
+def write_untranslated(results, target=None):
+    """失败条目清单（untranslated）：按门禁分组，逐条留原因。
+
+    这些条目**不写库**是安全的终态：运行时 TryGet 未命中就回退原文（DictPack.TryGet 返回 false）。
+    留档是为了让 lead 一眼看到是哪几条、被哪条门禁拦下、模型当时给了什么。
+    """
+    failed = [result for result in results if result["status"] == "failed"]
+    path = Path(target) if target else (REPORTS_DIR / "untranslated-{}.jsonl".format(
+        time.strftime("%Y%m%d-%H%M%S")))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    by_gate = {}
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        for result in failed:
+            gates = result["gates"] or ["G1"]
+            for name in gates:
+                by_gate[name] = by_gate.get(name, 0) + 1
+            handle.write(json.dumps({
+                "id": result["id"], "mod": result["mod"], "bucket": result["bucket"],
+                "gates": gates, "src": result["source"], "zh": result["restored"],
+            }, ensure_ascii=False) + "\n")
+    return path, len(failed), by_gate
+
+
 class _OfflineConfig:
     """离线模式的假配置：不读 .env，不持有密钥。"""
 
@@ -1458,6 +1651,12 @@ def main(argv=None):
                         help="只跑指定 mod（逗号分隔，单 mod 试点用，如 --mods RP-1）")
     parser.add_argument("--sample-out", default=None,
                         help="把本次逐条结果写成 jsonl（审计用，默认 reports/sample-<ts>.jsonl）")
+    parser.add_argument("--only-ids", default=None,
+                        help="只跑指定 id 集合（jsonl 每行带 id，或纯 id 文本），用于补跑 failed")
+    parser.add_argument("--single", action="store_true",
+                        help="强制单条一批：补跑用，模型漏 id 时不会连坐整批")
+    parser.add_argument("--complete-hint", action="store_true",
+                        help="在 user message 里加硬约束：每个 id 必须返回，无需翻译就抄原文（补跑用）")
     args = parser.parse_args(argv)
 
     pool_rows = load_pool(args.pool)
@@ -1477,6 +1676,24 @@ def main(argv=None):
         print("[translate] --mods {}：{} 行{}".format(
             ",".join(wanted), len(pool_rows),
             "（pool 里没找到：{}）".format(",".join(missing)) if missing else ""))
+
+    if args.only_ids:
+        wanted_ids = set()
+        for line in Path(args.only_ids).read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                wanted_ids.add(int(json.loads(line).get("id")))
+            except (ValueError, TypeError, AttributeError):
+                try:
+                    wanted_ids.add(int(line))
+                except ValueError:
+                    continue
+        before = len(pool_rows)
+        pool_rows = [row for row in pool_rows if row.get("id") in wanted_ids]
+        print("[translate] --only-ids {}：{} 行（来自 {} 行，文件里 {} 个 id）".format(
+            Path(args.only_ids).name, len(pool_rows), before, len(wanted_ids)))
 
     if args.selftest:
         failures, checks = selftest(pool_rows)
@@ -1500,6 +1717,12 @@ def main(argv=None):
                                                      glossary=glossary,
                                                      keyref_rescue=args.keyref_rescue,
                                                      group_by_mod=False)
+
+    if args.single:
+        flat = [{"mod": batch["mod"], "bucket": batch["bucket"], "items": [item]}
+                for batch in batches for item in batch["items"]]
+        print("[translate] --single：{} 批 → {} 批（单条一批）".format(len(batches), len(flat)))
+        batches = flat
 
     total_items = sum(len(batch["items"]) for batch in batches)
     keep_items = [item for item in items if item.get("keep_auto")]
@@ -1554,13 +1777,15 @@ def main(argv=None):
 
     cache = Cache(enabled=not args.no_cache)
     runner = Runner(config, glossary, cache, jobs=args.jobs, max_chars=args.max_chars,
-                    dry_run=args.dry_run, offline=args.offline)
+                    dry_run=args.dry_run, offline=args.offline,
+                    complete_hint=args.complete_hint)
     try:
         results = runner.keep_results(keep_items) + runner.run(batches)
     finally:
         cache.close()
 
     written = write_packs(results, args.out, dry_run=args.dry_run)
+    un_path, un_count, un_gates = write_untranslated(results)
     payload = {
         "kind": "translation",
         "started": time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(started)),
@@ -1582,10 +1807,12 @@ def main(argv=None):
         "keyref_rescue": bool(args.keyref_rescue),
         "mods": args.mods,
         "only_bucket": args.only_bucket,
+        "complete_hint": bool(args.complete_hint),
         "glossary_detail": {"total": glossary.total, "terms": len(glossary.pairs),
                             "locked": len(glossary.locked), "exact": len(glossary.exact),
                             "keyref": len(glossary.keyref), "bad": glossary.bad},
         "written": written,
+        "untranslated": {"count": un_count, "path": str(un_path), "by_gate": un_gates},
         "elapsed_s": round(time.time() - started, 1),
         "by_mod": _by_mod(results),
     }

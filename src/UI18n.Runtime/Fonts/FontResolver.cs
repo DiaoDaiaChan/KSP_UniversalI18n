@@ -56,7 +56,6 @@ namespace UI18n.Runtime.Fonts
         private static string _preferredOsFont = "Microsoft YaHei";
         private static string _bundledPath = string.Empty;
 
-        private static bool _configured;
         private static string[] _installedOsFonts;
         private static readonly Dictionary<int, Font> OsFontBySize = new Dictionary<int, Font>(4);
         private static bool _osFontGaveUp;
@@ -93,8 +92,6 @@ namespace UI18n.Runtime.Fonts
             _tmpMode = c.TmpMode;
             _preferredOsFont = string.IsNullOrEmpty(c.OsFontName) ? "Microsoft YaHei" : c.OsFontName.Trim();
             _bundledPath = c.BundledFontPath == null ? string.Empty : c.BundledFontPath.Trim();
-            _configured = true;
-
             _installedOsFonts = null;
             OsFontBySize.Clear();
             _osFontGaveUp = false;
@@ -322,6 +319,26 @@ namespace UI18n.Runtime.Fonts
             }
 
             return _installedOsFonts;
+        }
+
+        /// <summary>按 Ordinal 精确匹配（<c>Font.GetOSInstalledFontNames()</c> 返回的名字与注册表家族名不一定一致，
+        /// 所以只用精确相等，不做模糊/前缀匹配 —— 这是 Lead 指定的字体判据）。</summary>
+        private static bool ContainsOrdinal(string[] names, string name)
+        {
+            if (names == null || name == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                if (string.Equals(names[i], name, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>Bundled 模式：载入 AssetBundle 里的 <c>Font</c>；路径/载入失败只记原因并回落 OsFont。</summary>

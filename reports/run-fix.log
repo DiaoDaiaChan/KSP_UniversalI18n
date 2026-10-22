@@ -1,0 +1,152 @@
+[translate] --only-ids failed_ids.jsonl：203 行（来自 12792 行，文件里 203 个 id）
+[translate] pool=203 待译=203 跳过=0 批=35 jobs=4 dry_run=True
+[translate] 跳过原因： {}
+[translate] 术语表：官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）（版本 024c4e9a）
+[translate] 端点 http://100.111.24.121:8317/v1，model=gemini-3.8-flash-high，reasoning=none
+  [5/35] 批  ok=10 failed=2 tokens=4750/1303
+  [10/35] 批  ok=25 failed=2 tokens=10127/3290
+  [15/35] 批  ok=28 failed=5 tokens=14599/3943
+  [20/35] 批  ok=46 failed=12 tokens=20954/4815
+  [25/35] 批  ok=78 failed=14 tokens=25157/5713
+  [30/35] 批  ok=83 failed=28 tokens=39038/7995
+  [35/35] 批  ok=108 failed=95 tokens=103411/14987
+
+==========================================================================
+翻译摘要  2026-10-23T02:17:47  [DRY-RUN 未写盘]
+==========================================================================
+输入    : pool 203 行 → 待译 203 条 / 跳过 0 条
+批次    : 35 批 / 并发 4 / 字符预算 2000 / 拆分 0 次 / 单条重试 107 次 / 单条补发 107 次
+结果    : 共处理 203 条 → ok 108 / official 0 / rescue 0 / keep 0 / failed 95
+通过率  : 53.20% （(ok+official+rescue)/(ok+official+rescue+failed)，keep 不计入分母）
+官方直用: 命中 0 条 = 整句 0 + 键引用救回 0（救回开关 开，套用官方中文记忆、非模型输出） / 门禁不过退回翻译 1 条
+耗时    : 3.8min  调用 139 次 / 平均 3.43s / 最慢 16.65s
+模型    : gemini-3.8-flash-high  promptV=3  glossaryV=024c4e9a
+术语表  : 官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）
+token   : prompt 103411 + completion 14987 = 118398 / 139 次调用
+         每条均摊 509.4 prompt + 73.8 completion
+         每 10 条 5094 prompt + 738 completion
+缓存    : 命中 32 条
+半译    : 14 条（译文残留 ≥3 个英文单词，需人工复核；不算失败）
+          半译最多的 mod：ModularLaunchPads=8  RealismOverhaul=3  RP-1=2  VenStockRevamp=1
+术语漂移: 3 处（只计数不拦截，§9 走 term-drift 复核）
+          Deploy                     期望 开启         出现    2 次  例 专为德尔塔IV号（Delta IV）火箭设计的专用发射台，同时支持单芯级和三芯级构型。默认配…
+          station                    期望 空间站        出现    1 次  例 <b>项目：早期专注效益应用<br><b>类型：<color=green>必要</color…
+术语命中: 注入 50 条（去重 17 种）/ 短语锁触发 9 种，覆盖 53 条
+停止原因: stop=139
+
+-- 八门禁拦截 ----------------------------------------------------------
+   G1 条数/id 集合一致                     0
+   G2 KSP 占位符 <<n>> 多重集              0
+   G3 格式符 {n} %s                     0
+ ! G4 富文本标签逐字节                       2
+      id=7116 mod=RP-1 标签 期望{'<b>': 3, '<color=green>': 1, '</color>': 3, '</b>': 2, '<color=white>': 1, '<color=yellow>': 1} 实际{'<b>': 3, '<color=green>': 1, '</color>': 3, '</b>': 3, '<color=white>': 1, '<color=yellow>': 1}
+        源 <b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>The previous launc…
+        译 <b>项目：早期专注效益应用<br>类型：<color=green>必要</color></b><br><br>先前第一颗导航卫星的发射证明了多普勒频移测时理论，即利用卫星可以精确确定地球表面某个点的位置。现在，通过建立…
+      id=7124 mod=RP-1 标签 期望{'<b>': 2, '<color=green>': 1, '</color>': 2, '</b>': 1, '<color=yellow>': 1} 实际{'<b>': 2, '<color=green>': 1, '</color>': 2, '</b>': 2, '<color=yellow>': 1}
+        源 <b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Communications aro…
+        译 <b>项目：早期专注效益应用<br>类型：<color=green>必要</color></b><br><br>由于地球曲率的存在，全球通信受限于视距范围。如果我们能发射一颗通信卫星入轨，就可以利用它向地球的另一端传输信…
+   G5 哨兵 <<M>> 多重集/无残留               0
+ ! G6 长度比 0.15–1.8                   3
+      id=10489 mod=Sol-Configs 长度比 0.12
+        源 Mare Serenitatis
+        译 澄海
+      id=10490 mod=Sol-Configs 长度比 0.10
+        源 Mare Tranquillitatis
+        译 静海
+      id=6463 mod=ROSolar 长度比 1.89
+        源 1x2 Coatl
+        译 1x2 Coatl 太阳能电池阵列
+ ! G7 术语锁定逐字一致                       9
+      id=1923 mod=SXT 术语 EAS-1 External Command Seat=EAS-1外部控制座椅 未出现在译文
+        源 The EAS 316 is a lightweight observation pod that works in the same way as the EAS-1 External Command Seat. Fe…
+        译 EAS 316 是一款轻型观测舱，其运作方式与 EAS-1 外部指令座椅相同。虽然配备了“无钥匙”启动按钮，但这通常只意味着飞行员在发射时又跑回 KSC 去找根本不存在的钥匙了。
+      id=2182 mod=SXT 术语 J-90 "Goliath" Turbofan Engine=J-90“歌利亚”涡轮风扇引擎 未出现在译文
+        源 J-90 "Goliath" Turbofan Engine
+        译 J-90 “歌利亚”涡轮风扇发动机
+      id=2924 mod=VenStockRevamp 术语 Rockomax HubMax Multi-Point Connector=极限火箭“超级中枢”多点连接器 未出现在译文
+        源 After the fervorous response from fans, Rockomax has decide to up the ante with the Extra-Large Rockomax HubMa…
+        译 在获得粉丝的热烈反响后，Rockomax决定加大投入，推出超大型Rockomax HubMax多向连接器，将2.5米部件无缝整合到一个超大轮毂上。遗憾的是，当天并没有人因此震惊致死。
+ ! G8 非空/非原文/含中文                    81
+      id=293 mod=EditorExtensionsRedux 译文等于原文
+        源 ).symmetryCounterparts.Count =
+        译 ).symmetryCounterparts.Count =
+      id=3527 mod=KerbalismConfig 译文无中文
+        源 rcs
+        译 RCS
+      id=4271 mod=ProceduralParts 译文等于原文
+        源 PP-CustomEnds
+        译 PP-CustomEnds
+
+-- 未译条目 untranslated --------------------------------------------------
+ 共 95 条不写库（运行时 TryGet miss → 回退原文，安全终态）
+ 清单 C:\Users\43701\Documents\github\UniversalI18n\reports\untranslated-20261023-022134.jsonl
+ ! G4 富文本标签逐字节                       2
+ ! G6 长度比 0.15–1.8                   3
+ ! G7 术语锁定逐字一致                       9
+ ! G8 非空/非原文/含中文                    81
+
+-- 按 mod（前 15，全量见 JSON）-------------------------------------------
+   mod                            ok   keep failed
+   RealismOverhaul                60      0     35
+   ModularLaunchPads              27      0      0
+   RP-1                           16      0      2
+   ROSolar                         2      0      4
+   VenStockRevamp                  2      0      8
+   ROEngines                       1      0      3
+   EditorExtensionsRedux           0      0      1
+   KerbalismConfig                 0      0      1
+   ProceduralParts                 0      0      1
+   ROHeatshields                   0      0      1
+   ROCapsules                      0      0      1
+   ROTanks                         0      0      1
+   SXT                             0      0      2
+   Sol-Configs                     0      0      2
+   TriggerTech                     0      0      6
+   … 另外 1 个 mod
+
+写盘    : dry-run，未写 packs/zh-cn/（本次会产生 108 条 / 6 个文件）
+
+-- 失败明细（最多 300 条，报告里全存）------------------------------------
+   id=293 mod=EditorExtensionsRedux gates=['G8']
+      源 ).symmetryCounterparts.Count =
+      译 ).symmetryCounterparts.Count =
+      因 {"G8": "译文等于原文"}
+   id=3527 mod=KerbalismConfig gates=['G8']
+      源 rcs
+      译 RCS
+      因 {"G8": "译文无中文"}
+   id=4271 mod=ProceduralParts gates=['G8']
+      源 PP-CustomEnds
+      译 PP-CustomEnds
+      因 {"G8": "译文等于原文"}
+   id=6386 mod=ROHeatshields gates=['G8']
+      源 Coatl
+      译 Coatl
+      因 {"G8": "译文等于原文"}
+   id=5861 mod=ROCapsules gates=['G8']
+      源 abc
+      译 abc
+      因 {"G8": "译文等于原文"}
+   id=6110 mod=ROEngines gates=['G8']
+      源 ReStock 45
+      译 ReStock 45
+      因 {"G8": "译文等于原文"}
+   id=6883 mod=ROTanks gates=['G8']
+      源 Direct
+      译 Direct
+      因 {"G8": "译文等于原文"}
+   id=6452 mod=ROSolar gates=['G8']
+      源 1x6 ReStock
+      译 1x6 ReStock
+      因 {"G8": "译文等于原文"}
+   id=6113 mod=ROEngines gates=['G8']
+      源 Squad
+      译 Squad
+      因 {"G8": "译文等于原文"}
+   id=6454 mod=ROSolar gates=['G8']
+      源 3x2 ReStock
+      译 3x2 ReStock
+      因 {"G8": "译文等于原文"}
+   … 另外 85 条
+==========================================================================
+[translate] 报告 → C:\Users\43701\Documents\github\UniversalI18n\reports\translation-20261023-022135.json

@@ -184,7 +184,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="python -m i18n_tools.glossary",
         description="抽 Squad 官方双语术语表 -> packs/glossary.jsonl",
     )
-    p.add_argument("--gamedata", default=None, help="GameData 根目录（默认 ../GameData 或环境变量 UI18N_GAMEDATA）")
+    p.add_argument("--gamedata", default=None, help="GameData 根目录（默认 UI18N_GAMEDATA / 仓库同级 / 本机安装目录）")
     p.add_argument("--out", default=None, help="输出文件（默认 packs/glossary.jsonl）")
     p.add_argument("--include-zh-only", action="store_true", help="同时导出只有中文、没有英文注释的字典键（en 为空串）")
     p.add_argument("--short-max-words", type=int, default=SHORT_MAX_WORDS, help="short 判据：最大词数（默认 5）")

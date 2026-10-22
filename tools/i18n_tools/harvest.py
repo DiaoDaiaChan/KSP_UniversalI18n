@@ -63,12 +63,34 @@ def repo_root() -> str:
     return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
+# 仓库搬出游戏根之后，“仓库上一级 = 游戏根”的推断会失效（会指向一个不存在的 GameData），
+# 所以默认解析加一级回退：本机已知的 KSP 安装目录（只在目录真实存在时生效）。
+# 换机器 / 换安装位置时请用 --gamedata 或环境变量 UI18N_GAMEDATA 指定，不要改这张表。
+KSP_GAMEDATA_FALLBACKS = (r"D:\Kerbal Space Program_newmod\GameData",)
+
+
 def default_gamedata() -> str:
-    """默认 GameData：优先环境变量 UI18N_GAMEDATA，否则取仓库上一级（游戏根）下的 GameData。"""
+    r"""默认 GameData，按优先级解析：
+
+    ① 环境变量 UI18N_GAMEDATA（显式指定，永远最高优先）
+    ② <仓库上一级>\GameData —— 仓库还放在游戏根里时的传统布局
+    ③ KSP_GAMEDATA_FALLBACKS 里第一个真实存在的目录（本机安装位置）
+
+    历史：仓库原先在 <游戏根>\UniversalI18n 下，② 恒成立；2026-10 仓库迁到
+    C:\Users\43701\Documents\github\UniversalI18n 后 ② 会得到 C:\Users\43701\Documents\github\GameData
+    （不存在），因此必须有 ③，否则所有不带 --gamedata 的命令都会报找不到 GameData。
+    解析不出来时返回 ②，让上层照常打印“找不到 GameData 目录”的错误。
+    """
     from_env = os.environ.get("UI18N_GAMEDATA")
     if from_env:
-        return from_env
-    return os.path.join(os.path.dirname(repo_root()), "GameData")
+        return os.path.abspath(from_env)
+    beside_repo = os.path.join(os.path.dirname(repo_root()), "GameData")
+    if os.path.isdir(beside_repo):
+        return beside_repo
+    for cand in KSP_GAMEDATA_FALLBACKS:
+        if os.path.isdir(cand):
+            return cand
+    return beside_repo
 
 
 def default_pack(name: str) -> str:
@@ -513,7 +535,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(
         prog="python -m i18n_tools.harvest",
         description="从 GameData 抽取 KSP 文本候选池（标准库，零依赖，不联网）")
-    ap.add_argument("--gamedata", default=None, help="GameData 目录（默认按仓库位置推断）")
+    ap.add_argument("--gamedata", default=None, help="GameData 目录（默认 UI18N_GAMEDATA / 仓库同级 / 本机安装目录）")
     ap.add_argument("--out", default=None, help="pool.jsonl 输出路径（默认 <repo>/packs/pool.jsonl）")
     ap.add_argument("--inventory", default=None, help="inventory.json 输出路径（默认 <repo>/packs/inventory.json）")
     ap.add_argument("--verify", default=None, help="与一份既有 pool.jsonl 逐行比对")
