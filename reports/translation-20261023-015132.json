@@ -1,0 +1,454 @@
+{
+  "kind": "translation",
+  "started": "2026-10-23T01:51:27",
+  "dry_run": true,
+  "offline": false,
+  "limit": 200,
+  "model": "gemini-3.8-flash-high",
+  "promptV": 3,
+  "glossaryV": "024c4e9a",
+  "glossary": "官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）",
+  "pool_rows": 12792,
+  "build": {
+    "skipped": {
+      "all-sentinel": 58,
+      "no-words": 484,
+      "key-ref": 3193
+    },
+    "items": 9057,
+    "batches": 225,
+    "keeps_auto": 7,
+    "curated": {
+      "used": 34,
+      "rejected": 1,
+      "keyref_rescue": 0
+    }
+  },
+  "sample_build": {
+    "skipped": {},
+    "items": 200,
+    "batches": 7,
+    "keeps_auto": 1,
+    "curated": {
+      "used": 2,
+      "rejected": 0,
+      "keyref_rescue": 0
+    }
+  },
+  "batches": 7,
+  "jobs": 4,
+  "max_chars": 6000,
+  "stats": {
+    "batches": 7,
+    "batches_failed": 0,
+    "splits": 0,
+    "calls": 1,
+    "cache_hits": 196,
+    "items_requested": 1,
+    "items_ok": 197,
+    "items_keep": 1,
+    "items_failed": 0,
+    "items_official": 2,
+    "curated_rejected": 0,
+    "term_drift": 6,
+    "mixed_lang": 9,
+    "mixed_lang_examples": [
+      {
+        "id": 1616,
+        "mod": "ROCapsules",
+        "src": "Improved, lunar rated heatshield for the Gemini Capsule. Can be switched to the Gemini B configuration with a hatch. <b>",
+        "zh": "改进型双子座乘员舱防热盾，具备月球再入能力。可切换为带舱门的双子座 B构型。<b><color=red>双子座缺乏更先进乘员舱的辐射防热能力。仅支持极其平缓的月球再入。</color></b>",
+        "words": [
+          "color",
+          "red",
+          "color"
+        ]
+      },
+      {
+        "id": 6620,
+        "mod": "ROSolar",
+        "src": "<b>Solar panels TL6</b> \\n <color=white>Mass: 6kg/m2</color> \\n <color=green>Cost: 100/m2</color> \\n <color=orange>Power",
+        "zh": "<b>太阳能电池板 TL6</b> \\n <color=white>质量：6kg/m2</color> \\n <color=green>成本：100/m2</color> \\n <color=orange>功率：180W/m2</color> \\n <color=#00ffff>1年后衰减20%</color> \\n ",
+        "words": [
+          "color",
+          "white",
+          "kg",
+          "color",
+          "color",
+          "green",
+          "color",
+          "color"
+        ]
+      },
+      {
+        "id": 7262,
+        "mod": "RP-1",
+        "src": "<b>Program: Early Satellites (Heavy)<br>Type: <color=green>Required</color></b><br><br>A polar orbit is one in which a s",
+        "zh": "<b>项目：早期卫星（重型）<br>类型：<color=green>必要</color></b><br><br>极地轨道是指卫星在每次公转中都会经过或接近天体两极上空的轨道。因此其对赤道的轨道倾角为（或非常接近）90度。极轨卫星每次绕行都会在不同的经度穿过赤道。将一颗质量至少为 400 kg 的卫星送入极地轨道，以便我",
+        "words": [
+          "br",
+          "color",
+          "green",
+          "color",
+          "br",
+          "br",
+          "kg"
+        ]
+      },
+      {
+        "id": 7667,
+        "mod": "RP-1",
+        "src": "<b>Program: Jupiter Observation<br>Type: <color=green>Required</color></b><br><br>Create a probe and send it to flyby Io",
+        "zh": "<b>项目：木星观测<br>类型：<color=green>必要</color></b><br><br>建造一颗探测器，并将其送至飞掠木卫一 7800 km 以内。务必在飞掠期间传回科学数据。",
+        "words": [
+          "br",
+          "color",
+          "green",
+          "color",
+          "br",
+          "br",
+          "km"
+        ]
+      },
+      {
+        "id": 7757,
+        "mod": "RP-1",
+        "src": "<b>Program: Uncrewed Lunar Surface Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully ",
+        "zh": "<b>项目：无人月球表面探测<br>类型：<color=blue>可选</color></b><br><br>设计并成功发射一艘能够在月球软着陆并将科学数据传回地球的航天器。<br><br>这是一个包含 @maxCompletions 个合同的系列，已完成 @index 个。</color>",
+        "words": [
+          "br",
+          "color",
+          "blue",
+          "color",
+          "br",
+          "br",
+          "br",
+          "br"
+        ]
+      },
+      {
+        "id": 7847,
+        "mod": "RP-1",
+        "src": "<b>Program: Crewed Mars Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully launch an u",
+        "zh": "<b>项目：载人火星探测<br>类型：<color=blue>可选</color></b><br><br>设计并成功发射一艘无人探测器，使其在火星着陆，采集地表样本并返回地球。",
+        "words": [
+          "br",
+          "color",
+          "blue",
+          "color",
+          "br",
+          "br"
+        ]
+      },
+      {
+        "id": 8117,
+        "mod": "RP-1",
+        "src": "<b>Program: Second Generation Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Satellites have ",
+        "zh": "<b>项目：第二代专注效益应用<br>类型：<color=green>必要</color></b><br><br>卫星已被证明是与西半球同志进行通信的可靠途径。我们希望提高莫斯科与古巴之间链路的容量。<br><br>历史参考：闪电2系列卫星（1,700kg，闪电-M）。",
+        "words": [
+          "br",
+          "color",
+          "green",
+          "color",
+          "br",
+          "br",
+          "br",
+          "br"
+        ]
+      },
+      {
+        "id": 8297,
+        "mod": "RP-1",
+        "src": "<b>Program: Early Inner Planet Probes<br>Type: <color=green>Required</color></b><br><br>Design and successfully launch a",
+        "zh": "<b>项目：早期内行星探测器<br>类型：<color=green>必要</color></b><br><br>设计并成功发射一艘无人探测器，使其进入金星轨道。",
+        "words": [
+          "br",
+          "color",
+          "green",
+          "color",
+          "br",
+          "br"
+        ]
+      },
+      {
+        "id": 8802,
+        "mod": "RP-1",
+        "src": "<b>Science-Core TL3</b> - <color=white>Mass: -76%</color> <color=green>Cost: +25%</color> <color=orange>Power: -99.4%</c",
+        "zh": "<b>科学核心 TL3</b> - <color=white>质量：-76%</color> <color=green>成本：+25%</color> <color=orange>功率：-99.4%</color> <color=white>kOS 磁盘空间：400 B</color>",
+        "words": [
+          "color",
+          "white",
+          "color",
+          "color",
+          "green",
+          "color",
+          "color",
+          "orange"
+        ]
+      }
+    ],
+    "drift_examples": [
+      {
+        "id": 8480,
+        "term": "Scientific",
+        "want": "热心科研",
+        "src": "Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much longer",
+        "zh": "照片有助于拓展我们对太阳系外侧的认知，但要加深对这些遥远邻居的了解，必须借助科学仪器，并具备远长于匆匆飞掠的驻留时间。向两颗最遥远的气态巨行星发射轨道器，并探测它们的大气层。在抵达太阳系最深处的同时，也探索这些巨行星的卫星。为了在如此遥远的"
+      },
+      {
+        "id": 6620,
+        "term": "White",
+        "want": "白色",
+        "src": "<b>Solar panels TL6</b> \\n <color=white>Mass: 6kg/m2</color> \\n <color=green>Cost: 100/m2</color> \\n <color=orange>Power",
+        "zh": "<b>太阳能电池板 TL6</b> \\n <color=white>质量：6kg/m2</color> \\n <color=green>成本：100/m2</color> \\n <color=orange>功率：180W/m2</color"
+      },
+      {
+        "id": 3351,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Adjustable Landing Gear (Large)",
+        "zh": "可调起落架（大号）"
+      },
+      {
+        "id": 8802,
+        "term": "White",
+        "want": "白色",
+        "src": "<b>Science-Core TL3</b> - <color=white>Mass: -76%</color> <color=green>Cost: +25%</color> <color=orange>Power: -99.4%</c",
+        "zh": "<b>科学核心 TL3</b> - <color=white>质量：-76%</color> <color=green>成本：+25%</color> <color=orange>功率：-99.4%</color> <color=white"
+      },
+      {
+        "id": 2067,
+        "term": "Research",
+        "want": "研究",
+        "src": "The latest in research and development enabled the development of this little marvel, The Sensor Array Computing Nose Co",
+        "zh": "研发部门的最新成果孕育了这一微型奇迹：传感器阵列计算鼻锥头。它配备了许多“优质”传感器，以及从最高品质飞行器废料中抢救出来的计算机，使其能够在飞行过程中收集大气数据。"
+      },
+      {
+        "id": 9121,
+        "term": "Oxidizer",
+        "want": "氧化剂",
+        "src": "2014-2018 Oxidizer-Rich Staged Combustion Engines",
+        "zh": "2014-2018年富氧分级燃烧发动机"
+      }
+    ],
+    "gates": {
+      "G1": 0,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 0,
+      "G6": 0,
+      "G7": 0,
+      "G8": 0
+    },
+    "gate_examples": {
+      "G1": [],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [],
+      "G6": [],
+      "G7": [],
+      "G8": []
+    },
+    "failed": [],
+    "retried": 0,
+    "finish_reasons": {
+      "stop": 1
+    },
+    "latencies": [
+      2.97
+    ],
+    "latency_total": 2.967,
+    "elapsed_s": 3.5,
+    "tokens": {
+      "prompt": 686,
+      "completion": 30,
+      "reasoning": 0,
+      "requests": 1,
+      "failures": 0
+    },
+    "latency_avg_s": 2.97,
+    "latency_max_s": 2.97
+  },
+  "curated": {
+    "used": 34,
+    "rejected": 1,
+    "keyref_rescue": 0
+  },
+  "keyref_rescue": false,
+  "glossary_detail": {
+    "total": 2126,
+    "terms": 813,
+    "locked": 588,
+    "exact": 1868,
+    "keyref": 2126,
+    "bad": 0
+  },
+  "written": {
+    "files": {
+      "000_TexturesUnlimited": 1,
+      "AJE": 1,
+      "ConformalDecals": 2,
+      "EditorExtensionsRedux": 4,
+      "KerbalFoundries": 2,
+      "KerbalismConfig": 2,
+      "MechJeb2": 1,
+      "ModularLaunchPads": 12,
+      "ProceduralFairings": 2,
+      "ProceduralParts": 3,
+      "ROCapsules": 9,
+      "ROEngines": 6,
+      "ROHeatshields": 1,
+      "ROSolar": 4,
+      "ROTanks": 7,
+      "RP-1": 75,
+      "RealAntennas": 1,
+      "RealChute": 1,
+      "RealismOverhaul": 39,
+      "SXT": 11,
+      "TriggerTech": 11,
+      "VenStockRevamp": 5
+    },
+    "total": 200,
+    "written": false
+  },
+  "elapsed_s": 5.1,
+  "by_mod": {
+    "TriggerTech": {
+      "ok": 10,
+      "keep": 1,
+      "failed": 0,
+      "chars": 59
+    },
+    "RP-1": {
+      "ok": 75,
+      "keep": 0,
+      "failed": 0,
+      "chars": 2660
+    },
+    "MechJeb2": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 18
+    },
+    "ROCapsules": {
+      "ok": 9,
+      "keep": 0,
+      "failed": 0,
+      "chars": 254
+    },
+    "ROSolar": {
+      "ok": 4,
+      "keep": 0,
+      "failed": 0,
+      "chars": 208
+    },
+    "AJE": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 15
+    },
+    "ConformalDecals": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 9
+    },
+    "EditorExtensionsRedux": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 27,
+      "official": 1
+    },
+    "RealismOverhaul": {
+      "ok": 39,
+      "keep": 0,
+      "failed": 0,
+      "chars": 1469
+    },
+    "SXT": {
+      "ok": 11,
+      "keep": 0,
+      "failed": 0,
+      "chars": 281
+    },
+    "VenStockRevamp": {
+      "ok": 5,
+      "keep": 0,
+      "failed": 0,
+      "chars": 148
+    },
+    "000_TexturesUnlimited": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 4
+    },
+    "KerbalFoundries": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 21
+    },
+    "KerbalismConfig": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 8
+    },
+    "ModularLaunchPads": {
+      "ok": 12,
+      "keep": 0,
+      "failed": 0,
+      "chars": 962
+    },
+    "ProceduralParts": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 40
+    },
+    "RealAntennas": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 8
+    },
+    "ROEngines": {
+      "ok": 5,
+      "keep": 0,
+      "failed": 0,
+      "chars": 170,
+      "official": 1
+    },
+    "ROTanks": {
+      "ok": 7,
+      "keep": 0,
+      "failed": 0,
+      "chars": 121
+    },
+    "ProceduralFairings": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 28
+    },
+    "RealChute": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 26
+    },
+    "ROHeatshields": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 19
+    }
+  },
+  "sample_out": "D:\\Kerbal Space Program_newmod\\UniversalI18n\\reports\\sample-20261023-015132.jsonl"
+}

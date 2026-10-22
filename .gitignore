@@ -1,0 +1,25 @@
+# build outputs
+build/
+bin/
+obj/
+*.user
+.vs/
+
+# 临时与审计产物（不进仓库）
+_scratch/
+_audit/
+
+# 机密与本地覆盖
+.env
+.env.local
+*.local.json
+secrets/
+
+# 生成物：字典包由 CI 产出，不手工提交
+packs/*.uip
+packs/**/*.bin
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/

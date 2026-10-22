@@ -1,0 +1,140 @@
+{"h": "004d2e191349e4f2", "n": "box", "s": "box", "t": "方框", "mod": "EditorExtensionsRedux"}
+{"h": "0254bfce2d87f7db", "n": "AS Root", "s": "AS Root", "t": "自动连接筋：根部件", "mod": "EditorExtensionsRedux"}
+{"h": "0268b0f8129435ca", "n": "offset", "s": "offset", "t": "偏移", "mod": "EditorExtensionsRedux"}
+{"h": "0312976fe9da5951", "n": "Button", "s": "Button", "t": "按钮", "mod": "EditorExtensionsRedux"}
+{"h": "034a187f7574f166", "n": "Change will take effect after deselecting current part", "s": "Change will take effect after deselecting current part", "t": "更改将在取消选择当前部件后生效", "mod": "EditorExtensionsRedux"}
+{"h": "0379fc73608ab971", "n": "Done", "s": "Done", "t": "完成", "mod": "EditorExtensionsRedux"}
+{"h": "04e13613e8f15f55", "n": "Stock", "s": "Stock", "t": "原版", "mod": "EditorExtensionsRedux"}
+{"h": "0662c42e7375f809", "n": "amount:", "s": "amount:", "t": "量：", "mod": "EditorExtensionsRedux"}
+{"h": "07b39eedea8b5b6a", "n": "AS Heaviest", "s": "AS Heaviest", "t": "自动连接筋：最重部件", "mod": "EditorExtensionsRedux"}
+{"h": "0ac7403f47011350", "n": "position:", "s": "position:", "t": "位置：", "mod": "EditorExtensionsRedux"}
+{"h": "0adeb1f48135b792", "n": "Part clipping", "s": "Part clipping", "t": "部件穿模", "mod": "EditorExtensionsRedux"}
+{"h": "0bcd0e91195fc6aa", "n": "comp", "s": "comp", "t": "组件", "mod": "EditorExtensionsRedux"}
+{"h": "0fa3391db68e4425", "n": "disabled", "s": "disabled", "t": "已禁用", "mod": "EditorExtensionsRedux"}
+{"h": "11500fe2bb0b62f7", "n": ").symMethod =", "s": ").symMethod =", "t": ").symMethod =", "mod": "EditorExtensionsRedux"}
+{"h": "11cf352c77d39c0c", "n": "Fine Adjust Keys", "s": "Fine Adjust Keys", "t": "微调按键", "mod": "EditorExtensionsRedux"}
+{"h": "159d902844a34f8a", "n": "Toggle Rigid", "s": "Toggle Rigid", "t": "开关刚性连接", "mod": "EditorExtensionsRedux"}
+{"h": "16f3e46051eee3e8", "n": "target", "s": "target", "t": "目标", "mod": "EditorExtensionsRedux"}
+{"h": "1bb8acc88bfe30f9", "n": "_lastKeyPressed:", "s": "_lastKeyPressed:", "t": "_lastKeyPressed:", "mod": "EditorExtensionsRedux"}
+{"h": "1c6a23f7ab13f24f", "n": "Reset camera:", "s": "Reset camera:", "t": "重置视角：", "mod": "EditorExtensionsRedux"}
+{"h": "1edf03e5247ca6b3", "n": "Horizontal snap:", "s": "Horizontal snap:", "t": "水平对齐：", "mod": "EditorExtensionsRedux"}
+{"h": "20ffe01a89553fde", "n": "Left:", "s": "Left:", "t": "向左：", "mod": "EditorExtensionsRedux"}
+{"h": "22a329de3000a84c", "n": "Waiting for key", "s": "Waiting for key", "t": "等待按键输入", "mod": "EditorExtensionsRedux"}
+{"h": "23182d7826ebc5f8", "n": "Debug Build", "s": "Debug Build", "t": "调试版本", "mod": "EditorExtensionsRedux"}
+{"h": "24b070ada2041cb0", "n": "left", "s": "left", "t": "左", "mod": "EditorExtensionsRedux"}
+{"h": "2c6ef248155cc53a", "n": "In the SPH, height bottom of vessel is moved to when using the 'b' function to adjust the position", "s": "In the SPH, height bottom of vessel is moved to when using the 'b' function to adjust the position", "t": "在 SPH 中使用“b”功能调整位置时载具底部移动至的高度", "mod": "EditorExtensionsRedux"}
+{"h": "302cbb19bf9a174a", "n": "Off", "s": "Off", "t": "关", "mod": "EditorExtensionsRedux"}
+{"h": "33f85f24c0f5f008", "n": "Save", "s": "Save", "t": "保存", "mod": "EditorExtensionsRedux"}
+{"h": "34ad64470b84620d", "n": "Select a new root part", "s": "Select a new root part", "t": "选择新的根部件", "mod": "EditorExtensionsRedux"}
+{"h": "3aed22b893669f4b", "n": "Settings 1", "s": "Settings 1", "t": "设置 1", "mod": "EditorExtensionsRedux"}
+{"h": "3aed23b89366a0fe", "n": "Settings 2", "s": "Settings 2", "t": "设置 2", "mod": "EditorExtensionsRedux"}
+{"h": "3c0d17bad169557b", "n": "none", "s": "none", "t": "无", "mod": "EditorExtensionsRedux"}
+{"h": "3cbae8c51a1e1e21", "n": "Surface attachment:", "s": "Surface attachment:", "t": "表面附着：", "mod": "EditorExtensionsRedux"}
+{"h": "406b85f73e792c91", "n": "Master Snap mode off", "s": "Master Snap mode off", "t": "全局对齐模式已关闭", "mod": "EditorExtensionsRedux"}
+{"h": "45f615692655a797", "n": "\\nKSP version:", "s": "\\nKSP version:", "t": "\\nKSP 版本：", "mod": "EditorExtensionsRedux"}
+{"h": "4663ae650a6bffd5", "n": "orgPos:", "s": "orgPos:", "t": "orgPos:", "mod": "EditorExtensionsRedux"}
+{"h": "46be44d1378ff044", "n": "No Offset Limit is active", "s": "No Offset Limit is active", "t": "解除偏移限制已激活", "mod": "EditorExtensionsRedux"}
+{"h": "46fbf3f7e58f0620", "n": "Autostruts set to 'Heaviest' for all current Parts in Vessel (except forced).", "s": "Autostruts set to 'Heaviest' for all current Parts in Vessel (except forced).", "t": "已将载具中所有当前部件的自动连接筋设为“最重部件”（强制除外）。", "mod": "EditorExtensionsRedux"}
+{"h": "4729fb7d2b71c501", "n": "No such field:", "s": "No such field:", "t": "无此字段：", "mod": "EditorExtensionsRedux"}
+{"h": "478110fd2d5ab4e7", "n": "children null", "s": "children null", "t": "子级为空", "mod": "EditorExtensionsRedux"}
+{"h": "48022f6d5501d677", "n": "Defaults", "s": "Defaults", "t": "默认", "mod": "EditorExtensionsRedux"}
+{"h": "488dec0c833d8a0c", "n": "Angle Snap", "s": "Angle Snap", "t": "角度吸附", "mod": "EditorExtensionsRedux"}
+{"h": "4cbf3a26fca1d74a", "n": "position", "s": "position", "t": "位置", "mod": "EditorExtensionsRedux"}
+{"h": "4dea9618e618ae3c", "n": "size", "s": "size", "t": "尺寸", "mod": "EditorExtensionsRedux"}
+{"h": "5590dbf7e425789d", "n": "Label", "s": "Label", "t": "标签", "mod": "EditorExtensionsRedux"}
+{"h": "5698e233cf2aa46e", "n": "Click to open the Forum thread", "s": "Click to open the Forum thread", "t": "点击打开论坛帖子", "mod": "EditorExtensionsRedux"}
+{"h": "56b1269125db029e", "n": "extents", "s": "extents", "t": "范围", "mod": "EditorExtensionsRedux"}
+{"h": "56e4f40c17b17f61", "n": "OSDLabel", "s": "OSDLabel", "t": "OSD标签", "mod": "EditorExtensionsRedux"}
+{"h": "5b88c55dca2c1cd8", "n": "Fine Adjust", "s": "Fine Adjust", "t": "微调", "mod": "EditorExtensionsRedux"}
+{"h": "5b9bc4ba528108e4", "n": "null", "s": "null", "t": "空", "mod": "EditorExtensionsRedux"}
+{"h": "5c3ad538218cc027", "n": "Current Part:", "s": "Current Part:", "t": "当前部件：", "mod": "EditorExtensionsRedux"}
+{"h": "5e1deb92de830dd4", "n": "part.collider not null", "s": "part.collider not null", "t": "part.collider 非空", "mod": "EditorExtensionsRedux"}
+{"h": "5e8250fb85d64c23", "n": "Close", "s": "Close", "t": "关闭", "mod": "EditorExtensionsRedux"}
+{"h": "60132e66d946d937", "n": "Part has no symmetry:", "s": "Part has no symmetry:", "t": "部件无对称：", "mod": "EditorExtensionsRedux"}
+{"h": "60e8f4e3a8255608", "n": "Back:", "s": "Back:", "t": "向后：", "mod": "EditorExtensionsRedux"}
+{"h": "650e75b16aee4e10", "n": "EEX Menu", "s": "EEX Menu", "t": "EEX 菜单", "mod": "EditorExtensionsRedux"}
+{"h": "70d885806b56289e", "n": "enabled", "s": "enabled", "t": "已启用", "mod": "EditorExtensionsRedux"}
+{"h": "71069aae3cfb16fd", "n": "Part Position Info", "s": "Part Position Info", "t": "部件位置信息", "mod": "EditorExtensionsRedux"}
+{"h": "7216d7d48afee8f8", "n": "Symmetry Mode & Angle Snap keys have been reset", "s": "Symmetry Mode & Angle Snap keys have been reset", "t": "对称模式与角度吸附按键已重置", "mod": "EditorExtensionsRedux"}
+{"h": "76aaaa535714d805", "n": "right", "s": "right", "t": "右", "mod": "EditorExtensionsRedux"}
+{"h": "7773c5ab77475a12", "n": "Editor Extensions", "s": "Editor Extensions", "t": "编辑器扩展", "mod": "EditorExtensionsRedux"}
+{"h": "78e3411d8291ed1f", "n": "AS Grandparent", "s": "AS Grandparent", "t": "自动连接筋：祖父级部件", "mod": "EditorExtensionsRedux"}
+{"h": "79346ab1a8577e4f", "n": "Zoom Selected:", "s": "Zoom Selected:", "t": "聚焦选中项：", "mod": "EditorExtensionsRedux"}
+{"h": "79ea96c7bbde76aa", "n": "No Autostruts", "s": "No Autostruts", "t": "无自动连接筋", "mod": "EditorExtensionsRedux"}
+{"h": "7b3a70561cec8d75", "n": "Type:", "s": "Type:", "t": "类型：", "mod": "EditorExtensionsRedux"}
+{"h": "7ca0c680e79f55a3", "n": "orthographic:", "s": "orthographic:", "t": "正交：", "mod": "EditorExtensionsRedux"}
+{"h": "8120450fa0756d3f", "n": "Strut/fuel align:", "s": "Strut/fuel align:", "t": "连接筋/燃料管对齐：", "mod": "EditorExtensionsRedux"}
+{"h": "8422cd55e9c654e2", "n": "attached part", "s": "attached part", "t": "已连接部件", "mod": "EditorExtensionsRedux"}
+{"h": "866324a9ba8b11c7", "n": "All Rigid", "s": "All Rigid", "t": "全部刚性连接", "mod": "EditorExtensionsRedux"}
+{"h": "892f2eda453d929c", "n": "Mass Tweakables:", "s": "Mass Tweakables:", "t": "批量调整：", "mod": "EditorExtensionsRedux"}
+{"h": "8c637978c60ecfe8", "n": "Attached part:", "s": "Attached part:", "t": "连接部件：", "mod": "EditorExtensionsRedux"}
+{"h": "8d87fafe640d7687", "n": "No Offset Limit is not active", "s": "No Offset Limit is not active", "t": "解除偏移限制未激活", "mod": "EditorExtensionsRedux"}
+{"h": "9000e724d1a3cfe0", "n": "Adjustment Type:", "s": "Adjustment Type:", "t": "调整类型：", "mod": "EditorExtensionsRedux"}
+{"h": "906df0d0d5554e78", "n": "Horizontal Center in Editor:", "s": "Horizontal Center in Editor:", "t": "编辑器水平居中：", "mod": "EditorExtensionsRedux"}
+{"h": "91d29ef8a9047682", "n": "Show Angle Snaps", "s": "Show Angle Snaps", "t": "显示角度吸附", "mod": "EditorExtensionsRedux"}
+{"h": "93f1f093e6e82ec9", "n": "Default Camera", "s": "Default Camera", "t": "默认镜头", "mod": "EditorExtensionsRedux"}
+{"h": "9440b45a3f1389ac", "n": "Failed to convert string value \"", "s": "Failed to convert string value \"", "t": "无法转换字符串值 \"", "mod": "EditorExtensionsRedux"}
+{"h": "95478bef5db877f1", "n": "aspect:", "s": "aspect:", "t": "宽高比：", "mod": "EditorExtensionsRedux"}
+{"h": "9783fee66ea8bcea", "n": "Zoom Camera on", "s": "Zoom Camera on", "t": "缩放镜头至", "mod": "EditorExtensionsRedux"}
+{"h": "99d5f60d93787695", "n": "RigidAttach toggled for all current Parts in Vessel.", "s": "RigidAttach toggled for all current Parts in Vessel.", "t": "已为载具中的所有当前部件切换 RigidAttach 状态。", "mod": "EditorExtensionsRedux"}
+{"h": "9a46ff9baa276602", "n": "back", "s": "back", "t": "后", "mod": "EditorExtensionsRedux"}
+{"h": "9b518aeae54d3048", "n": "Toggle ReRoot:", "s": "Toggle ReRoot:", "t": "开关 ReRoot：", "mod": "EditorExtensionsRedux"}
+{"h": "9c00f3da5ed008f7", "n": "Allow Mass Tweakables", "s": "Allow Mass Tweakables", "t": "允许批量调整", "mod": "EditorExtensionsRedux"}
+{"h": "9c349e4e66eb6ac3", "n": "Message delay:", "s": "Message delay:", "t": "提示延迟：", "mod": "EditorExtensionsRedux"}
+{"h": "9d8b8aa2b404c2c8", "n": "Settings", "s": "Settings", "t": "设置", "mod": "EditorExtensionsRedux"}
+{"h": "9daf8d12ff36743a", "n": "Toggle No Offset Limit:", "s": "Toggle No Offset Limit:", "t": "开关无偏移限制：", "mod": "EditorExtensionsRedux"}
+{"h": "9dd9fdb0cfc2d66d", "n": "Right:", "s": "Right:", "t": "向右：", "mod": "EditorExtensionsRedux"}
+{"h": "9e458594d6a29524", "n": "Reset Symmetry Mode & Angle Snap keys", "s": "Reset Symmetry Mode & Angle Snap keys", "t": "重置对称模式与角度吸附按键", "mod": "EditorExtensionsRedux"}
+{"h": "9e5c1e1611f14c61", "n": "orientation", "s": "orientation", "t": "朝向", "mod": "EditorExtensionsRedux"}
+{"h": "9f3ccc4569eaebe3", "n": "Hide Autostruts", "s": "Hide Autostruts", "t": "隐藏自动连接筋", "mod": "EditorExtensionsRedux"}
+{"h": "a018149b758c999a", "n": "Reroot is active", "s": "Reroot is active", "t": "重新选定根部件已激活", "mod": "EditorExtensionsRedux"}
+{"h": "a45a194b58837e4f", "n": "Active", "s": "Active", "t": "活动", "mod": "EditorExtensionsRedux"}
+{"h": "a558ab0c2d1e18f4", "n": "No part selected", "s": "No part selected", "t": "未选择部件", "mod": "EditorExtensionsRedux"}
+{"h": "a6cc8346e6b7f1ed", "n": "Fine Adjustments", "s": "Fine Adjustments", "t": "微调控制", "mod": "EditorExtensionsRedux"}
+{"h": "a904ca1391d9ba67", "n": "This version of Editor Extensions Redux is not compatible with this version of KSP", "s": "This version of Editor Extensions Redux is not compatible with this version of KSP", "t": "此版本的 Editor Extensions Redux 与当前 KSP 版本不兼容", "mod": "EditorExtensionsRedux"}
+{"h": "aca41c0c9b9ca67d", "n": "Down:", "s": "Down:", "t": "向下：", "mod": "EditorExtensionsRedux"}
+{"h": "ae75477608202328", "n": "reroot", "s": "reroot", "t": "重选根部件", "mod": "EditorExtensionsRedux"}
+{"h": "afb6effff2682074", "n": "name:", "s": "name:", "t": "名称：", "mod": "EditorExtensionsRedux"}
+{"h": "b072aa031f33e7b9", "n": "Max symmetry:", "s": "Max symmetry:", "t": "最大对称数：", "mod": "EditorExtensionsRedux"}
+{"h": "b261b9d8408f9461", "n": "ASnaps", "s": "ASnaps", "t": "角度吸附", "mod": "EditorExtensionsRedux"}
+{"h": "b3764d114c7d3241", "n": "Vertical snap:", "s": "Vertical snap:", "t": "垂直对齐：", "mod": "EditorExtensionsRedux"}
+{"h": "b8c979e9f37ee7a9", "n": "Position Debug", "s": "Position Debug", "t": "位置调试", "mod": "EditorExtensionsRedux"}
+{"h": "b91e4d49f1493a24", "n": "No such method:", "s": "No such method:", "t": "无此方法：", "mod": "EditorExtensionsRedux"}
+{"h": "bd27a48da7071079", "n": "Part selected as target for snap:", "s": "Part selected as target for snap:", "t": "已选定作为吸附目标的部件：", "mod": "EditorExtensionsRedux"}
+{"h": "bef9e1084e69480c", "n": "Translation", "s": "Translation", "t": "平移", "mod": "EditorExtensionsRedux"}
+{"h": "c16ff4d1fb98e8c1", "n": "Attach Node #", "s": "Attach Node #", "t": "连接节点 #", "mod": "EditorExtensionsRedux"}
+{"h": "c3466f387de5cd17", "n": "Click button and press key to change", "s": "Click button and press key to change", "t": "点击按钮并按下按键以更改", "mod": "EditorExtensionsRedux"}
+{"h": "c4bcadba8e631b86", "n": "name", "s": "name", "t": "名称", "mod": "EditorExtensionsRedux"}
+{"h": "c555c3f5bc846241", "n": "Autostruts turned OFF for all current Parts in Vessel (except forced).", "s": "Autostruts turned OFF for all current Parts in Vessel (except forced).", "t": "已为载具中的所有当前部件关闭自动连接筋（强制除外）。", "mod": "EditorExtensionsRedux"}
+{"h": "c9a8e632f28a1f02", "n": "Removing symmetry...", "s": "Removing symmetry...", "t": "正在移除对称...", "mod": "EditorExtensionsRedux"}
+{"h": "c9b5840ee216740e", "n": "\" to type", "s": "\" to type", "t": "\" 到类型", "mod": "EditorExtensionsRedux"}
+{"h": "cd12d11f82de5d38", "n": "Show Autostruts", "s": "Show Autostruts", "t": "显示自动连接筋", "mod": "EditorExtensionsRedux"}
+{"h": "cf7c5865bc4e96f0", "n": "Cycle Symmetry Mode + Mod Toggles", "s": "Cycle Symmetry Mode + Mod Toggles", "t": "循环切换对称模式 + Mod 开关", "mod": "EditorExtensionsRedux"}
+{"h": "d0686245d7597032", "n": "SPH/Runway Mode", "s": "SPH/Runway Mode", "t": "SPH/跑道模式", "mod": "EditorExtensionsRedux"}
+{"h": "d069b8c102870235", "n": "Autostruts set to 'Root' for all current Parts in Vessel (except forced).", "s": "Autostruts set to 'Root' for all current Parts in Vessel (except forced).", "t": "已将载具中所有当前部件的自动连接筋设为“根部件”（强制除外）。", "mod": "EditorExtensionsRedux"}
+{"h": "d182dd8d0ec7f1f9", "n": "Fine Adjust enabled", "s": "Fine Adjust enabled", "t": "微调已启用", "mod": "EditorExtensionsRedux"}
+{"h": "d30efc8c415deb47", "n": "Add angle:", "s": "Add angle:", "t": "添加角度：", "mod": "EditorExtensionsRedux"}
+{"h": "d52bb04cc4167e32", "n": "Symmetry Method:", "s": "Symmetry Method:", "t": "对称方式：", "mod": "EditorExtensionsRedux"}
+{"h": "d538ad09fd571709", "n": "ReRoot enabled", "s": "ReRoot enabled", "t": "ReRoot 已启用", "mod": "EditorExtensionsRedux"}
+{"h": "d66e3beb115e11aa", "n": "direction", "s": "direction", "t": "方向", "mod": "EditorExtensionsRedux"}
+{"h": "d6d63c6867872faa", "n": "RigidAttach turned OFF for all current Parts in Vessel.", "s": "RigidAttach turned OFF for all current Parts in Vessel.", "t": "已为载具中的所有当前部件关闭 RigidAttach。", "mod": "EditorExtensionsRedux"}
+{"h": "db87f49e7f8edda0", "n": "Forward:", "s": "Forward:", "t": "前进:", "mod": "EditorExtensionsRedux"}
+{"h": "dc04126761bb7455", "n": "down", "s": "down", "t": "下", "mod": "EditorExtensionsRedux"}
+{"h": "dc977e18fec31d0a", "n": "fwd", "s": "fwd", "t": "前", "mod": "EditorExtensionsRedux"}
+{"h": "dcb27818fed9da90", "n": "for", "s": "for", "t": "用于", "mod": "EditorExtensionsRedux"}
+{"h": "ddc91369997ec1d0", "n": "Anglesnap + Mod Toggles", "s": "Anglesnap + Mod Toggles", "t": "角度吸附与修改器开关", "mod": "EditorExtensionsRedux"}
+{"h": "de16ade408de4b79", "n": "Strutomatic 9000", "s": "Strutomatic 9000", "t": "自动支柱 9000", "mod": "EditorExtensionsRedux"}
+{"h": "df5e40740b9e1181", "n": "Autostruts set to 'Grandparent' for all current Parts in Vessel (except forced).", "s": "Autostruts set to 'Grandparent' for all current Parts in Vessel (except forced).", "t": "已将载具中所有当前部件的自动连接筋设为“祖父级”（强制除外）。", "mod": "EditorExtensionsRedux"}
+{"h": "e086cba796b7aee1", "n": "Surface attachment", "s": "Surface attachment", "t": "表面附着", "mod": "EditorExtensionsRedux"}
+{"h": "e19df7d58cd5fff7", "n": "Version:", "s": "Version:", "t": "版本：", "mod": "EditorExtensionsRedux"}
+{"h": "e5c7c4d1306c4fa4", "n": "RigidAttach turned ON for all current Parts in Vessel.", "s": "RigidAttach turned ON for all current Parts in Vessel.", "t": "已为载具中的所有当前部件开启 RigidAttach。", "mod": "EditorExtensionsRedux"}
+{"h": "e99086e624fedbc8", "n": "Disable Rigid", "s": "Disable Rigid", "t": "禁用刚性连接", "mod": "EditorExtensionsRedux"}
+{"h": "ea4f08110bb8f15d", "n": "Remove", "s": "Remove", "t": "移除", "mod": "EditorExtensionsRedux"}
+{"h": "ea8053bd75421d86", "n": "Tap then hold for rapid zoom", "s": "Tap then hold for rapid zoom", "t": "先按一下再按住以快速缩放", "mod": "EditorExtensionsRedux"}
+{"h": "eb8ace502a838b3c", "n": "VAB/Launchpad Mode", "s": "VAB/Launchpad Mode", "t": "VAB/发射台模式", "mod": "EditorExtensionsRedux"}
+{"h": "ece073db8b57154a", "n": "In the VAB, height bottom of vessel is moved to when using the 'b' function to adjust the position", "s": "In the VAB, height bottom of vessel is moved to when using the 'b' function to adjust the position", "t": "在 VAB 中使用“b”功能调整位置时载具底部移动至的高度", "mod": "EditorExtensionsRedux"}
+{"h": "f52e49e22da924dd", "n": "Reroot is not active", "s": "Reroot is not active", "t": "重新选定根部件未激活", "mod": "EditorExtensionsRedux"}
+{"h": "f5a8ee190cb30065", "n": "cpa", "s": "cpa", "t": "复合部件对齐", "mod": "EditorExtensionsRedux"}
+{"h": "f9aee319a006c9b4", "n": "Add", "s": "Add", "t": "添加", "mod": "EditorExtensionsRedux"}
+{"h": "fd3bf423e1e90db5", "n": "Reset Mode & Snap keys", "s": "Reset Mode & Snap keys", "t": "重置模式与吸附按键", "mod": "EditorExtensionsRedux"}
+{"h": "fee8165336b93197", "n": "Delta amount:", "s": "Delta amount:", "t": "变化量：", "mod": "EditorExtensionsRedux"}

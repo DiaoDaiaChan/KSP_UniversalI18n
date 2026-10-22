@@ -1,0 +1,22 @@
+<Project>
+
+  <!--
+    UniversalI18n 全仓库统一构建契约（T1 交付物，勿在子项目里重复定义）。
+
+    LangVersion 9.0        : net472 目标要跑在 KSP 的 Mono 5.x 上，语言级别与运行时特性对齐；
+                             个别项目需要更新语法时，在自己的 csproj 里显式覆盖即可（后定义者胜）。
+    Nullable disable       : net472 无法真正校验可空引用类型，开着只会产生噪音。
+    GenerateDocumentationFile false : 不产出 xml 文档，避免每个 public 成员一条 CS1591。
+    Deterministic true     : 同一输入必须产出同一字节流（差分发布 / CI 校验的前提）。
+    EnableNETAnalyzers false        : 关掉 CA* 噪音，让警告列表只剩「引用冲突」这类真问题。
+  -->
+  <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+</Project>

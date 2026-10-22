@@ -1,0 +1,144 @@
+{"h": "00133810a99c0a67", "n": "Procedural Tank max volume is 1.5 kL", "s": "Procedural Tank max volume is 1.5 kL", "t": "程序化储罐最大容积为 1.5 kL", "mod": "ProceduralParts"}
+{"h": "0027c75745efa1f4", "n": "Procedural Batteries can contain 300 EC", "s": "Procedural Batteries can contain 300 EC", "t": "程序化电池最大储电量为 300 EC", "mod": "ProceduralParts"}
+{"h": "01ed642ec41bc5ec", "n": "Procedural SRB (10 kL)", "s": "Procedural SRB (10 kL)", "t": "程序化SRB (10 kL)", "mod": "ProceduralParts"}
+{"h": "0627edbee301c56f", "n": "Procedural Batteries can contain 2400 EC", "s": "Procedural Batteries can contain 2400 EC", "t": "程序化电池最大储电量为 2400 EC", "mod": "ProceduralParts"}
+{"h": "079911850d8f6b47", "n": "Foil", "s": "Foil", "t": "箔层", "mod": "ProceduralParts"}
+{"h": "0d15788b7099dda2", "n": "Waisted", "s": "Waisted", "t": "蜂腰", "mod": "ProceduralParts"}
+{"h": "0d2b82f2ca662917", "n": "Procedural Tank (45 kL)", "s": "Procedural Tank (45 kL)", "t": "程序化储罐 (45 kL)", "mod": "ProceduralParts"}
+{"h": "0e72a2e0e2554aa3", "n": "Procedural SRB dimensions expanded, maximum volume is 50kL", "s": "Procedural SRB dimensions expanded, maximum volume is 50kL", "t": "程序化固推尺寸扩展，最大容积为 50kL", "mod": "ProceduralParts"}
+{"h": "11f2d34433414f34", "n": "Procedural SRB dimensions are unrestricted", "s": "Procedural SRB dimensions are unrestricted", "t": "程序化固推尺寸不受限制", "mod": "ProceduralParts"}
+{"h": "1474fa8a0e35f575", "n": "Vanguard (Metal)", "s": "Vanguard (Metal)", "t": "Vanguard (金属)", "mod": "ProceduralParts"}
+{"h": "150b8590ec236282", "n": "Smooth Cone", "s": "Smooth Cone", "t": "平滑锥体", "mod": "ProceduralParts"}
+{"h": "1690dbb766c4ae07", "n": "Black Arrow (Metal)", "s": "Black Arrow (Metal)", "t": "黑箭 (金属)", "mod": "ProceduralParts"}
+{"h": "1815b9719a29628f", "n": "Procedural Battery", "s": "Procedural Battery", "t": "程序化电池", "mod": "ProceduralParts"}
+{"h": "19edb2536c20bd0d", "n": "Hermes (Metal)", "s": "Hermes (Metal)", "t": "Hermes (金属)", "mod": "ProceduralParts"}
+{"h": "1a145be800130810", "n": "Procedural Tank max volume is 45 kL", "s": "Procedural Tank max volume is 45 kL", "t": "程序化储罐最大容积为 45 kL", "mod": "ProceduralParts"}
+{"h": "1d7d3a84f69f93e4", "n": "Procedural Battery (600 EC)", "s": "Procedural Battery (600 EC)", "t": "程序化电池 (600 EC)", "mod": "ProceduralParts"}
+{"h": "266020f9d1e72c86", "n": "Procedural SRB (3m)", "s": "Procedural SRB (3m)", "t": "程序化SRB (3m)", "mod": "ProceduralParts"}
+{"h": "27f610c5cf2eb102", "n": "SLV (Metal)", "s": "SLV (Metal)", "t": "SLV (金属)", "mod": "ProceduralParts"}
+{"h": "304af123c68e9b02", "n": "Procedural Decoupler maximum diameter is 4.5m", "s": "Procedural Decoupler maximum diameter is 4.5m", "t": "程序化分离器最大直径为 4.5m", "mod": "ProceduralParts"}
+{"h": "34c009ecebd4994b", "n": "Procedural Life Support Tank (Expanded)", "s": "Procedural Life Support Tank (Expanded)", "t": "程序化生命保障储罐（扩展）", "mod": "ProceduralParts"}
+{"h": "3657fc9d1acde46a", "n": "Cone", "s": "Cone", "t": "锥头", "mod": "ProceduralParts"}
+{"h": "3705b3f8be3a5c29", "n": "Metal Default", "s": "Metal Default", "t": "金属Default", "mod": "ProceduralParts"}
+{"h": "3c6a4f029e6133e0", "n": "Metal Tricolor", "s": "Metal Tricolor", "t": "三色金属", "mod": "ProceduralParts"}
+{"h": "3db583589b1d95f6", "n": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this solid rocket can be stretched to accommodate fuel loads of a range of sizes and shapes. Hardens to a rigid structure before launch!", "s": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this solid rocket can be stretched to accommodate fuel loads of a range of sizes and shapes. Hardens to a rigid structure before launch!", "t": "由粘弹性纳米聚合物（偶然在办公室小冰箱深处发现其生长出来的产物）制成，这种固体火箭可以拉伸以容纳不同尺寸与形状的装药负载。发射前会硬化为刚性结构！", "mod": "ProceduralParts"}
+{"h": "3e15f08dceba4f08", "n": "Metal Checkers", "s": "Metal Checkers", "t": "金属棋盘格", "mod": "ProceduralParts"}
+{"h": "3e7128a7a1d72507", "n": "Straight", "s": "Straight", "t": "平直", "mod": "ProceduralParts"}
+{"h": "4362e720e4189a65", "n": "With further refinements to procedural tech, we were able to fill a viscoelastic nanopolymer shell with electroactive particles. This gives you a battery able to be adapted to many shapes.", "s": "With further refinements to procedural tech, we were able to fill a viscoelastic nanopolymer shell with electroactive particles. This gives you a battery able to be adapted to many shapes.", "t": "随着程序化技术的进一步完善，我们得以在粘弹性纳米聚合物外壳中注入电活性粒子。这使你可以获得能够适应多种形状的电池。", "mod": "ProceduralParts"}
+{"h": "43e78bffe8ce6c4f", "n": "Able (Metal)", "s": "Able (Metal)", "t": "Able (金属)", "mod": "ProceduralParts"}
+{"h": "488858311f427ecb", "n": "Procedural Heatshield minimum diameter is 0.125m", "s": "Procedural Heatshield minimum diameter is 0.125m", "t": "程序化隔热罩最小直径为 0.125m", "mod": "ProceduralParts"}
+{"h": "4ac44b7ca0353328", "n": "Procedural Tank max volume is 2.5 kL", "s": "Procedural Tank max volume is 2.5 kL", "t": "程序化储罐最大容积为 2.5 kL", "mod": "ProceduralParts"}
+{"h": "4b1efc9ab377ba75", "n": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this decoupler can be stretched to accommodate a range of sizes.", "s": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this decoupler can be stretched to accommodate a range of sizes.", "t": "由粘弹性纳米聚合物制成（纯属意外发现……长在办公室小冰箱的背面），这款分离器可以延展以适应多种尺寸。", "mod": "ProceduralParts"}
+{"h": "4baf94a9e79d5167", "n": "Procedural NoseCone max diameter unrestricted", "s": "Procedural NoseCone max diameter unrestricted", "t": "程序化 NoseCone 最大直径不受限制", "mod": "ProceduralParts"}
+{"h": "4bf9940d994f23d0", "n": "Truss", "s": "Truss", "t": "桁架", "mod": "ProceduralParts"}
+{"h": "4c0a518d0a882afe", "n": "Redstone-L (Metal)", "s": "Redstone-L (Metal)", "t": "Redstone-L (金属)", "mod": "ProceduralParts"}
+{"h": "4d31704f43d1e6bc", "n": "Procedural Tank max volume is 85 kL", "s": "Procedural Tank max volume is 85 kL", "t": "程序化储罐最大容积为 85 kL", "mod": "ProceduralParts"}
+{"h": "4db221bfac4067fc", "n": "Black Paint (Metallic)", "s": "Black Paint (Metallic)", "t": "黑色涂装 (金属)", "mod": "ProceduralParts"}
+{"h": "508151e60612c66f", "n": "Cylinder", "s": "Cylinder", "t": "圆柱体", "mod": "ProceduralParts"}
+{"h": "548f6f9ff935c653", "n": "Procedural Battery (300 EC)", "s": "Procedural Battery (300 EC)", "t": "程序化电池 (300 EC)", "mod": "ProceduralParts"}
+{"h": "59aa79166d1a91e0", "n": "Procedural SRB maximum diameter is 3m", "s": "Procedural SRB maximum diameter is 3m", "t": "程序化固推最大直径为 3m", "mod": "ProceduralParts"}
+{"h": "5b9b4aa3d368f0d0", "n": "Procedural Heatshield (3m)", "s": "Procedural Heatshield (3m)", "t": "程序化防热盾 (3m)", "mod": "ProceduralParts"}
+{"h": "5befb8c1888dd751", "n": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this fuel tank can be stretched to accommodate fuel loads of a range of sizes and shapes. Hardens to a rigid structure before launch!", "s": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this fuel tank can be stretched to accommodate fuel loads of a range of sizes and shapes. Hardens to a rigid structure before launch!", "t": "由粘弹性纳米聚合物（偶然在办公室小冰箱深处发现其生长出来的产物）制成，这种储罐可以拉伸以容纳不同尺寸与形状的推进剂负载。发射前会硬化为刚性结构！", "mod": "ProceduralParts"}
+{"h": "5f3016614fd09a34", "n": "Peaked #2", "s": "Peaked #2", "t": "尖峰 #2", "mod": "ProceduralParts"}
+{"h": "5f3019614fd09f4d", "n": "Peaked #1", "s": "Peaked #1", "t": "尖峰 #1", "mod": "ProceduralParts"}
+{"h": "5fc11631da91eb1e", "n": "Procedural Battery (2400 EC)", "s": "Procedural Battery (2400 EC)", "t": "程序化电池 (2400 EC)", "mod": "ProceduralParts"}
+{"h": "6039ce89feb59f7f", "n": "Procedural SRB", "s": "Procedural SRB", "t": "程序化SRB", "mod": "ProceduralParts"}
+{"h": "6123ad9484dfedb2", "n": "Procedural Tank (37 kL)", "s": "Procedural Tank (37 kL)", "t": "程序化储罐 (37 kL)", "mod": "ProceduralParts"}
+{"h": "64e75c71f20e7f59", "n": "Procedural Heatshield", "s": "Procedural Heatshield", "t": "程序化防热盾", "mod": "ProceduralParts"}
+{"h": "66b034c52a02179d", "n": "Procedural Tank size is unrestricted", "s": "Procedural Tank size is unrestricted", "t": "程序化储罐尺寸不受限制", "mod": "ProceduralParts"}
+{"h": "66c6c5d013a5d020", "n": "Procedural Life Support Tank dimensions are increased", "s": "Procedural Life Support Tank dimensions are increased", "t": "程序化生命支持储罐尺寸已增大", "mod": "ProceduralParts"}
+{"h": "67221f3c52a454fc", "n": "Titan I (Metal)", "s": "Titan I (Metal)", "t": "Titan I (金属)", "mod": "ProceduralParts"}
+{"h": "6799545fea461cbe", "n": "Procedural Batteries can contain any amount of EC", "s": "Procedural Batteries can contain any amount of EC", "t": "程序化电池可包含任意容量的 EC", "mod": "ProceduralParts"}
+{"h": "67f57d53e45b3fac", "n": "Bumper (Metal)", "s": "Bumper (Metal)", "t": "Bumper (金属)", "mod": "ProceduralParts"}
+{"h": "6b2104de444b7480", "n": "Sharp #2", "s": "Sharp #2", "t": "锐利 #2", "mod": "ProceduralParts"}
+{"h": "6b2107de444b7999", "n": "Sharp #1", "s": "Sharp #1", "t": "锐利 #1", "mod": "ProceduralParts"}
+{"h": "6b259f334baddd9c", "n": "Plain Metal", "s": "Plain Metal", "t": "素面金属", "mod": "ProceduralParts"}
+{"h": "6c3ce2843a8efc01", "n": "Mu (Metal)", "s": "Mu (Metal)", "t": "Mu (金属)", "mod": "ProceduralParts"}
+{"h": "6dfe20a3de1feaf6", "n": "Procedural Heatshield (5m)", "s": "Procedural Heatshield (5m)", "t": "程序化防热盾 (5m)", "mod": "ProceduralParts"}
+{"h": "6feea479ee56d73e", "n": "Metal Checkers 2", "s": "Metal Checkers 2", "t": "金属棋盘格 2", "mod": "ProceduralParts"}
+{"h": "74a2e5a01ec7f6f4", "n": "Corestar (Metal)", "s": "Corestar (Metal)", "t": "Corestar (金属)", "mod": "ProceduralParts"}
+{"h": "772fe2eed8b08b90", "n": "Fancy Metal 3", "s": "Fancy Metal 3", "t": "精制金属 3", "mod": "ProceduralParts"}
+{"h": "772fe3eed8b08d43", "n": "Fancy Metal 2", "s": "Fancy Metal 2", "t": "精制金属 2", "mod": "ProceduralParts"}
+{"h": "772fe6eed8b0925c", "n": "Fancy Metal 7", "s": "Fancy Metal 7", "t": "精制金属 7", "mod": "ProceduralParts"}
+{"h": "772fe7eed8b0940f", "n": "Fancy Metal 6", "s": "Fancy Metal 6", "t": "精制金属 6", "mod": "ProceduralParts"}
+{"h": "772fe8eed8b095c2", "n": "Fancy Metal 5", "s": "Fancy Metal 5", "t": "精制金属 5", "mod": "ProceduralParts"}
+{"h": "772fe9eed8b09775", "n": "Fancy Metal 4", "s": "Fancy Metal 4", "t": "精制金属 4", "mod": "ProceduralParts"}
+{"h": "772feceed8b09c8e", "n": "Fancy Metal 9", "s": "Fancy Metal 9", "t": "精制金属 9", "mod": "ProceduralParts"}
+{"h": "772fedeed8b09e41", "n": "Fancy Metal 8", "s": "Fancy Metal 8", "t": "精制金属 8", "mod": "ProceduralParts"}
+{"h": "786b7a647704eef7", "n": "Procedural Tank (2.5 kL)", "s": "Procedural Tank (2.5 kL)", "t": "程序化储罐 (2.5 kL)", "mod": "ProceduralParts"}
+{"h": "788b5e98ac72223a", "n": "Procedural NoseCone (1.5m)", "s": "Procedural NoseCone (1.5m)", "t": "程序化NoseCone (1.5m)", "mod": "ProceduralParts"}
+{"h": "79702fbbef4a07be", "n": "Metal Half-Stripes", "s": "Metal Half-Stripes", "t": "金属半条纹", "mod": "ProceduralParts"}
+{"h": "7b3669885a8c814f", "n": "Procedural SRB maximum length is 3m", "s": "Procedural SRB maximum length is 3m", "t": "程序化固推最大长度为 3m", "mod": "ProceduralParts"}
+{"h": "7fe4c9497e7a8293", "n": "Procedural Tank (85 kL)", "s": "Procedural Tank (85 kL)", "t": "程序化储罐 (85 kL)", "mod": "ProceduralParts"}
+{"h": "807e088d75abf2a7", "n": "Skylab (Metal)", "s": "Skylab (Metal)", "t": "Skylab (金属)", "mod": "ProceduralParts"}
+{"h": "84f4bdaf395728e9", "n": "Black Arrow 2 (Metal)", "s": "Black Arrow 2 (Metal)", "t": "Black Arrow 2 (金属)", "mod": "ProceduralParts"}
+{"h": "86423ff36fa6fc63", "n": "Procedural Tank max volume is 37 kL", "s": "Procedural Tank max volume is 37 kL", "t": "程序化储罐最大容积为 37 kL", "mod": "ProceduralParts"}
+{"h": "87920d14fadabe77", "n": "Procedural Heatshield (Unlimited)", "s": "Procedural Heatshield (Unlimited)", "t": "程序化隔热罩（无限制）", "mod": "ProceduralParts"}
+{"h": "8977a59b9f0c76f8", "n": "USAF Able (Metal)", "s": "USAF Able (Metal)", "t": "USAF Able (金属)", "mod": "ProceduralParts"}
+{"h": "8a27b0d7aaef7694", "n": "Procedural Tank (Unlimited)", "s": "Procedural Tank (Unlimited)", "t": "程序化储罐 (无限制)", "mod": "ProceduralParts"}
+{"h": "8b5b5c46af6fcd35", "n": "Procedural SRB (3m diameter)", "s": "Procedural SRB (3m diameter)", "t": "程序化SRB (直径 3m)", "mod": "ProceduralParts"}
+{"h": "8bfb8abf87542267", "n": "Procedural SRB dimensions expanded, maximum volume is 10kL", "s": "Procedural SRB dimensions expanded, maximum volume is 10kL", "t": "程序化固推尺寸扩展，最大容积为 10kL", "mod": "ProceduralParts"}
+{"h": "91396a7a73184b67", "n": "Procedural Decoupler (Unlimited)", "s": "Procedural Decoupler (Unlimited)", "t": "程序化分离器（无限制）", "mod": "ProceduralParts"}
+{"h": "960852500267cbb3", "n": "Procedural Tank min dimensions are reduced", "s": "Procedural Tank min dimensions are reduced", "t": "程序化储罐的最小尺寸减小", "mod": "ProceduralParts"}
+{"h": "98a817cfc726ec20", "n": "Procedural Kethane Tank (Expanded)", "s": "Procedural Kethane Tank (Expanded)", "t": "程序化 Kethane 储罐（扩展）", "mod": "ProceduralParts"}
+{"h": "9ae71d4f167768c0", "n": "Procedural Decoupler (3m)", "s": "Procedural Decoupler (3m)", "t": "程序化分离器 (3m)", "mod": "ProceduralParts"}
+{"h": "9b30b0ce8f73c1b6", "n": "Procedural Ore Tank (Expanded)", "s": "Procedural Ore Tank (Expanded)", "t": "程序化矿石储罐 (扩容)", "mod": "ProceduralParts"}
+{"h": "9b6df6012a340ffa", "n": "Procedural Liquid Tank", "s": "Procedural Liquid Tank", "t": "程序化液体燃料箱", "mod": "ProceduralParts"}
+{"h": "9deadc26f8625e81", "n": "Juno (Metal)", "s": "Juno (Metal)", "t": "Juno (金属)", "mod": "ProceduralParts"}
+{"h": "9f276d7ff2a77a62", "n": "Procedural SRB maximum volume is 40kL", "s": "Procedural SRB maximum volume is 40kL", "t": "程序化固推最大容积为 40kL", "mod": "ProceduralParts"}
+{"h": "a05add647489ea56", "n": "Procedural Tank (20 kL)", "s": "Procedural Tank (20 kL)", "t": "程序化储罐 (20 kL)", "mod": "ProceduralParts"}
+{"h": "a507b45635523cd7", "n": "Procedural NoseCone max diameter 2.5m", "s": "Procedural NoseCone max diameter 2.5m", "t": "程序化 NoseCone 最大直径 2.5m", "mod": "ProceduralParts"}
+{"h": "a7170b1e7d0437bd", "n": "Procedural Stack Decoupler", "s": "Procedural Stack Decoupler", "t": "程序化堆叠分离器", "mod": "ProceduralParts"}
+{"h": "a73c7fc51e4d2f36", "n": "Procedural Decoupler diameter is unrestricted", "s": "Procedural Decoupler diameter is unrestricted", "t": "程序化分离器直径不受限制", "mod": "ProceduralParts"}
+{"h": "ab214331d620f865", "n": "Procedural Ore Tank dimensions are increased", "s": "Procedural Ore Tank dimensions are increased", "t": "程序化矿石储罐尺寸上限提升", "mod": "ProceduralParts"}
+{"h": "ad0112eeff1bcd4c", "n": "Juno-L (Metal)", "s": "Juno-L (Metal)", "t": "Juno-L (金属)", "mod": "ProceduralParts"}
+{"h": "b116562cd190f068", "n": "Procedural NoseCone (Unlimited)", "s": "Procedural NoseCone (Unlimited)", "t": "程序化 NoseCone（无限制）", "mod": "ProceduralParts"}
+{"h": "b1423abedafb4921", "n": "Procedural SRB (Unlimited)", "s": "Procedural SRB (Unlimited)", "t": "程序化SRB (无限制)", "mod": "ProceduralParts"}
+{"h": "b1d6753664584e05", "n": "Procedural Battery (Unlimited EC)", "s": "Procedural Battery (Unlimited EC)", "t": "程序化电池（无限电量）", "mod": "ProceduralParts"}
+{"h": "b39e089cba5920fe", "n": "Procedural Tank (1.5 kL)", "s": "Procedural Tank (1.5 kL)", "t": "程序化储罐 (1.5 kL)", "mod": "ProceduralParts"}
+{"h": "b80909a3ba1d07fc", "n": "Hollow Fillet Cylinder", "s": "Hollow Fillet Cylinder", "t": "空心圆角柱体", "mod": "ProceduralParts"}
+{"h": "b914d4529a552689", "n": "Procedural Batteries can contain 600 EC", "s": "Procedural Batteries can contain 600 EC", "t": "程序化电池最大储电量为 600 EC", "mod": "ProceduralParts"}
+{"h": "babe231f5deed782", "n": "White Paint (Metallic)", "s": "White Paint (Metallic)", "t": "White涂装 (金属)", "mod": "ProceduralParts"}
+{"h": "babedbaf5b4e6c02", "n": "Long March (Metal)", "s": "Long March (Metal)", "t": "长征 (金属)", "mod": "ProceduralParts"}
+{"h": "bcf29f3beaf47e41", "n": "Fillet Cylinder", "s": "Fillet Cylinder", "t": "圆角柱体", "mod": "ProceduralParts"}
+{"h": "bd1bcb29113a76bb", "n": "Procedural Kethane Tank dimensions are increased", "s": "Procedural Kethane Tank dimensions are increased", "t": "程序化 Kethane 储罐尺寸上限提升", "mod": "ProceduralParts"}
+{"h": "be79099f665d9c6b", "n": "Procedural NoseCone (2.5m)", "s": "Procedural NoseCone (2.5m)", "t": "程序化 NoseCone (2.5米)", "mod": "ProceduralParts"}
+{"h": "bf9a164b9c4de074", "n": "Hollow Cylinder", "s": "Hollow Cylinder", "t": "空心圆柱体", "mod": "ProceduralParts"}
+{"h": "c093a37bae80de73", "n": "Metal Narrow", "s": "Metal Narrow", "t": "细带金属", "mod": "ProceduralParts"}
+{"h": "c0a84cca44eed4f2", "n": "Procedural Tank min diameter is 0.625m (Mk0)", "s": "Procedural Tank min diameter is 0.625m (Mk0)", "t": "程序化储罐最小直径为 0.625m (Mk0)", "mod": "ProceduralParts"}
+{"h": "c14f18a05ce04be5", "n": "Procedural Heatshield (0.125m)", "s": "Procedural Heatshield (0.125m)", "t": "程序化防热盾 (0.125m)", "mod": "ProceduralParts"}
+{"h": "c173e6268f147da7", "n": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this ablative heat shield can be stretched to a range of sizes. Hardens to a rigid, heat resistant structure before launch!", "s": "Made from viscoelastic nanopolymers (which were discovered by accident... growing in the back of the office mini-fridge) this ablative heat shield can be stretched to a range of sizes. Hardens to a rigid, heat resistant structure before launch!", "t": "由粘弹性纳米聚合物（偶然在办公室小冰箱深处发现其生长出来的产物）制成，这种烧蚀防热盾可以拉伸至各种尺寸。发射前会硬化为刚性耐热结构！", "mod": "ProceduralParts"}
+{"h": "c5d952bed8c187d7", "n": "Metal Slats", "s": "Metal Slats", "t": "金属百叶", "mod": "ProceduralParts"}
+{"h": "c5e74155f4fd9096", "n": "Delta IV (Metal)", "s": "Delta IV (Metal)", "t": "Delta IV (金属)", "mod": "ProceduralParts"}
+{"h": "c69bd1ba22808e85", "n": "Europa (Metal)", "s": "Europa (Metal)", "t": "Europa (金属)", "mod": "ProceduralParts"}
+{"h": "c6e7a2b2d21d55c9", "n": "Polygon", "s": "Polygon", "t": "多边形", "mod": "ProceduralParts"}
+{"h": "c808d3253221f19b", "n": "Procedural Decoupler minimum diameter is 0.125m", "s": "Procedural Decoupler minimum diameter is 0.125m", "t": "程序化分离器最小直径为 0.125m", "mod": "ProceduralParts"}
+{"h": "c815e6c1a7a5e32d", "n": "Procedural NoseCone max length 1.5m", "s": "Procedural NoseCone max length 1.5m", "t": "程序化 NoseCone 最大长度 1.5m", "mod": "ProceduralParts"}
+{"h": "c9cd5e8873055f5c", "n": "Procedural Tank (Aviation)", "s": "Procedural Tank (Aviation)", "t": "程序化储罐 (Aviation)", "mod": "ProceduralParts"}
+{"h": "cc125e43241afa06", "n": "Procedural Heatshield diameter is unrestricted", "s": "Procedural Heatshield diameter is unrestricted", "t": "程序化隔热罩直径不受限制", "mod": "ProceduralParts"}
+{"h": "ccfd2a5d53a3e575", "n": "Procedural Decoupler (0.125m)", "s": "Procedural Decoupler (0.125m)", "t": "程序化分离器 (0.125m)", "mod": "ProceduralParts"}
+{"h": "cecb86cfdd68f324", "n": "Procedural Battery (4800 EC)", "s": "Procedural Battery (4800 EC)", "t": "程序化电池 (4800 EC)", "mod": "ProceduralParts"}
+{"h": "cf4a89894576ad70", "n": "Long March 2 (Metal)", "s": "Long March 2 (Metal)", "t": "长征2号 (金属)", "mod": "ProceduralParts"}
+{"h": "d7994be0f048b497", "n": "Procedural Tank max volume is 20 kL", "s": "Procedural Tank max volume is 20 kL", "t": "程序化储罐最大容积为 20 kL", "mod": "ProceduralParts"}
+{"h": "d8cdb1afc11fbef4", "n": "Metal Twisted Stripes", "s": "Metal Twisted Stripes", "t": "金属扭曲条纹", "mod": "ProceduralParts"}
+{"h": "d95337bad28d3881", "n": "Procedural Batteries can contain 4800 EC", "s": "Procedural Batteries can contain 4800 EC", "t": "程序化电池最大储电量为 4800 EC", "mod": "ProceduralParts"}
+{"h": "e31d56453d3952e3", "n": "Redstone (Metal)", "s": "Redstone (Metal)", "t": "Redstone (金属)", "mod": "ProceduralParts"}
+{"h": "e570e635e4252a74", "n": "Metal Long Stripes", "s": "Metal Long Stripes", "t": "金属长条纹", "mod": "ProceduralParts"}
+{"h": "e5cd4d92b155fad5", "n": "Procedural SRB (40 kL)", "s": "Procedural SRB (40 kL)", "t": "程序化SRB (40 kL)", "mod": "ProceduralParts"}
+{"h": "e6c46da8ed92a345", "n": "Thor-Able (Metal)", "s": "Thor-Able (Metal)", "t": "Thor-Able (金属)", "mod": "ProceduralParts"}
+{"h": "e925d43e0c23d0f2", "n": "Procedural Decoupler maximum diameter is 3m", "s": "Procedural Decoupler maximum diameter is 3m", "t": "程序化分离器最大直径为 3m", "mod": "ProceduralParts"}
+{"h": "eda32a45f7b95e44", "n": "Procedural Decoupler (4.5m)", "s": "Procedural Decoupler (4.5m)", "t": "程序化分离器 (4.5m)", "mod": "ProceduralParts"}
+{"h": "f1bc54b3e932fb3c", "n": "Round #2", "s": "Round #2", "t": "圆形 #2", "mod": "ProceduralParts"}
+{"h": "f1bc55b3e932fcef", "n": "Round #3", "s": "Round #3", "t": "圆形 #3", "mod": "ProceduralParts"}
+{"h": "f1bc57b3e9330055", "n": "Round #1", "s": "Round #1", "t": "圆形 #1", "mod": "ProceduralParts"}
+{"h": "f3fb6164e7ddc3e9", "n": "Hollow Cone", "s": "Hollow Cone", "t": "空心锥体", "mod": "ProceduralParts"}
+{"h": "f41729872b0a400a", "n": "Metal Stripes", "s": "Metal Stripes", "t": "金属条纹", "mod": "ProceduralParts"}
+{"h": "f6735b4b75bbe067", "n": "Titan II (Metal)", "s": "Titan II (Metal)", "t": "Titan II (金属)", "mod": "ProceduralParts"}
+{"h": "f80bd375484726d0", "n": "Procedural SRB (50 kL)", "s": "Procedural SRB (50 kL)", "t": "程序化SRB (50 kL)", "mod": "ProceduralParts"}
+{"h": "f876bb812d886887", "n": "Metal Double Checkers", "s": "Metal Double Checkers", "t": "金属双排棋盘格", "mod": "ProceduralParts"}
+{"h": "fb37fa175b555e0f", "n": "Agena (Metal)", "s": "Agena (Metal)", "t": "Agena (金属)", "mod": "ProceduralParts"}
+{"h": "fb8c03ce05307fb8", "n": "Procedural Tank (Miniaturization)", "s": "Procedural Tank (Miniaturization)", "t": "程序化储罐（微型化）", "mod": "ProceduralParts"}
+{"h": "fdad332b78e36a51", "n": "Fancy Metal", "s": "Fancy Metal", "t": "精制金属", "mod": "ProceduralParts"}
+{"h": "fe89bd3f2ffbb8d5", "n": "Redstone-USA (Metal)", "s": "Redstone-USA (Metal)", "t": "Redstone-USA (金属)", "mod": "ProceduralParts"}
+{"h": "ffd98a42eb5f41e2", "n": "Procedural Heatshield maximum diameter is 3m", "s": "Procedural Heatshield maximum diameter is 3m", "t": "程序化隔热罩最大直径为 3m", "mod": "ProceduralParts"}
+{"h": "ffee6642eb7160c0", "n": "Procedural Heatshield maximum diameter is 5m", "s": "Procedural Heatshield maximum diameter is 5m", "t": "程序化隔热罩最大直径为 5m", "mod": "ProceduralParts"}

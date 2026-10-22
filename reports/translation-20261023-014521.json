@@ -1,0 +1,712 @@
+{
+  "kind": "translation",
+  "started": "2026-10-23T01:45:20",
+  "dry_run": true,
+  "offline": true,
+  "limit": 100,
+  "model": "offline-stub",
+  "promptV": 3,
+  "glossaryV": "024c4e9a",
+  "glossary": "官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）",
+  "pool_rows": 12792,
+  "build": {
+    "skipped": {
+      "all-sentinel": 58,
+      "no-words": 484,
+      "key-ref": 3193
+    },
+    "items": 9057,
+    "batches": 225,
+    "curated": {
+      "used": 34,
+      "rejected": 1,
+      "keyref_rescue": 0
+    }
+  },
+  "batches": 79,
+  "jobs": 4,
+  "max_chars": 6000,
+  "stats": {
+    "batches": 79,
+    "batches_failed": 0,
+    "splits": 0,
+    "calls": 79,
+    "cache_hits": 0,
+    "items_requested": 99,
+    "items_ok": 94,
+    "items_keep": 0,
+    "items_failed": 5,
+    "items_official": 1,
+    "curated_rejected": 0,
+    "term_drift": 14,
+    "mixed_lang": 74,
+    "mixed_lang_examples": [
+      {
+        "id": 294,
+        "mod": "EditorExtensionsRedux",
+        "src": "Part has no symmetry:",
+        "zh": "【离线】Part has no symmetry:",
+        "words": [
+          "Part",
+          "has",
+          "no",
+          "symmetry"
+        ]
+      },
+      {
+        "id": 1,
+        "mod": "AJE",
+        "src": "Mil Mi-17 Rotor & Engine",
+        "zh": "【离线】Mil Mi-17 Rotor & Engine",
+        "words": [
+          "Mil",
+          "Mi-",
+          "Rotor",
+          "Engine"
+        ]
+      },
+      {
+        "id": 3657,
+        "mod": "ModularLaunchPads",
+        "src": "A multi-height additional section for the Large General Modular Service Tower, available in 8 colors. Optional side pane",
+        "zh": "【离线】A multi-height additional section for the Large General Modular Service Tower, available in 8 colors. Optional side panels in multiple configurations are al",
+        "words": [
+          "multi-height",
+          "additional",
+          "section",
+          "for",
+          "the",
+          "Large",
+          "General",
+          "Modular"
+        ]
+      },
+      {
+        "id": 3752,
+        "mod": "ModularLaunchPads",
+        "src": "Medium-size animated general swing arm for the general and specialty towers, available in 8 colors. The arm swing can be",
+        "zh": "【离线】Medium-size animated general swing arm for the general and specialty towers, available in 8 colors. The arm swing can be done in the default or alternate di",
+        "words": [
+          "Medium-size",
+          "animated",
+          "general",
+          "swing",
+          "arm",
+          "for",
+          "the",
+          "general"
+        ]
+      },
+      {
+        "id": 3932,
+        "mod": "ModularLaunchPads",
+        "src": "The 3m short section for the modular version of the Titan II GLV Service Tower with optional details. Attach the tower c",
+        "zh": "【离线】The 3m short section for the modular version of the Titan II GLV Service Tower with optional details. Attach the tower core sections to the top of the base.",
+        "words": [
+          "The",
+          "short",
+          "section",
+          "for",
+          "the",
+          "modular",
+          "version",
+          "of"
+        ]
+      },
+      {
+        "id": 3842,
+        "mod": "ModularLaunchPads",
+        "src": "Crew Elevator Mercury-Redstone, with Hatch",
+        "zh": "【离线】Crew Elevator Mercury-Redstone, with Hatch",
+        "words": [
+          "Crew",
+          "Elevator",
+          "Mercury-Redstone",
+          "with",
+          "Hatch"
+        ]
+      },
+      {
+        "id": 4028,
+        "mod": "ModularLaunchPads",
+        "src": "This is the base for the Shuttle Launch Platform, and can be also used with an accurate SLS recreation. The base attache",
+        "zh": "【离线】This is the base for the Shuttle Launch Platform, and can be also used with an accurate SLS recreation. The base attaches to the shuttle's External Tank via",
+        "words": [
+          "This",
+          "is",
+          "the",
+          "base",
+          "for",
+          "the",
+          "Shuttle",
+          "Launch"
+        ]
+      },
+      {
+        "id": 4118,
+        "mod": "ProceduralFairings",
+        "src": "Procedural Interstage Fairing Adapter",
+        "zh": "【离线】Procedural Interstage Fairing Adapter",
+        "words": [
+          "Procedural",
+          "Interstage",
+          "Fairing",
+          "Adapter"
+        ]
+      },
+      {
+        "id": 5740,
+        "mod": "ROCapsules",
+        "src": "Decoupler which connects the base of the D-2 descent module to the propulsion module.",
+        "zh": "【离线】Decoupler which connects the base of the D-2 descent module to the propulsion module.",
+        "words": [
+          "Decoupler",
+          "which",
+          "connects",
+          "the",
+          "base",
+          "of",
+          "the",
+          "descent"
+        ]
+      },
+      {
+        "id": 1616,
+        "mod": "ROCapsules",
+        "src": "Improved, lunar rated heatshield for the Gemini Capsule. Can be switched to the Gemini B configuration with a hatch. <b>",
+        "zh": "【离线】Improved, lunar rated heatshield for the Gemini Capsule. Can be switched to the Gemini B configuration with a hatch. <b><color=red>Gemini lacks the radiativ",
+        "words": [
+          "Improved",
+          "lunar",
+          "rated",
+          "heatshield",
+          "for",
+          "the",
+          "Gemini",
+          "Capsule"
+        ]
+      },
+      {
+        "id": 4304,
+        "mod": "ProceduralParts",
+        "src": "Black Arrow (Metal)",
+        "zh": "【离线】Black Arrow (Metal)",
+        "words": [
+          "Black",
+          "Arrow",
+          "Metal"
+        ]
+      },
+      {
+        "id": 1526,
+        "mod": "ROCapsules",
+        "src": "Apollo High Gain Antenna (HGA)",
+        "zh": "【离线】Apollo High Gain Antenna (HGA)",
+        "words": [
+          "Apollo",
+          "High",
+          "Gain",
+          "Antenna"
+        ]
+      },
+      {
+        "id": 6160,
+        "mod": "ROEngines",
+        "src": "A small solid kick motor. Developed from the Altair, this successor was used on Scout and Delta. Used to circularize at ",
+        "zh": "【离线】A small solid kick motor. Developed from the Altair, this successor was used on Scout and Delta. Used to circularize at apogee or perform final payload kick",
+        "words": [
+          "small",
+          "solid",
+          "kick",
+          "motor",
+          "Developed",
+          "from",
+          "the",
+          "Altair"
+        ]
+      },
+      {
+        "id": 6261,
+        "mod": "ROEngines",
+        "src": "Nike solid rocket motor.",
+        "zh": "【离线】Nike solid rocket motor.",
+        "words": [
+          "Nike",
+          "solid",
+          "rocket",
+          "motor"
+        ]
+      },
+      {
+        "id": 6462,
+        "mod": "ROSolar",
+        "src": "1x6 Panel Folding Solar Panel from Vens",
+        "zh": "【离线】1x6 Panel Folding Solar Panel from Vens",
+        "words": [
+          "Panel",
+          "Folding",
+          "Solar",
+          "Panel",
+          "from",
+          "Vens"
+        ]
+      },
+      {
+        "id": 7035,
+        "mod": "ROTanks",
+        "src": "The Hollow Interstage allows you to change the Diameter of the part to fit many different configurations for your craft.",
+        "zh": "【离线】The Hollow Interstage allows you to change the Diameter of the part to fit many different configurations for your craft. It allows for customization of Deco",
+        "words": [
+          "The",
+          "Hollow",
+          "Interstage",
+          "allows",
+          "you",
+          "to",
+          "change",
+          "the"
+        ]
+      },
+      {
+        "id": 6781,
+        "mod": "ROTanks",
+        "src": "3:4 Ratio Adapter - Short",
+        "zh": "【离线】3:4 Ratio Adapter - Short",
+        "words": [
+          "Ratio",
+          "Adapter",
+          "Short"
+        ]
+      },
+      {
+        "id": 8480,
+        "mod": "RP-1",
+        "src": "Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much longer",
+        "zh": "【离线】Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much longer than a hasty flyby are necessary to",
+        "words": [
+          "Pictures",
+          "can",
+          "help",
+          "expand",
+          "our",
+          "knowledge",
+          "of",
+          "the"
+        ]
+      },
+      {
+        "id": 7307,
+        "mod": "RP-1",
+        "src": "Send any needed supplies, modules, or crew to the station",
+        "zh": "【离线】Send any needed supplies, modules, or crew to the station",
+        "words": [
+          "Send",
+          "any",
+          "needed",
+          "supplies",
+          "modules",
+          "or",
+          "crew",
+          "to"
+        ]
+      },
+      {
+        "id": 7397,
+        "mod": "RP-1",
+        "src": "Rendezvous two craft in orbit (closer than 100m, relative speed less than 0.5m/s)",
+        "zh": "【离线】Rendezvous two craft in orbit (closer than 100m, relative speed less than 0.5m/s)",
+        "words": [
+          "Rendezvous",
+          "two",
+          "craft",
+          "in",
+          "orbit",
+          "closer",
+          "than",
+          "relative"
+        ]
+      }
+    ],
+    "drift_examples": [
+      {
+        "id": 3752,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "Medium-size animated general swing arm for the general and specialty towers, available in 8 colors. The arm swing can be",
+        "zh": "【离线】Medium-size animated general swing arm for the general and specialty towers, available in 8 colors. The arm swing ca"
+      },
+      {
+        "id": 3932,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "The 3m short section for the modular version of the Titan II GLV Service Tower with optional details. Attach the tower c",
+        "zh": "【离线】The 3m short section for the modular version of the Titan II GLV Service Tower with optional details. Attach the tow"
+      },
+      {
+        "id": 4028,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "This is the base for the Shuttle Launch Platform, and can be also used with an accurate SLS recreation. The base attache",
+        "zh": "【离线】This is the base for the Shuttle Launch Platform, and can be also used with an accurate SLS recreation. The base att"
+      },
+      {
+        "id": 8480,
+        "term": "Scientific",
+        "want": "热心科研",
+        "src": "Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much longer",
+        "zh": "【离线】Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much lo"
+      },
+      {
+        "id": 7307,
+        "term": "station",
+        "want": "空间站",
+        "src": "Send any needed supplies, modules, or crew to the station",
+        "zh": "【离线】Send any needed supplies, modules, or crew to the station"
+      },
+      {
+        "id": 7937,
+        "term": "science",
+        "want": "科学",
+        "src": "Transmit science data from Uranus's atmosphere, AFTER going below 1000 km",
+        "zh": "【离线】Transmit science data from Uranus's atmosphere, AFTER going below 1000 km"
+      },
+      {
+        "id": 7487,
+        "term": "science",
+        "want": "科学",
+        "src": "Carry the required science instruments",
+        "zh": "【离线】Carry the required science instruments"
+      },
+      {
+        "id": 9214,
+        "term": "science",
+        "want": "科学",
+        "src": "Early Human Spaceflight Materials Science",
+        "zh": "【离线】Early Human Spaceflight Materials Science"
+      },
+      {
+        "id": 7667,
+        "term": "science",
+        "want": "科学",
+        "src": "<b>Program: Jupiter Observation<br>Type: <color=green>Required</color></b><br><br>Create a probe and send it to flyby Io",
+        "zh": "【离线】<b>Program: Jupiter Observation<br>Type: <color=green>Required</color></b><br><br>Create a probe and send it to flyb"
+      },
+      {
+        "id": 7757,
+        "term": "science",
+        "want": "科学",
+        "src": "<b>Program: Uncrewed Lunar Surface Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully ",
+        "zh": "【离线】<b>Program: Uncrewed Lunar Surface Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfu"
+      },
+      {
+        "id": 8117,
+        "term": "Commercial",
+        "want": "专注效益",
+        "src": "<b>Program: Second Generation Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Satellites have ",
+        "zh": "【离线】<b>Program: Second Generation Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Satellites h"
+      },
+      {
+        "id": 7127,
+        "term": "satellite",
+        "want": "卫星",
+        "src": "First Navigational Satellite",
+        "zh": "【离线】First Navigational Satellite"
+      },
+      {
+        "id": 2067,
+        "term": "cone",
+        "want": "锥头",
+        "src": "The latest in research and development enabled the development of this little marvel, The Sensor Array Computing Nose Co",
+        "zh": "【离线】The latest in research and development enabled the development of this little marvel, The Sensor Array Computing Nos"
+      },
+      {
+        "id": 1707,
+        "term": "Air",
+        "want": "进气",
+        "src": "XM-C200 Radial Air Intake",
+        "zh": "【离线】XM-C200 Radial Air Intake"
+      }
+    ],
+    "gates": {
+      "G1": 0,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 0,
+      "G6": 0,
+      "G7": 5,
+      "G8": 0
+    },
+    "gate_examples": {
+      "G1": [],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [],
+      "G6": [],
+      "G7": [
+        {
+          "id": 3351,
+          "mod": "KerbalFoundries",
+          "src": "Adjustable Landing Gear (Large)",
+          "zh": "【离线】Adjustable Landing Gear (Large)",
+          "why": "术语 Landing Gear=起落架 未出现在译文"
+        },
+        {
+          "id": 6062,
+          "mod": "ROCapsules",
+          "src": "Place this above the Descent Module to decoupler the additional retro booster.",
+          "zh": "【离线】Place this above the Descent Module to decoupler the additional retro booster.",
+          "why": "术语 Booster=助推器 未出现在译文"
+        },
+        {
+          "id": 9121,
+          "mod": "RP-1",
+          "src": "2014-2018 Oxidizer-Rich Staged Combustion Engines",
+          "zh": "【离线】2014-2018 Oxidizer-Rich Staged Combustion Engines",
+          "why": "术语 Oxidizer=氧化剂 未出现在译文"
+        },
+        {
+          "id": 397,
+          "mod": "RealismOverhaul",
+          "src": "A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the des",
+          "zh": "【离线】A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the",
+          "why": "术语 Booster=助推器 未出现在译文"
+        },
+        {
+          "id": 4851,
+          "mod": "RealismOverhaul",
+          "src": "Improved for N1F Block G. Relightable. Gimbal, throttle.",
+          "zh": "【离线】Improved for N1F Block G. Relightable. Gimbal, throttle.",
+          "why": "术语 Throttle=节流阀 未出现在译文"
+        }
+      ],
+      "G8": []
+    },
+    "failed": [
+      {
+        "id": 3351,
+        "mod": "KerbalFoundries",
+        "gates": [
+          "G7"
+        ],
+        "src": "Adjustable Landing Gear (Large)",
+        "zh": "【离线】Adjustable Landing Gear (Large)",
+        "notes": {
+          "G7": "术语 Landing Gear=起落架 未出现在译文"
+        }
+      },
+      {
+        "id": 6062,
+        "mod": "ROCapsules",
+        "gates": [
+          "G7"
+        ],
+        "src": "Place this above the Descent Module to decoupler the additional retro booster.",
+        "zh": "【离线】Place this above the Descent Module to decoupler the additional retro booster.",
+        "notes": {
+          "G7": "术语 Booster=助推器 未出现在译文"
+        }
+      },
+      {
+        "id": 9121,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "2014-2018 Oxidizer-Rich Staged Combustion Engines",
+        "zh": "【离线】2014-2018 Oxidizer-Rich Staged Combustion Engines",
+        "notes": {
+          "G7": "术语 Oxidizer=氧化剂 未出现在译文"
+        }
+      },
+      {
+        "id": 397,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G7"
+        ],
+        "src": "A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the design was deemed unsuitable for military u",
+        "zh": "【离线】A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the design was deemed unsuitable for milita",
+        "notes": {
+          "G7": "术语 Booster=助推器 未出现在译文"
+        }
+      },
+      {
+        "id": 4851,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G7"
+        ],
+        "src": "Improved for N1F Block G. Relightable. Gimbal, throttle.",
+        "zh": "【离线】Improved for N1F Block G. Relightable. Gimbal, throttle.",
+        "notes": {
+          "G7": "术语 Throttle=节流阀 未出现在译文"
+        }
+      }
+    ],
+    "retried": 0,
+    "finish_reasons": {},
+    "latencies": [],
+    "latency_total": 0.0,
+    "elapsed_s": 0.5,
+    "tokens": {
+      "prompt": 0,
+      "completion": 0,
+      "reasoning": 0,
+      "requests": 0,
+      "failures": 0
+    },
+    "latency_avg_s": 0.0,
+    "latency_max_s": 0.0
+  },
+  "curated": {
+    "used": 34,
+    "rejected": 1,
+    "keyref_rescue": 0
+  },
+  "keyref_rescue": false,
+  "glossary_detail": {
+    "total": 2126,
+    "terms": 813,
+    "locked": 588,
+    "exact": 1868,
+    "keyref": 2126,
+    "bad": 0
+  },
+  "written": {
+    "files": {
+      "AJE": 1,
+      "ConformalDecals": 1,
+      "EditorExtensionsRedux": 2,
+      "KerbalismConfig": 1,
+      "ModularLaunchPads": 6,
+      "ProceduralFairings": 1,
+      "ProceduralParts": 2,
+      "ROCapsules": 4,
+      "ROEngines": 3,
+      "ROSolar": 2,
+      "ROTanks": 4,
+      "RP-1": 36,
+      "RealChute": 1,
+      "RealismOverhaul": 17,
+      "SXT": 6,
+      "TriggerTech": 5,
+      "VenStockRevamp": 3
+    },
+    "total": 95,
+    "written": false
+  },
+  "elapsed_s": 1.8,
+  "by_mod": {
+    "KerbalFoundries": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "EditorExtensionsRedux": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 27,
+      "official": 1
+    },
+    "ConformalDecals": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 22
+    },
+    "AJE": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 28
+    },
+    "KerbalismConfig": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 13
+    },
+    "ModularLaunchPads": {
+      "ok": 6,
+      "keep": 0,
+      "failed": 0,
+      "chars": 2543
+    },
+    "ROCapsules": {
+      "ok": 4,
+      "keep": 0,
+      "failed": 1,
+      "chars": 398
+    },
+    "ProceduralFairings": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 41
+    },
+    "ProceduralParts": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 53
+    },
+    "ROEngines": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 273
+    },
+    "ROSolar": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 57
+    },
+    "ROTanks": {
+      "ok": 4,
+      "keep": 0,
+      "failed": 0,
+      "chars": 283
+    },
+    "RP-1": {
+      "ok": 36,
+      "keep": 0,
+      "failed": 1,
+      "chars": 4259
+    },
+    "RealismOverhaul": {
+      "ok": 17,
+      "keep": 0,
+      "failed": 2,
+      "chars": 1674
+    },
+    "RealChute": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 58
+    },
+    "SXT": {
+      "ok": 6,
+      "keep": 0,
+      "failed": 0,
+      "chars": 643
+    },
+    "VenStockRevamp": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 221
+    },
+    "TriggerTech": {
+      "ok": 5,
+      "keep": 0,
+      "failed": 0,
+      "chars": 107
+    }
+  }
+}

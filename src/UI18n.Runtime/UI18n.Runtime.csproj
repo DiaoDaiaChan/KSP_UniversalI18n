@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    UI18n.Runtime —— KSP 侧插件（net472）：Harmony patch 注册、配置读取、字体探测。
+    红线（01 事故复盘，违反即返工）：
+      1. 不用 transpiler；2. 不 try/catch 包游戏方法体；3. patch 只改「传进来的值」；
+      4. GUIContent 只构造新对象，绝不原地写 content.text；5. 语言非中文时一个 patch 都不装。
+  -->
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>UI18n.Runtime</AssemblyName>
+    <RootNamespace>UI18n.Runtime</RootNamespace>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net472'">C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2</FrameworkPathOverride>
+
+    <!-- 构建产物一律落在仓库根的 build/，绝不写 KSP 的 GameData（deploy.ps1 负责 staging） -->
+    <RepoRoot>$(MSBuildThisFileDirectory)..\..\</RepoRoot>
+    <OutputPath>$(RepoRoot)build\bin\$(Configuration)\</OutputPath>
+
+    <!-- 机器相关路径，可用 -p:KspManagedDir=... 覆盖 -->
+    <KspManagedDir Condition="'$(KspManagedDir)' == ''">D:\Kerbal Space Program_newmod\KSP_x64_Data\Managed</KspManagedDir>
+    <HarmonyDir Condition="'$(HarmonyDir)' == ''">D:\Kerbal Space Program_newmod\GameData\000_Harmony</HarmonyDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UI18n.Core\UI18n.Core.csproj" />
+  </ItemGroup>
+
+  <!-- 游戏 / Unity / Harmony 程序集：只编译期引用，不复制进产物（KSP 自己会提供） -->
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(KspManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(KspManagedDir)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(KspManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(KspManagedDir)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(KspManagedDir)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(KspManagedDir)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(KspManagedDir)\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(HarmonyDir)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- 模板文件随构建复制到产物目录，deploy.ps1 直接整包 staging -->
+  <ItemGroup>
+    <None Include="GameData\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

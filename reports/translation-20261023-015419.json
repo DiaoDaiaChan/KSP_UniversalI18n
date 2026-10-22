@@ -1,0 +1,1065 @@
+{
+  "kind": "translation",
+  "started": "2026-10-23T01:54:17",
+  "dry_run": true,
+  "offline": true,
+  "limit": 60,
+  "model": "offline-stub",
+  "promptV": 3,
+  "glossaryV": "024c4e9a",
+  "glossary": "官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）",
+  "pool_rows": 12792,
+  "build": {
+    "skipped": {
+      "all-sentinel": 58,
+      "no-words": 484,
+      "key-ref": 3193
+    },
+    "items": 9057,
+    "batches": 225,
+    "keeps_auto": 7,
+    "curated": {
+      "used": 34,
+      "rejected": 1,
+      "keyref_rescue": 0,
+      "exact_used": 34,
+      "rescue_examples": [],
+      "exact_examples": [
+        {
+          "id": 190,
+          "mod": "EditorExtensionsRedux",
+          "en": "Close",
+          "zh": "关闭"
+        },
+        {
+          "id": 1457,
+          "mod": "RealismOverhaul",
+          "en": "Adjustable Ramp Intake",
+          "zh": "可调节坡度进气道"
+        },
+        {
+          "id": 1471,
+          "mod": "RealismOverhaul",
+          "en": "Toggle <<1>>",
+          "zh": "开关<<1>>"
+        },
+        {
+          "id": 1472,
+          "mod": "RealismOverhaul",
+          "en": "Lights On",
+          "zh": "灯光开"
+        },
+        {
+          "id": 1473,
+          "mod": "RealismOverhaul",
+          "en": "Lights Off",
+          "zh": "灯光关"
+        }
+      ]
+    }
+  },
+  "sample_build": {
+    "skipped": {},
+    "items": 60,
+    "batches": 4,
+    "keeps_auto": 0,
+    "curated": {
+      "used": 0,
+      "rejected": 0,
+      "keyref_rescue": 0,
+      "exact_used": 0,
+      "rescue_examples": [],
+      "exact_examples": []
+    }
+  },
+  "batches": 4,
+  "jobs": 4,
+  "max_chars": 6000,
+  "stats": {
+    "batches": 4,
+    "batches_failed": 4,
+    "splits": 0,
+    "calls": 4,
+    "cache_hits": 0,
+    "items_requested": 60,
+    "items_ok": 0,
+    "items_keep": 0,
+    "items_failed": 60,
+    "items_official": 0,
+    "items_rescue": 0,
+    "curated_rejected": 0,
+    "term_drift": 0,
+    "mixed_lang": 0,
+    "mixed_lang_examples": [],
+    "mixed_lang_by_mod": {},
+    "keep_examples": [],
+    "drift_examples": [],
+    "drift_counts": {},
+    "terms_injected": 19,
+    "terms_distinct": 17,
+    "locked_triggered": 0,
+    "items_locked": 0,
+    "gates": {
+      "G1": 60,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 0,
+      "G6": 0,
+      "G7": 0,
+      "G8": 0
+    },
+    "gate_examples": {
+      "G1": [
+        {
+          "id": 501,
+          "mod": "RealismOverhaul",
+          "src": "A small French solid rocket motor that was developed as a fourth stage for the Europa II launch vehicle, and later used as the third stage on the B and BP.4 con",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 2067,
+          "mod": "SXT",
+          "src": "The latest in research and development enabled the development of this little marvel, The Sensor Array Computing Nose Cone. It is outfitted with many \"quality\" ",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 5230,
+          "mod": "RealismOverhaul",
+          "src": "Balloon tanks do not have an internal framework, but instead rely on internal pressurization to keep its shape. If the pressurization fails, the balloon tank co",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 1616,
+          "mod": "ROCapsules",
+          "src": "Improved, lunar rated heatshield for the Gemini Capsule. Can be switched to the Gemini B configuration with a hatch. <b><color=red>Gemini lacks the radiative he",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 7757,
+          "mod": "RP-1",
+          "src": "<b>Program: Uncrewed Lunar Surface Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully launch a craft that can achieve a soft l",
+          "zh": "",
+          "why": ""
+        }
+      ],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [],
+      "G6": [],
+      "G7": [],
+      "G8": []
+    },
+    "failed": [
+      {
+        "id": 501,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "A small French solid rocket motor that was developed as a fourth stage for the Europa II launch vehicle, and later used as the third stage on the B and BP.4 configurations of the Diamant launch vehicl",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 2067,
+        "mod": "SXT",
+        "gates": [
+          "G1"
+        ],
+        "src": "The latest in research and development enabled the development of this little marvel, The Sensor Array Computing Nose Cone. It is outfitted with many \"quality\" sensors and a computer salvaged from the",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 5230,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "Balloon tanks do not have an internal framework, but instead rely on internal pressurization to keep its shape. If the pressurization fails, the balloon tank collapses. They are constructed of very th",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 1616,
+        "mod": "ROCapsules",
+        "gates": [
+          "G1"
+        ],
+        "src": "Improved, lunar rated heatshield for the Gemini Capsule. Can be switched to the Gemini B configuration with a hatch. <b><color=red>Gemini lacks the radiative heat protection of more advanced capsules.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 7757,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "<b>Program: Uncrewed Lunar Surface Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully launch a craft that can achieve a soft landing on the Moon and return science da",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 7907,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "<b>Program: Outer Gas Giant Survey<br>Type: <color=green>Required</color></b><br><br>Create a probe and send it to flyby Oberon within 9000 km. Make sure to transmit science from the flyby.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 8817,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "<b>Near-Earth TL6</b> - <color=white>Mass: -15%</color> <color=green>Cost: +5%</color> <color=orange>Power: -15%</color> <color=white>kOS Disk Space: 29 kB</color>",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 723,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "An upper stage kerolox engine designed for the R-9 ICBM and later used on the Molniya, Voskhod. and Soyuz launchers.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 975,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "A small apogee kick motor used for the Intelsat II series of geostationary satellites.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 2380,
+        "mod": "TriggerTech",
+        "gates": [
+          "G1"
+        ],
+        "src": "If enabled then when one alarm fires another will be created based on the existing alarm",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 2850,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G1"
+        ],
+        "src": "A repurposed Stratus-V tank, the Stratus-VI now stores Liquid Fuel instead of Monopropellant.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 3351,
+        "mod": "KerbalFoundries",
+        "gates": [
+          "G1"
+        ],
+        "src": "Adjustable Landing Gear (Large)",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 3842,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G1"
+        ],
+        "src": "Crew Elevator Mercury-Redstone, with Hatch",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 3998,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G1"
+        ],
+        "src": "Saturn Tower swing arm #1 for the Saturn V. This is the S-IC Intertank arm. Two sizes for 5.625m and 6.4m tanks, and two color options are available from the right-click menu.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 4456,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "This was the test version that used the nozzle for the Full Length design.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 4607,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "J47 with water injection, as used on the RB-45C. Temperature Mach limit at 15 km: 1.68.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 4761,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "Main engine for the Jupiter / Juno II launch vehicle",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 4912,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "UDMH/LOX version of RD-0206. Much higher performance, but requires cryogenic fuels.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 5066,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "Spectre 1, booster engine for SR.53.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 7157,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Geostationary Communications Network (3 Satellites)",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 7307,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Send any needed supplies, modules, or crew to the station",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 7457,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Craft must have Electric Charge after 60 days",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 8510,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "A start tailored for European Space Agency at the dawn of 1969. Can the Agency establish itself, independent of the United States and the Soviet Union?",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 9121,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "2014-2018 Oxidizer-Rich Staged Combustion Engines",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 9274,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Advanced Nuclear Power Generation",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 9424,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "The RD0216 Engine now supports the 11D23 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 9574,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "The E1 Engine now supports the E-1-468k configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 9724,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "The JT8D Engine now supports the JT8D-209 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 9874,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "The Merlin1 Engine now supports the Merlin1C configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 10024,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "The RD0212 Engine now supports the RD-0212-Mk3 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 10174,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "The RD9 Engine now supports the RD-9AF2-300 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 10324,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "The U1250 Engine now supports the U-2000 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 1,
+        "mod": "AJE",
+        "gates": [
+          "G1"
+        ],
+        "src": "Mil Mi-17 Rotor & Engine",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 159,
+        "mod": "EditorExtensionsRedux",
+        "gates": [
+          "G1"
+        ],
+        "src": "disabled",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 330,
+        "mod": "KerbalChangelog",
+        "gates": [
+          "G1"
+        ],
+        "src": "High Priority",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 1158,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "RB.162 Turbojet",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 1313,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "ОКБ-117 (Klimov/Izotov)",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 1466,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "J47-GE-27 Turbojet",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 1767,
+        "mod": "SXT",
+        "gates": [
+          "G1"
+        ],
+        "src": "A.I.R.B.R.A.K.E.S \"Panel\"",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 1917,
+        "mod": "SXT",
+        "gates": [
+          "G1"
+        ],
+        "src": "PPD-8 Lander Can",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 2225,
+        "mod": "TriggerTech",
+        "gates": [
+          "G1"
+        ],
+        "src": "Alarm List",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 2533,
+        "mod": "TriggerTech",
+        "gates": [
+          "G1"
+        ],
+        "src": "Plugin Preferences",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 2690,
+        "mod": "TriggerTech",
+        "gates": [
+          "G1"
+        ],
+        "src": "Delete",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 3516,
+        "mod": "KerbalismConfig",
+        "gates": [
+          "G1"
+        ],
+        "src": "LiOH Scrubber (Auxiliary)",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 3687,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G1"
+        ],
+        "src": "Modular Multi Tower Top",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 4154,
+        "mod": "ProceduralFairings",
+        "gates": [
+          "G1"
+        ],
+        "src": "Saturn Stringer Recolor",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 4304,
+        "mod": "ProceduralParts",
+        "gates": [
+          "G1"
+        ],
+        "src": "Black Arrow (Metal)",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 5862,
+        "mod": "ROCapsules",
+        "gates": [
+          "G1"
+        ],
+        "src": "CST-100 Service Module",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 6094,
+        "mod": "ROEngines",
+        "gates": [
+          "G1"
+        ],
+        "src": "BDB Normal",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 6261,
+        "mod": "ROEngines",
+        "gates": [
+          "G1"
+        ],
+        "src": "Nike solid rocket motor.",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 6427,
+        "mod": "ROLib",
+        "gates": [
+          "G1"
+        ],
+        "src": "Quad-X",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 6605,
+        "mod": "ROSolar",
+        "gates": [
+          "G1"
+        ],
+        "src": "Static Solar Panel",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 6781,
+        "mod": "ROTanks",
+        "gates": [
+          "G1"
+        ],
+        "src": "3:4 Ratio Adapter - Short",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 6956,
+        "mod": "ROTanks",
+        "gates": [
+          "G1"
+        ],
+        "src": "SQR Compact",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 7607,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Outer Planet Flybys",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 8057,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Rhea Landing (Uncrewed)",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 8207,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Reach 100 km",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 8358,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Eurostar",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 8664,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "EVA Astronaut",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      },
+      {
+        "id": 8968,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Large Docking Ports",
+        "zh": "",
+        "notes": {
+          "why": "批异常"
+        }
+      }
+    ],
+    "retried": 0,
+    "finish_reasons": {},
+    "latencies": [],
+    "latency_total": 0.0,
+    "locked_triggered_names": [],
+    "drift_top": [],
+    "mixed_lang_top_mods": [],
+    "elapsed_s": 0.3,
+    "tokens": {
+      "prompt": 0,
+      "completion": 0,
+      "reasoning": 0,
+      "requests": 0,
+      "failures": 0
+    },
+    "latency_avg_s": 0.0,
+    "latency_max_s": 0.0
+  },
+  "curated": {
+    "used": 34,
+    "rejected": 1,
+    "keyref_rescue": 0,
+    "exact_used": 34,
+    "rescue_examples": [],
+    "exact_examples": [
+      {
+        "id": 190,
+        "mod": "EditorExtensionsRedux",
+        "en": "Close",
+        "zh": "关闭"
+      },
+      {
+        "id": 1457,
+        "mod": "RealismOverhaul",
+        "en": "Adjustable Ramp Intake",
+        "zh": "可调节坡度进气道"
+      },
+      {
+        "id": 1471,
+        "mod": "RealismOverhaul",
+        "en": "Toggle <<1>>",
+        "zh": "开关<<1>>"
+      },
+      {
+        "id": 1472,
+        "mod": "RealismOverhaul",
+        "en": "Lights On",
+        "zh": "灯光开"
+      },
+      {
+        "id": 1473,
+        "mod": "RealismOverhaul",
+        "en": "Lights Off",
+        "zh": "灯光关"
+      }
+    ]
+  },
+  "keyref_rescue": false,
+  "mods": null,
+  "only_bucket": null,
+  "glossary_detail": {
+    "total": 2126,
+    "terms": 813,
+    "locked": 588,
+    "exact": 1868,
+    "keyref": 2126,
+    "bad": 0
+  },
+  "written": {
+    "files": {},
+    "total": 0,
+    "written": false
+  },
+  "elapsed_s": 1.7,
+  "by_mod": {
+    "RealismOverhaul": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 12,
+      "chars": 0
+    },
+    "SXT": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 3,
+      "chars": 0
+    },
+    "ROCapsules": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 2,
+      "chars": 0
+    },
+    "RP-1": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 22,
+      "chars": 0
+    },
+    "TriggerTech": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 4,
+      "chars": 0
+    },
+    "VenStockRevamp": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "KerbalFoundries": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ModularLaunchPads": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 3,
+      "chars": 0
+    },
+    "AJE": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "EditorExtensionsRedux": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "KerbalChangelog": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "KerbalismConfig": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ProceduralFairings": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ProceduralParts": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ROEngines": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 2,
+      "chars": 0
+    },
+    "ROLib": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ROSolar": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ROTanks": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 2,
+      "chars": 0
+    }
+  },
+  "sample_out": "D:\\Kerbal Space Program_newmod\\UniversalI18n\\reports\\sample-20261023-015419.jsonl"
+}

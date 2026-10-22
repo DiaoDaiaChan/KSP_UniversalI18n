@@ -1,0 +1,4230 @@
+{
+  "kind": "translation",
+  "started": "2026-10-23T02:01:42",
+  "dry_run": false,
+  "offline": false,
+  "limit": null,
+  "model": "gemini-3.8-flash-high",
+  "promptV": 3,
+  "glossaryV": "024c4e9a",
+  "glossary": "官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）",
+  "pool_rows": 12792,
+  "build": {
+    "skipped": {
+      "all-sentinel": 58,
+      "no-words": 484,
+      "key-ref": 2201
+    },
+    "items": 10049,
+    "batches": 229,
+    "keeps_auto": 7,
+    "curated": {
+      "used": 1026,
+      "rejected": 2,
+      "keyref_rescue": 992,
+      "exact_used": 34,
+      "rescue_examples": [
+        {
+          "id": 3553,
+          "mod": "KSPCommunityFixes",
+          "key": "#autoLOC_501653",
+          "zh": "光年轮胎公司",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 3555,
+          "mod": "KSPCommunityFixes",
+          "key": "#autoLOC_6004000",
+          "zh": "层云公司",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 4121,
+          "mod": "ProceduralFairings",
+          "key": "#autoLOC_8007119",
+          "zh": "白色",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 5188,
+          "mod": "RealismOverhaul",
+          "key": "#autoLOC_6011001",
+          "zh": "前进",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 5189,
+          "mod": "RealismOverhaul",
+          "key": "#autoLOC_6011004",
+          "zh": "反向",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 5352,
+          "mod": "ReStock",
+          "key": "#autoLOC_8014157",
+          "zh": "斜角四喷嘴",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 5353,
+          "mod": "ReStock",
+          "key": "#autoLOC_8014156",
+          "zh": "正交五喷嘴",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 5354,
+          "mod": "ReStock",
+          "key": "#autoLOC_8014155",
+          "zh": "正交四喷嘴",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 5355,
+          "mod": "ReStock",
+          "key": "#autoLOC_8014154",
+          "zh": "正交三喷嘴",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        },
+        {
+          "id": 5356,
+          "mod": "ReStock",
+          "key": "#autoLOC_8014153",
+          "zh": "正交双喷嘴",
+          "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+        }
+      ],
+      "exact_examples": [
+        {
+          "id": 190,
+          "mod": "EditorExtensionsRedux",
+          "en": "Close",
+          "zh": "关闭"
+        },
+        {
+          "id": 1457,
+          "mod": "RealismOverhaul",
+          "en": "Adjustable Ramp Intake",
+          "zh": "可调节坡度进气道"
+        },
+        {
+          "id": 1471,
+          "mod": "RealismOverhaul",
+          "en": "Toggle <<1>>",
+          "zh": "开关<<1>>"
+        },
+        {
+          "id": 1472,
+          "mod": "RealismOverhaul",
+          "en": "Lights On",
+          "zh": "灯光开"
+        },
+        {
+          "id": 1473,
+          "mod": "RealismOverhaul",
+          "en": "Lights Off",
+          "zh": "灯光关"
+        }
+      ]
+    }
+  },
+  "sample_build": null,
+  "batches": 229,
+  "jobs": 4,
+  "max_chars": 6000,
+  "stats": {
+    "batches": 229,
+    "batches_failed": 0,
+    "splits": 0,
+    "calls": 101,
+    "cache_hits": 4738,
+    "items_requested": 4278,
+    "items_ok": 8813,
+    "items_keep": 7,
+    "items_failed": 203,
+    "items_official": 34,
+    "items_rescue": 992,
+    "curated_rejected": 0,
+    "term_drift": 326,
+    "mixed_lang": 594,
+    "mixed_lang_examples": [
+      {
+        "id": 6,
+        "mod": "BurstPQS",
+        "src": "BurstPQS could not find any burst-compiled methods!\\n\\nThis is not a hard error and your game is not broken. It does mea",
+        "zh": "BurstPQS未能找到任何通过 Burst 编译的方法。\\n\\n这不是严重错误，游戏并未损坏。但这确实意味着 KSPBurst 无法成功构建原生库，因此某些处理速度会显著变慢。\\n\\n有关让 KSPBurst 正常运行的最新建议，请参阅BurstPQS论坛帖。",
+        "words": [
+          "BurstPQS",
+          "Burst",
+          "KSPBurst",
+          "KSPBurst",
+          "BurstPQS"
+        ]
+      },
+      {
+        "id": 67,
+        "mod": "ConformalDecals",
+        "src": "After several unfortunate mishaps with confusing signage on spacecraft, The Peel-N-StikTM Corporation teamed up with Ker",
+        "zh": "在航天器上因标识不清导致数起不幸事故后，The Peel-N-StikTM Corporation 与 Kerland-Mutani 联手推出了坎巴拉飞船符号学标准，这是一套用于飞船和空间站的标准化图标。（基于 Ron Cobb 的作品）",
+        "words": [
+          "The",
+          "Peel-N-StikTM",
+          "Corporation",
+          "Kerland-Mutani",
+          "Ron",
+          "Cobb"
+        ]
+      },
+      {
+        "id": 100,
+        "mod": "ConformalDecals",
+        "src": "Munar Industries Ltd. saw the wild success of the CDL-2 decal, and wanted to develop a decal set for their own line of H",
+        "zh": "Munar Industries Ltd. 看到了 CDL-2 贴花的巨大成功，希望为自家的氦矿开采基地开发一套贴花。这些贴花比符号学标准更明确直观，专门针对先进技术带来的危险。（基于 Gavin Rothery 的作品）",
+        "words": [
+          "Munar",
+          "Industries",
+          "Ltd",
+          "Gavin",
+          "Rothery"
+        ]
+      },
+      {
+        "id": 141,
+        "mod": "EditorExtensionsRedux",
+        "src": "This version of Editor Extensions Redux is not compatible with this version of KSP",
+        "zh": "此版本的 Editor Extensions Redux 与当前 KSP 版本不兼容",
+        "words": [
+          "Editor",
+          "Extensions",
+          "Redux"
+        ]
+      },
+      {
+        "id": 31,
+        "mod": "ConformalDecals",
+        "src": "conformal decal sticker text font",
+        "zh": "贴花 贴纸 文本 字体 conformal decal sticker text font",
+        "words": [
+          "conformal",
+          "decal",
+          "sticker",
+          "text",
+          "font"
+        ]
+      },
+      {
+        "id": 34,
+        "mod": "ConformalDecals",
+        "src": "conformal decal sticker generic hazard warning danger",
+        "zh": "贴花 贴纸 通用 危险 警告 conformal decal sticker generic hazard warning danger",
+        "words": [
+          "conformal",
+          "decal",
+          "sticker",
+          "generic",
+          "hazard",
+          "warning",
+          "danger"
+        ]
+      },
+      {
+        "id": 68,
+        "mod": "ConformalDecals",
+        "src": "conformal decal sticker semiotic standard for kerbal vessels Ron Cobb Alien",
+        "zh": "贴花 贴纸 坎巴拉载具符号学标准 罗恩·科布 异形 conformal decal sticker semiotic standard for kerbal vessels Ron Cobb Alien",
+        "words": [
+          "conformal",
+          "decal",
+          "sticker",
+          "semiotic",
+          "standard",
+          "for",
+          "vessels",
+          "Ron"
+        ]
+      },
+      {
+        "id": 101,
+        "mod": "ConformalDecals",
+        "src": "conformal decal sticker Moon munar lunar industries Gavin Rothery Sarang",
+        "zh": "贴花 贴纸 月球 坎月 月球工业 加文·罗瑟里 萨朗 conformal decal sticker Moon munar lunar industries Gavin Rothery Sarang",
+        "words": [
+          "conformal",
+          "decal",
+          "sticker",
+          "Moon",
+          "munar",
+          "lunar",
+          "industries",
+          "Gavin"
+        ]
+      },
+      {
+        "id": 2995,
+        "mod": "AJE",
+        "src": "1100hp at 2300rpm at takeoff, 900hp at 2200rpm at 4500m",
+        "zh": "起飞时 2300 rpm 下 1100 hp，4500 m 高度 2200 rpm 下 900 hp",
+        "words": [
+          "rpm",
+          "hp",
+          "rpm",
+          "hp"
+        ]
+      },
+      {
+        "id": 2997,
+        "mod": "AJE",
+        "src": "1640 at 2500rpm at takeoff, 1450hp at 2400rpm at 4650m, 750hp at 10500m. Two-speed single-stage supercharger.",
+        "zh": "起飞时 2500 rpm 下 1640 hp，4650 m 高度 2400 rpm 下 1450 hp，10500 m 高度 750 hp。双速单级机械增压器。",
+        "words": [
+          "rpm",
+          "hp",
+          "rpm",
+          "hp",
+          "hp"
+        ]
+      },
+      {
+        "id": 3007,
+        "mod": "AJE",
+        "src": "Pratt & Whitney Twin Wasp, 1350HP radial. Two-speed supercharger, max of 1395HP at 3km and 1365HP at 5km static, 1415/3.",
+        "zh": "普惠“双黄蜂”，1350 HP 星型发动机。双速机械增压器，3 km 静止时最大 1395 HP，5 km 静止时最大 1365 HP；冲压进气下 3.6 km 为 1415 HP，5.6 km 为 1387 HP。",
+        "words": [
+          "km",
+          "km",
+          "km",
+          "km"
+        ]
+      },
+      {
+        "id": 3381,
+        "mod": "KerbalFoundries",
+        "src": "Flying in the face of the usual \"Go big or go home\" philosophy, junior Kerbal engineer Dougel Kerman came up with these ",
+        "zh": "初级坎巴拉工程师 Dougel Kerman 逆“要么搞大，要么回家”的传统理念而行，“从远处”观察某个大型原型机后设计出了这款部件。Valentina 觉得它们很可爱。",
+        "words": [
+          "Dougel",
+          "Kerman",
+          "Valentina"
+        ]
+      },
+      {
+        "id": 3701,
+        "mod": "ModularLaunchPads",
+        "src": "SpaceX-inspired crew access arm for the Tundra Exploration Rodan (Crew Dragon) command pod, designed to fit on the Shutt",
+        "zh": "受SpaceX启发的登船臂，专为 Tundra Exploration 的 Rodan（载人龙飞船）指令舱设计，可适配在航天飞机 FSS 塔架的人员通道段上。该臂需使用 FSS 人员通道段中的 Rodan Crew Arm 设置，并安装在该段的左侧主垂直梁上。该臂仅有一个收回方向。共有 4 种臂长变体，端部可通过开启限",
+        "words": [
+          "SpaceX",
+          "Tundra",
+          "Exploration",
+          "Rodan",
+          "Rodan",
+          "Crew",
+          "Arm"
+        ]
+      },
+      {
+        "id": 3806,
+        "mod": "ModularLaunchPads",
+        "src": "A specialty launch stand for the Aerobee and other small sounding rockets, inspired by two versions of the real Aerobee ",
+        "zh": "专用于“航空蜜蜂”（Aerobee）及其他小型探空火箭的专用发射架，灵感源自两款现实中的 Aerobee 发射塔。现实中的 Aerobee 确实是置于塔架内的导轨上发射的。该部件实际上是一个发射稳定支架，可关闭支架部分以获得更美观的外观。塔架提供三角形和方形两种款式，并具有多种高度变体。内部的发射导轨仅起装饰作用且无碰",
+        "words": [
+          "Aerobee",
+          "Aerobee",
+          "Aerobee"
+        ]
+      },
+      {
+        "id": 3863,
+        "mod": "ModularLaunchPads",
+        "src": "Animated \"petal\" cover used for the deployed Jupiter IRBM sites. It is sized for 1.5m diameter rockets, namely the Jupit",
+        "zh": "用于已部署 Jupiter IRBM 发射阵地的带动画“花瓣”掩蔽罩。尺寸适用于 1.5m 直径火箭，即 Bluedog Design Bureau 的 Jupiter 火箭。它可附着在 Redstone 发射台上的可选节点；调节高度直至底环接触地面。开启展开动画可手动触发，也可通过分级触发。",
+        "words": [
+          "Jupiter",
+          "Bluedog",
+          "Design",
+          "Bureau",
+          "Jupiter",
+          "Redstone"
+        ]
+      },
+      {
+        "id": 3865,
+        "mod": "ModularLaunchPads",
+        "src": "Add-on part for launch bases and stands that provides a rotatable launch rail for angled launching of rockets. This is t",
+        "zh": "发射底座和发射台的附加部件，提供可旋转的导轨以进行倾斜发射。此为大型导轨，适用于 1.25m 及以上的较大型火箭。火箭只能表面附着在导轨上，导轨内置分离器。导轨还可在默认的前进方向与反向之间切换。导轨的旋转可通过 B9PD 切换器进行，或者在安装了 Animated Attachment 时通过开启限制滑块动画来调节。",
+        "words": [
+          "Animated",
+          "Attachment",
+          "Animated",
+          "Attachment"
+        ]
+      },
+      {
+        "id": 3880,
+        "mod": "ModularLaunchPads",
+        "src": "Add-on part for launch bases and stands that provides a rotatable launch rail for angled launching of rockets. This is t",
+        "zh": "发射底座和发射台的附加部件，提供可旋转的导轨以进行倾斜发射。此为中型导轨，适用于 0.937m 及以上的火箭。火箭只能表面附着在导轨上，导轨内置分离器。导轨还可在默认的前进方向与反向之间切换。导轨的旋转可通过 B9PD 切换器进行，或者在安装了 Animated Attachment 时通过开启限制滑块动画来调节。An",
+        "words": [
+          "Animated",
+          "Attachment",
+          "Animated",
+          "Attachment"
+        ]
+      },
+      {
+        "id": 3882,
+        "mod": "ModularLaunchPads",
+        "src": "Add-on part for launch bases and stands that provides a rotatable launch rail for angled launching of rockets. This is t",
+        "zh": "发射底座和发射台的附加部件，提供可旋转的导轨以进行倾斜发射。此为微型导轨（实际为导杆），适用于 0.3125m 和 0.625m 火箭；导杆可通过开启限制滑块移动。火箭只能表面附着在导轨上，导轨内置分离器。导轨的旋转可通过 B9PD 切换器进行，或者在安装了 Animated Attachment 时通过开启限制滑块动",
+        "words": [
+          "Animated",
+          "Attachment",
+          "Animated",
+          "Attachment"
+        ]
+      },
+      {
+        "id": 3884,
+        "mod": "ModularLaunchPads",
+        "src": "Add-on part for launch bases and stands that provides a rotatable launch rail for angled launching of rockets. This is t",
+        "zh": "发射底座和发射台的附加部件，提供可旋转的导轨以进行倾斜发射。此为小型导轨，适用于较小型火箭。火箭只能表面附着在导轨上，导轨内置分离器。导轨还可在默认的前进方向与反向之间切换。导轨的旋转可通过 B9PD 切换器进行，或者在安装了 Animated Attachment 时通过开启限制滑块动画来调节。Animated At",
+        "words": [
+          "Animated",
+          "Attachment",
+          "Animated",
+          "Attachment"
+        ]
+      },
+      {
+        "id": 3938,
+        "mod": "ModularLaunchPads",
+        "src": "A single-piece version of the Titan II GLV Service Tower, sized and customized for the Bluedog Design Bureaau Titan II G",
+        "zh": "大力神 II GLV 服务塔的一体化版本，尺寸专为 Bluedog Design Bureau 的大力神 II GLV 火箭定制。使用独立的大力神 II 塔架脐带缆或通用脐带缆。与大力神 II 发射台配合使用，可完整还原 LC-19。",
+        "words": [
+          "Bluedog",
+          "Design",
+          "Bureau"
+        ]
+      }
+    ],
+    "mixed_lang_by_mod": {
+      "BurstPQS": 1,
+      "ConformalDecals": 6,
+      "EditorExtensionsRedux": 1,
+      "AJE": 3,
+      "KerbalFoundries": 1,
+      "ModularLaunchPads": 9,
+      "ROCapsules": 8,
+      "ROEngines": 5,
+      "ROSolar": 14,
+      "RP-1": 403,
+      "ReStockPlus": 4,
+      "RealChute": 5,
+      "RealismOverhaul": 100,
+      "SXT": 18,
+      "Squad": 4,
+      "TriggerTech": 1,
+      "VenStockRevamp": 11
+    },
+    "keep_examples": [
+      {
+        "id": 219,
+        "mod": "EditorExtensionsRedux",
+        "s": "orgPos:",
+        "t": "orgPos:",
+        "why": "遮蔽后只剩不可翻译物"
+      },
+      {
+        "id": 235,
+        "mod": "EditorExtensionsRedux",
+        "s": "_lastKeyPressed:",
+        "t": "_lastKeyPressed:",
+        "why": "遮蔽后只剩不可翻译物"
+      },
+      {
+        "id": 292,
+        "mod": "EditorExtensionsRedux",
+        "s": ").symMethod =",
+        "t": ").symMethod =",
+        "why": "遮蔽后只剩不可翻译物"
+      },
+      {
+        "id": 2191,
+        "mod": "TriggerTech",
+        "s": "RealSolarSystem.RSSWatchDog",
+        "t": "RealSolarSystem.RSSWatchDog",
+        "why": "遮蔽后只剩不可翻译物"
+      },
+      {
+        "id": 2210,
+        "mod": "TriggerTech",
+        "s": "dblTest:",
+        "t": "dblTest:",
+        "why": "遮蔽后只剩不可翻译物"
+      }
+    ],
+    "drift_examples": [
+      {
+        "id": 3351,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Adjustable Landing Gear (Large)",
+        "zh": "可调起落架（大号）"
+      },
+      {
+        "id": 3352,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "An adjustable landing gear with two wheels and slightly stronger brakes, motor, and default suspension settings.",
+        "zh": "一款可调起落架，配有双轮，制动器、电机和默认悬挂设置略强。"
+      },
+      {
+        "id": 3353,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Adjustable Landing Gear (Medium)",
+        "zh": "可调起落架（中）"
+      },
+      {
+        "id": 3354,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Adjustable Landing Gear (Small)",
+        "zh": "可调起落架（小）"
+      },
+      {
+        "id": 3355,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "An adjustable landing gear with a single wheel.",
+        "zh": "一款单轮可调起落架。"
+      },
+      {
+        "id": 3356,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Adjustable Landing Gear (Small - Side)",
+        "zh": "可调起落架（小 - 侧置）"
+      },
+      {
+        "id": 3426,
+        "term": "Air",
+        "want": "进气",
+        "src": "Air Pump",
+        "zh": "气泵"
+      },
+      {
+        "id": 3756,
+        "term": "Rings",
+        "want": "环形",
+        "src": "General cradle-type test stand for doing horizontal static fire testing of smaller rocket stages. The stand has two size",
+        "zh": "用于对较小型火箭级段进行水平静载点火测试的通用托架式试车台。该台架具有两种尺寸和八种颜色选项。托架可配置不同尺寸的储箱环或固定夹持支撑梁。侧支撑夹具位置可通过各自的开启限制滑块在水平和垂直方向上进行调节，亦可关闭。"
+      },
+      {
+        "id": 3835,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "Animated twin vertical retracting umbilical arms for the Centaur upper stage used on the Atlas SLV-3 Centaur D rocket. T",
+        "zh": "带有动画的双联垂直缩回式脐带臂，用于宇宙神 SLV-3 半人马座 D 火箭的半人马座上面级。双臂夹抱半人马座级，下臂跨接在级间段与储箱的分界处，上臂跨接在储箱与整流罩的连接处。专为安装在宇宙神-半人马座勤务塔上设计，但也可用于其他勤务塔。整"
+      },
+      {
+        "id": 3837,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A special Mercury Spacecraft umbilical for the Mercury-Atlas Crew Elevator, which also doubled as the Launch Umbilical T",
+        "zh": "用于水星-宇宙神载人电梯的专用“水星”飞船脐带柱，该电梯同时兼作发射脐带塔。它安装在电梯塔前平台正上方管道顶部的节点上。脐带可通过展开限制滑块调节长度。可通过手动操作或借助 Animated Decouplers 通过分级触发缩回。"
+      },
+      {
+        "id": 3839,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A crew access elevator for small manned spacecraft, inspired by the emergency egress and umbilical tower used for Mercur",
+        "zh": "一种小型载人飞船登船电梯，灵感源自水星-宇宙神使用的紧急撤离与脐带塔，专为 1 级发射台和宇宙神发射架设计，但也可用于部分其他发射底座和发射架。该电梯塔为固定式，有 8 种颜色可选。电梯轿厢的停靠高度可通过展开限制滑块调节。需配合水星-宇宙"
+      },
+      {
+        "id": 3841,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A crew access elevator for Gemini spacecraft, inspired by the erector used for the Titan II-Gemini. Designed for use wit",
+        "zh": "用于双子座飞船的人员登船电梯，灵感源自大力神 II-双子座使用的起竖架。专为配套的大力神 II 发射架设计，但也可用于其他发射架、发射板和发射底座。电梯塔可环绕大力神 II 或其他火箭，顶部洁净室的登船通道地面贴合返回舱。轿厢的最大高度与登"
+      },
+      {
+        "id": 3843,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A crew access elevator for small manned spacecraft, inspired by the rollback gantry used for Mercury-Redstone and design",
+        "zh": "一种小型载人飞船登船电梯，灵感源自水星-红石使用的后撤式门架，专为 1 级发射台和红石发射架设计，但也可用于部分其他发射底座和发射架。电梯塔为带动画的后撤式，有 8 种颜色可选。电梯轿厢的停靠高度可通过展开限制滑块调节。轿厢上的舱门提供了另"
+      },
+      {
+        "id": 3920,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "Animated fallback tower for the Thor-Able/Delta rockets, though it was most used with the Able-derived upper stages (Abl",
+        "zh": "用于雷神-艾布尔/德尔塔火箭的带动画后倒塔架，不过它最常用于艾布尔派生的上级（艾布尔、阿布尔星和德尔塔）。它集成了三根带动画的脱落脐带缆，每根均有独立颜色选项，且均可关闭。每根脐带缆均可通过相关的展开限制滑块进行垂直和水平调节。塔架还具有 "
+      },
+      {
+        "id": 3940,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A special Gemini Spacecraft umbilical for the Titan II GLV Service Tower. It attaches to the top of the large angled arm",
+        "zh": "专为大力神 II GLV 服务塔设计的双子座飞船专用脐带缆。安装在大力神 II 塔架脐带缆的大折角摆臂款式顶部。脐带管长度可通过展开限制滑块进行调节。"
+      },
+      {
+        "id": 3942,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A custom umbilical for the Titan II GLV Service Tower, with three switchable arm styles. For reference, from the top dow",
+        "zh": "大力神 II GLV 服务塔的定制脐带缆，具有三种可切换的摆臂样式。作为参考，从上到下依次为：两个大折角摆臂、两个大直臂、一个小横梁臂，最底部则是另一个大直臂。独立的双子座飞船脐带缆安装在大折角摆臂样式的顶部。脐带管长度可通过展开限制滑块进"
+      },
+      {
+        "id": 3944,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A special droop-style Gemini Spacecraft umbilical for the Titan II GLV Service Tower. It attaches to the top of the larg",
+        "zh": "专为大力神 II GLV 服务塔设计的垂坠式双子座飞船专用脐带缆。安装在大力神 II 塔架脐带缆的大折角摆臂款式顶部。脐带缆配有延长管，可通过展开限制滑块调节长度。"
+      },
+      {
+        "id": 3946,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "A custom droop-style umbilical for the Titan II GLV Service Tower, with three switchable arm styles. For reference, from",
+        "zh": "大力神 II GLV 服务塔的定制垂坠式脐带缆，具有三种可切换的摆臂样式。作为参考，从上到下依次为：两个大折角摆臂、两个大直臂、一个小横梁臂，最底部则是另一个大直臂。独立的双子座飞船脐带缆安装在大折角摆臂样式的顶部。脐带缆配有延长管，可通过"
+      },
+      {
+        "id": 3980,
+        "term": "Start",
+        "want": "起点",
+        "src": "Angled base section of the modular Saturn launch tower, with two color options: classic red and new gray. The base has t",
+        "zh": "模块化土星发射塔的斜角基座段，提供两种颜色选项：经典红与新版灰。基座拥有两部独立的乘员电梯，每部电梯均有四个可切换的最大高度选项；电梯亦可关闭。调节电梯的开启限制滑块可使其停在低于最大高度的位置。电梯初始处于最高点，必须先降下。电梯轿厢上的"
+      },
+      {
+        "id": 3982,
+        "term": "Start",
+        "want": "起点",
+        "src": "Square base section of the modular Saturn launch tower, with two color options: classic red and new gray. The base has t",
+        "zh": "模块化土星发射塔的方形基座段，提供两种颜色选项：经典红与新版灰。基座拥有两部独立的乘员电梯，每部电梯均有四个可切换的最大高度选项；电梯亦可关闭。调节电梯的开启限制滑块可使其停在低于最大高度的位置。电梯初始处于最高点，必须先降下。电梯轿厢上的"
+      }
+    ],
+    "drift_counts": {
+      "Landing -> 着陆": {
+        "term": "Landing",
+        "want": "着陆",
+        "count": 11,
+        "zh_samples": [
+          "可调起落架（大号）",
+          "一款可调起落架，配有双轮，制动器、电机和默认悬挂设置略强。",
+          "可调起落架（中）"
+        ]
+      },
+      "Air -> 进气": {
+        "term": "Air",
+        "want": "进气",
+        "count": 19,
+        "zh_samples": [
+          "气泵",
+          "严格来说它并不是操纵面，更像是一块用于导流流经空气的金属板条。安装在双子座飞行背包的开口上方。",
+          "一台早期的小型自燃上面级发动机。最初作为朱诺 IVB 的第三级研发，后来作为宇宙神-织女星的第三级。它经过了广泛测试，但在 NASA 得知空军的阿金纳火箭后被取消。"
+        ]
+      },
+      "Rings -> 环形": {
+        "term": "Rings",
+        "want": "环形",
+        "count": 1,
+        "zh_samples": [
+          "用于对较小型火箭级段进行水平静载点火测试的通用托架式试车台。该台架具有两种尺寸和八种颜色选项。托架可配置不同尺寸的储箱环或固定夹持支撑梁。侧支撑夹具位置可通过各自的开启限制滑块在水平和垂直方向上进行调节，亦可关闭。"
+        ]
+      },
+      "Deploy -> 开启": {
+        "term": "Deploy",
+        "want": "开启",
+        "count": 15,
+        "zh_samples": [
+          "带有动画的双联垂直缩回式脐带臂，用于宇宙神 SLV-3 半人马座 D 火箭的半人马座上面级。双臂夹抱半人马座级，下臂跨接在级间段与储箱的分界处，上臂跨接在储箱与整流罩的连接处。专为安装在宇宙神-半人马座勤务塔上设计，但也可用于其他勤务塔。整",
+          "用于水星-宇宙神载人电梯的专用“水星”飞船脐带柱，该电梯同时兼作发射脐带塔。它安装在电梯塔前平台正上方管道顶部的节点上。脐带可通过展开限制滑块调节长度。可通过手动操作或借助 Animated Decouplers 通过分级触发缩回。",
+          "一种小型载人飞船登船电梯，灵感源自水星-宇宙神使用的紧急撤离与脐带塔，专为 1 级发射台和宇宙神发射架设计，但也可用于部分其他发射底座和发射架。该电梯塔为固定式，有 8 种颜色可选。电梯轿厢的停靠高度可通过展开限制滑块调节。需配合水星-宇宙"
+        ]
+      },
+      "Start -> 起点": {
+        "term": "Start",
+        "want": "起点",
+        "count": 17,
+        "zh_samples": [
+          "模块化土星发射塔的斜角基座段，提供两种颜色选项：经典红与新版灰。基座拥有两部独立的乘员电梯，每部电梯均有四个可切换的最大高度选项；电梯亦可关闭。调节电梯的开启限制滑块可使其停在低于最大高度的位置。电梯初始处于最高点，必须先降下。电梯轿厢上的",
+          "模块化土星发射塔的方形基座段，提供两种颜色选项：经典红与新版灰。基座拥有两部独立的乘员电梯，每部电梯均有四个可切换的最大高度选项；电梯亦可关闭。调节电梯的开启限制滑块可使其停在低于最大高度的位置。电梯初始处于最高点，必须先降下。电梯轿厢上的",
+          "脐带塔兼具发射架和燃油泵的功能。这可以在发射台上等待发射窗口时保持燃料充满。要启动燃料加注，请右键点击该塔。"
+        ]
+      },
+      "White -> 白色": {
+        "term": "White",
+        "want": "白色",
+        "count": 96,
+        "zh_samples": [
+          "航天飞机发射台FSS塔架的模块化乘员通道段，用于通过乘员通道臂和独立的乘员登机楼层登入航天器。该段提供两种高度选项以便更好地对齐通道臂与楼层，并拥有两种颜色选项：默认灰与备选黑白。独立的乘员登机楼层安装在塔段内部的节点上，可上下移动以使楼层",
+          "航天飞机发射台FSS塔架的模块化多高度核心段。该段提供六种高度，每种高度均有两种颜色选项：默认灰与备选黑白。用于安装储箱间通道结构（仅需一个）的节点位于塔架核心的右侧。还包含可选侧板，各侧可单独切换。",
+          "航天飞机发射台FSS塔乘员通道段的独立通道平台，用于在指令舱舱门与乘员通道段底部未对齐时，提供从塔架电梯通往乘员通道臂的路径。将该平台安装到乘员通道段电梯井内的节点上，并使用平移小工具调整高度。平台具有三种配置：航天飞机通道臂、Rodan通"
+        ]
+      },
+      "Forward -> 前进": {
+        "term": "Forward",
+        "want": "前进",
+        "count": 7,
+        "zh_samples": [
+          "土星V的土星塔架2号摆臂。此为S-IC前部摆臂。可在右键菜单中选择适配5.625m和6.4m贮箱的两种尺寸，以及两种颜色外观。",
+          "土星V的土星塔架5号摆臂。此为S-II前部摆臂。可在右键菜单中选择适配5.625m和6.4m贮箱的两种尺寸，以及两种颜色外观。",
+          "减速伞包用于在阿波罗飞船高空阶段减速，为主降落伞包的展开做准备。在安装前部防热盾之前，请将其安装在前端节点上。"
+        ]
+      },
+      "cone -> 锥头": {
+        "term": "cone",
+        "want": "锥头",
+        "count": 13,
+        "zh_samples": [
+          "平滑锥体",
+          "空心锥体",
+          "五段式可重复使用固体火箭发动机（RSRMV）最初作为航天飞机的升级型号进行研究，随后进入战神一号的全面开发阶段。战神计划取消后，该研发转移至SLS。整流锥高6.50662m。"
+        ]
+      },
+      "Aviation -> 航空学": {
+        "term": "Aviation",
+        "want": "航空学",
+        "count": 6,
+        "zh_samples": [
+          "程序化储罐 (Aviation)",
+          "一款20世纪60年代初期的小型涡轮螺旋桨发动机。PT6A专为中型通用航空飞机开发，最早用于比奇“空中国王”（King Air）。其低成本、轻重量和高可靠性使其成为有史以来最受欢迎的涡桨发动机之一，产量超过60000台。它广泛应用于大型通用航",
+          "法国国家航空发动机制造公司（SNECMA）"
+        ]
+      },
+      "Default -> 默认": {
+        "term": "Default",
+        "want": "默认",
+        "count": 1,
+        "zh_samples": [
+          "金属Default"
+        ]
+      },
+      "Commercial -> 专注效益": {
+        "term": "Commercial",
+        "want": "专注效益",
+        "count": 20,
+        "zh_samples": [
+          "CST-100“星际客机”商业乘员运输系统（COTS）的指令舱。设计最多可重复使用10次。",
+          "NASA 对接系统（NDS）是用于美国载人航天器的航天器对接与停泊机构，例如猎户座多功能载人飞船和商业载人航天器。",
+          "高分辨率胶卷相机用于从太空拍摄行星照片。这台相机提供极高分辨率的照片，且底片需要回收至地球。历史上，这些相机曾以KH-9“六边形”的名义作为间谍卫星飞行，但对于RP-1而言，它们代表了商业公司的第一批高分辨率卫星相机。"
+        ]
+      },
+      "Oxidizer -> 氧化剂": {
+        "term": "Oxidizer",
+        "want": "氧化剂",
+        "count": 24,
+        "zh_samples": [
+          "BE-4 是一台富氧分级燃烧甲烷液氧发动机。尽管最初是为蓝色起源的运载火箭研发，但在2014年，联合发射联盟（ULA）宣布他们的新型火神运载火箭（宇宙神5型与德尔塔4型运载火箭的共同继承者）将由一对 BE-4 发动机提供动力。",
+          "早期富氧分级燃烧发动机（1961）",
+          "1963 富氧分级燃烧发动机"
+        ]
+      },
+      "Dry -> 无加力": {
+        "term": "Dry",
+        "want": "无加力",
+        "count": 7,
+        "zh_samples": [
+          "作为卡斯托尔 1 发动机的衍生型，卡斯托尔 2 具有更高的比冲和推进剂加注量、更低的干重比以及更长的燃烧时间。它从德尔塔 E 开始用作捆绑助推器，并在除早期型号外的所有侦察兵火箭中得到应用。燃烧时间 39 秒。直径：[0.79 m]。",
+          "作为卡斯托 1（Castor 1）发动机的衍生型号，卡斯托 2 具有更高的比冲和装药量、更低的结构质量比以及更长的工作时间。从德尔塔 E 起，以及除早期型号外的所有侦察兵火箭上，它都被用作捆绑助推器。工作时间 39 秒。",
+          "搅拌摩擦焊等改进的制造技术可进一步降低储箱干重。搅拌摩擦焊利用旋转工具摩擦产生的热量使两块金属软化并在机械力作用下混合。它适用于需要极高焊接强度的结构，并在航天工业中有着广泛应用。SpaceX首次在“猎鹰1e”及随后的“猎鹰9”系列火箭上对"
+        ]
+      },
+      "Medium -> 中": {
+        "term": "Medium",
+        "want": "中",
+        "count": 2,
+        "zh_samples": [
+          "磁力计用于测定行星磁场的大小和方向。长伸杆可将这些仪器与航天器上磁性部件引起的任何干扰隔离开来。此类实验可以研究太阳磁场及其与行星的相互作用；如果航天器飞向星际空间，还可以帮助确定日球层的大小以及星际介质的特性。历史上，该实验基于旅行者1号",
+          "无线电与等离子体波科学仪器用于测量行星磁层与行星际等离子体介质相互作用所产生的静电场和电磁场。历史上，该实验基于卡西尼号上搭载的仪器。"
+        ]
+      },
+      "Scientific -> 热心科研": {
+        "term": "Scientific",
+        "want": "热心科研",
+        "count": 24,
+        "zh_samples": [
+          "既然你已经证明了将卫星送入轨道的能力，下一步就是将它们送入更具实用价值的轨道，搭载更有益的载荷。该计划将侧重于用于观测地球及其周围太空环境的卫星。这不仅将推进有关大气层内物理过程的科学知识，还将深化对太空环境的认知，而所有这些都在影响着我们",
+          "照片有助于拓展我们对太阳系外侧的认知，但要加深对这些遥远邻居的了解，必须借助科学仪器，并具备远长于匆匆飞掠的驻留时间。向两颗最遥远的气态巨行星发射轨道器，并探测它们的大气层。在抵达太阳系最深处的同时，也探索这些巨行星的卫星。为了在如此遥远的",
+          "在月球上完成科学任务目标"
+        ]
+      },
+      "station -> 空间站": {
+        "term": "station",
+        "want": "空间站",
+        "count": 34,
+        "zh_samples": [
+          "月球是探索太阳系的第一块垫脚石。月球距离我们超过一光秒，在此距离操作探测器是迈出的坚实第一步。该计划需要新技术和更重型的运载火箭，以迈出近距离研究月球的第一步。将其送入环月轨道即可完成计划。该计划至少需要“月球测控通信”，通常还需要升级任务",
+          "你的任务是将一枚高达300多英尺的巨型火箭送往距离休斯敦控制站24万英里外的月球。它由新型金属合金制成（其中一些甚至尚未被发明），能够承受数倍于以往经历的热量与应力，装配精度胜过最精密的钟表，搭载推进、制导、控制、通信、食品与生存所需的全部",
+          "照片有助于拓展我们对太阳系外侧的认知，但要加深对这些遥远邻居的了解，必须借助科学仪器，并具备远长于匆匆飞掠的驻留时间。向两颗最遥远的气态巨行星发射轨道器，并探测它们的大气层。在抵达太阳系最深处的同时，也探索这些巨行星的卫星。为了在如此遥远的"
+        ]
+      },
+      "Research -> 研究": {
+        "term": "Research",
+        "want": "研究",
+        "count": 4,
+        "zh_samples": [
+          "<b>计划：载人入轨<br>类型：<color=green>必要</color></b><br><br>可以说，航天计划所能达成的最重要里程碑之一就是将人类送入环绕地球的轨道。这项任务需要可靠的发射系统，以及数以千计小时的研发与工程攻关才能",
+          "中央机械制造科研所（TsNIIMash）",
+          "赫鲁尼切夫国家科研生产航天中心（GKNPTs）"
+        ]
+      },
+      "Electronics -> 电子学": {
+        "term": "Electronics",
+        "want": "电子学",
+        "count": 3,
+        "zh_samples": [
+          "集成电路技术的进步带来了更好的数据压缩率、更小的控制电子元件，并持续提升了数据密度。<color=green>基础容量：60 MB</color>",
+          "集成电路技术的进步带来了更好的数据压缩率、更小的控制电子元件，并持续提升了数据密度。<color=green>基础容量：150 MB</color>",
+          "军事电子研究所"
+        ]
+      },
+      "Booster -> 助推器": {
+        "term": "Booster",
+        "want": "助推器",
+        "count": 8,
+        "zh_samples": [
+          "一款小型液体燃料助推火箭，旨在提升FJ-4/F-86的性能。经过了大量测试，但该系统的重量抵消了所有的性能收益。后来升级为泵压式，使其能够直接使用飞机油箱中的燃料，并用于驱动NF-104A宇航员训练机。",
+          "一款采用煤油、液氢和液氧的三组元液体燃料分级燃烧发动机。最初为 MAKS 航天飞机开发。在上升助推阶段，它混合燃烧煤油与液氢，而在主级巡航阶段则切换为纯氢燃料。",
+          "一款采用煤油、液氢和液氧的三组元液体燃料分级燃烧发动机。这是 RD-701 的单燃烧室版本，最初为 MAKS 航天飞机开发。在上升助推阶段，它混合燃烧煤油与液氢，而在主级巡航阶段则切换为纯氢燃料。"
+        ]
+      },
+      "Wet -> 加力": {
+        "term": "Wet",
+        "want": "加力",
+        "count": 4,
+        "zh_samples": [
+          "你现在可以使用复合材料机翼油箱。大型复合材料结构的应用最早由波音787、777X和空中客车A350开创。它们比常规机翼油箱轻 35%，但成本高出 10%。",
+          "机翼油箱",
+          "复合材料机翼油箱"
+        ]
+      },
+      "Operations -> 运营": {
+        "term": "Operations",
+        "want": "运营",
+        "count": 2,
+        "zh_samples": [
+          "首款大型栅极离子推力器，NASA太阳能技术应用就绪计划（NSTAR）曾用于深空1号和黎明号航天器，以支持在小行星带的长期任务。",
+          "通灵机16是一款多功能轻型天线，适用于中程通信、远程备用通信，以及窃听政府秘密行动。"
+        ]
+      },
+      "science -> 科学": {
+        "term": "science",
+        "want": "科学",
+        "count": 1,
+        "zh_samples": [
+          "宇宙航空研究所（ISAS）"
+        ]
+      },
+      "Pioneer -> 先驱精神": {
+        "term": "Pioneer",
+        "want": "先驱精神",
+        "count": 1,
+        "zh_samples": [
+          "天兵科技"
+        ]
+      },
+      "Ablator -> 烧蚀剂": {
+        "term": "Ablator",
+        "want": "烧蚀剂",
+        "count": 1,
+        "zh_samples": [
+          "烧蚀残余"
+        ]
+      },
+      "Pilot -> 飞行员": {
+        "term": "Pilot",
+        "want": "飞行员",
+        "count": 1,
+        "zh_samples": [
+          "Ke-111被称为面向载客飞行器的“高视野”座舱；然而，一些观察者对副驾驶座位旁安装的“重力辅助弹药投放瞄准镜”之用途提出了质疑。"
+        ]
+      },
+      "Tourist -> 旅行者": {
+        "term": "Tourist",
+        "want": "旅行者",
+        "count": 1,
+        "zh_samples": [
+          "Ke-111被称为面向载客飞行器的“高视野”座舱；然而，一些观察者对副驾驶座位旁安装的“重力辅助弹药投放瞄准镜”之用途提出了质疑。"
+        ]
+      },
+      "Toggle -> 开关": {
+        "term": "Toggle",
+        "want": "开关",
+        "count": 2,
+        "zh_samples": [
+          "点击切换时间格式",
+          "切换日历"
+        ]
+      },
+      "Engineer -> 工程师": {
+        "term": "Engineer",
+        "want": "工程师",
+        "count": 1,
+        "zh_samples": [
+          "KER 节点余量"
+        ]
+      }
+    },
+    "terms_injected": 903,
+    "terms_distinct": 135,
+    "locked_triggered": 80,
+    "items_locked": 536,
+    "gates": {
+      "G1": 4,
+      "G2": 0,
+      "G3": 0,
+      "G4": 4,
+      "G5": 1,
+      "G6": 4,
+      "G7": 53,
+      "G8": 137
+    },
+    "gate_examples": {
+      "G1": [
+        {
+          "id": 459,
+          "mod": "RealismOverhaul",
+          "src": "A composite solid rocket motor designed as a drop-in replacement for the 5 Segment RSRM used on the Space Launch System (SLS). Its lower inert mass along with t",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 433,
+          "mod": "RealismOverhaul",
+          "src": "A small solid kick motor developed as a braking motor for the Ranger Block II rough lander. Repeated failures of the Ranger spacecraft meant the rough lander wa",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 4989,
+          "mod": "RealismOverhaul",
+          "src": "RD-254 prototype (extrapolated from early RD-253 performance).",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 2889,
+          "mod": "VenStockRevamp",
+          "src": "propuls rocket (bollard sustain (vsr (ven",
+          "zh": "",
+          "why": ""
+        }
+      ],
+      "G2": [],
+      "G3": [],
+      "G4": [
+        {
+          "id": 7116,
+          "mod": "RP-1",
+          "src": "<b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>The previous launch of the first navigation satellite proved the the",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 7124,
+          "mod": "RP-1",
+          "src": "<b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Communications around the globe are limited to line of sight because",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 7126,
+          "mod": "RP-1",
+          "src": "<b>Program: Early Commercial Applications<br><b>Type: <color=green>Required</color></b><br><br>A Molniya orbit is a type of highly elliptical orbit with an incl",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 7128,
+          "mod": "RP-1",
+          "src": "<b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>By measuring the Doppler shift of radio signals from a satellite in ",
+          "zh": "",
+          "why": ""
+        }
+      ],
+      "G5": [
+        {
+          "id": 675,
+          "mod": "RealismOverhaul",
+          "src": "An American open cycle gas core nuclear rocket. NYRATH (Nuclear electrodYnamic Retention Advanced THermal) uses electrostatic confinment, instead of magnetic co",
+          "zh": "",
+          "why": ""
+        }
+      ],
+      "G6": [
+        {
+          "id": 8550,
+          "mod": "RP-1",
+          "src": "Synoptic Weather Photography",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 9270,
+          "mod": "RP-1",
+          "src": "GPHS-RTGs",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 10489,
+          "mod": "Sol-Configs",
+          "src": "Mare Serenitatis",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 10490,
+          "mod": "Sol-Configs",
+          "src": "Mare Tranquillitatis",
+          "zh": "",
+          "why": ""
+        }
+      ],
+      "G7": [
+        {
+          "id": 3789,
+          "mod": "ModularLaunchPads",
+          "src": "A specialized rectangular launch plate for the new TantaresLV Energia rocket. It sits flush with the launch pad; put the dark lower section under the VAB floor ",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 3791,
+          "mod": "ModularLaunchPads",
+          "src": "A specialized rectangular launch plate designed for Falcon 9 and Falcon Heavy-style rockets. Insert sections can be turned off for Falcon Heavy/tri-core rockets",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 3796,
+          "mod": "ModularLaunchPads",
+          "src": "A specialized giant-sized round launch plate for the new TantaresLV N1 rocket. It sits flush with the launch pad; put the dark lower section under the VAB floor",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 3641,
+          "mod": "ModularLaunchPads",
+          "src": "Large size General Launch Base, a node-attached launch clamp platform. Has different shapes for 6m and 8m exhaust hole widths. The base frame has 9 color option",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 3643,
+          "mod": "ModularLaunchPads",
+          "src": "Medium size General Launch Base, a node-attached launch clamp platform, with mobile wheel style. Has three different shapes for 4m and 6m exhaust hole widths. T",
+          "zh": "",
+          "why": ""
+        }
+      ],
+      "G8": [
+        {
+          "id": 3527,
+          "mod": "KerbalismConfig",
+          "src": "rcs",
+          "zh": "RCS",
+          "why": "译文无中文"
+        },
+        {
+          "id": 293,
+          "mod": "EditorExtensionsRedux",
+          "src": ").symmetryCounterparts.Count =",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 4271,
+          "mod": "ProceduralParts",
+          "src": "PP-CustomEnds",
+          "zh": "PP-CustomEnds",
+          "why": "译文等于原文"
+        },
+        {
+          "id": 5861,
+          "mod": "ROCapsules",
+          "src": "abc",
+          "zh": "abc",
+          "why": "译文等于原文"
+        },
+        {
+          "id": 6386,
+          "mod": "ROHeatshields",
+          "src": "Coatl",
+          "zh": "Coatl",
+          "why": "译文等于原文"
+        }
+      ]
+    },
+    "failed": [
+      {
+        "id": 3527,
+        "mod": "KerbalismConfig",
+        "gates": [
+          "G8"
+        ],
+        "src": "rcs",
+        "zh": "RCS",
+        "notes": {
+          "G8": "译文无中文"
+        }
+      },
+      {
+        "id": 3789,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialized rectangular launch plate for the new TantaresLV Energia rocket. It sits flush with the launch pad; put the dark lower section under the VAB floor to ensure proper positioning. The Plate ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3791,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialized rectangular launch plate designed for Falcon 9 and Falcon Heavy-style rockets. Insert sections can be turned off for Falcon Heavy/tri-core rockets. The plate can accomodate the Large Gen",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3796,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialized giant-sized round launch plate for the new TantaresLV N1 rocket. It sits flush with the launch pad; put the dark lower section under the VAB floor to ensure proper positioning. The Plate",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3641,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "Large size General Launch Base, a node-attached launch clamp platform. Has different shapes for 6m and 8m exhaust hole widths. The base frame has 9 color options, and the sides have 3 color options. O",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3643,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "Medium size General Launch Base, a node-attached launch clamp platform, with mobile wheel style. Has three different shapes for 4m and 6m exhaust hole widths. The base frame has 9 color options. Optio",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3645,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "Micro size General Launch Base, a node-attached launch clamp platform. Has a two 1.5m wide exhaust holes with square and rectangular shapes, and a 2.5m wide square shape. The base frame has 8 color op",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3647,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "Mini size General Launch Base, a node-attached launch clamp platform, with mobile wheels or fixed footing styles. Has a 3 shapes of exhaust holes in 1.5m and 2.5m widths, and a 3.5m square hole. The b",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3649,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "Small size General Launch Base, a node-attached launch clamp platform, with mobile wheel style. Has two special exhaust hole variants for the BDB Atlas V and KNES Ariane 5, plus other shapes in 2m, 3m",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3651,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "BIG Extra Large size General Launch Base, a node-attached launch clamp platform. Wider than the Sandbox/Tier 3 launch pad static, the support columns will sit in the ground. Has different shapes for 1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3798,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A very low profile minimalist round launch clamp base, the launch plate sits flush with the launch pad; put the dark lower section under the VAB floor to ensure proper positioning. The Plate has two m",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3802,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A very low profile minimalist square launch clamp base, the launch plate sits flush with the launch pad; put the dark lower section under the VAB floor to ensure proper positioning. Square or rectangu",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3816,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A modified version of the Atlas Launch Stand without a frame and with separately adjustable center and side section. The stand has 8 color options, and the clamp arms and side umbilicals have 2 color ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3818,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialized launch stand for the Atlas SLV and derivatives from Bluedog Design Bureau, based on the real launch mount that the Atlas used. The stand has 8 color options, and the clamp arms and side ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3849,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialty launch stand for the Delta IV rocket, both the single and triple-core versions. By default it is set up for the Delta IV from Bluedog Design Bureau, which has 3.125m diameter core tanks. B",
+        "zh": "德尔塔IV号火箭专用的发射架，适配单芯级与三芯级版本。默认配置适配 Bluedog Design Bureau 的德尔塔IV号（芯级储罐直径 3.125m）。通过调节开启限制滑块来改变脐带塔和限位柱的位置与宽度，也可以兼容 2.5m 直径的储罐。该发射架设计为与发射台表面齐平，放置时请向下移动发射架，直至大边角支撑柱底部的深色条纹贴齐或略微陷入 VAB 地面。发射架配有两个可输出电能和燃料资源的手",
+        "notes": {
+          "G7": "术语 Electric Charge=电量 未出现在译文"
+        }
+      },
+      {
+        "id": 3859,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A general rectangular node-attached launch clamp, intended for early career, that can accomodate rockets of 2.5m, 1.875m, 1.5m, 1.25m, 0.9375m and 0.625m diameters with two small side boosters. Center",
+        "zh": "一款通用矩形节点附着式发射支架，适用于生涯早期，可容纳 2.5m、1.875m、1.5m、1.25m、0.9375m 和 0.625m 直径的火箭并附带两个小型侧置助推器。中央支承板和可选的外侧限位支承板均可通过开启限制滑块调节长度。提供多种组合的一体化限位螺栓和夹臂，均可通过各自的开启限制滑块向内调节，以对齐储罐底部或发动机挂架。螺栓还可在矮、高和加长三种高度间切换。加长高度螺栓带有一个额外的高",
+        "notes": {
+          "G7": "术语 Electric Charge=电量 未出现在译文"
+        }
+      },
+      {
+        "id": 3861,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A general round node-attached launch clamp, intended for early career, that can accomodate rockets of 2.5m, 1.875m, 1.5m, 1.25m, 0.9375m and 0.625m diameters. The stand can be configured as the base f",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3886,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A tall node-attached launch clamp for raising tiny rockets up from the ground. Has two height variants and 8 color options. The hold-down bolts at the top can be configured for 0.3125m or 0.625m diame",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3888,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A tall node-attached launch clamp for raising small rockets up from the ground. Has two height variants and 8 color options. The hold-down bolts at the top can be configured for 0.9375, 1.25m or 1.5m ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3890,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A tall node-attached launch clamp for raising medium rockets up from the ground. Has three height variants and 8 color options. The hold-down bolts at the top can be configured for 1.875m or 2.5m diam",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 293,
+        "mod": "EditorExtensionsRedux",
+        "gates": [
+          "G8"
+        ],
+        "src": ").symmetryCounterparts.Count =",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3956,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialty square node-attached launch clamp designed for the Vanguard and Scout rockets from Bluedog Design Bureau. The hold-down structure in the center has configurations for the BDB Vanguard shro",
+        "zh": "专为 Bluedog Design Bureau 的先锋号和侦察兵火箭设计的方形节点安装型发射支架。中央的压紧结构可配置为 BDB 先锋号带罩发动机（2 种）、裸露发动机/0.9375m 储箱以及 1.25m 储箱；该结构也可关闭以使用其他压紧装置。可开启独立红石脐带塔架的可选连接节点。发射台带有两个手动发电机，可输出电能和燃料资源。与先锋号勤务塔搭配使用可实现完整的 LC-18A 复原。",
+        "notes": {
+          "G7": "术语 Electric Charge=电量 未出现在译文"
+        }
+      },
+      {
+        "id": 3968,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "This is the free-standing base for the Saturn Mobile Launcher. The base attaches to a free node in the center of a rocket's lower or core stage using the size 5 node at the top of the exhaust hole ope",
+        "zh": "这是土星移动发射台的独立底座。底座通过排气孔开口顶部的 5 号尺寸节点，连接到火箭下级或芯级中央的空闲节点。塔架基座段连接到发射台底座另一端的 5 号尺寸节点。包含内置分离器以及供乘员从地面到达顶层甲板的电梯。为获得最佳效果，请将前支腿放置在 VAB 地面大圆圈的白色区域内。无需发射支架。包含一个手动启动的电能发电机。底座的排气孔可针对三种尺寸的火箭进行配置：土星 V 号（6.4/5.625m）、",
+        "notes": {
+          "G7": "术语 Electric Charge=电量 未出现在译文"
+        }
+      },
+      {
+        "id": 4075,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "Soyuz Launch Base, a node-attached launch clamp pad styled after the actual Soyuz launch pad facility at Baikonur. Three color options are available. It attaches via the upper larger node in the centr",
+        "zh": "联盟号发射台，一款节点连接式发射架基座，仿照拜科努尔实际的联盟号发射台设施设计。提供三种配色方案。通过中心孔内上方较大的节点连接至火箭底部的中心节点。夹臂、勤务塔、大燃料臂和小燃料臂均为独立安装。夹臂垫板可在多个选项间切换。甲板上配有 8 个用于安装燃料臂或其他脐带塔的辅助节点。配有两个手动控制的燃料和电能发生器。",
+        "notes": {
+          "G7": "术语 Electric Charge=电量 未出现在译文"
+        }
+      },
+      {
+        "id": 3978,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "This is the base for the Saturn Mobile Launcher. The base attaches to a free node in the center of a rocket's lower or core stage using the size 5 node at the top of the exhaust hole opening. The towe",
+        "zh": "这是土星移动发射台的底座。底座通过排气孔顶部的 5 号节点连接至火箭下级或芯级中心的空闲节点。发射塔底段则连接至发射台底座另一端的 5 号节点。包含一部供乘员从地面直达顶层甲板的电梯。为获得最佳效果，请将前支腿放置在 VAB 地面大圆圈的白色区域内。包含可手动激活的发电机，用于提供电能和燃料资源。底座的排气孔可针对三种火箭尺寸进行配置：土星 5 号（6.4/5.625m）、SLS（5m）和土星 1",
+        "notes": {
+          "G7": "术语 Electric Charge=电量 未出现在译文"
+        }
+      },
+      {
+        "id": 3910,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialty round node-attached launch clamp designed for the Redstone rocket from Bluedog Design Bureau, but also with optional hold-down bolt positions for standard 1.25m and 1.5m fuel tanks. There ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3918,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "Node-attached launch clamp styled after various hold-down assemblies used by the Thor/Delta/Delta II rockets, sized for 1.5m diameter rockets. It is designed to sit flush with the ground, so move it d",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3922,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialty launch stand for the Titan III and Titan IV, inspired by the real one. The center section can be switched between Titan II style (flat) and Titan IV style (elevated). Integrated hold-down ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3926,
+        "mod": "ModularLaunchPads",
+        "gates": [
+          "G7"
+        ],
+        "src": "A specialty round quad-tripod node-attached launch clamp designed for the Titan II rocket from Bluedog Design Bureau. It's meant to sit flush with the top of the static launch pad, so move the stand d",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 4271,
+        "mod": "ProceduralParts",
+        "gates": [
+          "G8"
+        ],
+        "src": "PP-CustomEnds",
+        "zh": "PP-CustomEnds",
+        "notes": {
+          "G8": "译文等于原文"
+        }
+      },
+      {
+        "id": 5861,
+        "mod": "ROCapsules",
+        "gates": [
+          "G8"
+        ],
+        "src": "abc",
+        "zh": "abc",
+        "notes": {
+          "G8": "译文等于原文"
+        }
+      },
+      {
+        "id": 6386,
+        "mod": "ROHeatshields",
+        "gates": [
+          "G8"
+        ],
+        "src": "Coatl",
+        "zh": "Coatl",
+        "notes": {
+          "G8": "译文等于原文"
+        }
+      },
+      {
+        "id": 6255,
+        "mod": "ROEngines",
+        "gates": [
+          "G7"
+        ],
+        "src": "MR-104 Monopropellant Engine family originally provided in-space propulsion for the Voyager 1 and 2 and Magellan missions. Subsequent MR-104 variants provided propulsion for Landsat and NOAA as well a",
+        "zh": "MR-104 单组元推进剂发动机系列最初为旅行者 1 号、2 号以及麦哲伦号任务提供在轨空间推进。随后的 MR-104 变型为陆地卫星（Landsat）和国家海洋和大气管理局（NOAA）以及其他美国政府项目提供推进力。该发动机的一个变型（MR-104G）将用于猎户座深空探索飞船。[使用 RCS 配置]",
+        "notes": {
+          "G7": "术语 Space Exploration=太空探索 未出现在译文"
+        }
+      },
+      {
+        "id": 6110,
+        "mod": "ROEngines",
+        "gates": [
+          "G8"
+        ],
+        "src": "ReStock 45",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6113,
+        "mod": "ROEngines",
+        "gates": [
+          "G8"
+        ],
+        "src": "Squad",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6258,
+        "mod": "ROEngines",
+        "gates": [
+          "G8"
+        ],
+        "src": "NERVA XE Prime",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6452,
+        "mod": "ROSolar",
+        "gates": [
+          "G8"
+        ],
+        "src": "1x6 ReStock",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6454,
+        "mod": "ROSolar",
+        "gates": [
+          "G8"
+        ],
+        "src": "3x2 ReStock",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6458,
+        "mod": "ROSolar",
+        "gates": [
+          "G8"
+        ],
+        "src": "1x3 Vens",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6459,
+        "mod": "ROSolar",
+        "gates": [
+          "G8"
+        ],
+        "src": "3x2 Vens",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6461,
+        "mod": "ROSolar",
+        "gates": [
+          "G8"
+        ],
+        "src": "1x6 Vens",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6463,
+        "mod": "ROSolar",
+        "gates": [
+          "G8"
+        ],
+        "src": "1x2 Coatl",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6883,
+        "mod": "ROTanks",
+        "gates": [
+          "G8"
+        ],
+        "src": "Direct",
+        "zh": "DIRECT",
+        "notes": {
+          "G8": "译文无中文"
+        }
+      },
+      {
+        "id": 7133,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Generate surplus Electric Charge",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7225,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7257,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after one day",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7116,
+        "mod": "RP-1",
+        "gates": [
+          "G4"
+        ],
+        "src": "<b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>The previous launch of the first navigation satellite proved the theories that Doppler shift timing can be u",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7124,
+        "mod": "RP-1",
+        "gates": [
+          "G4"
+        ],
+        "src": "<b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Communications around the globe are limited to line of sight because of the curvature of Earth. If we can la",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7126,
+        "mod": "RP-1",
+        "gates": [
+          "G4"
+        ],
+        "src": "<b>Program: Early Commercial Applications<br><b>Type: <color=green>Required</color></b><br><br>A Molniya orbit is a type of highly elliptical orbit with an inclination of 63.4 degrees, an argument of ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7128,
+        "mod": "RP-1",
+        "gates": [
+          "G4"
+        ],
+        "src": "<b>Program: Early Commercial Applications<br>Type: <color=green>Required</color></b><br><br>By measuring the Doppler shift of radio signals from a satellite in a known orbit, it is possible for a rece",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7430,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 45 days",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7438,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 8 hours",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7445,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 2 days",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7457,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 60 days",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7463,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 7 days",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7471,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 14 days",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7476,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 30 days",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7486,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge for 7 days",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7546,
+        "mod": "RP-1",
+        "gates": [
+          "G7"
+        ],
+        "src": "Craft must have Electric Charge after 31 dayss",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 8550,
+        "mod": "RP-1",
+        "gates": [
+          "G6"
+        ],
+        "src": "Synoptic Weather Photography",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 9270,
+        "mod": "RP-1",
+        "gates": [
+          "G6"
+        ],
+        "src": "GPHS-RTGs",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 459,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "A composite solid rocket motor designed as a drop-in replacement for the 5 Segment RSRM used on the Space Launch System (SLS). Its lower inert mass along with the higher surface thrust will enable the",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 675,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "An American open cycle gas core nuclear rocket. NYRATH (Nuclear electrodYnamic Retention Advanced THermal) uses electrostatic confinment, instead of magnetic confinment, to contain the gaseous fissile",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 433,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "A small solid kick motor developed as a braking motor for the Ranger Block II rough lander. Repeated failures of the Ranger spacecraft meant the rough lander was never able to be deployed.",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 5240,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G7"
+        ],
+        "src": "Level II Service Module Tanks are similar to ones used by Mercury and Vostok. These are heavy tanks with poor utilization to simulate the supporting structures and systems needed for the specialized p",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 5241,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G7"
+        ],
+        "src": "Level III Service Module Tanks are similar to ones used by Gemini and Voskhod. These are heavy tanks with poor utilization that simulates the supporting structures and systems needed for the specializ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 5242,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G7"
+        ],
+        "src": "Level IV Service Module Tanks are similar to ones used by Apollo. These are heavy tanks with poor utilization that simulates the supporting structures and systems needed for the specialized payloads. ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 4989,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "RD-254 prototype (extrapolated from early RD-253 performance).",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 360,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Atar 09B",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 362,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Avon RA.4 Mk.107",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 364,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Avon RA.24R Mk.200R",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 376,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Olympus 593 Mk.610",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 392,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Aerojet 1.8KS-7800",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 394,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Aerojet 2.5KS-18000",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 400,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Model 39",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 402,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Aerobee",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 404,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Aestus",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 420,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "AJ23 Transtar",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 432,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Alcyone 1 BE-3",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 434,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Alcyone 1A BE-3A",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 436,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Algol IB",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 438,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Algol II",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 440,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Algol III",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 442,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Altair X-248",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 444,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Altair II X-258",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 446,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Altair III FW-4S",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 450,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Antares I X-254",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 452,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Antares IIA X-259",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 460,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Astris",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 462,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Baby Sergeant (5.4KS-1975)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 474,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Cajun (2.8KS-8100)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 476,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 478,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 2",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 480,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 4",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 482,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 4A",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 484,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 4AXL",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 486,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 30A",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 488,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 30B",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 490,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 30XL",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 492,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Castor 120",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 500,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "P0.68 Dropt",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 522,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Gamma 2",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 524,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Gamma 8",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 526,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Gamma-201/301",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 564,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Kestrel",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 636,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "M55 (Minuteman)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 642,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Merlin 1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 656,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Nerva XE-Prime",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 660,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Nike M5E1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 690,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Princeton LNTR",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 702,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Raptor",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 826,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "P4 Rita I",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 830,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "RL60/Vinci",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 852,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "P0.6 Rubis",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 854,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Rutherford",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 883,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Spectre",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 894,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Sprite",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 942,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "STAR 20A (Altair IIIA)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 950,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Antares III (STAR 31)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 964,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "STBE (Rocketdyne)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 966,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "STBE (Pratt & Whitney)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 992,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "P2.2 Topaze",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1008,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Véronique",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1010,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Vesta/Vexin/Valois",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1014,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Vikas",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1016,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Viking",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1018,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Viking (5/6)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1020,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Vulcain",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1024,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Waxwing",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1188,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Ad Astra Rocket Company",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1189,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Aerojet",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1190,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Aerojet Rocketdyne",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1192,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Alliant Techsystems (ATK)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1193,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Allison Engine",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1194,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Astra",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1195,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Astrobotic",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1196,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Atomics International",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1197,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Axiom Space",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1198,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Beechcraft",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1199,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Bell Aircraft",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1200,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Bell Aerosystems",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1201,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Bell Textron",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1202,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Bigelow Aerospace",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1204,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Boeing",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1205,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "CFM International",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1206,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Collins Radio",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1207,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Consolidated Vultee Convair",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1209,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Convair",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1210,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Cordant Technologies",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1212,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Curtiss-Wright",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1216,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Dynetics",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1335,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "NPO EnergoMash",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1409,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "ispace",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 5284,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Atlas III",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 5285,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Atlas V",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 5288,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G8"
+        ],
+        "src": "Delta IV DCSS",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1923,
+        "mod": "SXT",
+        "gates": [
+          "G7"
+        ],
+        "src": "The EAS 316 is a lightweight observation pod that works in the same way as the EAS-1 External Command Seat. Features a 'No key' start button, though that just means that the pilots have normally gone ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 10489,
+        "mod": "Sol-Configs",
+        "gates": [
+          "G6"
+        ],
+        "src": "Mare Serenitatis",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 10490,
+        "mod": "Sol-Configs",
+        "gates": [
+          "G6"
+        ],
+        "src": "Mare Tranquillitatis",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2480,
+        "mod": "TriggerTech",
+        "gates": [
+          "G8"
+        ],
+        "src": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sprograde)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2481,
+        "mod": "TriggerTech",
+        "gates": [
+          "G8"
+        ],
+        "src": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sretrograde)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2708,
+        "mod": "TriggerTech",
+        "gates": [
+          "G8"
+        ],
+        "src": "KerbalEngineer.Flight.Readouts.Orbital.ManoeuvreNode.ManoeuvreProcessor",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2182,
+        "mod": "SXT",
+        "gates": [
+          "G7"
+        ],
+        "src": "J-90 \"Goliath\" Turbofan Engine",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2479,
+        "mod": "TriggerTech",
+        "gates": [
+          "G8"
+        ],
+        "src": "(?<=Phase\\sAngle\\:\\s+)\\S+(?=°)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2698,
+        "mod": "TriggerTech",
+        "gates": [
+          "G8"
+        ],
+        "src": "KerbalAlarmClock.KACAlarm",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2705,
+        "mod": "TriggerTech",
+        "gates": [
+          "G8"
+        ],
+        "src": ".err-",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2924,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "After the fervorous response from fans, Rockomax has decide to up the ante with the Extra-Large Rockomax HubMax Multi-Point Connector, seamlessly integrating 2.5 meter parts on a very large hub. Unfor",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2797,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "This decoupler is the result of a dim-witted engineer hitting an ailing TT-38K Radial Decoupler with a hammer one too many times. This has unfortunately stunted the TR-8A's growth for the rest of its ",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2898,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "Kerbodyne ADTP-2-3-H",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2889,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G1"
+        ],
+        "src": "propuls rocket (bollard sustain (vsr (ven",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2925,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "Extra-Large Rockomax HubMax Multi-Point Connector",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2947,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "fueltank mono monopropellant propellant ven vsr",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12705,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G8"
+        ],
+        "src": "description = #OscarEtank_Part_description",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2761,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "fueltank mono monopropellant propellant cluster control dock maneuver manoeuvre react rendezvous rotate stab steer translate (ven (vsr mercury",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2781,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "O-40 \"Breeze\" Heavy MonoPropellant Engine",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 2784,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G7"
+        ],
+        "src": "O-1 \"Huff\" Tiny MonoPropellant Fuel Engine",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12766,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-alpha-noise-1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12767,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-noise-1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12768,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-noise-2",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12769,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-noise-3",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12770,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-noise-4",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12771,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-noise-5",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12772,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-noise-6",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12773,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-ion-noise",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12774,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12775,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-1-blurred",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12776,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-2",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12777,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-2-extradense",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12778,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-3",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12779,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-3-blurred",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12780,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-4",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12781,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-4-blurred",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12782,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-5",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12783,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-5-blurred",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12784,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-6",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12785,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-7",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12786,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx-katniss-noise-8",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12787,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx_flaresimple01",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12788,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx_flarelens01",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12789,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx_flarelens02",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12790,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx_flaresimple02",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12791,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx_flareglow-1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 12792,
+        "mod": "Waterfall",
+        "gates": [
+          "G8"
+        ],
+        "src": "fx_flarelamp-1",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      }
+    ],
+    "retried": 191,
+    "finish_reasons": {
+      "stop": 101
+    },
+    "latencies": [
+      3.04,
+      4.27,
+      7.5,
+      6.19,
+      6.34,
+      5.81,
+      14.81,
+      4.84,
+      2.66,
+      4.43,
+      9.17,
+      2.35,
+      3.23,
+      2.06,
+      2.54,
+      3.36,
+      2.97,
+      3.58,
+      8.54,
+      12.25,
+      16.91,
+      26.53,
+      33.23,
+      29.94,
+      10.0,
+      14.26,
+      19.77,
+      19.86,
+      20.91,
+      20.32,
+      5.2,
+      3.12,
+      2.49,
+      5.69,
+      4.99,
+      4.26,
+      3.51,
+      23.14,
+      7.34,
+      3.28,
+      8.42,
+      13.48,
+      16.55,
+      16.11,
+      15.55,
+      11.47,
+      14.25,
+      15.09,
+      14.98,
+      15.94,
+      15.14,
+      15.31,
+      20.42,
+      14.67,
+      15.07,
+      15.83,
+      15.14,
+      14.25,
+      18.38,
+      20.86,
+      13.93,
+      14.76,
+      20.04,
+      16.45,
+      18.96,
+      18.58,
+      18.18,
+      18.65,
+      20.3,
+      15.55,
+      16.27,
+      19.78,
+      5.1,
+      19.92,
+      18.95,
+      20.12,
+      22.61,
+      21.15,
+      16.66,
+      16.71,
+      6.94,
+      17.96,
+      17.64,
+      17.82,
+      20.12,
+      2.51,
+      2.96,
+      2.84,
+      14.8,
+      2.38,
+      15.74,
+      24.03,
+      17.26,
+      17.27,
+      6.53,
+      16.57,
+      8.98,
+      18.23,
+      4.97,
+      19.32,
+      5.97
+    ],
+    "latency_total": 1305.095,
+    "locked_triggered_names": [
+      "Adjustable Ramp Intake",
+      "Advanced Landing",
+      "Apoapsis",
+      "Atmosphere Analysis",
+      "Basic Rocketry",
+      "Booster",
+      "C7 Aerospace Division",
+      "Center of Mass",
+      "Clamp-O-Tron Docking Port",
+      "Collect Data",
+      "Command Modules",
+      "Communotron 88-88",
+      "Convert-O-Tron 125",
+      "Cubic Octagonal Strut",
+      "Delta-V",
+      "EAS-1 External Command Seat",
+      "EVA Propellant",
+      "Electric Charge",
+      "Flight Control",
+      "Fuel Cell",
+      "Gimbal",
+      "Gravity Scan",
+      "High Altitude Flight",
+      "Hypersonic Flight",
+      "Ion Propulsion",
+      "J-90 \"Goliath\" Turbofan Engine",
+      "Kerbodyne ADTP-2-3",
+      "Landing Gear",
+      "Landing Leg",
+      "Launch Escape System",
+      "Lights Off",
+      "Lights On",
+      "Liquid Fuel",
+      "Magnetometer Boom",
+      "Mk0 Liquid Fuel Fuselage",
+      "Mk2 Lander Can",
+      "Mk3 Cargo Ramp",
+      "Monopropellant",
+      "Nuclear Propulsion",
+      "O.M.B. Demolition Enterprises"
+    ],
+    "drift_top": [
+      {
+        "term": "White",
+        "want": "白色",
+        "count": 96,
+        "zh_samples": [
+          "航天飞机发射台FSS塔架的模块化乘员通道段，用于通过乘员通道臂和独立的乘员登机楼层登入航天器。该段提供两种高度选项以便更好地对齐通道臂与楼层，并拥有两种颜色选项：默认灰与备选黑白。独立的乘员登机楼层安装在塔段内部的节点上，可上下移动以使楼层",
+          "航天飞机发射台FSS塔架的模块化多高度核心段。该段提供六种高度，每种高度均有两种颜色选项：默认灰与备选黑白。用于安装储箱间通道结构（仅需一个）的节点位于塔架核心的右侧。还包含可选侧板，各侧可单独切换。",
+          "航天飞机发射台FSS塔乘员通道段的独立通道平台，用于在指令舱舱门与乘员通道段底部未对齐时，提供从塔架电梯通往乘员通道臂的路径。将该平台安装到乘员通道段电梯井内的节点上，并使用平移小工具调整高度。平台具有三种配置：航天飞机通道臂、Rodan通"
+        ],
+        "label": "White -> 白色"
+      },
+      {
+        "term": "station",
+        "want": "空间站",
+        "count": 34,
+        "zh_samples": [
+          "月球是探索太阳系的第一块垫脚石。月球距离我们超过一光秒，在此距离操作探测器是迈出的坚实第一步。该计划需要新技术和更重型的运载火箭，以迈出近距离研究月球的第一步。将其送入环月轨道即可完成计划。该计划至少需要“月球测控通信”，通常还需要升级任务",
+          "你的任务是将一枚高达300多英尺的巨型火箭送往距离休斯敦控制站24万英里外的月球。它由新型金属合金制成（其中一些甚至尚未被发明），能够承受数倍于以往经历的热量与应力，装配精度胜过最精密的钟表，搭载推进、制导、控制、通信、食品与生存所需的全部",
+          "照片有助于拓展我们对太阳系外侧的认知，但要加深对这些遥远邻居的了解，必须借助科学仪器，并具备远长于匆匆飞掠的驻留时间。向两颗最遥远的气态巨行星发射轨道器，并探测它们的大气层。在抵达太阳系最深处的同时，也探索这些巨行星的卫星。为了在如此遥远的"
+        ],
+        "label": "station -> 空间站"
+      },
+      {
+        "term": "Oxidizer",
+        "want": "氧化剂",
+        "count": 24,
+        "zh_samples": [
+          "BE-4 是一台富氧分级燃烧甲烷液氧发动机。尽管最初是为蓝色起源的运载火箭研发，但在2014年，联合发射联盟（ULA）宣布他们的新型火神运载火箭（宇宙神5型与德尔塔4型运载火箭的共同继承者）将由一对 BE-4 发动机提供动力。",
+          "早期富氧分级燃烧发动机（1961）",
+          "1963 富氧分级燃烧发动机"
+        ],
+        "label": "Oxidizer -> 氧化剂"
+      },
+      {
+        "term": "Scientific",
+        "want": "热心科研",
+        "count": 24,
+        "zh_samples": [
+          "既然你已经证明了将卫星送入轨道的能力，下一步就是将它们送入更具实用价值的轨道，搭载更有益的载荷。该计划将侧重于用于观测地球及其周围太空环境的卫星。这不仅将推进有关大气层内物理过程的科学知识，还将深化对太空环境的认知，而所有这些都在影响着我们",
+          "照片有助于拓展我们对太阳系外侧的认知，但要加深对这些遥远邻居的了解，必须借助科学仪器，并具备远长于匆匆飞掠的驻留时间。向两颗最遥远的气态巨行星发射轨道器，并探测它们的大气层。在抵达太阳系最深处的同时，也探索这些巨行星的卫星。为了在如此遥远的",
+          "在月球上完成科学任务目标"
+        ],
+        "label": "Scientific -> 热心科研"
+      },
+      {
+        "term": "Commercial",
+        "want": "专注效益",
+        "count": 20,
+        "zh_samples": [
+          "CST-100“星际客机”商业乘员运输系统（COTS）的指令舱。设计最多可重复使用10次。",
+          "NASA 对接系统（NDS）是用于美国载人航天器的航天器对接与停泊机构，例如猎户座多功能载人飞船和商业载人航天器。",
+          "高分辨率胶卷相机用于从太空拍摄行星照片。这台相机提供极高分辨率的照片，且底片需要回收至地球。历史上，这些相机曾以KH-9“六边形”的名义作为间谍卫星飞行，但对于RP-1而言，它们代表了商业公司的第一批高分辨率卫星相机。"
+        ],
+        "label": "Commercial -> 专注效益"
+      },
+      {
+        "term": "Air",
+        "want": "进气",
+        "count": 19,
+        "zh_samples": [
+          "气泵",
+          "严格来说它并不是操纵面，更像是一块用于导流流经空气的金属板条。安装在双子座飞行背包的开口上方。",
+          "一台早期的小型自燃上面级发动机。最初作为朱诺 IVB 的第三级研发，后来作为宇宙神-织女星的第三级。它经过了广泛测试，但在 NASA 得知空军的阿金纳火箭后被取消。"
+        ],
+        "label": "Air -> 进气"
+      },
+      {
+        "term": "Start",
+        "want": "起点",
+        "count": 17,
+        "zh_samples": [
+          "模块化土星发射塔的斜角基座段，提供两种颜色选项：经典红与新版灰。基座拥有两部独立的乘员电梯，每部电梯均有四个可切换的最大高度选项；电梯亦可关闭。调节电梯的开启限制滑块可使其停在低于最大高度的位置。电梯初始处于最高点，必须先降下。电梯轿厢上的",
+          "模块化土星发射塔的方形基座段，提供两种颜色选项：经典红与新版灰。基座拥有两部独立的乘员电梯，每部电梯均有四个可切换的最大高度选项；电梯亦可关闭。调节电梯的开启限制滑块可使其停在低于最大高度的位置。电梯初始处于最高点，必须先降下。电梯轿厢上的",
+          "脐带塔兼具发射架和燃油泵的功能。这可以在发射台上等待发射窗口时保持燃料充满。要启动燃料加注，请右键点击该塔。"
+        ],
+        "label": "Start -> 起点"
+      },
+      {
+        "term": "Deploy",
+        "want": "开启",
+        "count": 15,
+        "zh_samples": [
+          "带有动画的双联垂直缩回式脐带臂，用于宇宙神 SLV-3 半人马座 D 火箭的半人马座上面级。双臂夹抱半人马座级，下臂跨接在级间段与储箱的分界处，上臂跨接在储箱与整流罩的连接处。专为安装在宇宙神-半人马座勤务塔上设计，但也可用于其他勤务塔。整",
+          "用于水星-宇宙神载人电梯的专用“水星”飞船脐带柱，该电梯同时兼作发射脐带塔。它安装在电梯塔前平台正上方管道顶部的节点上。脐带可通过展开限制滑块调节长度。可通过手动操作或借助 Animated Decouplers 通过分级触发缩回。",
+          "一种小型载人飞船登船电梯，灵感源自水星-宇宙神使用的紧急撤离与脐带塔，专为 1 级发射台和宇宙神发射架设计，但也可用于部分其他发射底座和发射架。该电梯塔为固定式，有 8 种颜色可选。电梯轿厢的停靠高度可通过展开限制滑块调节。需配合水星-宇宙"
+        ],
+        "label": "Deploy -> 开启"
+      },
+      {
+        "term": "cone",
+        "want": "锥头",
+        "count": 13,
+        "zh_samples": [
+          "平滑锥体",
+          "空心锥体",
+          "五段式可重复使用固体火箭发动机（RSRMV）最初作为航天飞机的升级型号进行研究，随后进入战神一号的全面开发阶段。战神计划取消后，该研发转移至SLS。整流锥高6.50662m。"
+        ],
+        "label": "cone -> 锥头"
+      },
+      {
+        "term": "Landing",
+        "want": "着陆",
+        "count": 11,
+        "zh_samples": [
+          "可调起落架（大号）",
+          "一款可调起落架，配有双轮，制动器、电机和默认悬挂设置略强。",
+          "可调起落架（中）"
+        ],
+        "label": "Landing -> 着陆"
+      }
+    ],
+    "mixed_lang_top_mods": [
+      {
+        "mod": "RP-1",
+        "count": 403
+      },
+      {
+        "mod": "RealismOverhaul",
+        "count": 100
+      },
+      {
+        "mod": "SXT",
+        "count": 18
+      },
+      {
+        "mod": "ROSolar",
+        "count": 14
+      },
+      {
+        "mod": "VenStockRevamp",
+        "count": 11
+      }
+    ],
+    "elapsed_s": 335.7,
+    "tokens": {
+      "prompt": 271498,
+      "completion": 140162,
+      "reasoning": 1634,
+      "requests": 101,
+      "failures": 0
+    },
+    "latency_avg_s": 12.92,
+    "latency_max_s": 33.23
+  },
+  "curated": {
+    "used": 1026,
+    "rejected": 2,
+    "keyref_rescue": 992,
+    "exact_used": 34,
+    "rescue_examples": [
+      {
+        "id": 3553,
+        "mod": "KSPCommunityFixes",
+        "key": "#autoLOC_501653",
+        "zh": "光年轮胎公司",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 3555,
+        "mod": "KSPCommunityFixes",
+        "key": "#autoLOC_6004000",
+        "zh": "层云公司",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 4121,
+        "mod": "ProceduralFairings",
+        "key": "#autoLOC_8007119",
+        "zh": "白色",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 5188,
+        "mod": "RealismOverhaul",
+        "key": "#autoLOC_6011001",
+        "zh": "前进",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 5189,
+        "mod": "RealismOverhaul",
+        "key": "#autoLOC_6011004",
+        "zh": "反向",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 5352,
+        "mod": "ReStock",
+        "key": "#autoLOC_8014157",
+        "zh": "斜角四喷嘴",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 5353,
+        "mod": "ReStock",
+        "key": "#autoLOC_8014156",
+        "zh": "正交五喷嘴",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 5354,
+        "mod": "ReStock",
+        "key": "#autoLOC_8014155",
+        "zh": "正交四喷嘴",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 5355,
+        "mod": "ReStock",
+        "key": "#autoLOC_8014154",
+        "zh": "正交三喷嘴",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      },
+      {
+        "id": 5356,
+        "mod": "ReStock",
+        "key": "#autoLOC_8014153",
+        "zh": "正交双喷嘴",
+        "how": "套用官方中文记忆（glossary.jsonl），非模型输出"
+      }
+    ],
+    "exact_examples": [
+      {
+        "id": 190,
+        "mod": "EditorExtensionsRedux",
+        "en": "Close",
+        "zh": "关闭"
+      },
+      {
+        "id": 1457,
+        "mod": "RealismOverhaul",
+        "en": "Adjustable Ramp Intake",
+        "zh": "可调节坡度进气道"
+      },
+      {
+        "id": 1471,
+        "mod": "RealismOverhaul",
+        "en": "Toggle <<1>>",
+        "zh": "开关<<1>>"
+      },
+      {
+        "id": 1472,
+        "mod": "RealismOverhaul",
+        "en": "Lights On",
+        "zh": "灯光开"
+      },
+      {
+        "id": 1473,
+        "mod": "RealismOverhaul",
+        "en": "Lights Off",
+        "zh": "灯光关"
+      }
+    ]
+  },
+  "keyref_rescue": true,
+  "mods": null,
+  "only_bucket": null,
+  "glossary_detail": {
+    "total": 2126,
+    "terms": 813,
+    "locked": 588,
+    "exact": 1868,
+    "keyref": 2126,
+    "bad": 0
+  },
+  "written": {
+    "files": {
+      "000_TexturesUnlimited": 24,
+      "001_ToolbarControl": 8,
+      "AJE": 20,
+      "B9_Aerospace_ProceduralWings": 4,
+      "BurstPQS": 1,
+      "CommunityResourcePack": 2,
+      "ConformalDecals": 124,
+      "ContractConfigurator": 3,
+      "EditorExtensionsRedux": 140,
+      "KSCSwitcher": 2,
+      "KSPCommunityFixes": 5,
+      "KerbalChangelog": 32,
+      "KerbalFoundries": 49,
+      "KerbalismConfig": 130,
+      "Kopernicus": 3,
+      "MechJeb2": 6,
+      "ModularLaunchPads": 471,
+      "Parallax_StockPlanetTextures": 11,
+      "Parallax_StockTerrainTextures": 12,
+      "Principia": 1,
+      "ProceduralFairings": 69,
+      "ProceduralParts": 144,
+      "ROCapsules": 361,
+      "ROEngines": 264,
+      "ROHeatshields": 38,
+      "ROLib": 14,
+      "ROSolar": 175,
+      "ROTanks": 319,
+      "RP-1": 3366,
+      "ReStock": 8,
+      "ReStockPlus": 19,
+      "RealAntennas": 37,
+      "RealChute": 44,
+      "RealFuels": 6,
+      "RealismOverhaul": 1679,
+      "SXT": 524,
+      "Sol-Configs": 12,
+      "Squad": 982,
+      "TriggerTech": 490,
+      "VenStockRevamp": 221,
+      "Waterfall": 26
+    },
+    "total": 9846,
+    "written": true
+  },
+  "elapsed_s": 337.6,
+  "by_mod": {
+    "EditorExtensionsRedux": {
+      "ok": 136,
+      "keep": 3,
+      "failed": 1,
+      "chars": 1016,
+      "official": 1
+    },
+    "TriggerTech": {
+      "ok": 485,
+      "keep": 4,
+      "failed": 6,
+      "chars": 3954,
+      "official": 1
+    },
+    "001_ToolbarControl": {
+      "ok": 8,
+      "keep": 0,
+      "failed": 0,
+      "chars": 96
+    },
+    "000_TexturesUnlimited": {
+      "ok": 24,
+      "keep": 0,
+      "failed": 0,
+      "chars": 100
+    },
+    "AJE": {
+      "ok": 20,
+      "keep": 0,
+      "failed": 0,
+      "chars": 960
+    },
+    "BurstPQS": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 131
+    },
+    "CommunityResourcePack": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 6
+    },
+    "B9_Aerospace_ProceduralWings": {
+      "ok": 4,
+      "keep": 0,
+      "failed": 0,
+      "chars": 45
+    },
+    "ConformalDecals": {
+      "ok": 124,
+      "keep": 0,
+      "failed": 0,
+      "chars": 1263
+    },
+    "ContractConfigurator": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 23
+    },
+    "KSCSwitcher": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 56
+    },
+    "KSPCommunityFixes": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 197,
+      "rescue": 2
+    },
+    "KerbalChangelog": {
+      "ok": 32,
+      "keep": 0,
+      "failed": 0,
+      "chars": 627
+    },
+    "KerbalFoundries": {
+      "ok": 48,
+      "keep": 0,
+      "failed": 0,
+      "chars": 1329,
+      "official": 1
+    },
+    "KerbalismConfig": {
+      "ok": 126,
+      "keep": 0,
+      "failed": 1,
+      "chars": 1057,
+      "official": 4
+    },
+    "Kopernicus": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 131
+    },
+    "MechJeb2": {
+      "ok": 6,
+      "keep": 0,
+      "failed": 0,
+      "chars": 50
+    },
+    "ModularLaunchPads": {
+      "ok": 471,
+      "keep": 0,
+      "failed": 27,
+      "chars": 23360
+    },
+    "Parallax_StockPlanetTextures": {
+      "ok": 11,
+      "keep": 0,
+      "failed": 0,
+      "chars": 32
+    },
+    "Parallax_StockTerrainTextures": {
+      "ok": 12,
+      "keep": 0,
+      "failed": 0,
+      "chars": 32
+    },
+    "Principia": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 11
+    },
+    "ProceduralFairings": {
+      "ok": 68,
+      "keep": 0,
+      "failed": 0,
+      "chars": 825,
+      "rescue": 1
+    },
+    "ProceduralParts": {
+      "ok": 144,
+      "keep": 0,
+      "failed": 1,
+      "chars": 1854
+    },
+    "ROCapsules": {
+      "ok": 360,
+      "keep": 0,
+      "failed": 1,
+      "chars": 10733,
+      "official": 1
+    },
+    "ROEngines": {
+      "ok": 261,
+      "keep": 0,
+      "failed": 4,
+      "chars": 11571,
+      "official": 3
+    },
+    "ROHeatshields": {
+      "ok": 38,
+      "keep": 0,
+      "failed": 1,
+      "chars": 419
+    },
+    "ROLib": {
+      "ok": 14,
+      "keep": 0,
+      "failed": 0,
+      "chars": 79
+    },
+    "ROSolar": {
+      "ok": 175,
+      "keep": 0,
+      "failed": 6,
+      "chars": 4701
+    },
+    "ROTanks": {
+      "ok": 318,
+      "keep": 0,
+      "failed": 1,
+      "chars": 3377,
+      "official": 1
+    },
+    "RP-1": {
+      "ok": 3359,
+      "keep": 0,
+      "failed": 18,
+      "chars": 149604,
+      "official": 7
+    },
+    "ReStock": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 43,
+      "rescue": 6
+    },
+    "ReStockPlus": {
+      "ok": 19,
+      "keep": 0,
+      "failed": 0,
+      "chars": 742
+    },
+    "RealAntennas": {
+      "ok": 37,
+      "keep": 0,
+      "failed": 0,
+      "chars": 648
+    },
+    "RealChute": {
+      "ok": 44,
+      "keep": 0,
+      "failed": 0,
+      "chars": 1656
+    },
+    "RealFuels": {
+      "ok": 6,
+      "keep": 0,
+      "failed": 0,
+      "chars": 93
+    },
+    "RealismOverhaul": {
+      "ok": 1671,
+      "keep": 0,
+      "failed": 95,
+      "chars": 81108,
+      "official": 6,
+      "rescue": 2
+    },
+    "SXT": {
+      "ok": 516,
+      "keep": 0,
+      "failed": 2,
+      "chars": 15667,
+      "official": 8
+    },
+    "Squad": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 34425,
+      "rescue": 981
+    },
+    "Sol-Configs": {
+      "ok": 12,
+      "keep": 0,
+      "failed": 2,
+      "chars": 33
+    },
+    "VenStockRevamp": {
+      "ok": 220,
+      "keep": 0,
+      "failed": 10,
+      "chars": 7866,
+      "official": 1
+    },
+    "Waterfall": {
+      "ok": 26,
+      "keep": 0,
+      "failed": 27,
+      "chars": 295
+    }
+  },
+  "sample_out": "D:\\Kerbal Space Program_newmod\\UniversalI18n\\reports\\sample-full.jsonl"
+}

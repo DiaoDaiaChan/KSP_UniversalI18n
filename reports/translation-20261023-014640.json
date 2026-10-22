@@ -1,0 +1,1544 @@
+{
+  "kind": "translation",
+  "started": "2026-10-23T01:46:37",
+  "dry_run": true,
+  "offline": true,
+  "limit": 200,
+  "model": "offline-stub",
+  "promptV": 3,
+  "glossaryV": "024c4e9a",
+  "glossary": "官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）",
+  "pool_rows": 12792,
+  "build": {
+    "skipped": {
+      "all-sentinel": 58,
+      "no-words": 484,
+      "key-ref": 3193
+    },
+    "items": 9057,
+    "batches": 225,
+    "curated": {
+      "used": 34,
+      "rejected": 1,
+      "keyref_rescue": 0
+    }
+  },
+  "sample_build": {
+    "skipped": {},
+    "items": 200,
+    "batches": 7,
+    "curated": {
+      "used": 2,
+      "rejected": 0,
+      "keyref_rescue": 0
+    }
+  },
+  "batches": 7,
+  "jobs": 4,
+  "max_chars": 6000,
+  "stats": {
+    "batches": 7,
+    "batches_failed": 0,
+    "splits": 0,
+    "calls": 3,
+    "cache_hits": 186,
+    "items_requested": 12,
+    "items_ok": 133,
+    "items_keep": 0,
+    "items_failed": 65,
+    "items_official": 2,
+    "curated_rejected": 0,
+    "term_drift": 24,
+    "mixed_lang": 96,
+    "mixed_lang_examples": [
+      {
+        "id": 8480,
+        "mod": "RP-1",
+        "src": "Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much longer",
+        "zh": "【离线】Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much longer than a hasty flyby are necessary to",
+        "words": [
+          "Pictures",
+          "can",
+          "help",
+          "expand",
+          "our",
+          "knowledge",
+          "of",
+          "the"
+        ]
+      },
+      {
+        "id": 346,
+        "mod": "MechJeb2",
+        "src": "Configuration of <<1>> window copied to clipboard.",
+        "zh": "【离线】Configuration of <<1>> window copied to clipboard.",
+        "words": [
+          "Configuration",
+          "of",
+          "window",
+          "copied",
+          "to",
+          "clipboard"
+        ]
+      },
+      {
+        "id": 10339,
+        "mod": "RP-1",
+        "src": "Vikas Engine Upgrade: Vikas-1+ Config",
+        "zh": "【离线】Vikas Engine Upgrade: Vikas-1+ Config",
+        "words": [
+          "Vikas",
+          "Engine",
+          "Upgrade",
+          "Vikas-",
+          "Config"
+        ]
+      },
+      {
+        "id": 48,
+        "mod": "ConformalDecals",
+        "src": "Remove Before Flight",
+        "zh": "【离线】Remove Before Flight",
+        "words": [
+          "Remove",
+          "Before",
+          "Flight"
+        ]
+      },
+      {
+        "id": 294,
+        "mod": "EditorExtensionsRedux",
+        "src": "Part has no symmetry:",
+        "zh": "【离线】Part has no symmetry:",
+        "words": [
+          "Part",
+          "has",
+          "no",
+          "symmetry"
+        ]
+      },
+      {
+        "id": 1481,
+        "mod": "RealismOverhaul",
+        "src": "Only Sandbox Supported",
+        "zh": "【离线】Only Sandbox Supported",
+        "words": [
+          "Only",
+          "Sandbox",
+          "Supported"
+        ]
+      },
+      {
+        "id": 1526,
+        "mod": "ROCapsules",
+        "src": "Apollo High Gain Antenna (HGA)",
+        "zh": "【离线】Apollo High Gain Antenna (HGA)",
+        "words": [
+          "Apollo",
+          "High",
+          "Gain",
+          "Antenna"
+        ]
+      },
+      {
+        "id": 1616,
+        "mod": "ROCapsules",
+        "src": "Improved, lunar rated heatshield for the Gemini Capsule. Can be switched to the Gemini B configuration with a hatch. <b>",
+        "zh": "【离线】Improved, lunar rated heatshield for the Gemini Capsule. Can be switched to the Gemini B configuration with a hatch. <b><color=red>Gemini lacks the radiativ",
+        "words": [
+          "Improved",
+          "lunar",
+          "rated",
+          "heatshield",
+          "for",
+          "the",
+          "Gemini",
+          "Capsule"
+        ]
+      },
+      {
+        "id": 639,
+        "mod": "RealismOverhaul",
+        "src": "A expander bleed cycle engine developed in the 2000s. It was a Mitsubishi and Boeing joint project for Delta IV cryogeni",
+        "zh": "【离线】A expander bleed cycle engine developed in the 2000s. It was a Mitsubishi and Boeing joint project for Delta IV cryogenic upper stages.",
+        "words": [
+          "expander",
+          "bleed",
+          "cycle",
+          "engine",
+          "developed",
+          "in",
+          "the",
+          "It"
+        ]
+      },
+      {
+        "id": 929,
+        "mod": "RealismOverhaul",
+        "src": "The Star 13 was developed in the mid-1960s as the braking motor for the AIMP program, and was used on Explorer 33 and 35",
+        "zh": "【离线】The Star 13 was developed in the mid-1960s as the braking motor for the AIMP program, and was used on Explorer 33 and 35.",
+        "words": [
+          "The",
+          "Star",
+          "was",
+          "developed",
+          "in",
+          "the",
+          "mid-",
+          "as"
+        ]
+      },
+      {
+        "id": 1067,
+        "mod": "RealismOverhaul",
+        "src": "A Chinese hydrolox gas generator sustainer engine. Used on the first stage of the Long March 5.",
+        "zh": "【离线】A Chinese hydrolox gas generator sustainer engine. Used on the first stage of the Long March 5.",
+        "words": [
+          "Chinese",
+          "hydrolox",
+          "gas",
+          "generator",
+          "sustainer",
+          "engine",
+          "Used",
+          "on"
+        ]
+      },
+      {
+        "id": 1344,
+        "mod": "RealismOverhaul",
+        "src": "Electrical Instrumentation Design Bureau",
+        "zh": "【离线】Electrical Instrumentation Design Bureau",
+        "words": [
+          "Electrical",
+          "Instrumentation",
+          "Design",
+          "Bureau"
+        ]
+      },
+      {
+        "id": 1797,
+        "mod": "SXT",
+        "src": "The lack of proper structural supports makes this fuel bladder extremely delicate and prevents the stacking of multiple ",
+        "zh": "【离线】The lack of proper structural supports makes this fuel bladder extremely delicate and prevents the stacking of multiple cells on top of each other. Probably",
+        "words": [
+          "The",
+          "lack",
+          "of",
+          "proper",
+          "structural",
+          "supports",
+          "makes",
+          "this"
+        ]
+      },
+      {
+        "id": 1932,
+        "mod": "SXT",
+        "src": "sxt mk2 plane connector tilt angl",
+        "zh": "【离线】sxt mk2 plane connector tilt angl",
+        "words": [
+          "sxt",
+          "mk",
+          "plane",
+          "connector",
+          "tilt",
+          "angl"
+        ]
+      },
+      {
+        "id": 1977,
+        "mod": "SXT",
+        "src": "LV-NX4 \"Fat Mun\" Atomic Rocket Motor",
+        "zh": "【离线】LV-NX4 \"Fat Mun\" Atomic Rocket Motor",
+        "words": [
+          "Fat",
+          "Atomic",
+          "Rocket",
+          "Motor"
+        ]
+      },
+      {
+        "id": 2113,
+        "mod": "SXT",
+        "src": "sxt triangle structural plate panel",
+        "zh": "【离线】sxt triangle structural plate panel",
+        "words": [
+          "sxt",
+          "triangle",
+          "structural",
+          "plate",
+          "panel"
+        ]
+      },
+      {
+        "id": 2158,
+        "mod": "SXT",
+        "src": "sxt wing aero lift fold aileron control (elev )rudder",
+        "zh": "【离线】sxt wing aero lift fold aileron control (elev )rudder",
+        "words": [
+          "sxt",
+          "wing",
+          "aero",
+          "lift",
+          "fold",
+          "aileron",
+          "control",
+          "elev"
+        ]
+      },
+      {
+        "id": 2395,
+        "mod": "TriggerTech",
+        "src": "Unable to Add the Margin Minutes",
+        "zh": "【离线】Unable to Add the Margin Minutes",
+        "words": [
+          "Unable",
+          "to",
+          "Add",
+          "the",
+          "Margin",
+          "Minutes"
+        ]
+      },
+      {
+        "id": 1571,
+        "mod": "ROCapsules",
+        "src": "Apollo Block IV Service Module",
+        "zh": "【离线】Apollo Block IV Service Module",
+        "words": [
+          "Apollo",
+          "Block",
+          "Service",
+          "Module"
+        ]
+      },
+      {
+        "id": 1661,
+        "mod": "ROCapsules",
+        "src": "Big G Service Module",
+        "zh": "【离线】Big G Service Module",
+        "words": [
+          "Big",
+          "Service",
+          "Module"
+        ]
+      }
+    ],
+    "drift_examples": [
+      {
+        "id": 8480,
+        "term": "Scientific",
+        "want": "热心科研",
+        "src": "Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much longer",
+        "zh": "【离线】Pictures can help expand our knowledge of the outer Solar System, but scientific instruments and dwell times much lo"
+      },
+      {
+        "id": 2022,
+        "term": "cone",
+        "want": "锥头",
+        "src": "sxt nose cone",
+        "zh": "【离线】sxt nose cone"
+      },
+      {
+        "id": 2067,
+        "term": "cone",
+        "want": "锥头",
+        "src": "The latest in research and development enabled the development of this little marvel, The Sensor Array Computing Nose Co",
+        "zh": "【离线】The latest in research and development enabled the development of this little marvel, The Sensor Array Computing Nos"
+      },
+      {
+        "id": 2775,
+        "term": "station",
+        "want": "空间站",
+        "src": "The biggest crew container you can possibly get for your rocket or station, some exceptions do apply.",
+        "zh": "【离线】The biggest crew container you can possibly get for your rocket or station, some exceptions do apply."
+      },
+      {
+        "id": 4622,
+        "term": "temperature",
+        "want": "温度",
+        "src": "J58 concept, uprated and with added nitrous oxide injection for NASA to allow for increased payload. Temperature Mach li",
+        "zh": "【离线】J58 concept, uprated and with added nitrous oxide injection for NASA to allow for increased payload. Temperature Mac"
+      },
+      {
+        "id": 6017,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Small 1.89m heatshield for the Mercury capsule. Place underneath, before adding the retropack. Does not include a fairin",
+        "zh": "【离线】Small 1.89m heatshield for the Mercury capsule. Place underneath, before adding the retropack. Does not include a fa"
+      },
+      {
+        "id": 7172,
+        "term": "Commercial",
+        "want": "专注效益",
+        "src": "Tundra Commercial Communications Satellite",
+        "zh": "【离线】Tundra Commercial Communications Satellite"
+      },
+      {
+        "id": 7307,
+        "term": "station",
+        "want": "空间站",
+        "src": "Send any needed supplies, modules, or crew to the station",
+        "zh": "【离线】Send any needed supplies, modules, or crew to the station"
+      },
+      {
+        "id": 7442,
+        "term": "satellite",
+        "want": "卫星",
+        "src": "Completed Dedicated Earth Imaging Satellite",
+        "zh": "【离线】Completed Dedicated Earth Imaging Satellite"
+      },
+      {
+        "id": 8802,
+        "term": "science",
+        "want": "科学",
+        "src": "<b>Science-Core TL3</b> - <color=white>Mass: -76%</color> <color=green>Cost: +25%</color> <color=orange>Power: -99.4%</c",
+        "zh": "【离线】<b>Science-Core TL3</b> - <color=white>Mass: -76%</color> <color=green>Cost: +25%</color> <color=orange>Power: -99.4"
+      },
+      {
+        "id": 3612,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "Specialized animated swing arm for the Delta IV rocket. This is the lowest arm, which provides umbilicals for the core t",
+        "zh": "【离线】Specialized animated swing arm for the Delta IV rocket. This is the lowest arm, which provides umbilicals for the co"
+      },
+      {
+        "id": 3752,
+        "term": "Deploy",
+        "want": "开启",
+        "src": "Medium-size animated general swing arm for the general and specialty towers, available in 8 colors. The arm swing can be",
+        "zh": "【离线】Medium-size animated general swing arm for the general and specialty towers, available in 8 colors. The arm swing ca"
+      },
+      {
+        "id": 7082,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Vesta Landing (Uncrewed)",
+        "zh": "【离线】Vesta Landing (Uncrewed)"
+      },
+      {
+        "id": 7127,
+        "term": "satellite",
+        "want": "卫星",
+        "src": "First Navigational Satellite",
+        "zh": "【离线】First Navigational Satellite"
+      },
+      {
+        "id": 7712,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Crewed targeted lunar landing",
+        "zh": "【离线】Crewed targeted lunar landing"
+      },
+      {
+        "id": 8983,
+        "term": "Landing",
+        "want": "着陆",
+        "src": "Early Landing",
+        "zh": "【离线】Early Landing"
+      },
+      {
+        "id": 7487,
+        "term": "science",
+        "want": "科学",
+        "src": "Carry the required science instruments",
+        "zh": "【离线】Carry the required science instruments"
+      },
+      {
+        "id": 7532,
+        "term": "satellite",
+        "want": "卫星",
+        "src": "Geostationary Operational Environmental Satellite",
+        "zh": "【离线】Geostationary Operational Environmental Satellite"
+      },
+      {
+        "id": 7937,
+        "term": "science",
+        "want": "科学",
+        "src": "Transmit science data from Uranus's atmosphere, AFTER going below 1000 km",
+        "zh": "【离线】Transmit science data from Uranus's atmosphere, AFTER going below 1000 km"
+      },
+      {
+        "id": 8072,
+        "term": "satellite",
+        "want": "卫星",
+        "src": "First Low Orbit Communications Satellite",
+        "zh": "【离线】First Low Orbit Communications Satellite"
+      }
+    ],
+    "gates": {
+      "G1": 11,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 53,
+      "G6": 0,
+      "G7": 1,
+      "G8": 0
+    },
+    "gate_examples": {
+      "G1": [
+        {
+          "id": 698,
+          "mod": "RealismOverhaul",
+          "src": "R-103 Booster",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 6844,
+          "mod": "ROTanks",
+          "src": "STS Booster",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 9169,
+          "mod": "RP-1",
+          "src": "Early Nuclear Propulsion",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 860,
+          "mod": "RealismOverhaul",
+          "src": "A British kerolox booster engine for the Blue Streak missile and the first stage of the Europa launch vehicle. It was derived from the Rocketdyne S-3, with mino",
+          "zh": "",
+          "why": ""
+        },
+        {
+          "id": 997,
+          "mod": "RealismOverhaul",
+          "src": "A small pressure-fed sustainer for MR-1 Meteo sounding rockets, developed in response to the American Aerobee. Used after a small solid booster.",
+          "zh": "",
+          "why": ""
+        }
+      ],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [
+        {
+          "id": 9934,
+          "mod": "RP-1",
+          "src": "The RCS Engine now supports the NitrousOxide configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+          "zh": "【离线】The RCS Engine now supports the NitrousOxide configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+          "why": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        },
+        {
+          "id": 9979,
+          "mod": "RP-1",
+          "src": "R42 Engine Upgrade: R-42DM-NTO Config",
+          "zh": "【离线】R42 Engine Upgrade: R-42DM-NTO Config",
+          "why": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        },
+        {
+          "id": 10024,
+          "mod": "RP-1",
+          "src": "The RD0212 Engine now supports the RD-0212-Mk3 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+          "zh": "【离线】The RD0212 Engine now supports the RD-0212-Mk3 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+          "why": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        },
+        {
+          "id": 10069,
+          "mod": "RP-1",
+          "src": "RD108-118 Engine Upgrade: RD-108-11D511P Config",
+          "zh": "【离线】RD108-118 Engine Upgrade: RD-108-11D511P Config",
+          "why": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        },
+        {
+          "id": 10114,
+          "mod": "RP-1",
+          "src": "The RD211 Engine now supports the RD-214U-8D59U configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+          "zh": "【离线】The RD211 Engine now supports the RD-214U-8D59U configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+          "why": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      ],
+      "G6": [],
+      "G7": [
+        {
+          "id": 397,
+          "mod": "RealismOverhaul",
+          "src": "A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the des",
+          "zh": "【离线】A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the",
+          "why": "术语 Booster=助推器 未出现在译文"
+        }
+      ],
+      "G8": []
+    },
+    "failed": [
+      {
+        "id": 9934,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The RCS Engine now supports the NitrousOxide configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The RCS Engine now supports the NitrousOxide configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9979,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "R42 Engine Upgrade: R-42DM-NTO Config",
+        "zh": "【离线】R42 Engine Upgrade: R-42DM-NTO Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10024,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The RD0212 Engine now supports the RD-0212-Mk3 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The RD0212 Engine now supports the RD-0212-Mk3 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10069,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "RD108-118 Engine Upgrade: RD-108-11D511P Config",
+        "zh": "【离线】RD108-118 Engine Upgrade: RD-108-11D511P Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10114,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The RD211 Engine now supports the RD-214U-8D59U configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The RD211 Engine now supports the RD-214U-8D59U configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10159,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "RD58 Engine Upgrade: RD-58 Config",
+        "zh": "【离线】RD58 Engine Upgrade: RD-58 Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10204,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The RL10 Engine now supports the RL10A-4-2N configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The RL10 Engine now supports the RL10A-4-2N configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10249,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "H1 Engine Upgrade: RS-27 Config",
+        "zh": "【离线】H1 Engine Upgrade: RS-27 Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10294,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The SPT100 Engine now supports the SPT-100M configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The SPT100 Engine now supports the SPT-100M configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10384,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The R11 Engine now supports the WP-7BM configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The R11 Engine now supports the WP-7BM configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 10429,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "XLR99 Engine Upgrade: XLR99-RM-5 Config",
+        "zh": "【离线】XLR99 Engine Upgrade: XLR99-RM-5 Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 2, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 1,
+        "mod": "AJE",
+        "gates": [
+          "G5"
+        ],
+        "src": "Mil Mi-17 Rotor & Engine",
+        "zh": "【离线】Mil Mi-17 Rotor & Engine",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 239,
+        "mod": "EditorExtensionsRedux",
+        "gates": [
+          "G5"
+        ],
+        "src": "ReRoot enabled",
+        "zh": "【离线】ReRoot enabled",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 6620,
+        "mod": "ROSolar",
+        "gates": [
+          "G5"
+        ],
+        "src": "<b>Solar panels TL6</b> \\n <color=white>Mass: 6kg/m2</color> \\n <color=green>Cost: 100/m2</color> \\n <color=orange>Power: 180W/m2</color> \\n <color=#00ffff>20% degradation after 1 year</color> \\n NOTE",
+        "zh": "【离线】<b>Solar panels TL6</b> \\n <color=white>Mass: 6kg/m2</color> \\n <color=green>Cost: 100/m2</color> \\n <color=orange>Power: 180W/m2</color> \\n <color=#00ffff>20% degradation after 1 year</color> \\n ",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 5} 实际{}"
+        }
+      },
+      {
+        "id": 7262,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "<b>Program: Early Satellites (Heavy)<br>Type: <color=green>Required</color></b><br><br>A polar orbit is one in which a satellite passes above or nearly above both poles of the body being orbited on ea",
+        "zh": "【离线】<b>Program: Early Satellites (Heavy)<br>Type: <color=green>Required</color></b><br><br>A polar orbit is one in which a satellite passes above or nearly above both poles of the body being orbited o",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 3} 实际{}"
+        }
+      },
+      {
+        "id": 7667,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "<b>Program: Jupiter Observation<br>Type: <color=green>Required</color></b><br><br>Create a probe and send it to flyby Io within 7800 km. Make sure to transmit science from the flyby.",
+        "zh": "【离线】<b>Program: Jupiter Observation<br>Type: <color=green>Required</color></b><br><br>Create a probe and send it to flyby Io within 7800 km. Make sure to transmit science from the flyby.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 3} 实际{}"
+        }
+      },
+      {
+        "id": 781,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "A staged combustion upper stage vernier engine developed for the R-36M second stage. This represents 1/4th of an RD-0230. The R-36M2 used an upgraded version of the engine known as the RD-0257.",
+        "zh": "【离线】A staged combustion upper stage vernier engine developed for the R-36M second stage. This represents 1/4th of an RD-0230. The R-36M2 used an upgraded version of the engine known as the RD-0257.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1, '<<M3>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 1707,
+        "mod": "SXT",
+        "gates": [
+          "G5"
+        ],
+        "src": "XM-C200 Radial Air Intake",
+        "zh": "【离线】XM-C200 Radial Air Intake",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 1887,
+        "mod": "SXT",
+        "gates": [
+          "G5"
+        ],
+        "src": "TR-32K1 3.75m Stack Decoupler",
+        "zh": "【离线】TR-32K1 3.75m Stack Decoupler",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 2210,
+        "mod": "TriggerTech",
+        "gates": [
+          "G5"
+        ],
+        "src": "dblTest:",
+        "zh": "【离线】dblTest:",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4214,
+        "mod": "ProceduralParts",
+        "gates": [
+          "G5"
+        ],
+        "src": "Procedural NoseCone (2.5m)",
+        "zh": "【离线】Procedural NoseCone (2.5m)",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4943,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Used on Vostok 8K72K",
+        "zh": "【离线】Used on Vostok 8K72K",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 5277,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Subcooled RP-1",
+        "zh": "【离线】Subcooled RP-1",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 1113,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "The Allison/General Electric J35 is an axial flow turbojet, and one of the first turbojets natively designed in the United States. Although not as well known as its later derivative, the J47, it still",
+        "zh": "【离线】The Allison/General Electric J35 is an axial flow turbojet, and one of the first turbojets natively designed in the United States. Although not as well known as its later derivative, the J47, it s",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1, '<<M3>>': 1, '<<M4>>': 1, '<<M5>>': 1, '<<M6>>': 1, '<<M7>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 2865,
+        "mod": "VenStockRevamp",
+        "gates": [
+          "G5"
+        ],
+        "src": "An evolution of the classic RT-10, the RT-10-G has four gimballed nozzles for thrust vectoring capability.",
+        "zh": "【离线】An evolution of the classic RT-10, the RT-10-G has four gimballed nozzles for thrust vectoring capability.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4395,
+        "mod": "RealChute",
+        "gates": [
+          "G5"
+        ],
+        "src": "Basic RealChute preset for a 2.5m double drogue chute.",
+        "zh": "【离线】Basic RealChute preset for a 2.5m double drogue chute.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4441,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Delta-F Upper Stage Engine, AJ10-138 modified for use on Delta.",
+        "zh": "【离线】Delta-F Upper Stage Engine, AJ10-138 modified for use on Delta.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4532,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Earliest prototype version of the H-1 Engine that flew on the Saturn I, Block I. It is rated at 165k lbf sea level thrust.",
+        "zh": "【离线】Earliest prototype version of the H-1 Engine that flew on the Saturn I, Block I. It is rated at 165k lbf sea level thrust.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4577,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "F103-GE-100, as used on the E-4B.",
+        "zh": "【离线】F103-GE-100, as used on the E-4B.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4667,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "PT6A-6 with improved fuel efficiency.",
+        "zh": "【离线】PT6A-6 with improved fuel efficiency.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4712,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Modified RJ43-MA-11, as used on D-21. Design speed M3.32@29 km.",
+        "zh": "【离线】Modified RJ43-MA-11, as used on D-21. Design speed M3.32@29 km.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4897,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Used on the UR-500 second stage. AKA 8D411",
+        "zh": "【离线】Used on the UR-500 second stage. AKA 8D411",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 4988,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Modern upgrade to improve performance of Proton. AKA RD-276",
+        "zh": "【离线】Modern upgrade to improve performance of Proton. AKA RD-276",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 5034,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Sea level RL10 for use on the Delta Clipper (DC-X) project.",
+        "zh": "【离线】Sea level RL10 for use on the Delta Clipper (DC-X) project.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 5135,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G5"
+        ],
+        "src": "Second stage engine for Ariane 2/3. Uses UH25 for extra performance.",
+        "zh": "【离线】Second stage engine for Ariane 2/3. Uses UH25 for extra performance.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 5740,
+        "mod": "ROCapsules",
+        "gates": [
+          "G5"
+        ],
+        "src": "Decoupler which connects the base of the D-2 descent module to the propulsion module.",
+        "zh": "【离线】Decoupler which connects the base of the D-2 descent module to the propulsion module.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 7757,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "<b>Program: Uncrewed Lunar Surface Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully launch a craft that can achieve a soft landing on the Moon and return science da",
+        "zh": "【离线】<b>Program: Uncrewed Lunar Surface Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully launch a craft that can achieve a soft landing on the Moon and return scienc",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 5, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 7847,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "<b>Program: Crewed Mars Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully launch an uncrewed probe to land on Mars, gather surface samples, and return to Earth.",
+        "zh": "【离线】<b>Program: Crewed Mars Exploration<br>Type: <color=blue>Optional</color></b><br><br>Design and successfully launch an uncrewed probe to land on Mars, gather surface samples, and return to Earth.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 3} 实际{}"
+        }
+      },
+      {
+        "id": 8117,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "<b>Program: Second Generation Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Satellites have proven to be a reliable way to communicate with our comrades in the Western Hemi",
+        "zh": "【离线】<b>Program: Second Generation Commercial Applications<br>Type: <color=green>Required</color></b><br><br>Satellites have proven to be a reliable way to communicate with our comrades in the Western ",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 5} 实际{}"
+        }
+      },
+      {
+        "id": 8297,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "<b>Program: Early Inner Planet Probes<br>Type: <color=green>Required</color></b><br><br>Design and successfully launch an uncrewed probe that will enter into an orbit of Venus.",
+        "zh": "【离线】<b>Program: Early Inner Planet Probes<br>Type: <color=green>Required</color></b><br><br>Design and successfully launch an uncrewed probe that will enter into an orbit of Venus.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 3} 实际{}"
+        }
+      },
+      {
+        "id": 8709,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "McDonnell Aircraft Corporation",
+        "zh": "【离线】McDonnell Aircraft Corporation",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 698,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "R-103 Booster",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6844,
+        "mod": "ROTanks",
+        "gates": [
+          "G1"
+        ],
+        "src": "STS Booster",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 9169,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "Early Nuclear Propulsion",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 7622,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "We want you to set a new crew count record! Have at least @crewedTargetCount crew on the same spacecraft/station at the same time.",
+        "zh": "【离线】We want you to set a new crew count record! Have at least @crewedTargetCount crew on the same spacecraft/station at the same time.",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 8390,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "IS03 - Near Infrared Mapping Spectrometer (NIMS) and Ultraviolet Spectrometer (UVS)",
+        "zh": "【离线】IS03 - Near Infrared Mapping Spectrometer (NIMS) and Ultraviolet Spectrometer (UVS)",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9439,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "N1_BlockV Engine Upgrade: 4x_NK-39 Config",
+        "zh": "【离线】N1_BlockV Engine Upgrade: 4x_NK-39 Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9484,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The Aerobee Engine now supports the AJ10-27 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The Aerobee Engine now supports the AJ10-27 configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9529,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "Avon Engine Upgrade: Avon302 Config",
+        "zh": "【离线】Avon Engine Upgrade: Avon302 Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9574,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The E1 Engine now supports the E-1-468k configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The E1 Engine now supports the E-1-468k configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9619,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "H1 Engine Upgrade: H-1-205K Config",
+        "zh": "【离线】H1 Engine Upgrade: H-1-205K Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9664,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The J2 Engine now supports the J-2-230K configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The J2 Engine now supports the J-2-230K configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9754,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The LMDE Engine now supports the LMDE-J configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The LMDE Engine now supports the LMDE-J configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9799,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "LR87 Engine Upgrade: LR87-AJ-5-Kero Config",
+        "zh": "【离线】LR87 Engine Upgrade: LR87-AJ-5-Kero Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 2, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9844,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "The LR91 Engine now supports the LR91-AJ-9-Kero configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "zh": "【离线】The LR91 Engine now supports the LR91-AJ-9-Kero configuration for increased performance. Unlock it in the VAB/SPH through the engine configs interface.\\n\\n",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 2, '<<M1>>': 1, '<<M2>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 9889,
+        "mod": "RP-1",
+        "gates": [
+          "G5"
+        ],
+        "src": "A-4 Engine Upgrade: Model39cI Config",
+        "zh": "【离线】A-4 Engine Upgrade: Model39cI Config",
+        "notes": {
+          "G5": "哨兵多重集 期望{'<<M0>>': 1, '<<M1>>': 1} 实际{}"
+        }
+      },
+      {
+        "id": 397,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G7"
+        ],
+        "src": "A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the design was deemed unsuitable for military u",
+        "zh": "【离线】A basic pressure-fed booster engine developed by General Electric to power American-built Wasserfall missiles for the Hermes program (CTV-G-5). Although the design was deemed unsuitable for milita",
+        "notes": {
+          "G7": "术语 Booster=助推器 未出现在译文"
+        }
+      },
+      {
+        "id": 860,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "A British kerolox booster engine for the Blue Streak missile and the first stage of the Europa launch vehicle. It was derived from the Rocketdyne S-3, with minor modifications.",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 997,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "A small pressure-fed sustainer for MR-1 Meteo sounding rockets, developed in response to the American Aerobee. Used after a small solid booster.",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 1752,
+        "mod": "SXT",
+        "gates": [
+          "G1"
+        ],
+        "src": "sxt fuel tank lfo liquid oxidizer nose cone",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 3351,
+        "mod": "KerbalFoundries",
+        "gates": [
+          "G1"
+        ],
+        "src": "Adjustable Landing Gear (Large)",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 4806,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "MA-5.2 booster engine. Both engines shared turbopumps due to NASA preferring that configuration. Used for Atlas-Centaur launches",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 4851,
+        "mod": "RealismOverhaul",
+        "gates": [
+          "G1"
+        ],
+        "src": "Improved for N1F Block G. Relightable. Gimbal, throttle.",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 6062,
+        "mod": "ROCapsules",
+        "gates": [
+          "G1"
+        ],
+        "src": "Place this above the Descent Module to decoupler the additional retro booster.",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      },
+      {
+        "id": 9121,
+        "mod": "RP-1",
+        "gates": [
+          "G1"
+        ],
+        "src": "2014-2018 Oxidizer-Rich Staged Combustion Engines",
+        "zh": "",
+        "notes": {
+          "why": "重试后仍失败（gate）"
+        }
+      }
+    ],
+    "retried": 11,
+    "finish_reasons": {},
+    "latencies": [],
+    "latency_total": 0.0,
+    "elapsed_s": 0.7,
+    "tokens": {
+      "prompt": 0,
+      "completion": 0,
+      "reasoning": 0,
+      "requests": 0,
+      "failures": 0
+    },
+    "latency_avg_s": 0.0,
+    "latency_max_s": 0.0
+  },
+  "curated": {
+    "used": 34,
+    "rejected": 1,
+    "keyref_rescue": 0
+  },
+  "keyref_rescue": false,
+  "glossary_detail": {
+    "total": 2126,
+    "terms": 813,
+    "locked": 588,
+    "exact": 1868,
+    "keyref": 2126,
+    "bad": 0
+  },
+  "written": {
+    "files": {
+      "000_TexturesUnlimited": 1,
+      "ConformalDecals": 2,
+      "EditorExtensionsRedux": 3,
+      "KerbalFoundries": 1,
+      "KerbalismConfig": 2,
+      "MechJeb2": 1,
+      "ModularLaunchPads": 12,
+      "ProceduralFairings": 2,
+      "ProceduralParts": 2,
+      "ROCapsules": 7,
+      "ROEngines": 6,
+      "ROHeatshields": 1,
+      "ROSolar": 3,
+      "ROTanks": 6,
+      "RP-1": 43,
+      "RealAntennas": 1,
+      "RealismOverhaul": 20,
+      "SXT": 8,
+      "TriggerTech": 10,
+      "VenStockRevamp": 4
+    },
+    "total": 135,
+    "written": false
+  },
+  "elapsed_s": 2.7,
+  "by_mod": {
+    "RP-1": {
+      "ok": 43,
+      "keep": 0,
+      "failed": 32,
+      "chars": 2789
+    },
+    "MechJeb2": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 54
+    },
+    "ROCapsules": {
+      "ok": 7,
+      "keep": 0,
+      "failed": 2,
+      "chars": 566
+    },
+    "ROSolar": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 1,
+      "chars": 80
+    },
+    "AJE": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ConformalDecals": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 46
+    },
+    "EditorExtensionsRedux": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 1,
+      "chars": 49,
+      "official": 1
+    },
+    "RealismOverhaul": {
+      "ok": 20,
+      "keep": 0,
+      "failed": 19,
+      "chars": 1970
+    },
+    "SXT": {
+      "ok": 8,
+      "keep": 0,
+      "failed": 3,
+      "chars": 688
+    },
+    "TriggerTech": {
+      "ok": 10,
+      "keep": 0,
+      "failed": 1,
+      "chars": 218
+    },
+    "VenStockRevamp": {
+      "ok": 4,
+      "keep": 0,
+      "failed": 1,
+      "chars": 326
+    },
+    "000_TexturesUnlimited": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 14
+    },
+    "KerbalFoundries": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 1,
+      "chars": 27
+    },
+    "KerbalismConfig": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 33
+    },
+    "ModularLaunchPads": {
+      "ok": 12,
+      "keep": 0,
+      "failed": 0,
+      "chars": 3286
+    },
+    "ProceduralParts": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 1,
+      "chars": 80
+    },
+    "RealAntennas": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 22
+    },
+    "ROEngines": {
+      "ok": 5,
+      "keep": 0,
+      "failed": 0,
+      "chars": 409,
+      "official": 1
+    },
+    "ROTanks": {
+      "ok": 6,
+      "keep": 0,
+      "failed": 1,
+      "chars": 326
+    },
+    "ProceduralFairings": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 94
+    },
+    "RealChute": {
+      "ok": 0,
+      "keep": 0,
+      "failed": 1,
+      "chars": 0
+    },
+    "ROHeatshields": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 66
+    }
+  }
+}

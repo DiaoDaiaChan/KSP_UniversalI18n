@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    UI18n.Core —— 纯 .NET 核心库（契约见 00 §4、02 §5、03 §5.1）。
+
+    硬约束（违反即返工，见 05 §2 / T1 任务书）：
+      1. 零第三方依赖：不允许任何 PackageReference。
+      2. 零游戏依赖：不允许引用 UnityEngine / Assembly-CSharp / 0Harmony / KSP 任何程序集。
+         下面的 UI18nCore_RejectGameDependencies target 会主动拦下来。
+      3. 双目标：net472（KSP 运行时）+ net10.0（单测与工具链）。net472 无 targeting pack，
+         用 FrameworkPathOverride 指向机器上的 .NET Framework 4.7.2 参考程序集。
+  -->
+  <PropertyGroup>
+    <TargetFrameworks>net472;net10.0</TargetFrameworks>
+    <AssemblyName>UI18n.Core</AssemblyName>
+    <RootNamespace>UI18n.Core</RootNamespace>
+    <OutputType>Library</OutputType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+    <FrameworkPathOverride Condition="'$(TargetFramework)' == 'net472'">C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2</FrameworkPathOverride>
+  </PropertyGroup>
+
+  <!-- 红线守卫：Core 一旦引用了游戏侧程序集，立刻在编译前报错，而不是等到运行时炸 -->
+  <Target Name="UI18nCore_RejectGameDependencies" BeforeTargets="CoreCompile">
+    <Error Condition="$(TargetFramework) == 'net472' and !Exists('$(FrameworkPathOverride)\mscorlib.dll')"
+           Text="找不到 net472 参考程序集：$(FrameworkPathOverride)。请检查 FrameworkPathOverride。" />
+    <Error Condition="'%(Reference.Identity)' != '' and ($([System.String]::Copy('%(Reference.Identity)').ToLowerInvariant().Contains('unityengine')) or $([System.String]::Copy('%(Reference.Identity)').ToLowerInvariant().Contains('assembly-csharp')) or $([System.String]::Copy('%(Reference.Identity)').ToLowerInvariant().Contains('harmony')) or $([System.String]::Copy('%(Reference.Identity)').ToLowerInvariant().Contains('ksp')))"
+           Text="UI18n.Core 必须是纯 .NET：禁止引用游戏侧程序集 '%(Reference.Identity)'（见 05 §2 与 T1 任务书）。" />
+    <Error Condition="'%(PackageReference.Identity)' != ''"
+           Text="UI18n.Core 必须零第三方依赖：禁止 PackageReference '%(PackageReference.Identity)'。" />
+  </Target>
+
+</Project>

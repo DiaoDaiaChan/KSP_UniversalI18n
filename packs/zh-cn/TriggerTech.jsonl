@@ -1,0 +1,490 @@
+{"h": "00243b50a133968d", "n": "No Science Labs on Active Vessel.", "s": "No Science Labs on Active Vessel.", "t": "激活载具上没有科学实验室。", "mod": "TriggerTech"}
+{"h": "003e13ad5ce059f8", "n": "Xfer Origin:", "s": "Xfer Origin:", "t": "转移出发地：", "mod": "TriggerTech"}
+{"h": "00638f8d8b38b287", "n": "Set Vessel Active", "s": "Set Vessel Active", "t": "设为活动载具", "mod": "TriggerTech"}
+{"h": "00ed4c2fe2431a5d", "n": "No Future Maneuver Nodes Found", "s": "No Future Maneuver Nodes Found", "t": "未找到后续机动节点", "mod": "TriggerTech"}
+{"h": "00fff34042ce53fe", "n": "Object Targeted", "s": "Object Targeted", "t": "已选定目标", "mod": "TriggerTech"}
+{"h": "0113d15a09d28ddb", "n": "Add Margin to", "s": "Add Margin to", "t": "添加裕度至", "mod": "TriggerTech"}
+{"h": "011e24c76f7f71e8", "n": "Target Vessel:", "s": "Target Vessel:", "t": "目标载具：", "mod": "TriggerTech"}
+{"h": "019f1ea0ef82764f", "n": "Selected a transfer with no event date", "s": "Selected a transfer with no event date", "t": "所选转移没有事件日期", "mod": "TriggerTech"}
+{"h": "01a685c93a33f0a1", "n": "- Maneuver Node", "s": "- Maneuver Node", "t": "- 机动节点", "mod": "TriggerTech"}
+{"h": "023c81dfbd00a483", "n": "Periapsis", "s": "Periapsis", "t": "近地点", "mod": "TriggerTech"}
+{"h": "03200e9cab3dc963", "n": "Default Burn Node Margin (KER/VOID)", "s": "Default Burn Node Margin (KER/VOID)", "t": "默认点火节点裕度（KER/VOID）", "mod": "TriggerTech"}
+{"h": "03d12fcc2b51b0b9", "n": "Details...", "s": "Details...", "t": "详情...", "mod": "TriggerTech"}
+{"h": "04320abb24fac387", "n": "Filter list to current vessel", "s": "Filter list to current vessel", "t": "按当前载具过滤列表", "mod": "TriggerTech"}
+{"h": "043fc2b86795b3dc", "n": "General Settings", "s": "General Settings", "t": "通用设置", "mod": "TriggerTech"}
+{"h": "0458ee1abdff1db9", "n": "No Enabled Future Alarms in list", "s": "No Enabled Future Alarms in list", "t": "列表中无已启用的未来闹钟", "mod": "TriggerTech"}
+{"h": "0487f33d9ddaabde", "n": "About", "s": "About", "t": "关于", "mod": "TriggerTech"}
+{"h": "05e969fe34b89a63", "n": "Crew member alarm", "s": "Crew member alarm", "t": "乘员闹钟", "mod": "TriggerTech"}
+{"h": "05eb9385eb3e7097", "n": "If an EVA'd Kerbal is on an SOI Path dont create an alarm for this scenario", "s": "If an EVA'd Kerbal is on an SOI Path dont create an alarm for this scenario", "t": "若处于 EVA 状态的坎巴拉人处于 SOI 路径上，不为此情景创建闹钟", "mod": "TriggerTech"}
+{"h": "061cc20e3432dead", "n": "Pause", "s": "Pause", "t": "暂停", "mod": "TriggerTech"}
+{"h": "06eaee20d025f545", "n": "Textures", "s": "Textures", "t": "贴图", "mod": "TriggerTech"}
+{"h": "07be4aedb7f4714f", "n": "Closest/Target Distance", "s": "Closest/Target Distance", "t": "最近/目标距离", "mod": "TriggerTech"}
+{"h": "07c4c30f5c49e684", "n": "No Alarms in the List", "s": "No Alarms in the List", "t": "列表中无警报", "mod": "TriggerTech"}
+{"h": "08c255c3b6dac2c6", "n": "Time to pay attention to", "s": "Time to pay attention to", "t": "关注倒计时", "mod": "TriggerTech"}
+{"h": "08e6bd98452e6bb9", "n": "Audio", "s": "Audio", "t": "音频", "mod": "TriggerTech"}
+{"h": "0a84a116b6dbb4bf", "n": "No future model data available for this transfer", "s": "No future model data available for this transfer", "t": "此转移无未来的模型数据", "mod": "TriggerTech"}
+{"h": "0b061ad7d5a2a18b", "n": "Phase Angle", "s": "Phase Angle", "t": "相位角", "mod": "TriggerTech"}
+{"h": "0ba6a3dcc7330bc3", "n": "No Contracts Offered or Active", "s": "No Contracts Offered or Active", "t": "无待选或进行中合同", "mod": "TriggerTech"}
+{"h": "0bb41a60d95dd386", "n": "Test Sound", "s": "Test Sound", "t": "测试声音", "mod": "TriggerTech"}
+{"h": "0d4c27b5bd263b1c", "n": "Nearing SOI Change", "s": "Nearing SOI Change", "t": "接近 SOI 变更", "mod": "TriggerTech"}
+{"h": "0e1a5b66a4a07a02", "n": "Hide Full List", "s": "Hide Full List", "t": "隐藏完整列表", "mod": "TriggerTech"}
+{"h": "0e245c18b431588c", "n": "Warp to", "s": "Warp to", "t": "加速至", "mod": "TriggerTech"}
+{"h": "11292455752b45cd", "n": "Hides all warpto stuff when the man node gizmo is visible", "s": "Hides all warpto stuff when the man node gizmo is visible", "t": "机动节点调节手柄可见时隐藏所有加速相关内容", "mod": "TriggerTech"}
+{"h": "116fac6708f87d36", "n": "Target:", "s": "Target:", "t": "目标：", "mod": "TriggerTech"}
+{"h": "1204542b8b909c24", "n": "(Margin=", "s": "(Margin=", "t": "（余量=", "mod": "TriggerTech"}
+{"h": "1219d97b49650c05", "n": "Visibility", "s": "Visibility", "t": "可见性", "mod": "TriggerTech"}
+{"h": "12b8bdb5825dabe1", "n": "seconds of the Alarm time, at which point it just maintains the last captured time of the change.", "s": "seconds of the Alarm time, at which point it just maintains the last captured time of the change.", "t": "秒（闹钟时间前），届时它将仅保持最后捕获的变更时间。", "mod": "TriggerTech"}
+{"h": "1306753534b81deb", "n": "If enabled, the window will remember its last open status.", "s": "If enabled, the window will remember its last open status.", "t": "若启用，窗口将记住上次打开状态。", "mod": "TriggerTech"}
+{"h": "14b936e3fb3321e6", "n": "Default Action:", "s": "Default Action:", "t": "默认操作：", "mod": "TriggerTech"}
+{"h": "15733d929c371c93", "n": "Save Backup Failed", "s": "Save Backup Failed", "t": "保存备份失败", "mod": "TriggerTech"}
+{"h": "15bdec250a4a55fb", "n": "Descending", "s": "Descending", "t": "降环", "mod": "TriggerTech"}
+{"h": "1619efb42bf429c5", "n": "KAC API Tester", "s": "KAC API Tester", "t": "KAC API 测试器", "mod": "TriggerTech"}
+{"h": "165c5937ca5f6644", "n": "APIReady:", "s": "APIReady:", "t": "API 就绪：", "mod": "TriggerTech"}
+{"h": "16719dca8d641325", "n": "Nearing Ascending Node", "s": "Nearing Ascending Node", "t": "接近升交点", "mod": "TriggerTech"}
+{"h": "16b3606b313c03d2", "n": "Rendezvous", "s": "Rendezvous", "t": "交会", "mod": "TriggerTech"}
+{"h": "1800c0261e577716", "n": "Exclude Debris from Auto Alarm", "s": "Exclude Debris from Auto Alarm", "t": "自动闹钟排除碎片", "mod": "TriggerTech"}
+{"h": "18306ca6fea3941f", "n": "Time Format:", "s": "Time Format:", "t": "时间格式：", "mod": "TriggerTech"}
+{"h": "192c12bffad005de", "n": "(Unarmed)", "s": "(Unarmed)", "t": "（未就绪）", "mod": "TriggerTech"}
+{"h": "19a08736bdbc0fc1", "n": "Source Code / Downloads:", "s": "Source Code / Downloads:", "t": "源码 / 下载：", "mod": "TriggerTech"}
+{"h": "1a21c094652f7bd9", "n": "Parameters:", "s": "Parameters:", "t": "参数：", "mod": "TriggerTech"}
+{"h": "1aece763ea649d2b", "n": "Target Not Currently Orbiting Same Parent", "s": "Target Not Currently Orbiting Same Parent", "t": "目标当前未环绕同一母体运行", "mod": "TriggerTech"}
+{"h": "1b77500f932ac21b", "n": "Something weird has happened", "s": "Something weird has happened", "t": "发生异常错误", "mod": "TriggerTech"}
+{"h": "1c0a0fb5ed2fb8de", "n": "Points found", "s": "Points found", "t": "找到的点", "mod": "TriggerTech"}
+{"h": "1c109a21525649fd", "n": "Minimize", "s": "Minimize", "t": "最小化", "mod": "TriggerTech"}
+{"h": "1c75ffd9a9a973ae", "n": "Use KSP UI Volume", "s": "Use KSP UI Volume", "t": "使用 KSP 界面音量", "mod": "TriggerTech"}
+{"h": "1c995e1da7fdf3a1", "n": "Adds WarpTo Buttons near flight nodes to", "s": "Adds WarpTo Buttons near flight nodes to", "t": "在飞行节点旁添加WarpTo按钮以", "mod": "TriggerTech"}
+{"h": "1cdf7369e583dbd1", "n": "Nearing Target Distance", "s": "Nearing Target Distance", "t": "接近目标距离", "mod": "TriggerTech"}
+{"h": "1ce04544e072a793", "n": "seconds of the target phase angle, at which point it just maintains the last captured time of the angle.", "s": "seconds of the target phase angle, at which point it just maintains the last captured time of the angle.", "t": "秒，届时它将仅保持最后捕获的角度时间。", "mod": "TriggerTech"}
+{"h": "1d656e2a8a2b8549", "n": "Show Child Windows Below (not to the side)", "s": "Show Child Windows Below (not to the side)", "t": "在下方显示子窗口（而非侧边）", "mod": "TriggerTech"}
+{"h": "1d9174569274fed7", "n": "Science Lab is already full.", "s": "Science Lab is already full.", "t": "科学实验室已满。", "mod": "TriggerTech"}
+{"h": "1e69667867e0fa00", "n": "-excluding Debris", "s": "-excluding Debris", "t": "-排除残骸", "mod": "TriggerTech"}
+{"h": "1ee7af1cbae48fa8", "n": "Target Science:", "s": "Target Science:", "t": "目标科学点数：", "mod": "TriggerTech"}
+{"h": "1f413a614f30e558", "n": "Earth Settings", "s": "Earth Settings", "t": "地球设置", "mod": "TriggerTech"}
+{"h": "1fe6a01e22bcb146", "n": "No Future Closest Approach found", "s": "No Future Closest Approach found", "t": "未找到未来的最近接近点", "mod": "TriggerTech"}
+{"h": "20384596b0da102e", "n": "Updated Version Available - Click Here", "s": "Updated Version Available - Click Here", "t": "有可用更新版本 - 点击此处", "mod": "TriggerTech"}
+{"h": "20a52e7f3a85f0ba", "n": "SOI Change", "s": "SOI Change", "t": "SOI 变更", "mod": "TriggerTech"}
+{"h": "20c9a0831fc1673c", "n": "Target Details...", "s": "Target Details...", "t": "目标详情...", "mod": "TriggerTech"}
+{"h": "20cc2c09bb449391", "n": "SOI Recalculation is enabled", "s": "SOI Recalculation is enabled", "t": "已启用 SOI 重新计算", "mod": "TriggerTech"}
+{"h": "20e48d7b7b378f75", "n": "Transfer Recalculation is enabled", "s": "Transfer Recalculation is enabled", "t": "已启用转移重新计算", "mod": "TriggerTech"}
+{"h": "21cf255204ee5524", "n": "No Kerbals present in this vessel", "s": "No Kerbals present in this vessel", "t": "此载具中没有坎巴拉人", "mod": "TriggerTech"}
+{"h": "21f14183b607d2de", "n": "Specifics", "s": "Specifics", "t": "详细参数", "mod": "TriggerTech"}
+{"h": "220b62344cbc6ff2", "n": "Space Center", "s": "Space Center", "t": "航天中心", "mod": "TriggerTech"}
+{"h": "231561f3f03b7950", "n": "Plugin Styles", "s": "Plugin Styles", "t": "插件样式", "mod": "TriggerTech"}
+{"h": "2416d9315ec2a6f7", "n": "Version Check", "s": "Version Check", "t": "版本检查", "mod": "TriggerTech"}
+{"h": "2470c96e7a315cc5", "n": "Use Instant Warp Transitions", "s": "Use Instant Warp Transitions", "t": "使用瞬时加速过渡", "mod": "TriggerTech"}
+{"h": "2474e7fb1aec9f05", "n": "Test", "s": "Test", "t": "测试", "mod": "TriggerTech"}
+{"h": "2523e31d6e47246b", "n": "Quick Add...", "s": "Quick Add...", "t": "快速添加...", "mod": "TriggerTech"}
+{"h": "255857544a9d5ec0", "n": "Reset", "s": "Reset", "t": "重置", "mod": "TriggerTech"}
+{"h": "26111dc06eeb02dd", "n": "Tooltip Work", "s": "Tooltip Work", "t": "提示处理", "mod": "TriggerTech"}
+{"h": "2617e83ba68c6d1e", "n": "This will check and recalculate the active orbit node alarms as the flight path changes. The alarm will adjust until it is within", "s": "This will check and recalculate the active orbit node alarms as the flight path changes. The alarm will adjust until it is within", "t": "当飞行路径改变时，这将检查并重新计算激活的轨道节点闹钟。闹钟将持续调整，直到进入前", "mod": "TriggerTech"}
+{"h": "278592e353da8f1a", "n": "Alarm List", "s": "Alarm List", "t": "闹钟列表", "mod": "TriggerTech"}
+{"h": "27bd694470250690", "n": "OrbitExtensions.GetEccentricAnomalyAtTrueAnomaly: True anomaly of", "s": "OrbitExtensions.GetEccentricAnomalyAtTrueAnomaly: True anomaly of", "t": "OrbitExtensions.GetEccentricAnomalyAtTrueAnomaly：真近点角", "mod": "TriggerTech"}
+{"h": "27be241a0fbe1428", "n": "The alarm will adjust until it is within", "s": "The alarm will adjust until it is within", "t": "闹钟将持续调整，直到进入目标相位角前", "mod": "TriggerTech"}
+{"h": "286f64f605eb9b00", "n": "Max alarms before scrolling the list", "s": "Max alarms before scrolling the list", "t": "列表滚动前的最大闹钟数", "mod": "TriggerTech"}
+{"h": "295d5a0ad0627d97", "n": "Oldest Alarm", "s": "Oldest Alarm", "t": "最早的闹钟", "mod": "TriggerTech"}
+{"h": "2969171a24ca90ff", "n": "- SOI Change", "s": "- SOI Change", "t": "- 引力范围变更", "mod": "TriggerTech"}
+{"h": "29d3b9fb142caed1", "n": "Checking", "s": "Checking", "t": "正在检查", "mod": "TriggerTech"}
+{"h": "2a282b1e9d2c3730", "n": "Add Earth Time Alarm", "s": "Add Earth Time Alarm", "t": "添加地球时间闹钟", "mod": "TriggerTech"}
+{"h": "2a6f382ba3c226b2", "n": "Crew Alarms", "s": "Crew Alarms", "t": "乘员闹钟", "mod": "TriggerTech"}
+{"h": "2b3441b8eece504f", "n": "Maximize", "s": "Maximize", "t": "最大化", "mod": "TriggerTech"}
+{"h": "2bbc58c592ac4fe1", "n": "WarpTo Margins", "s": "WarpTo Margins", "t": "WarpTo 提前量", "mod": "TriggerTech"}
+{"h": "2c971b1e2f7ede46", "n": "On Orbit:", "s": "On Orbit:", "t": "在轨：", "mod": "TriggerTech"}
+{"h": "2ca021781b3141b5", "n": "Show the Kerbal Alarm Clock Updated Icon in this Game Mode", "s": "Show the Kerbal Alarm Clock Updated Icon in this Game Mode", "t": "在此游戏模式下显示 Kerbal Alarm Clock 更新图标", "mod": "TriggerTech"}
+{"h": "2ceb11be2290bb1b", "n": "Cancel", "s": "Cancel", "t": "取消", "mod": "TriggerTech"}
+{"h": "2cf24e81a2794a09", "n": "You need to click twice to use these so a single click doesnt inadvertantly cause a warp", "s": "You need to click twice to use these so a single click doesnt inadvertantly cause a warp", "t": "需要点击两次才能使用，防止单次点击意外引发加速", "mod": "TriggerTech"}
+{"h": "2e0763d4b01ec694", "n": "Plugin Preferences", "s": "Plugin Preferences", "t": "插件首选项", "mod": "TriggerTech"}
+{"h": "2ed6d1f2e700421e", "n": "RealSolarSystem.RSSWatchDog", "s": "RealSolarSystem.RSSWatchDog", "t": "RealSolarSystem.RSSWatchDog", "mod": "TriggerTech"}
+{"h": "2f38bf978440ce04", "n": "No Active Vessel.", "s": "No Active Vessel.", "t": "无活动载具。", "mod": "TriggerTech"}
+{"h": "2f4f5c5934b06498", "n": "Instance:", "s": "Instance:", "t": "实例：", "mod": "TriggerTech"}
+{"h": "2f57c68ab8985f52", "n": "Default Margin:", "s": "Default Margin:", "t": "默认提前量：", "mod": "TriggerTech"}
+{"h": "2f67855125675a69", "n": "There is no Ascending Node between orbits", "s": "There is no Ascending Node between orbits", "t": "轨道之间不存在升交点", "mod": "TriggerTech"}
+{"h": "2fdf278bb77975a3", "n": "Minimal Mode", "s": "Minimal Mode", "t": "极简模式", "mod": "TriggerTech"}
+{"h": "302b3af44f6e063e", "n": "Create Alarms for all listed transfers", "s": "Create Alarms for all listed transfers", "t": "为所有列出的转移创建闹钟", "mod": "TriggerTech"}
+{"h": "30a8e41782bc06c6", "n": "Transfer", "s": "Transfer", "t": "转移", "mod": "TriggerTech"}
+{"h": "30d8afddc9716922", "n": "Distance", "s": "Distance", "t": "距离", "mod": "TriggerTech"}
+{"h": "30f34c5fb50d26bf", "n": "SOI Auto Add Enabled", "s": "SOI Auto Add Enabled", "t": "已启用 SOI 自动添加", "mod": "TriggerTech"}
+{"h": "30fb79325cfd62f7", "n": "Dont Auto Create Alarm if inside Margin", "s": "Dont Auto Create Alarm if inside Margin", "t": "在裕度范围内不自动创建闹钟", "mod": "TriggerTech"}
+{"h": "318dd160cf1bb63c", "n": "No future model data", "s": "No future model data", "t": "无后续模型数据", "mod": "TriggerTech"}
+{"h": "33d3b0242a114c0e", "n": "Select Science Lab...", "s": "Select Science Lab...", "t": "选择科学实验室...", "mod": "TriggerTech"}
+{"h": "347de318c22b0f3c", "n": "Quick Added Descending Node", "s": "Quick Added Descending Node", "t": "已快捷添加降交点", "mod": "TriggerTech"}
+{"h": "35ab05d2ce5668f3", "n": "Vertical:", "s": "Vertical:", "t": "垂直：", "mod": "TriggerTech"}
+{"h": "366991b9c9287765", "n": "Right", "s": "Right", "t": "居右", "mod": "TriggerTech"}
+{"h": "377145aeff8dfc8d", "n": "Enough Δv:", "s": "Enough Δv:", "t": "Δv 充足：", "mod": "TriggerTech"}
+{"h": "37a45c15421871ec", "n": "No valid Vessel Target Selected", "s": "No valid Vessel Target Selected", "t": "未选择有效的载具目标", "mod": "TriggerTech"}
+{"h": "38e8de07b7045468", "n": "Add Burn Time:", "s": "Add Burn Time:", "t": "计入燃烧时间：", "mod": "TriggerTech"}
+{"h": "391d8d9ba801cb8e", "n": "Jebediah digs around in the Sandbox, but can't\\nfind any contracts in this game mode", "s": "Jebediah digs around in the Sandbox, but can't\\nfind any contracts in this game mode", "t": "Jebediah 在沙盒中四处翻找，但在该游戏模式下\\n找不到任何合同", "mod": "TriggerTech"}
+{"h": "397b659c8b1bad98", "n": "Crew", "s": "Crew", "t": "乘组", "mod": "TriggerTech"}
+{"h": "3981eb8498d1bd2f", "n": "Volume:", "s": "Volume:", "t": "音量：", "mod": "TriggerTech"}
+{"h": "3a083fab2e9b3e40", "n": "Auto Contracts Enabled", "s": "Auto Contracts Enabled", "t": "已启用自动合同", "mod": "TriggerTech"}
+{"h": "3a0e0a0dcefe9845", "n": "Hide Display of \"Real\" Time", "s": "Hide Display of \"Real\" Time", "t": "隐藏“现实”时间显示", "mod": "TriggerTech"}
+{"h": "3a63a76716aa8102", "n": "Toggle AppLauncher Button", "s": "Toggle AppLauncher Button", "t": "开关 AppLauncher 按钮", "mod": "TriggerTech"}
+{"h": "3afc874a4d86257e", "n": "Warp Choice", "s": "Warp Choice", "t": "加速选项", "mod": "TriggerTech"}
+{"h": "3bc8abc4f9dc9c92", "n": "seconds of the node.", "s": "seconds of the node.", "t": "秒（距节点）。", "mod": "TriggerTech"}
+{"h": "3c57cfe9490f3c54", "n": "Transfer Alarms", "s": "Transfer Alarms", "t": "转移闹钟", "mod": "TriggerTech"}
+{"h": "3c6d8dd38baa07c0", "n": "Invalid fields treated as 0", "s": "Invalid fields treated as 0", "t": "无效字段将视为 0", "mod": "TriggerTech"}
+{"h": "3c9a7c62dbc021cc", "n": "- Kerbal Alarm", "s": "- Kerbal Alarm", "t": "- 坎巴拉闹钟", "mod": "TriggerTech"}
+{"h": "3ce8e76afb560d1a", "n": "- Contract", "s": "- Contract", "t": "- 合同", "mod": "TriggerTech"}
+{"h": "3e034d4098eb5ab2", "n": "Point Found on current plan", "s": "Point Found on current plan", "t": "在当前规划中找到该点", "mod": "TriggerTech"}
+{"h": "3e1555a244dfc3b0", "n": "Quick Margin:", "s": "Quick Margin:", "t": "快捷提前量：", "mod": "TriggerTech"}
+{"h": "3e78e02b9e85b1f8", "n": "Equatorial Nodes (No Valid Target)", "s": "Equatorial Nodes (No Valid Target)", "t": "赤道节点（无有效目标）", "mod": "TriggerTech"}
+{"h": "3fa0733555a4d884", "n": "Alarms when Warping to", "s": "Alarms when Warping to", "t": "加速到此处时闹钟", "mod": "TriggerTech"}
+{"h": "3ffc81b8b87c3496", "n": "Flight Mode", "s": "Flight Mode", "t": "飞行模式", "mod": "TriggerTech"}
+{"h": "4019db6df854a56e", "n": "Check Version Daily", "s": "Check Version Daily", "t": "每日检查版本", "mod": "TriggerTech"}
+{"h": "417235629c4153df", "n": "Calendar:", "s": "Calendar:", "t": "日历：", "mod": "TriggerTech"}
+{"h": "41d0c1fceca53b9a", "n": "Quick Raw", "s": "Quick Raw", "t": "快捷普通", "mod": "TriggerTech"}
+{"h": "4214f0aeca5c3445", "n": "Next Alarm", "s": "Next Alarm", "t": "下一个闹钟", "mod": "TriggerTech"}
+{"h": "436044aa28b17377", "n": "Add the configured default Margin to", "s": "Add the configured default Margin to", "t": "添加配置的默认裕度到", "mod": "TriggerTech"}
+{"h": "4481713940f9f440", "n": "Select Target:", "s": "Select Target:", "t": "选择目标：", "mod": "TriggerTech"}
+{"h": "44f87c21d186fcea", "n": "Repeat", "s": "Repeat", "t": "重复", "mod": "TriggerTech"}
+{"h": "451f1c427658dc80", "n": "Reuse existing Alarm within if node within X(s)", "s": "Reuse existing Alarm within if node within X(s)", "t": "节点在 X 秒内时复用现有闹钟", "mod": "TriggerTech"}
+{"h": "45a3e77b64ac065d", "n": "Time Interval", "s": "Time Interval", "t": "时间间隔", "mod": "TriggerTech"}
+{"h": "466fd7ade09d1137", "n": "apsis Type:", "s": "apsis Type:", "t": "拱点类型：", "mod": "TriggerTech"}
+{"h": "4947fb3cd502670b", "n": "No Selected Vessel", "s": "No Selected Vessel", "t": "未选择载具", "mod": "TriggerTech"}
+{"h": "4970d6c3166b190d", "n": "Quick Earth Alarm", "s": "Quick Earth Alarm", "t": "快捷地球闹钟", "mod": "TriggerTech"}
+{"h": "4a6950a0dab3068a", "n": "Time Warp/Math Checks", "s": "Time Warp/Math Checks", "t": "时间加速/计算检测", "mod": "TriggerTech"}
+{"h": "4b2366ccf0cd58e2", "n": "Nearing Closest Approach", "s": "Nearing Closest Approach", "t": "接近最近距离", "mod": "TriggerTech"}
+{"h": "4be975a8e1f97336", "n": "Close Alarm", "s": "Close Alarm", "t": "关闭闹钟", "mod": "TriggerTech"}
+{"h": "4bfa10d4b8b78e7b", "n": "Kerbal Engineer Node Margin", "s": "Kerbal Engineer Node Margin", "t": "KER 节点余量", "mod": "TriggerTech"}
+{"h": "4bfbd6b3f676a7d0", "n": "Time Warp Halted", "s": "Time Warp Halted", "t": "时间加速已停止", "mod": "TriggerTech"}
+{"h": "4c30d61c1b48be5b", "n": "Kerbal Alarm Clock Updated -", "s": "Kerbal Alarm Clock Updated -", "t": "Kerbal Alarm Clock 已更新 -", "mod": "TriggerTech"}
+{"h": "4cc09af3299a27e5", "n": "Enter Time for reminder...", "s": "Enter Time for reminder...", "t": "输入提醒时间…", "mod": "TriggerTech"}
+{"h": "4d21acf0f471b114", "n": "Selected Vessel:", "s": "Selected Vessel:", "t": "选定载具：", "mod": "TriggerTech"}
+{"h": "4d85e104c7ab30fd", "n": "BackupFailed Message", "s": "BackupFailed Message", "t": "BackupFailed 消息", "mod": "TriggerTech"}
+{"h": "4da9de74c4439de9", "n": "Alarm Position:", "s": "Alarm Position:", "t": "闹钟位置：", "mod": "TriggerTech"}
+{"h": "4daebf293a48ced4", "n": "Date of Event:", "s": "Date of Event:", "t": "事件日期：", "mod": "TriggerTech"}
+{"h": "4e73a7bf10b56c6a", "n": "Delete Contract Alarm on Expiry passing", "s": "Delete Contract Alarm on Expiry passing", "t": "过期后删除合同闹钟", "mod": "TriggerTech"}
+{"h": "4e75bb9192821d8b", "n": "Quick Added Periapsis Alarm", "s": "Quick Added Periapsis Alarm", "t": "已快捷添加近地点闹钟", "mod": "TriggerTech"}
+{"h": "4ec295e6c0fe2f64", "n": "Slams the transitions between levels - can cause issues for large timewarp factors", "s": "Slams the transitions between levels - can cause issues for large timewarp factors", "t": "强制在不同倍率间快速切换 - 在大时间加速倍率下可能导致问题", "mod": "TriggerTech"}
+{"h": "4f64e59017bee1d6", "n": "RSS detected - it is recommended that you use the Transfer Window Planner Plugin to plan transfers", "s": "RSS detected - it is recommended that you use the Transfer Window Planner Plugin to plan transfers", "t": "检测到 RSS - 建议使用 Transfer Window Planner 插件来规划转移", "mod": "TriggerTech"}
+{"h": "4f66d77aa6091ab7", "n": "Old SOI:", "s": "Old SOI:", "t": "原SOI：", "mod": "TriggerTech"}
+{"h": "4fcdd77a00313c8f", "n": "Normal Time", "s": "Normal Time", "t": "标准时间", "mod": "TriggerTech"}
+{"h": "4fe1a4e5239bbb5d", "n": "Save File Backups", "s": "Save File Backups", "t": "存档备份", "mod": "TriggerTech"}
+{"h": "4ffe647a1d89a570", "n": "Enable WarpTo Buttons", "s": "Enable WarpTo Buttons", "t": "启用 WarpTo 按钮", "mod": "TriggerTech"}
+{"h": "5024b9226ba6037b", "n": "Are you sure you want to delete?", "s": "Are you sure you want to delete?", "t": "确定要删除吗？", "mod": "TriggerTech"}
+{"h": "504d3cb92c9e5c79", "n": "Date:", "s": "Date:", "t": "日期：", "mod": "TriggerTech"}
+{"h": "51042616c72b6d43", "n": "Earth Calling...", "s": "Earth Calling...", "t": "地球呼叫…", "mod": "TriggerTech"}
+{"h": "511537cea0675c58", "n": "Kerbal", "s": "Kerbal", "t": "坎巴拉人", "mod": "TriggerTech"}
+{"h": "523af7772f62d094", "n": "Remove Auto Alarms if Maneuver Node Removed", "s": "Remove Auto Alarms if Maneuver Node Removed", "t": "机动节点移除时移除自动闹钟", "mod": "TriggerTech"}
+{"h": "5344bb3bb1f0e92f", "n": "How much leeway to give the transitions period. The higher this value the earlier the KAC will slow the warp rate", "s": "How much leeway to give the transitions period. The higher this value the earlier the KAC will slow the warp rate", "t": "过渡期给予的余量。此值越高，KAC 降低时间加速速率越早", "mod": "TriggerTech"}
+{"h": "539b34c4c93e0663", "n": "Raw Time Alarm", "s": "Raw Time Alarm", "t": "原始时间闹钟", "mod": "TriggerTech"}
+{"h": "54415e0f287eed6f", "n": "Exclude EVA Kerbals from Auto Alarm", "s": "Exclude EVA Kerbals from Auto Alarm", "t": "自动闹钟排除 EVA 坎巴拉人", "mod": "TriggerTech"}
+{"h": "54cffdc3aea63e1e", "n": "Maneuver Node", "s": "Maneuver Node", "t": "机动节点", "mod": "TriggerTech"}
+{"h": "550b2e2b1f99286d", "n": "- Science Lab", "s": "- Science Lab", "t": "- 科学实验室", "mod": "TriggerTech"}
+{"h": "557e769867b69e39", "n": "Reset Earth Epoch", "s": "Reset Earth Epoch", "t": "重置地球历元", "mod": "TriggerTech"}
+{"h": "55ab1f710999a664", "n": "SOI Alarm Settings", "s": "SOI Alarm Settings", "t": "SOI 闹钟设置", "mod": "TriggerTech"}
+{"h": "55e0d7c635900d04", "n": "Remember last open status", "s": "Remember last open status", "t": "记住上次开启状态", "mod": "TriggerTech"}
+{"h": "56031b9bb65c18ad", "n": "Toggle Calendar", "s": "Toggle Calendar", "t": "切换日历", "mod": "TriggerTech"}
+{"h": "56a7979444d86f73", "n": "Vessel:", "s": "Vessel:", "t": "载具：", "mod": "TriggerTech"}
+{"h": "57a02fbc13ec0c36", "n": "Not Switching - failed in loading new position", "s": "Not Switching - failed in loading new position", "t": "未切换 - 加载新位置失败", "mod": "TriggerTech"}
+{"h": "58258eb4fd9c2670", "n": "No Maneuver Nodes Found", "s": "No Maneuver Nodes Found", "t": "未找到机动节点", "mod": "TriggerTech"}
+{"h": "586076f718cc391a", "n": "Time type:", "s": "Time type:", "t": "时间类型：", "mod": "TriggerTech"}
+{"h": "588e05fa720c4b3f", "n": "Hide Details", "s": "Hide Details", "t": "隐藏详细信息", "mod": "TriggerTech"}
+{"h": "58bd6684d875f739", "n": "VOID Node Margin", "s": "VOID Node Margin", "t": "VOID 节点余量", "mod": "TriggerTech"}
+{"h": "59f313706a06b9fe", "n": "Xfer Parent:", "s": "Xfer Parent:", "t": "转移母体：", "mod": "TriggerTech"}
+{"h": "5aeed813fd30d1f9", "n": "Kerbal Crew", "s": "Kerbal Crew", "t": "坎巴拉乘员", "mod": "TriggerTech"}
+{"h": "5b2ee6577cbf8fbb", "n": "Not Switching - unable to backup saves", "s": "Not Switching - unable to backup saves", "t": "未切换 - 无法备份存档", "mod": "TriggerTech"}
+{"h": "5c468e943eee8a12", "n": "Select Alarm Type:", "s": "Select Alarm Type:", "t": "选择闹钟类型：", "mod": "TriggerTech"}
+{"h": "5c9b57b63817f56f", "n": "Global Settings", "s": "Global Settings", "t": "全局设置", "mod": "TriggerTech"}
+{"h": "5da52af9b083c29a", "n": "Model", "s": "Model", "t": "模型", "mod": "TriggerTech"}
+{"h": "5ed2d4d910800a8f", "n": "Orbit", "s": "Orbit", "t": "轨道", "mod": "TriggerTech"}
+{"h": "5ed971e58fdde3aa", "n": "Store Man Node/Target with Crew Alarm", "s": "Store Man Node/Target with Crew Alarm", "t": "随乘组闹钟保存机动节点/目标", "mod": "TriggerTech"}
+{"h": "5ef3d45e3ae89ce5", "n": "Time To Event:", "s": "Time To Event:", "t": "距事件发生：", "mod": "TriggerTech"}
+{"h": "5fb42539c5d92881", "n": "Kill Warp Only", "s": "Kill Warp Only", "t": "仅终止加速", "mod": "TriggerTech"}
+{"h": "600030d4085e48c8", "n": "Invalid order", "s": "Invalid order", "t": "无效顺序", "mod": "TriggerTech"}
+{"h": "60b3033c17dbb9b2", "n": "Year:", "s": "Year:", "t": "年：", "mod": "TriggerTech"}
+{"h": "60f24f804a09be81", "n": "Man Node Alarm Settings", "s": "Man Node Alarm Settings", "t": "机动节点闹钟设置", "mod": "TriggerTech"}
+{"h": "613a8c732e631ec7", "n": "Message Choice", "s": "Message Choice", "t": "消息选项", "mod": "TriggerTech"}
+{"h": "62aaa51c6551d249", "n": "Warp To General Settings", "s": "Warp To General Settings", "t": "时间加速通用设置", "mod": "TriggerTech"}
+{"h": "638128be495dd254", "n": "Confirm before deleting alarms", "s": "Confirm before deleting alarms", "t": "删除闹钟前确认", "mod": "TriggerTech"}
+{"h": "63a98418475dde00", "n": "Target Science Amount:", "s": "Target Science Amount:", "t": "目标科学点数量：", "mod": "TriggerTech"}
+{"h": "63befa0a8bd307f6", "n": "Not Switching - unable to find vessel index", "s": "Not Switching - unable to find vessel index", "t": "未切换 - 找不到载具索引", "mod": "TriggerTech"}
+{"h": "6403ca65cc117ffe", "n": "This option will save your persistent and quicksave files prior to switching ships using the KAC Jump buttons", "s": "This option will save your persistent and quicksave files prior to switching ships using the KAC Jump buttons", "t": "此选项将在使用 KAC 跳转按钮切换飞船前保存你的 persistent 存档与快速存档", "mod": "TriggerTech"}
+{"h": "641f550297d1a1f9", "n": "Apoapsis", "s": "Apoapsis", "t": "远地点", "mod": "TriggerTech"}
+{"h": "64a117f12acdbf48", "n": "Earth Alarm (1 Hr)", "s": "Earth Alarm (1 Hr)", "t": "地球闹钟 (1小时)", "mod": "TriggerTech"}
+{"h": "64b7ba7403e7d739", "n": "Launch Rendezvous", "s": "Launch Rendezvous", "t": "发射交会", "mod": "TriggerTech"}
+{"h": "64c56ee420769b1d", "n": "- Transfer Point", "s": "- Transfer Point", "t": "- 转移点", "mod": "TriggerTech"}
+{"h": "6555f21afb3aec04", "n": "Raw Alarm (10 Min)", "s": "Raw Alarm (10 Min)", "t": "普通闹钟 (10分钟)", "mod": "TriggerTech"}
+{"h": "656dfdc68a98502e", "n": "Functions", "s": "Functions", "t": "功能", "mod": "TriggerTech"}
+{"h": "660b5d263ce131d4", "n": "Control Drawing", "s": "Control Drawing", "t": "控件绘制", "mod": "TriggerTech"}
+{"h": "660f2b406b0cb629", "n": "- Earth Alarm", "s": "- Earth Alarm", "t": "- 地球闹钟", "mod": "TriggerTech"}
+{"h": "6628a8b8c1d5ae08", "n": "Max time before tooltip is auto-hidden", "s": "Max time before tooltip is auto-hidden", "t": "工具提示自动隐藏前的最大时间", "mod": "TriggerTech"}
+{"h": "67577921a7828baa", "n": "Time to Alarm:", "s": "Time to Alarm:", "t": "闹钟剩余时间：", "mod": "TriggerTech"}
+{"h": "679e4476d06290bc", "n": "No Vessel", "s": "No Vessel", "t": "无载具", "mod": "TriggerTech"}
+{"h": "67bd41b126ad6fcb", "n": "Nearing Apoapsis", "s": "Nearing Apoapsis", "t": "接近远地点", "mod": "TriggerTech"}
+{"h": "6906ba56555fa8b3", "n": "Margin:", "s": "Margin:", "t": "余量：", "mod": "TriggerTech"}
+{"h": "69aa322affaff398", "n": "Stuff to get icon and windows by scene", "s": "Stuff to get icon and windows by scene", "t": "按场景获取图标和窗口的组件", "mod": "TriggerTech"}
+{"h": "6b0248f3257f658f", "n": "Transfers", "s": "Transfers", "t": "转移", "mod": "TriggerTech"}
+{"h": "6b45fa015bb01f25", "n": "Man Node", "s": "Man Node", "t": "机动节点", "mod": "TriggerTech"}
+{"h": "6be60d7281a829f7", "n": "order", "s": "order", "t": "顺序", "mod": "TriggerTech"}
+{"h": "6c80e8ad765947e8", "n": "Allow Ship Jump in Space Center and Tracking Station", "s": "Allow Ship Jump in Space Center and Tracking Station", "t": "允许在航天中心和深空网地面站中跳转载具", "mod": "TriggerTech"}
+{"h": "6cb3fa98263b8a1a", "n": "Common Alarm Properties", "s": "Common Alarm Properties", "t": "常用闹钟属性", "mod": "TriggerTech"}
+{"h": "6d31035878e50336", "n": "Selected Target is out of reach. Target Amount changed.", "s": "Selected Target is out of reach. Target Amount changed.", "t": "所选目标无法达成。目标数值已更改。", "mod": "TriggerTech"}
+{"h": "6d53818dc7c593dc", "n": "Ascending/Descending Node", "s": "Ascending/Descending Node", "t": "升交点/降交点", "mod": "TriggerTech"}
+{"h": "6ec88462a0a31ad4", "n": "Next Active Contract", "s": "Next Active Contract", "t": "下一个进行中合同", "mod": "TriggerTech"}
+{"h": "6efaff52b3d303a5", "n": "Safety Options", "s": "Safety Options", "t": "安全选项", "mod": "TriggerTech"}
+{"h": "717e6324e40f47bf", "n": "Ship", "s": "Ship", "t": "飞船", "mod": "TriggerTech"}
+{"h": "71811ef2a18a5c6b", "n": "Editing...", "s": "Editing...", "t": "正在编辑...", "mod": "TriggerTech"}
+{"h": "71824f00ea7de5c5", "n": "No Future", "s": "No Future", "t": "无后续", "mod": "TriggerTech"}
+{"h": "719beddd4bb593c8", "n": "Distance:", "s": "Distance:", "t": "距离：", "mod": "TriggerTech"}
+{"h": "728e24b8e5a2f571", "n": "Scientist", "s": "Scientist", "t": "科学家", "mod": "TriggerTech"}
+{"h": "72c861310b73e9bc", "n": "Show Phase Angle", "s": "Show Phase Angle", "t": "显示相位角", "mod": "TriggerTech"}
+{"h": "7329dee63faa3600", "n": "Alarm Defaults", "s": "Alarm Defaults", "t": "默认闹钟设置", "mod": "TriggerTech"}
+{"h": "7339e91861cfcf11", "n": "Delete Contract Alarm on Deadline passing", "s": "Delete Contract Alarm on Deadline passing", "t": "期限过后删除合同闹钟", "mod": "TriggerTech"}
+{"h": "73beb11b6ec99d56", "n": "Dont Add New alarms if Man node is closer than this threshold", "s": "Dont Add New alarms if Man node is closer than this threshold", "t": "若机动节点近于此阈值则不添加新闹钟", "mod": "TriggerTech"}
+{"h": "757fa33d67881d44", "n": "Scene and Icon Settings", "s": "Scene and Icon Settings", "t": "场景与图标设置", "mod": "TriggerTech"}
+{"h": "758063698e4e60a6", "n": "Add KER Burn Time:", "s": "Add KER Burn Time:", "t": "添加 KER 点火时长：", "mod": "TriggerTech"}
+{"h": "75c96a1cac687528", "n": "- Apoapsis", "s": "- Apoapsis", "t": "- 远地点", "mod": "TriggerTech"}
+{"h": "75fa5343b967f4d7", "n": "Altitude", "s": "Altitude", "t": "高度", "mod": "TriggerTech"}
+{"h": "76efca180e83a3ef", "n": "Kill Warp and Message", "s": "Kill Warp and Message", "t": "终止加速并显示消息", "mod": "TriggerTech"}
+{"h": "776cb0a26e917c2e", "n": "Settings...", "s": "Settings...", "t": "设置...", "mod": "TriggerTech"}
+{"h": "77716335e187f5d9", "n": "Xfer Target:", "s": "Xfer Target:", "t": "转移目标：", "mod": "TriggerTech"}
+{"h": "784fc947ce6e6981", "n": "Nearing Periapsis", "s": "Nearing Periapsis", "t": "接近近地点", "mod": "TriggerTech"}
+{"h": "78886094414fd9fb", "n": "Node Details...", "s": "Node Details...", "t": "节点详情...", "mod": "TriggerTech"}
+{"h": "78be84489a146a26", "n": "Burn:", "s": "Burn:", "t": "点火：", "mod": "TriggerTech"}
+{"h": "7be74127060d828b", "n": "alarms", "s": "alarms", "t": "闹钟", "mod": "TriggerTech"}
+{"h": "7ce65b90a1be4307", "n": "Alarm Time:", "s": "Alarm Time:", "t": "闹钟时间：", "mod": "TriggerTech"}
+{"h": "7cee7b6268aa6da5", "n": "Time for Alarm (24 hour):", "s": "Time for Alarm (24 hour):", "t": "闹钟时间（24小时制）：", "mod": "TriggerTech"}
+{"h": "7d0288ec335b86e8", "n": "Click to cycle through Target Bodies", "s": "Click to cycle through Target Bodies", "t": "点击循环切换目标天体", "mod": "TriggerTech"}
+{"h": "7d4f54e174248cac", "n": "KAC Controls", "s": "KAC Controls", "t": "KAC 控制", "mod": "TriggerTech"}
+{"h": "7e0c884f18710c7e", "n": "Show Calendar Toggle in Main Window", "s": "Show Calendar Toggle in Main Window", "t": "在主窗口显示日历开关", "mod": "TriggerTech"}
+{"h": "7e31a8026ecf09dc", "n": "Hides these labels regardless of the tooltips setting", "s": "Hides these labels regardless of the tooltips setting", "t": "无视工具提示设置，始终隐藏这些标签", "mod": "TriggerTech"}
+{"h": "7ee3fb63e20ecd06", "n": "Audio Settings", "s": "Audio Settings", "t": "音频设置", "mod": "TriggerTech"}
+{"h": "815889daca1d60d7", "n": "Quick Added Apoapsis Alarm", "s": "Quick Added Apoapsis Alarm", "t": "已快捷添加远地点闹钟", "mod": "TriggerTech"}
+{"h": "8168c80504d33176", "n": "timeOfClosestApproach Code -", "s": "timeOfClosestApproach Code -", "t": "timeOfClosestApproach 代码 -", "mod": "TriggerTech"}
+{"h": "828f904ba9223cb6", "n": "Alarm Exists", "s": "Alarm Exists", "t": "闹钟已存在", "mod": "TriggerTech"}
+{"h": "82e8b42ce6ffb999", "n": "Calc by:", "s": "Calc by:", "t": "计算依据：", "mod": "TriggerTech"}
+{"h": "839102cc50763dd8", "n": "Tracking Station", "s": "Tracking Station", "t": "追踪站", "mod": "TriggerTech"}
+{"h": "8407f6cd6b8e0746", "n": "Orbital Node Alarms (Ap, Pe, AN, DN)", "s": "Orbital Node Alarms (Ap, Pe, AN, DN)", "t": "轨道节点闹钟（Ap、Pe、AN、DN）", "mod": "TriggerTech"}
+{"h": "849d0fe0c99bc25b", "n": "Science Lab is not Active.", "s": "Science Lab is not Active.", "t": "科学实验室未运行。", "mod": "TriggerTech"}
+{"h": "85024653c47bf74e", "n": "App Button:", "s": "App Button:", "t": "应用按钮：", "mod": "TriggerTech"}
+{"h": "8530e1bcc56acae5", "n": "Math Stuff", "s": "Math Stuff", "t": "数学计算", "mod": "TriggerTech"}
+{"h": "85928a8ffe208064", "n": "Distance Type:", "s": "Distance Type:", "t": "距离类型：", "mod": "TriggerTech"}
+{"h": "862486fbbea8e05f", "n": "Click to cycle through Parent Bodies", "s": "Click to cycle through Parent Bodies", "t": "点击循环切换母体天体", "mod": "TriggerTech"}
+{"h": "863ee2fe08f1072e", "n": "Science Lab has no Scientists.", "s": "Science Lab has no Scientists.", "t": "科学实验室内无科学家。", "mod": "TriggerTech"}
+{"h": "865f6f17e1a1c53f", "n": "Orbits to Search:", "s": "Orbits to Search:", "t": "搜索轨道数：", "mod": "TriggerTech"}
+{"h": "8691e03c05bdbfab", "n": "Click here to open the TWP forum thread", "s": "Click here to open the TWP forum thread", "t": "点击此处打开 TWP 论坛板块", "mod": "TriggerTech"}
+{"h": "8787e43cf6e34fc2", "n": "No Active Vessel", "s": "No Active Vessel", "t": "无活跃载具", "mod": "TriggerTech"}
+{"h": "87e9c67a5ebcd020", "n": "Hide WarpTo Tooltips", "s": "Hide WarpTo Tooltips", "t": "隐藏 WarpTo 提示信息", "mod": "TriggerTech"}
+{"h": "8a28e69bf367837c", "n": "Jump To Ship", "s": "Jump To Ship", "t": "切至飞船", "mod": "TriggerTech"}
+{"h": "8a85b0f570045feb", "n": "radians is not attained by orbit with eccentricity", "s": "radians is not attained by orbit with eccentricity", "t": "弧度无法在此偏心率的轨道中达到", "mod": "TriggerTech"}
+{"h": "8abd6cc4bfb0bc2f", "n": "Nearing Descending Node", "s": "Nearing Descending Node", "t": "接近降交点", "mod": "TriggerTech"}
+{"h": "8b0432eecbd8b034", "n": "Update", "s": "Update", "t": "更新", "mod": "TriggerTech"}
+{"h": "8b9516b93f4d6c41", "n": "science in Science Lab", "s": "science in Science Lab", "t": "科学实验室中的科学点数", "mod": "TriggerTech"}
+{"h": "8c96fcc2b24c4cdb", "n": "Restore Window", "s": "Restore Window", "t": "恢复窗口", "mod": "TriggerTech"}
+{"h": "8cfaeedc8534e7bb", "n": "test4:", "s": "test4:", "t": "测试4：", "mod": "TriggerTech"}
+{"h": "8d04f4dc853d4672", "n": "test1:", "s": "test1:", "t": "测试1：", "mod": "TriggerTech"}
+{"h": "8d0becdc85435788", "n": "test3:", "s": "test3:", "t": "测试3：", "mod": "TriggerTech"}
+{"h": "8d0f76dc854677dd", "n": "test2:", "s": "test2:", "t": "测试2：", "mod": "TriggerTech"}
+{"h": "8dc9643037c4ebae", "n": "secs)", "s": "secs)", "t": "秒)", "mod": "TriggerTech"}
+{"h": "8df2df4959a446cc", "n": "Show Extra Details", "s": "Show Extra Details", "t": "显示额外详细信息", "mod": "TriggerTech"}
+{"h": "8e656766d5b6276b", "n": "Create DoNothing", "s": "Create DoNothing", "t": "创建 DoNothing", "mod": "TriggerTech"}
+{"h": "8e6adddaadb023d2", "n": "NOTE: There is already a target and this will change", "s": "NOTE: There is already a target and this will change", "t": "注意：已存在目标，此操作将更改它", "mod": "TriggerTech"}
+{"h": "8fbd60d062a21d90", "n": "Auto Recalc of Node points", "s": "Auto Recalc of Node points", "t": "自动重新计算节点位置", "mod": "TriggerTech"}
+{"h": "8fcf6162f617fdcb", "n": "-excluding EVA", "s": "-excluding EVA", "t": "-排除 EVA", "mod": "TriggerTech"}
+{"h": "9004c7db84ddd2e5", "n": "Create One", "s": "Create One", "t": "创建其一", "mod": "TriggerTech"}
+{"h": "90c1bf3a30acb622", "n": "Pause Action must show Msg", "s": "Pause Action must show Msg", "t": "暂停操作必须显示消息", "mod": "TriggerTech"}
+{"h": "91c6c61dc5fbb865", "n": "Documentation and Links:", "s": "Documentation and Links:", "t": "文档与链接：", "mod": "TriggerTech"}
+{"h": "91e7360cb1fa2c7d", "n": "Final Data Rate:", "s": "Final Data Rate:", "t": "最终数据速率：", "mod": "TriggerTech"}
+{"h": "922a645a721fef31", "n": "OnGUI Stuff", "s": "OnGUI Stuff", "t": "OnGUI 杂项", "mod": "TriggerTech"}
+{"h": "92a0d19a28995530", "n": "Success", "s": "Success", "t": "成功", "mod": "TriggerTech"}
+{"h": "9351bb0378eeb060", "n": "Sphere Of Influence Alarms", "s": "Sphere Of Influence Alarms", "t": "引力范围闹钟", "mod": "TriggerTech"}
+{"h": "94926ae6c1acb355", "n": "Select Contract...", "s": "Select Contract...", "t": "选择合同...", "mod": "TriggerTech"}
+{"h": "94c650bef124bd01", "n": "Ascending", "s": "Ascending", "t": "升环", "mod": "TriggerTech"}
+{"h": "952631b4f45157d7", "n": "Earth", "s": "Earth", "t": "地球", "mod": "TriggerTech"}
+{"h": "96ac6e802fe528b6", "n": "Set to Max", "s": "Set to Max", "t": "设为最大值", "mod": "TriggerTech"}
+{"h": "96d2f1dc180a46d8", "n": "Debug", "s": "Debug", "t": "调试", "mod": "TriggerTech"}
+{"h": "9708c8978457cf06", "n": "Custom (", "s": "Custom (", "t": "自定义 (", "mod": "TriggerTech"}
+{"h": "9759fffa17293a39", "n": "Cannot find the stored Kerbal - perhaps he's lost :(", "s": "Cannot find the stored Kerbal - perhaps he's lost :(", "t": "找不到保存的坎巴拉人 - 可能已经走丢了 :(", "mod": "TriggerTech"}
+{"h": "97784a96507a6913", "n": "Final Data Amount:", "s": "Final Data Amount:", "t": "最终数据量：", "mod": "TriggerTech"}
+{"h": "9779064883b3b696", "n": "APIReady", "s": "APIReady", "t": "API就绪", "mod": "TriggerTech"}
+{"h": "97ee683f4374c4cb", "n": "Game paused", "s": "Game paused", "t": "游戏已暂停", "mod": "TriggerTech"}
+{"h": "97f1df9ceef3a718", "n": "Auto Recalc of Manual SOI Alarms", "s": "Auto Recalc of Manual SOI Alarms", "t": "自动重新计算手动 SOI 闹钟", "mod": "TriggerTech"}
+{"h": "98233bda45e437a4", "n": "Backup Saves on Ship Jump", "s": "Backup Saves on Ship Jump", "t": "切换飞船时备份存档", "mod": "TriggerTech"}
+{"h": "98a74b2e8c91014c", "n": "Replace Target", "s": "Replace Target", "t": "替换目标", "mod": "TriggerTech"}
+{"h": "98adccba33d2278f", "n": "Node Type:", "s": "Node Type:", "t": "节点类型：", "mod": "TriggerTech"}
+{"h": "99c663bac0ae78c5", "n": "dblTest:", "s": "dblTest:", "t": "dblTest:", "mod": "TriggerTech"}
+{"h": "99fc7fa20d9c714c", "n": "Closest", "s": "Closest", "t": "最近", "mod": "TriggerTech"}
+{"h": "9b1d3e5cd6383a3a", "n": "Last Check Attempt:", "s": "Last Check Attempt:", "t": "上次检查尝试：", "mod": "TriggerTech"}
+{"h": "9c252925d844a124", "n": "Auto Create Active Alarms:", "s": "Auto Create Active Alarms:", "t": "自动创建进行中闹钟：", "mod": "TriggerTech"}
+{"h": "9c3a81e27bd431a0", "n": "Enter Raw Time Values...", "s": "Enter Raw Time Values...", "t": "输入原始时间数值...", "mod": "TriggerTech"}
+{"h": "9da72d0d07ac0b1e", "n": "Show Eject Angle", "s": "Show Eject Angle", "t": "显示逃逸角", "mod": "TriggerTech"}
+{"h": "9dac356d42451f91", "n": "/Debris", "s": "/Debris", "t": "/残骸", "mod": "TriggerTech"}
+{"h": "9dfd3e70856e5044", "n": "Quick Action:", "s": "Quick Action:", "t": "快捷操作：", "mod": "TriggerTech"}
+{"h": "9e35e25f4d104bba", "n": "- Ascending Node", "s": "- Ascending Node", "t": "- 升交点", "mod": "TriggerTech"}
+{"h": "9e63c82f03d5cb35", "n": "Attach to Active Vessel", "s": "Attach to Active Vessel", "t": "附加到活动载具", "mod": "TriggerTech"}
+{"h": "9ec7d37b2130ad70", "n": "Tooltip", "s": "Tooltip", "t": "提示信息", "mod": "TriggerTech"}
+{"h": "9f3fb4ba751abb2f", "n": "Active Contract Alarm Settings", "s": "Active Contract Alarm Settings", "t": "进行中合同闹钟设置", "mod": "TriggerTech"}
+{"h": "9ffeaccef70282b5", "n": "No TWP Phase and Eject Angle found in notes", "s": "No TWP Phase and Eject Angle found in notes", "t": "备注中未找到 TWP 相位角和逃逸角", "mod": "TriggerTech"}
+{"h": "9fffe119feb85df1", "n": "Raw", "s": "Raw", "t": "普通", "mod": "TriggerTech"}
+{"h": "a003ef2f30873722", "n": "Editing Alarm", "s": "Editing Alarm", "t": "编辑闹钟", "mod": "TriggerTech"}
+{"h": "a0831faf7cd98f78", "n": "Hide all WarpTo's when Node Gizmo shown", "s": "Hide all WarpTo's when Node Gizmo shown", "t": "显示节点调节手柄时隐藏所有WarpTo", "mod": "TriggerTech"}
+{"h": "a0c27940e14f56da", "n": "Raw Time", "s": "Raw Time", "t": "原始时间", "mod": "TriggerTech"}
+{"h": "a11e41de3a6bada6", "n": "No Contracts Available", "s": "No Contracts Available", "t": "无可用合同", "mod": "TriggerTech"}
+{"h": "a17bce80e1919c03", "n": "Will create an alarm whenever a maneuver node is detected on the vessels flight plan", "s": "Will create an alarm whenever a maneuver node is detected on the vessels flight plan", "t": "当在载具飞行计划中检测到机动节点时将创建闹钟", "mod": "TriggerTech"}
+{"h": "a212997d288bcfdf", "n": "sci/day", "s": "sci/day", "t": "点/日", "mod": "TriggerTech"}
+{"h": "a22b639baad75f65", "n": "-excluding", "s": "-excluding", "t": "-排除", "mod": "TriggerTech"}
+{"h": "a272c5833753da6d", "n": "Detect and Add Alarms for SOI Changes", "s": "Detect and Add Alarms for SOI Changes", "t": "检测并添加 SOI 变更闹钟", "mod": "TriggerTech"}
+{"h": "a2bebf3f86c7778c", "n": "Backups to Keep:", "s": "Backups to Keep:", "t": "保留备份数：", "mod": "TriggerTech"}
+{"h": "a327471feed437ec", "n": "Apoapsis / Periapsis", "s": "Apoapsis / Periapsis", "t": "远地点 / 近地点", "mod": "TriggerTech"}
+{"h": "a4c647b36dab7522", "n": "- Descending Node", "s": "- Descending Node", "t": "- 降交点", "mod": "TriggerTech"}
+{"h": "a4c7d1b519c40eac", "n": "No Active Vessel to filter for", "s": "No Active Vessel to filter for", "t": "无可过滤的活动载具", "mod": "TriggerTech"}
+{"h": "a4c8b43a0182ca68", "n": "Transition Weighting:", "s": "Transition Weighting:", "t": "过渡权重：", "mod": "TriggerTech"}
+{"h": "a50b9c12c926c82d", "n": "Set to Edge", "s": "Set to Edge", "t": "设为边界", "mod": "TriggerTech"}
+{"h": "a5c371b4bb75e590", "n": "Left", "s": "Left", "t": "居左", "mod": "TriggerTech"}
+{"h": "a75b95980cd80e78", "n": "Editor", "s": "Editor", "t": "建造厂房", "mod": "TriggerTech"}
+{"h": "a7e8e55e12347328", "n": "Offered Contract Alarm Settings", "s": "Offered Contract Alarm Settings", "t": "已提供合同的闹钟设置", "mod": "TriggerTech"}
+{"h": "a810654b0cac90df", "n": "Styles", "s": "Styles", "t": "样式", "mod": "TriggerTech"}
+{"h": "a8d27a763bb35b63", "n": "Add New Alarm", "s": "Add New Alarm", "t": "添加新闹钟", "mod": "TriggerTech"}
+{"h": "a8eb4a8faebc9adc", "n": "Orbital Math", "s": "Orbital Math", "t": "轨道计算", "mod": "TriggerTech"}
+{"h": "a945be5ddf4504e7", "n": "Check Version Now", "s": "Check Version Now", "t": "立即检查版本", "mod": "TriggerTech"}
+{"h": "a949979c47eee661", "n": "KerbalAlarmClock.KerbalAlarmClock", "s": "KerbalAlarmClock.KerbalAlarmClock", "t": "KerbalAlarmClock.KerbalAlarmClock", "mod": "TriggerTech"}
+{"h": "aa2ff2be1beae7e5", "n": "Create Alarms for All", "s": "Create Alarms for All", "t": "为全部创建闹钟", "mod": "TriggerTech"}
+{"h": "aab8640d243b52fe", "n": "Invalid fields treated as Max", "s": "Invalid fields treated as Max", "t": "无效字段将视为最大值", "mod": "TriggerTech"}
+{"h": "abe9444fe7ef539b", "n": "Not Attached to Vessel", "s": "Not Attached to Vessel", "t": "未附加到载具", "mod": "TriggerTech"}
+{"h": "ac8252732f2edb19", "n": "Date", "s": "Date", "t": "日期", "mod": "TriggerTech"}
+{"h": "ac8256732f2ee1e5", "n": "Data", "s": "Data", "t": "数据", "mod": "TriggerTech"}
+{"h": "acaead732f54b0a5", "n": "Day:", "s": "Day:", "t": "日：", "mod": "TriggerTech"}
+{"h": "ace18019170f68f1", "n": "Add Alarm", "s": "Add Alarm", "t": "添加闹钟", "mod": "TriggerTech"}
+{"h": "ad7b15237813f3bd", "n": "- Closest Approach", "s": "- Closest Approach", "t": "- 最近接近点", "mod": "TriggerTech"}
+{"h": "adaa3b24c85b7915", "n": "Detect and Add Alarms for Maneuver Nodes", "s": "Detect and Add Alarms for Maneuver Nodes", "t": "检测并添加机动节点闹钟", "mod": "TriggerTech"}
+{"h": "adbe10fb34688429", "n": "Horizontal:", "s": "Horizontal:", "t": "水平：", "mod": "TriggerTech"}
+{"h": "af184402773cf9a4", "n": "Maneuver Alarms", "s": "Maneuver Alarms", "t": "机动闹钟", "mod": "TriggerTech"}
+{"h": "afec7f1a369755f0", "n": "Prev", "s": "Prev", "t": "上一项", "mod": "TriggerTech"}
+{"h": "b104d50dae204ec9", "n": "Forum Page:", "s": "Forum Page:", "t": "论坛页面：", "mod": "TriggerTech"}
+{"h": "b22e94fb6a24a9f9", "n": "Click to cycle through Origin Bodies", "s": "Click to cycle through Origin Bodies", "t": "点击循环切换起始天体", "mod": "TriggerTech"}
+{"h": "b295b9266bc0ab2a", "n": "Max Warp Limit", "s": "Max Warp Limit", "t": "最大加速限制", "mod": "TriggerTech"}
+{"h": "b2aeb7a54f897c93", "n": "Alarm Repeat Options...", "s": "Alarm Repeat Options...", "t": "闹钟重复选项...", "mod": "TriggerTech"}
+{"h": "b36a842965e533f6", "n": "Orbit Node (Ap,Pe,AN,DN) Recalculation is enabled", "s": "Orbit Node (Ap,Pe,AN,DN) Recalculation is enabled", "t": "已启用轨道节点（Ap、Pe、AN、DN）重新计算", "mod": "TriggerTech"}
+{"h": "b38d497d992ab4a4", "n": "Center", "s": "Center", "t": "居中", "mod": "TriggerTech"}
+{"h": "b397334014cd42d6", "n": "Science Lab", "s": "Science Lab", "t": "科学实验室", "mod": "TriggerTech"}
+{"h": "b3fbaba21290181a", "n": "KSP Time", "s": "KSP Time", "t": "KSP 时间", "mod": "TriggerTech"}
+{"h": "b42c6721a1437504", "n": "UT (raw seconds):", "s": "UT (raw seconds):", "t": "UT（原始秒数）：", "mod": "TriggerTech"}
+{"h": "b43f4fe25ad3fa0d", "n": "Display What:", "s": "Display What:", "t": "显示内容：", "mod": "TriggerTech"}
+{"h": "b48a3e2628a40f6b", "n": "This will check and recalculate the active transfer alarms for the correct phase angle - the math for these is based around circular orbits so the for any elliptical orbit these need to be recalculated over time.", "s": "This will check and recalculate the active transfer alarms for the correct phase angle - the math for these is based around circular orbits so the for any elliptical orbit these need to be recalculated over time.", "t": "此选项将检查并重新计算活跃转移告警的正确相位角——其计算数学模型基于圆轨道，因此对于任何椭圆轨道，告警都需要随时间推移进行重新计算。", "mod": "TriggerTech"}
+{"h": "b4e01f76b6595067", "n": "If Debris is on an SOI Path dont create an alarm for this scenario", "s": "If Debris is on an SOI Path dont create an alarm for this scenario", "t": "若残骸处于 SOI 路径上，不为此情景创建闹钟", "mod": "TriggerTech"}
+{"h": "b55d7a33cc161d96", "n": "All Alarms", "s": "All Alarms", "t": "全部闹钟", "mod": "TriggerTech"}
+{"h": "b56ca0bd90de0960", "n": "Alarm:", "s": "Alarm:", "t": "闹钟：", "mod": "TriggerTech"}
+{"h": "b645ba03245973ee", "n": "Alarm paused game, but has been unpaused", "s": "Alarm paused game, but has been unpaused", "t": "闹钟曾暂停游戏，但现已取消暂停", "mod": "TriggerTech"}
+{"h": "b705353fd0933fa1", "n": "Nearing Launch Rendevous", "s": "Nearing Launch Rendevous", "t": "接近发射交会", "mod": "TriggerTech"}
+{"h": "b79a483c5ab22536", "n": "1⁄2 Burn:", "s": "1⁄2 Burn:", "t": "1⁄2 点火：", "mod": "TriggerTech"}
+{"h": "b85d16cdb0126581", "n": "Confirm Alarm Delete", "s": "Confirm Alarm Delete", "t": "确认删除闹钟", "mod": "TriggerTech"}
+{"h": "b897c8bfa965e5c0", "n": "Screen.height:", "s": "Screen.height:", "t": "屏幕高度：", "mod": "TriggerTech"}
+{"h": "b94c4851c302a3f6", "n": "Man Node Auto Add Enabled", "s": "Man Node Auto Add Enabled", "t": "已启用机动节点自动添加", "mod": "TriggerTech"}
+{"h": "b9f16c9b3a61c125", "n": "Level:", "s": "Level:", "t": "级别：", "mod": "TriggerTech"}
+{"h": "ba59c1e3e9af2e1a", "n": "Hide Alarm Clock when game is paused", "s": "Hide Alarm Clock when game is paused", "t": "游戏暂停时隐藏闹钟", "mod": "TriggerTech"}
+{"h": "bb14c77274fde81c", "n": "- Science Lab alarm", "s": "- Science Lab alarm", "t": "- 科学实验室闹钟", "mod": "TriggerTech"}
+{"h": "bb235e4f013292db", "n": "Enable to select unique sounds or the Raw sound will be used", "s": "Enable to select unique sounds or the Raw sound will be used", "t": "启用以选择独特音效，否则将使用原始音效", "mod": "TriggerTech"}
+{"h": "bb298eea9633792b", "n": "Kerbal Name", "s": "Kerbal Name", "t": "乘员姓名", "mod": "TriggerTech"}
+{"h": "bb980b38227e171f", "n": "Calendar", "s": "Calendar", "t": "日历", "mod": "TriggerTech"}
+{"h": "bb9c75c94beac5f6", "n": "Contract alarm", "s": "Contract alarm", "t": "合同闹钟", "mod": "TriggerTech"}
+{"h": "bc32875044f85066", "n": "Alarm Repeats", "s": "Alarm Repeats", "t": "闹钟重复", "mod": "TriggerTech"}
+{"h": "bcdb5c1d691d772f", "n": "Origin:", "s": "Origin:", "t": "出发地：", "mod": "TriggerTech"}
+{"h": "bcf3457b0b6af60d", "n": "Assembly:", "s": "Assembly:", "t": "程序集：", "mod": "TriggerTech"}
+{"h": "bcfcf63b923b662d", "n": "All Contract Offers", "s": "All Contract Offers", "t": "所有待选合同", "mod": "TriggerTech"}
+{"h": "bd2e2600a8acdb61", "n": "Styling:", "s": "Styling:", "t": "外观样式：", "mod": "TriggerTech"}
+{"h": "bdc2ee1fc4528262", "n": "Nearing Celestial Transfer", "s": "Nearing Celestial Transfer", "t": "接近天体转移", "mod": "TriggerTech"}
+{"h": "bdeea31c60300a5a", "n": "Message:", "s": "Message:", "t": "消息：", "mod": "TriggerTech"}
+{"h": "be7d722d7b4be2e1", "n": "Toggle Display of time from an alternate galaxy on a planet called \"Earth\"", "s": "Toggle Display of time from an alternate galaxy on a planet called \"Earth\"", "t": "开关来自名为“地球”的另一个星系的时间显示", "mod": "TriggerTech"}
+{"h": "bf4a6ccc91cf5135", "n": "Displayed as \"Current Angle (Target Angle)\"", "s": "Displayed as \"Current Angle (Target Angle)\"", "t": "显示为“当前相位角（目标相位角）”", "mod": "TriggerTech"}
+{"h": "bf7b82b58ca060eb", "n": "Allow Ship Jump to Asteroids", "s": "Allow Ship Jump to Asteroids", "t": "允许切至小行星", "mod": "TriggerTech"}
+{"h": "c21ad1b4a88a380c", "n": "Make this alarm repeat when triggered", "s": "Make this alarm repeat when triggered", "t": "触发时让此闹钟重复", "mod": "TriggerTech"}
+{"h": "c22e6a7c44616d1c", "n": "Chosen Calendar and Details", "s": "Chosen Calendar and Details", "t": "所选日历及详细信息", "mod": "TriggerTech"}
+{"h": "c2fa6bbf3c4f8636", "n": "- Launch Rendevous", "s": "- Launch Rendevous", "t": "- 发射交会", "mod": "TriggerTech"}
+{"h": "c30dbc400bffc17a", "n": "Unable to combine all text fields to date", "s": "Unable to combine all text fields to date", "t": "无法将所有文本字段合并为日期", "mod": "TriggerTech"}
+{"h": "c3ac225273c8316b", "n": "General", "s": "General", "t": "通用", "mod": "TriggerTech"}
+{"h": "c3ad27fd362d54af", "n": "Quick Add", "s": "Quick Add", "t": "快速添加", "mod": "TriggerTech"}
+{"h": "c4b836d6b794cf46", "n": "Threshold:", "s": "Threshold:", "t": "阈值：", "mod": "TriggerTech"}
+{"h": "c4bcf7fa98337b88", "n": "Nearing Celestial Transfer:", "s": "Nearing Celestial Transfer:", "t": "接近天体转移：", "mod": "TriggerTech"}
+{"h": "c4d84975794ba61e", "n": "WarpTo Requires Confirmation (Two-Clicks)", "s": "WarpTo Requires Confirmation (Two-Clicks)", "t": "WarpTo需要确认（双击）", "mod": "TriggerTech"}
+{"h": "c4ed99a781ce567e", "n": "Add VOID Burn Time:", "s": "Add VOID Burn Time:", "t": "添加 VOID 点火时长：", "mod": "TriggerTech"}
+{"h": "c609d84f94664308", "n": "Unknown - check again later", "s": "Unknown - check again later", "t": "未知 - 稍后重试", "mod": "TriggerTech"}
+{"h": "c6aa66263884e2f1", "n": "seconds of the current time it will not be created", "s": "seconds of the current time it will not be created", "t": "秒（距当前时间），则不会创建", "mod": "TriggerTech"}
+{"h": "c6fac5e5bf2440b9", "n": "Update Code", "s": "Update Code", "t": "更新代码", "mod": "TriggerTech"}
+{"h": "c703448b4bdb32dc", "n": "Select Crew...", "s": "Select Crew...", "t": "选择乘员...", "mod": "TriggerTech"}
+{"h": "c8de00441353bc42", "n": "Click to toggle through time formats", "s": "Click to toggle through time formats", "t": "点击切换时间格式", "mod": "TriggerTech"}
+{"h": "c915e45ff7a74dee", "n": "Apoapsis Alarms cannot be set without upgrading the Tracking Station", "s": "Apoapsis Alarms cannot be set without upgrading the Tracking Station", "t": "必须升级深空网地面站才能设置远地点闹钟", "mod": "TriggerTech"}
+{"h": "c9b0971b301c8174", "n": "Nearing Maneuver Node", "s": "Nearing Maneuver Node", "t": "接近机动节点", "mod": "TriggerTech"}
+{"h": "cca9bb86f1ddaf13", "n": "Science Lab has no Data.", "s": "Science Lab has no Data.", "t": "科学实验室无数据。", "mod": "TriggerTech"}
+{"h": "ccf3727d17d66b53", "n": "Delete Alarm", "s": "Delete Alarm", "t": "删除闹钟", "mod": "TriggerTech"}
+{"h": "cd93bdcb7863611a", "n": "Alarm", "s": "Alarm", "t": "闹钟", "mod": "TriggerTech"}
+{"h": "cdc721018a80486a", "n": "Earth Time:", "s": "Earth Time:", "t": "地球时间：", "mod": "TriggerTech"}
+{"h": "cdd74e180c45f01e", "n": "Integer HorizSlider", "s": "Integer HorizSlider", "t": "整数 HorizSlider", "mod": "TriggerTech"}
+{"h": "cddb146740acfc87", "n": "Stored VesselID no longer exists", "s": "Stored VesselID no longer exists", "t": "保存的VesselID已不存在", "mod": "TriggerTech"}
+{"h": "ce693c5ea0e44c44", "n": "Earth Epoch:", "s": "Earth Epoch:", "t": "地球历元：", "mod": "TriggerTech"}
+{"h": "cede6d7a6c41ba0f", "n": "Add New Alarm...", "s": "Add New Alarm...", "t": "添加新闹钟...", "mod": "TriggerTech"}
+{"h": "cf28186d0277cbcb", "n": "All Contracts Have alarms set already", "s": "All Contracts Have alarms set already", "t": "所有合同均已设置闹钟", "mod": "TriggerTech"}
+{"h": "d03c2a928c25c430", "n": "Quick Added Maneuver Alarm", "s": "Quick Added Maneuver Alarm", "t": "已快捷添加机动闹钟", "mod": "TriggerTech"}
+{"h": "d0ca4cb66bc0f1e5", "n": "Time to", "s": "Time to", "t": "剩余时间", "mod": "TriggerTech"}
+{"h": "d183038c3588cd7b", "n": "0 Years,", "s": "0 Years,", "t": "0 年，", "mod": "TriggerTech"}
+{"h": "d209223b66d08b65", "n": "Unable to determine model data", "s": "Unable to determine model data", "t": "无法确定模型数据", "mod": "TriggerTech"}
+{"h": "d3b9696134557598", "n": "Close Alarm and Unpause", "s": "Close Alarm and Unpause", "t": "关闭闹钟并继续", "mod": "TriggerTech"}
+{"h": "d3c0a111cecaaeaf", "n": "Icon Position (for basic button)", "s": "Icon Position (for basic button)", "t": "图标位置（基础按钮）", "mod": "TriggerTech"}
+{"h": "d4eb0307f52aea71", "n": "Settings and Globals", "s": "Settings and Globals", "t": "设置与全局", "mod": "TriggerTech"}
+{"h": "d56a24c5d169ed26", "n": "Quick Alarm Settings", "s": "Quick Alarm Settings", "t": "快捷闹钟设置", "mod": "TriggerTech"}
+{"h": "d5a574afd55012ef", "n": "Alarm Specifics", "s": "Alarm Specifics", "t": "闹钟详细参数", "mod": "TriggerTech"}
+{"h": "d5acb25e4676b25a", "n": "No Date Recorded", "s": "No Date Recorded", "t": "无记录日期", "mod": "TriggerTech"}
+{"h": "d5e22a79018dac40", "n": "Show Tooltips on Mouse Hover", "s": "Show Tooltips on Mouse Hover", "t": "鼠标悬停时显示提示信息", "mod": "TriggerTech"}
+{"h": "d7771ac274b970a0", "n": "Close Alarm Details", "s": "Close Alarm Details", "t": "关闭闹钟详情", "mod": "TriggerTech"}
+{"h": "d8226592021963e7", "n": "Not tied to any vessel - will follow the Kerbal", "s": "Not tied to any vessel - will follow the Kerbal", "t": "未绑定到任何载具 - 将跟随该坎巴拉人", "mod": "TriggerTech"}
+{"h": "d832bfea9a82a813", "n": "Click Here", "s": "Click Here", "t": "点击此处", "mod": "TriggerTech"}
+{"h": "d868b9ed50f63fb3", "n": "Target Distance", "s": "Target Distance", "t": "目标距离", "mod": "TriggerTech"}
+{"h": "da09502ddf484d14", "n": "Constructors", "s": "Constructors", "t": "构造函数", "mod": "TriggerTech"}
+{"h": "da68b7b6b6da0a83", "n": "Contract", "s": "Contract", "t": "合同", "mod": "TriggerTech"}
+{"h": "db1fea8481795a78", "n": "No Alarms for the Active Vessel", "s": "No Alarms for the Active Vessel", "t": "当前激活载具无闹钟", "mod": "TriggerTech"}
+{"h": "db2bafbe56b6f418", "n": "Halt TimeWarp when Throttle Cutoff by Keystroke", "s": "Halt TimeWarp when Throttle Cutoff by Keystroke", "t": "通过按键切断节流阀时中止TimeWarp", "mod": "TriggerTech"}
+{"h": "dbe775bf24122afa", "n": "Target Body:", "s": "Target Body:", "t": "目标天体：", "mod": "TriggerTech"}
+{"h": "dc673e73b5c13aea", "n": "Delete", "s": "Delete", "t": "删除", "mod": "TriggerTech"}
+{"h": "de8e43141af78eab", "n": "Rooster", "s": "Rooster", "t": "公鸡打鸣", "mod": "TriggerTech"}
+{"h": "dfef2fcc5e5c339d", "n": "Choose Target Science Amount...", "s": "Choose Target Science Amount...", "t": "选择目标科学点数...", "mod": "TriggerTech"}
+{"h": "e2bf43e4ff841fac", "n": "Checks per Sec:", "s": "Checks per Sec:", "t": "每秒检测次数：", "mod": "TriggerTech"}
+{"h": "e3674cceaf805980", "n": "Quick Added Ascending Node", "s": "Quick Added Ascending Node", "t": "已快捷添加升交点", "mod": "TriggerTech"}
+{"h": "e3ef9a78f7a0c9ea", "n": "offset building", "s": "offset building", "t": "偏移构建", "mod": "TriggerTech"}
+{"h": "e479918b9010e655", "n": "Unable to parse web service", "s": "Unable to parse web service", "t": "无法解析网络服务", "mod": "TriggerTech"}
+{"h": "e58cbad2a8595bba", "n": "Time:", "s": "Time:", "t": "时间：", "mod": "TriggerTech"}
+{"h": "e5b49473f6c2be4a", "n": "Unable to Add the Margin Minutes", "s": "Unable to Add the Margin Minutes", "t": "无法增加裕度分钟数", "mod": "TriggerTech"}
+{"h": "e61c4ba5a5656743", "n": "Show Full List", "s": "Show Full List", "t": "显示完整列表", "mod": "TriggerTech"}
+{"h": "e679b4d2247c7a04", "n": "Time to Transfer", "s": "Time to Transfer", "t": "距转移时间", "mod": "TriggerTech"}
+{"h": "e77d884deff86626", "n": "Restore Target", "s": "Restore Target", "t": "恢复目标", "mod": "TriggerTech"}
+{"h": "e88e035bb635a00b", "n": "Phase Angle-Current:", "s": "Phase Angle-Current:", "t": "相位角-当前：", "mod": "TriggerTech"}
+{"h": "ea1c664b41660f4d", "n": "Auto Create Offered Alarms:", "s": "Auto Create Offered Alarms:", "t": "自动创建待接受闹钟：", "mod": "TriggerTech"}
+{"h": "eb9b77375a87cd8a", "n": "Time To Alarm:", "s": "Time To Alarm:", "t": "距闹钟触发：", "mod": "TriggerTech"}
+{"h": "ebe3206e5acdf7b5", "n": "Last Version from Web:", "s": "Last Version from Web:", "t": "网络最新版本：", "mod": "TriggerTech"}
+{"h": "ebf8966146ead621", "n": "All Active Contracts", "s": "All Active Contracts", "t": "所有进行中合同", "mod": "TriggerTech"}
+{"h": "ed1030738d5ccd32", "n": "Instance", "s": "Instance", "t": "实例", "mod": "TriggerTech"}
+{"h": "ed227f64db1ca9b6", "n": "Manuever", "s": "Manuever", "t": "机动", "mod": "TriggerTech"}
+{"h": "ed3b724d20210016", "n": "- Manual", "s": "- Manual", "t": "- 手动", "mod": "TriggerTech"}
+{"h": "ed6765d6e60835a5", "n": "If enabled then when one alarm fires another will be created based on the existing alarm", "s": "If enabled then when one alarm fires another will be created based on the existing alarm", "t": "若启用，当一个闹钟触发时将基于现有闹钟创建另一个闹钟", "mod": "TriggerTech"}
+{"h": "eddd377c43e8d3b3", "n": "(and Removal)", "s": "(and Removal)", "t": "（及移除）", "mod": "TriggerTech"}
+{"h": "edf4cbeaf877a6a5", "n": "Maneuver Quick Alarms", "s": "Maneuver Quick Alarms", "t": "机动快捷闹钟", "mod": "TriggerTech"}
+{"h": "edf9530228a27175", "n": "On Alarm:", "s": "On Alarm:", "t": "触发闹钟时：", "mod": "TriggerTech"}
+{"h": "eeb8ccb4f42bacf9", "n": "Updated Version Available - Settings...", "s": "Updated Version Available - Settings...", "t": "有可用更新版本 - 设置...", "mod": "TriggerTech"}
+{"h": "efc2a330ef9a11be", "n": "No Target Distance Approach found", "s": "No Target Distance Approach found", "t": "未找到目标距离接近点", "mod": "TriggerTech"}
+{"h": "efdb8d6daff6c300", "n": "This will monitor the current active flight path for the next detected SOI change.", "s": "This will monitor the current active flight path for the next detected SOI change.", "t": "这将监视当前激活飞行路径以检测下一次 SOI 变更。", "mod": "TriggerTech"}
+{"h": "effdaa79bfe78225", "n": "Cancel Jump if Backup Fails (Flight Mode Only)", "s": "Cancel Jump if Backup Fails (Flight Mode Only)", "t": "备份失败时取消跳转（仅限飞行模式）", "mod": "TriggerTech"}
+{"h": "f07a60e855407e02", "n": "New SOI:", "s": "New SOI:", "t": "新SOI：", "mod": "TriggerTech"}
+{"h": "f095cc47a4ff9c3d", "n": "Formula", "s": "Formula", "t": "公式", "mod": "TriggerTech"}
+{"h": "f14eb0dbbc8a89ef", "n": "Create Two", "s": "Create Two", "t": "创建其二", "mod": "TriggerTech"}
+{"h": "f3b317ea19edc30b", "n": "Unable to determine Earth Time", "s": "Unable to determine Earth Time", "t": "无法确定地球时间", "mod": "TriggerTech"}
+{"h": "f3c542f1b35d7f1e", "n": "Transfer Window", "s": "Transfer Window", "t": "转移窗口", "mod": "TriggerTech"}
+{"h": "f3c8b929e089fbf8", "n": "Unable to decipher TWP Phase and Eject Angle found in notes", "s": "Unable to decipher TWP Phase and Eject Angle found in notes", "t": "无法解析备注中的 TWP 相位角和逃逸角", "mod": "TriggerTech"}
+{"h": "f509859a4aebb251", "n": "AddXFER:", "s": "AddXFER:", "t": "AddXFER:", "mod": "TriggerTech"}
+{"h": "f60bf79bfc09cbb5", "n": "Alarm Name:", "s": "Alarm Name:", "t": "闹钟名称：", "mod": "TriggerTech"}
+{"h": "f6b05ab9399104a6", "n": "Alarm Margin:", "s": "Alarm Margin:", "t": "闹钟余量：", "mod": "TriggerTech"}
+{"h": "f6fd67d8e8056904", "n": "Quick Added SOI Change Alarm", "s": "Quick Added SOI Change Alarm", "t": "已快捷添加引力范围变更闹钟", "mod": "TriggerTech"}
+{"h": "f789043369f7c171", "n": "Auto Recalc of Transfer points", "s": "Auto Recalc of Transfer points", "t": "自动重新计算转移点", "mod": "TriggerTech"}
+{"h": "f7b5c8f90c12550a", "n": "Repeat After:", "s": "Repeat After:", "t": "重复周期：", "mod": "TriggerTech"}
+{"h": "f80979fd7ea6cbcb", "n": "Alarm - Common Properties", "s": "Alarm - Common Properties", "t": "闹钟 - 常用属性", "mod": "TriggerTech"}
+{"h": "f937a84cf8f73ac0", "n": "- Periapsis", "s": "- Periapsis", "t": "- 近地点", "mod": "TriggerTech"}
+{"h": "f94d7f2d16776f50", "n": "Periapsis Alarms cannot be set without upgrading the Tracking Station", "s": "Periapsis Alarms cannot be set without upgrading the Tracking Station", "t": "必须升级深空网地面站才能设置近地点闹钟", "mod": "TriggerTech"}
+{"h": "f9919e3231c899f1", "n": "Specific Settings for Alarm Types", "s": "Specific Settings for Alarm Types", "t": "闹钟类型的特定设置", "mod": "TriggerTech"}
+{"h": "f99c3d78bfbb94a7", "n": "Current Time:", "s": "Current Time:", "t": "当前时间：", "mod": "TriggerTech"}
+{"h": "f9aca851d1517b90", "n": "Notes:", "s": "Notes:", "t": "备注：", "mod": "TriggerTech"}
+{"h": "f9cc99bdf0cd5319", "n": "SOI Quick Alarms", "s": "SOI Quick Alarms", "t": "SOI 快捷闹钟", "mod": "TriggerTech"}
+{"h": "fa03ee610b92b8e2", "n": "Alarm Clock Visible", "s": "Alarm Clock Visible", "t": "显示闹钟", "mod": "TriggerTech"}
+{"h": "fa8524bca7b18369", "n": "NOTE: This already appears to be the target", "s": "NOTE: This already appears to be the target", "t": "注意：此天体似乎已经是目标", "mod": "TriggerTech"}
+{"h": "fc62b3a27df7683c", "n": "Override Stock Toolbar", "s": "Override Stock Toolbar", "t": "覆盖原生工具栏", "mod": "TriggerTech"}
+{"h": "fc63e31ac7c956ed", "n": "Select", "s": "Select", "t": "选择", "mod": "TriggerTech"}
+{"h": "fdbdbc3aef182118", "n": "Next Contract Offer", "s": "Next Contract Offer", "t": "下一个待选合同", "mod": "TriggerTech"}
+{"h": "fed7dc8f42a03b0b", "n": "Phase Angle-Target:", "s": "Phase Angle-Target:", "t": "相位角-目标：", "mod": "TriggerTech"}
+{"h": "ff186d552392ba9e", "n": "Enter Time Values...", "s": "Enter Time Values...", "t": "输入时间数值...", "mod": "TriggerTech"}
+{"h": "ff5bb7742c2896c8", "n": "Target", "s": "Target", "t": "目标", "mod": "TriggerTech"}

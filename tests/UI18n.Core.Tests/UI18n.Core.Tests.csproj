@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    UI18n.Core 单元测试（任务 T4）。**只读 Core 的公开 API，不改 src/ 任何文件。**
+
+    目标框架 net10.0 的理由：本机只装了 Microsoft.NETCore.App.Ref 10.0.12（没有 net8.0 参考包）。
+    Core 是多目标（net472 + net10.0），从 net10.0 工程 ProjectReference 过去只会解析到 net10.0 目标，
+    不会构建 net472（因此不依赖 .NET Framework 4.7.2 targeting pack）。
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>UI18n.Core.Tests</AssemblyName>
+    <RootNamespace>UI18n.Core.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- 断言失败信息里带上中文/emoji 原文，方便定位是哪条向量挂了 -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\UI18n.Core\UI18n.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      语料样本夹具（T9）：从 packs/pool.jsonl 确定性抽取并**入库**的小样本，供 CorpusContractTests 默认使用。
+      packs/pool.jsonl 本身是 3 MB 生成物、不入库，所以测试必须能只靠这份夹具跑起来。
+    -->
+    <None Update="Data\pool-sample.jsonl" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

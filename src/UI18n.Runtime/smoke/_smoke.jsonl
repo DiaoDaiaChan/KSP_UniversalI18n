@@ -1,0 +1,34 @@
+{"h":"fba4bffc46708e43","n":"Debug Toolbar","s":"Debug Toolbar","t":"调试工具栏","mod":"KSP"}
+{"h":"7072fd77f5a1261e","n":"Advanced & debug","s":"Advanced & debug","t":"高级与调试","mod":"KSP"}
+{"h":"fcab4b3574f6c9aa","n":"Console","s":"Console","t":"控制台","mod":"KSP"}
+{"h":"cc72649256137438","n":"Database","s":"Database","t":"数据库","mod":"KSP"}
+{"h":"a12e2373150a5c65","n":"Performance","s":"Performance","t":"性能","mod":"KSP"}
+{"h":"73b9abf911c294a9","n":"Reload Settings","s":"Reload Settings","t":"重新加载设置","mod":"KSP"}
+{"h":"536314125fc5e86c","n":"ReLoad","s":"ReLoad","t":"重新加载","mod":"KSP"}
+{"h":"86a91c4ba4b676e2","n":"Cannot reload in this scene","s":"Cannot reload in this scene","t":"无法在当前场景中重新加载","mod":"KSP"}
+{"h":"12e9c9d9d9b94cf1","n":"Screenshot","s":"Screenshot","t":"截图","mod":"KSP"}
+{"h":"b8f855b49234b81b","n":"Apply","s":"Apply","t":"应用","mod":"KSP"}
+{"h":"81ecf2d4386b8e84","n":"Continue","s":"Continue","t":"继续","mod":"KSP"}
+{"h":"7a391ae3182a86b5","n":"Credits","s":"Credits","t":"制作人员","mod":"KSP"}
+{"h":"469e484205e9ccdb","n":"Revert to Launch","s":"Revert to Launch","t":"回退到发射","mod":"KSP"}
+{"h":"0fbde37bb5f3fb3f","n":"Start Game","s":"Start Game","t":"开始游戏","mod":"KSP"}
+{"h":"7afee119b92090b4","n":"Resume Game","s":"Resume Game","t":"继续游戏","mod":"KSP"}
+{"h":"9d8b8aa2b404c2c8","n":"Settings","s":"Settings","t":"设置","mod":"KSP"}
+{"h":"45156213b0fb2396","n":"Quit","s":"Quit","t":"退出","mod":"KSP"}
+{"h":"413b6c1230d6b0bd","n":"Aid tool for the placement of RCS thrusters.","s":"Aid tool for the placement of RCS thrusters.","t":"用于放置 RCS 推力器的辅助工具。","mod":"RCSBuildAid"}
+{"h":"b196dd69727664c4","n":"Part list","s":"Part list","t":"部件列表","mod":"RCSBuildAid"}
+{"h":"74e6a7197c63c255","n":"Vessel mass","s":"Vessel mass","t":"飞行器质量","mod":"RCSBuildAid"}
+{"h":"2bd3e6e7fc10fe53","n":"Basic Options","s":"Basic Options","t":"基本选项","mod":"KSPWheel"}
+{"h":"355009218fdc971e","n":"Damage Options","s":"Damage Options","t":"损伤选项","mod":"KSPWheel"}
+{"h":"f3b0405c5ce5dd79","n":"Dump Wheel Debug Data","s":"Dump Wheel Debug Data","t":"导出轮组调试数据","mod":"KSPWheel"}
+{"h":"a1e87de9158f9755","n":"High Speed Limit","s":"High Speed Limit","t":"高速限制","mod":"KSPWheel"}
+{"h":"ae99719260057e54","n":"Click Through Blocker Focus Setting","s":"Click Through Blocker Focus Setting","t":"点击穿透阻止器焦点设置","mod":"000_ClickThroughBlocker"}
+{"h":"ef1dddfa832bde80","n":"All Input Locks Cleared","s":"All Input Locks Cleared","t":"所有输入锁已解除","mod":"000_ClickThroughBlocker"}
+{"h":"af766a208b54cd3d","n":"Toolbar Control","s":"Toolbar Control","t":"工具栏控制","mod":"001_ToolbarControl"}
+{"h":"d0e2ee5d7625bd69","n":"For each mod, select which toolbar to put it's button on.","s":"For each mod, select which toolbar to put it's button on.","t":"为每个 mod 选择把它的按钮放在哪个工具栏上。","mod":"001_ToolbarControl"}
+{"h":"38f03b25a006646c","n":"AdvancedPQSTools Parameters","s":"AdvancedPQSTools Parameters","t":"AdvancedPQSTools 参数","mod":"AdvancedPQSTools"}
+{"h":"a8595900d55beca6","n":"Kerbal Renamer Options","s":"Kerbal Renamer Options","t":"坎巴拉人名重置选项","mod":"KerbalRenamer"}
+{"h":"3797803e753044a5","n":"Flight Data Engineer Multiplier","s":"Flight Data Engineer Multiplier","t":"飞行数据工程师倍率","mod":"TestFlight"}
+{"h":"568ac0fa301064b2","n":"Overall difficulty slider.","s":"Overall difficulty slider.","t":"总体难度滑块。","mod":"TestFlight"}
+{"h":"09703b1ba02c0fc7","n":"Cannot find the Moon","s":"Cannot find the Moon","t":"找不到月球","mod":"LunarTransferPlanner"}
+{"h":"aab69dc76719fb41","n":"Stop Warp","s":"Stop Warp","t":"停止时间加速","mod":"LunarTransferPlanner"}

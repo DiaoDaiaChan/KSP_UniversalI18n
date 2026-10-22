@@ -1,0 +1,154 @@
+{
+  "kind": "translation",
+  "started": "2026-10-23T01:51:42",
+  "dry_run": false,
+  "offline": false,
+  "limit": null,
+  "model": "gemini-3.8-flash-high",
+  "promptV": 3,
+  "glossaryV": "024c4e9a",
+  "glossary": "官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）",
+  "pool_rows": 25,
+  "build": {
+    "skipped": {},
+    "items": 25,
+    "batches": 6,
+    "keeps_auto": 0,
+    "curated": {
+      "used": 1,
+      "rejected": 0,
+      "keyref_rescue": 0
+    }
+  },
+  "sample_build": null,
+  "batches": 6,
+  "jobs": 4,
+  "max_chars": 6000,
+  "stats": {
+    "batches": 6,
+    "batches_failed": 0,
+    "splits": 0,
+    "calls": 5,
+    "cache_hits": 1,
+    "items_requested": 23,
+    "items_ok": 24,
+    "items_keep": 0,
+    "items_failed": 0,
+    "items_official": 1,
+    "curated_rejected": 0,
+    "term_drift": 0,
+    "mixed_lang": 0,
+    "mixed_lang_examples": [],
+    "drift_examples": [],
+    "gates": {
+      "G1": 0,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 0,
+      "G6": 0,
+      "G7": 0,
+      "G8": 0
+    },
+    "gate_examples": {
+      "G1": [],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [],
+      "G6": [],
+      "G7": [],
+      "G8": []
+    },
+    "failed": [],
+    "retried": 0,
+    "finish_reasons": {
+      "stop": 5
+    },
+    "latencies": [
+      2.95,
+      3.3,
+      4.41,
+      2.52,
+      9.35
+    ],
+    "latency_total": 22.535,
+    "elapsed_s": 9.5,
+    "tokens": {
+      "prompt": 3896,
+      "completion": 1148,
+      "reasoning": 549,
+      "requests": 5,
+      "failures": 0
+    },
+    "latency_avg_s": 4.51,
+    "latency_max_s": 9.35
+  },
+  "curated": {
+    "used": 1,
+    "rejected": 0,
+    "keyref_rescue": 0
+  },
+  "keyref_rescue": false,
+  "glossary_detail": {
+    "total": 2126,
+    "terms": 813,
+    "locked": 588,
+    "exact": 1868,
+    "keyref": 2126,
+    "bad": 0
+  },
+  "written": {
+    "files": {
+      "ContractConfigurator": 2,
+      "KerbalChangelog": 15,
+      "MechJeb2": 1,
+      "Principia": 1,
+      "RP-1": 3,
+      "RealismOverhaul": 3
+    },
+    "total": 25,
+    "written": true
+  },
+  "elapsed_s": 9.7,
+  "by_mod": {
+    "MechJeb2": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 18
+    },
+    "RP-1": {
+      "ok": 3,
+      "keep": 0,
+      "failed": 0,
+      "chars": 45
+    },
+    "ContractConfigurator": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 18
+    },
+    "KerbalChangelog": {
+      "ok": 15,
+      "keep": 0,
+      "failed": 0,
+      "chars": 551
+    },
+    "RealismOverhaul": {
+      "ok": 2,
+      "keep": 0,
+      "failed": 0,
+      "chars": 21,
+      "official": 1
+    },
+    "Principia": {
+      "ok": 1,
+      "keep": 0,
+      "failed": 0,
+      "chars": 11
+    }
+  },
+  "sample_out": "reports\\sample-ph.jsonl"
+}

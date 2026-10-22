@@ -1,0 +1,319 @@
+{"h": "004bbee8df266f96", "n": "Skeleton Closed", "s": "Skeleton Closed", "t": "封闭骨架平台", "mod": "ROTanks"}
+{"h": "006eb2ca72208d7d", "n": "Rectangle (STEREO)", "s": "Rectangle (STEREO)", "t": "矩形（STEREO）", "mod": "ROTanks"}
+{"h": "00b4f13153246f03", "n": "3:1 Adapter - Long", "s": "3:1 Adapter - Long", "t": "3:1 转接段 - 长型", "mod": "ROTanks"}
+{"h": "029583e51c52526b", "n": "2:1-Short", "s": "2:1-Short", "t": "2:1-短型", "mod": "ROTanks"}
+{"h": "03beb1cfe19ec1dd", "n": "LDC Quad", "s": "LDC Quad", "t": "LDC 四发", "mod": "ROTanks"}
+{"h": "03efcc5881b5032a", "n": "QUBE Closed", "s": "QUBE Closed", "t": "QUBE 封闭平台", "mod": "ROTanks"}
+{"h": "056d8de95087843d", "n": "Ares Adapter", "s": "Ares Adapter", "t": "战神转接段", "mod": "ROTanks"}
+{"h": "075097c59019d12a", "n": "SLS 6-Engine", "s": "SLS 6-Engine", "t": "SLS 6 发支架", "mod": "ROTanks"}
+{"h": "077e10850d78a1dc", "n": "Foam", "s": "Foam", "t": "泡沫", "mod": "ROTanks"}
+{"h": "07a6d1d654635940", "n": "1:2-Flat", "s": "1:2-Flat", "t": "1:2-扁平", "mod": "ROTanks"}
+{"h": "08592d908af3293e", "n": "RND Compact", "s": "RND Compact", "t": "RND 紧凑平台", "mod": "ROTanks"}
+{"h": "09ccbcb3f2eb73a3", "n": "OKTO Compact", "s": "OKTO Compact", "t": "OKTO 紧凑平台", "mod": "ROTanks"}
+{"h": "0df9e9cac36dcb41", "n": "This modular engine mount allows for many customizations. You can swap out models as well as change the diameter and length.", "s": "This modular engine mount allows for many customizations. You can swap out models as well as change the diameter and length.", "t": "这种模块化发动机安装架支持多种自定义设置。你可以更换模型，也可以更改直径与长度。", "mod": "ROTanks"}
+{"h": "0ee2222af61e2e31", "n": "3:2-Short", "s": "3:2-Short", "t": "3:2-短型", "mod": "ROTanks"}
+{"h": "11a9f5f6f388bffb", "n": "3:2 Adapter - Extended", "s": "3:2 Adapter - Extended", "t": "3:2 转接段 - 加长", "mod": "ROTanks"}
+{"h": "133a0e3263cd2570", "n": "Foam-S", "s": "Foam-S", "t": "泡沫-S", "mod": "ROTanks"}
+{"h": "133a113263cd2a89", "n": "Foam-P", "s": "Foam-P", "t": "泡沫-P", "mod": "ROTanks"}
+{"h": "134bce34619d6881", "n": "HECS Compact", "s": "HECS Compact", "t": "HECS 紧凑平台", "mod": "ROTanks"}
+{"h": "134de8c5cd370101", "n": "3:4 Ratio Adapter - Short", "s": "3:4 Ratio Adapter - Short", "t": "3:4 比例适配器 - 短型", "mod": "ROTanks"}
+{"h": "139200afa0695967", "n": "Plain", "s": "Plain", "t": "素色", "mod": "ROTanks"}
+{"h": "13d3a5f28b92604d", "n": "Titan 2 Interstage", "s": "Titan 2 Interstage", "t": "大力神 2 级间段", "mod": "ROTanks"}
+{"h": "166a3d19b1137d79", "n": "Bus", "s": "Bus", "t": "服务舱平台", "mod": "ROTanks"}
+{"h": "181138304ce2da2c", "n": "RND Skeleton (Comp)", "s": "RND Skeleton (Comp)", "t": "RND 紧凑骨架平台", "mod": "ROTanks"}
+{"h": "1999bff819d4d9f4", "n": "Truss Interstage", "s": "Truss Interstage", "t": "桁架级间段", "mod": "ROTanks"}
+{"h": "1ba1435bd1ec76fa", "n": "This modular tank allows for many customizations. You can integrate top and bottom adapters, adjust the length and the diameter as well. The different designs work best for landing craft designs.", "s": "This modular tank allows for many customizations. You can integrate top and bottom adapters, adjust the length and the diameter as well. The different designs work best for landing craft designs.", "t": "这种模块化贮箱支持多种自定义设置。你可以集成顶部和底部适配器，调整长度和直径。不同的构型非常适合着陆器设计。", "mod": "ROTanks"}
+{"h": "1d05367d8e874b0e", "n": "This toroidal tank allows for many customizations with a hollow collision box. By adjusting the dimensions, the entire tank will adjust as well. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "s": "This toroidal tank allows for many customizations with a hollow collision box. By adjusting the dimensions, the entire tank will adjust as well. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "t": "该环形贮箱具有中空的碰撞箱并支持多种自定义设置。调整尺寸时，整个贮箱会成比例缩放。它包含多种不同的贮箱类型，可在下方选择。每种贮箱类型具有不同的基础质量、成本以及可用容积率。标记为 HP 的高压版本适用于需要增压输送的发动机。", "mod": "ROTanks"}
+{"h": "1d6c8982e006fb68", "n": "1:3 Adapter - Extended", "s": "1:3 Adapter - Extended", "t": "1:3 转接段 - 加长", "mod": "ROTanks"}
+{"h": "2595fd2e7e7d5950", "n": "Medium 2", "s": "Medium 2", "t": "中型 2", "mod": "ROTanks"}
+{"h": "2596002e7e7d5e69", "n": "Medium 1", "s": "Medium 1", "t": "中型 1", "mod": "ROTanks"}
+{"h": "2754af3ad10e06c7", "n": "Another Modular Radial Tank", "s": "Another Modular Radial Tank", "t": "另一款径向模块化贮箱", "mod": "ROTanks"}
+{"h": "27aad8aa9bb3e407", "n": "3:4 Ratio Adapter - Long", "s": "3:4 Ratio Adapter - Long", "t": "3:4 比例转接段 - 长型", "mod": "ROTanks"}
+{"h": "2968d29659818da0", "n": "OKTO Bus", "s": "OKTO Bus", "t": "OKTO 服务舱平台", "mod": "ROTanks"}
+{"h": "298a82eef1e81e5f", "n": "2:3 Ratio Adapter - Short", "s": "2:3 Ratio Adapter - Short", "t": "2:3 比例转接段 - 短型", "mod": "ROTanks"}
+{"h": "29d68c7b1fd6c736", "n": "The Decoupler allows you to change the Diameter of the part to fit many different configurations for your craft. It allows for customization of Decoupling just the bottom node as normal, or both nodes like a separator.", "s": "The Decoupler allows you to change the Diameter of the part to fit many different configurations for your craft. It allows for customization of Decoupling just the bottom node as normal, or both nodes like a separator.", "t": "该分离器允许修改部件直径，以适配航天器的各种不同构型。它支持自定义分离方式，既可像普通分离器一样仅分离底部节点，也能像双向分离器一样同时分离上下两个节点。", "mod": "ROTanks"}
+{"h": "2bd83a6c67879dcc", "n": "Atlas V CCB Fuel Line", "s": "Atlas V CCB Fuel Line", "t": "宇宙神 V CCB 输油管", "mod": "ROTanks"}
+{"h": "2c326124a1cc6026", "n": "LDC Adapter-2", "s": "LDC Adapter-2", "t": "LDC 转接段-2", "mod": "ROTanks"}
+{"h": "2c5eef918af99990", "n": "Medium Gold", "s": "Medium Gold", "t": "中型金箔", "mod": "ROTanks"}
+{"h": "2c9893e0d072260a", "n": "Explorer", "s": "Explorer", "t": "探索者号", "mod": "ROTanks"}
+{"h": "2e50f4a54f953d84", "n": "3:1-Short", "s": "3:1-Short", "t": "3:1-短型", "mod": "ROTanks"}
+{"h": "2eb8371130797357", "n": "Shroud (L)", "s": "Shroud (L)", "t": "整流罩 (L)", "mod": "ROTanks"}
+{"h": "2ebbdb11307cbfda", "n": "Shroud (M)", "s": "Shroud (M)", "t": "整流罩 (M)", "mod": "ROTanks"}
+{"h": "2ed02f11308df7a0", "n": "Shroud (S)", "s": "Shroud (S)", "t": "整流罩 (S)", "mod": "ROTanks"}
+{"h": "2f57e156444f272d", "n": "1:3-Flat", "s": "1:3-Flat", "t": "1:3-扁平", "mod": "ROTanks"}
+{"h": "3004aa19bf78a853", "n": "Ore", "s": "Ore", "t": "矿石", "mod": "ROTanks"}
+{"h": "30a54ab7698baaaa", "n": "Dome-Flat", "s": "Dome-Flat", "t": "扁平球冠", "mod": "ROTanks"}
+{"h": "315ba919b45209bb", "n": "2:1 Adapter - Flat", "s": "2:1 Adapter - Flat", "t": "2:1 转接段 - 扁平", "mod": "ROTanks"}
+{"h": "3195e18ce9f2c058", "n": "Adapter 4", "s": "Adapter 4", "t": "转接段 4", "mod": "ROTanks"}
+{"h": "3195e28ce9f2c20b", "n": "Adapter 5", "s": "Adapter 5", "t": "转接段 5", "mod": "ROTanks"}
+{"h": "3195e68ce9f2c8d7", "n": "Adapter 1", "s": "Adapter 1", "t": "转接段 1", "mod": "ROTanks"}
+{"h": "3195e78ce9f2ca8a", "n": "Adapter 2", "s": "Adapter 2", "t": "转接段 2", "mod": "ROTanks"}
+{"h": "3195e88ce9f2cc3d", "n": "Adapter 3", "s": "Adapter 3", "t": "转接段 3", "mod": "ROTanks"}
+{"h": "3210071f07fecb2c", "n": "SQR Skeleton", "s": "SQR Skeleton", "t": "SQR 骨架平台", "mod": "ROTanks"}
+{"h": "32652fbcc8138d2a", "n": "1:3 Ratio Adapter - Short", "s": "1:3 Ratio Adapter - Short", "t": "1:3 比例转接段 - 短型", "mod": "ROTanks"}
+{"h": "333c25df8eb0532c", "n": "1:3-Short", "s": "1:3-Short", "t": "1:3-短型", "mod": "ROTanks"}
+{"h": "35ad52f320e88256", "n": "1:3 Ratio Adapter - Long", "s": "1:3 Ratio Adapter - Long", "t": "1:3 比例转接段 - 长型", "mod": "ROTanks"}
+{"h": "37edf2aec5ab122a", "n": "Mono", "s": "Mono", "t": "单组元推进剂", "mod": "ROTanks"}
+{"h": "382bf2b6b8afc8b1", "n": "Inter-Sphere", "s": "Inter-Sphere", "t": "级间段-球形", "mod": "ROTanks"}
+{"h": "3936a4e335807617", "n": "SQR Closed (Comp)", "s": "SQR Closed (Comp)", "t": "SQR 紧凑封闭平台", "mod": "ROTanks"}
+{"h": "3a674a06d7006edc", "n": "2:1-Flat", "s": "2:1-Flat", "t": "2:1-扁平", "mod": "ROTanks"}
+{"h": "3a9134dd382b0c94", "n": "SQR Skeleton Closed", "s": "SQR Skeleton Closed", "t": "SQR 封闭骨架平台", "mod": "ROTanks"}
+{"h": "3d9e7019ac167dc5", "n": "SLS Tank", "s": "SLS Tank", "t": "SLS 贮箱", "mod": "ROTanks"}
+{"h": "408bfc55eaa2a2a4", "n": "Dome-Framed-M", "s": "Dome-Framed-M", "t": "骨架球冠-M", "mod": "ROTanks"}
+{"h": "408c0255eaa2acd6", "n": "Dome-Framed-S", "s": "Dome-Framed-S", "t": "骨架球冠-S", "mod": "ROTanks"}
+{"h": "40d8ba3e6410e68d", "n": "Checkered", "s": "Checkered", "t": "棋盘格", "mod": "ROTanks"}
+{"h": "421b18423a99f6e2", "n": "Radial Tank", "s": "Radial Tank", "t": "径向贮箱", "mod": "ROTanks"}
+{"h": "423349fe3b7e92ad", "n": "Modular Cargo Bay", "s": "Modular Cargo Bay", "t": "模块化货舱", "mod": "ROTanks"}
+{"h": "4319c707abcfae33", "n": "Xenon 2", "s": "Xenon 2", "t": "氙气 2", "mod": "ROTanks"}
+{"h": "4319c807abcfafe6", "n": "Xenon 1", "s": "Xenon 1", "t": "氙气 1", "mod": "ROTanks"}
+{"h": "432ee706b90f3bc4", "n": "This radial tank allows for many customizations. By adjusting the dimensions, the entire tank will adjust as well. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "s": "This radial tank allows for many customizations. By adjusting the dimensions, the entire tank will adjust as well. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "t": "该径向贮箱支持多种自定义设置。调整尺寸时，整个贮箱会成比例缩放。它包含多种不同的贮箱类型，可在下方选择。每种贮箱类型具有不同的基础质量、成本以及可用容积率。标记为 HP 的高压版本适用于需要增压输送的发动机。", "mod": "ROTanks"}
+{"h": "4348626747cafec8", "n": "QUBE Closed (Comp)", "s": "QUBE Closed (Comp)", "t": "QUBE 紧凑封闭平台", "mod": "ROTanks"}
+{"h": "4376604fbbe9521e", "n": "4:3 Adapter - Long", "s": "4:3 Adapter - Long", "t": "4:3 转接段 - 长型", "mod": "ROTanks"}
+{"h": "43aadc9b22d99dea", "n": "Small Gold", "s": "Small Gold", "t": "小型金箔", "mod": "ROTanks"}
+{"h": "43d1d83598bd291f", "n": "Shroud (XL)", "s": "Shroud (XL)", "t": "整流罩 (XL)", "mod": "ROTanks"}
+{"h": "43f1ffa8263b3f7b", "n": "Round", "s": "Round", "t": "球形", "mod": "ROTanks"}
+{"h": "448980769be6b1fe", "n": "Hollow Interstage", "s": "Hollow Interstage", "t": "中空级间段", "mod": "ROTanks"}
+{"h": "45d976f96bceb86c", "n": "3:1-Long", "s": "3:1-Long", "t": "3:1-长型", "mod": "ROTanks"}
+{"h": "466b206ae9879f39", "n": "HECS Skeleton Closed", "s": "HECS Skeleton Closed", "t": "HECS 封闭骨架平台", "mod": "ROTanks"}
+{"h": "46cc814f508b7472", "n": "2:1 Adapter - Long", "s": "2:1 Adapter - Long", "t": "2:1 转接段 - 长型", "mod": "ROTanks"}
+{"h": "47b9784d17710317", "n": "The Atlas Skirt Decoupler is designed to be used as part of the Stage and a Half Designs used by the Atlas Launch Vehicle.", "s": "The Atlas Skirt Decoupler is designed to be used as part of the Stage and a Half Designs used by the Atlas Launch Vehicle.", "t": "宇宙神裙部分离器专为宇宙神运载火箭采用的一级半构型设计。", "mod": "ROTanks"}
+{"h": "4a855ce7295f06c8", "n": "Short 7", "s": "Short 7", "t": "短型 7", "mod": "ROTanks"}
+{"h": "4a855de7295f087b", "n": "Short 6", "s": "Short 6", "t": "短型 6", "mod": "ROTanks"}
+{"h": "4a855ee7295f0a2e", "n": "Short 5", "s": "Short 5", "t": "短型 5", "mod": "ROTanks"}
+{"h": "4a855fe7295f0be1", "n": "Short 4", "s": "Short 4", "t": "短型 4", "mod": "ROTanks"}
+{"h": "4a8560e7295f0d94", "n": "Short 3", "s": "Short 3", "t": "短型 3", "mod": "ROTanks"}
+{"h": "4a8561e7295f0f47", "n": "Short 2", "s": "Short 2", "t": "短型 2", "mod": "ROTanks"}
+{"h": "4a8562e7295f10fa", "n": "Short 1", "s": "Short 1", "t": "短型 1", "mod": "ROTanks"}
+{"h": "4b30b67720dd7f56", "n": "SQR Skeleton (Comp)", "s": "SQR Skeleton (Comp)", "t": "SQR 紧凑骨架平台", "mod": "ROTanks"}
+{"h": "4b693eac0ccb82b6", "n": "RND Skeleton", "s": "RND Skeleton", "t": "RND 骨架平台", "mod": "ROTanks"}
+{"h": "4c977c8bd34ddc14", "n": "Inter-Split", "s": "Inter-Split", "t": "级间段-分离式", "mod": "ROTanks"}
+{"h": "4d5298b56aa67e8f", "n": "Aerobee Interstage Decoupler", "s": "Aerobee Interstage Decoupler", "t": "加洛比级间分离器", "mod": "ROTanks"}
+{"h": "4d7d5a29b52b9a91", "n": "1:2-Long", "s": "1:2-Long", "t": "1:2-长型", "mod": "ROTanks"}
+{"h": "4efbcab48a433013", "n": "Long", "s": "Long", "t": "长型", "mod": "ROTanks"}
+{"h": "4ff37d6d9b056e68", "n": "Striped", "s": "Striped", "t": "条纹", "mod": "ROTanks"}
+{"h": "50454de3a0f41593", "n": "Gold Foil", "s": "Gold Foil", "t": "金箔", "mod": "ROTanks"}
+{"h": "52c42ff7bf2b2a7b", "n": "Centaur Common Mount", "s": "Centaur Common Mount", "t": "半人马通用发动机支架", "mod": "ROTanks"}
+{"h": "55459971bce980f9", "n": "4:3-Long", "s": "4:3-Long", "t": "4:3-长型", "mod": "ROTanks"}
+{"h": "55b41b9de8f82ba7", "n": "OKTO Skeleton (Comp) Closed", "s": "OKTO Skeleton (Comp) Closed", "t": "OKTO 紧凑封闭骨架平台", "mod": "ROTanks"}
+{"h": "55f5e08e3aca8a5b", "n": "QUBE Skeleton Closed", "s": "QUBE Skeleton Closed", "t": "QUBE 封闭骨架平台", "mod": "ROTanks"}
+{"h": "5707a76312ba7510", "n": "3:2 Adapter - Long", "s": "3:2 Adapter - Long", "t": "3:2 转接段 - 长型", "mod": "ROTanks"}
+{"h": "58acf1aefc029f7e", "n": "This modular tank allows for many customizations. You can integrate top and bottom adapters, adjust the length and the diameter as well. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "s": "This modular tank allows for many customizations. You can integrate top and bottom adapters, adjust the length and the diameter as well. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "t": "该模块化贮箱支持多种自定义设置。你可以集成顶部和底部适配器，并调整其长度与直径。它包含多种不同的贮箱类型，可在下方选择。每种贮箱类型具有不同的基础质量、成本以及可用容积率。标记为 HP 的高压版本适用于需要增压输送的发动机。", "mod": "ROTanks"}
+{"h": "58c18c15586dc485", "n": "3:4-Long", "s": "3:4-Long", "t": "3:4-长型", "mod": "ROTanks"}
+{"h": "58d6c8be37a27f76", "n": "HECS Closed (Comp)", "s": "HECS Closed (Comp)", "t": "HECS 紧凑封闭平台", "mod": "ROTanks"}
+{"h": "591a0f4a5e1d73d5", "n": "Katniss Parts Pack Tank", "s": "Katniss Parts Pack Tank", "t": "Katniss 部件包贮箱", "mod": "ROTanks"}
+{"h": "59fba81b5b094f0f", "n": "4:3 Adapter - Flat", "s": "4:3 Adapter - Flat", "t": "4:3 转接段 - 扁平", "mod": "ROTanks"}
+{"h": "5a13bd905eeb26a5", "n": "Rockomax 8", "s": "Rockomax 8", "t": "洛克玛克斯 8", "mod": "ROTanks"}
+{"h": "5a15e72dd1e6f978", "n": "Spherical Tank", "s": "Spherical Tank", "t": "球形贮箱", "mod": "ROTanks"}
+{"h": "5a57ce1e90461625", "n": "This modular booster tank allows for many adjustments and simulates the types of tanks used on the R-7 family of Soviet rockets. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "s": "This modular booster tank allows for many adjustments and simulates the types of tanks used on the R-7 family of Soviet rockets. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "t": "该模块化助推器贮箱支持多种调整，用于模拟苏联R-7系列火箭所使用的贮箱类型。它包含多种不同的贮箱类型，可在下方选择。每种贮箱类型具有不同的基础质量、成本以及可用容积率。标记为 HP 的高压版本适用于需要增压输送的发动机。", "mod": "ROTanks"}
+{"h": "5b29fe5c17d161fb", "n": "3:4-Short", "s": "3:4-Short", "t": "3:4-短型", "mod": "ROTanks"}
+{"h": "5bab813035dab069", "n": "Closed (Comp)", "s": "Closed (Comp)", "t": "紧凑封闭平台", "mod": "ROTanks"}
+{"h": "5d606be3ca272b81", "n": "Rectangle Tall", "s": "Rectangle Tall", "t": "高矩形", "mod": "ROTanks"}
+{"h": "5e2d621efee07ae0", "n": "2:3 Ratio Adapter - Flat", "s": "2:3 Ratio Adapter - Flat", "t": "2:3 比例转接段 - 扁平", "mod": "ROTanks"}
+{"h": "5e7f35fb85d3e86b", "n": "Cloth", "s": "Cloth", "t": "织物", "mod": "ROTanks"}
+{"h": "5e9c65d871c1d967", "n": "Sputnik", "s": "Sputnik", "t": "斯普特尼克", "mod": "ROTanks"}
+{"h": "61829840b12999e1", "n": "4:1 Adapter - Flat", "s": "4:1 Adapter - Flat", "t": "4:1 转接段 - 扁平", "mod": "ROTanks"}
+{"h": "61a5c13d9f20722c", "n": "Centaur-D", "s": "Centaur-D", "t": "半人马-D", "mod": "ROTanks"}
+{"h": "61a5d33d9f2090c2", "n": "Centaur-V", "s": "Centaur-V", "t": "半人马-V", "mod": "ROTanks"}
+{"h": "6229e174af972f6b", "n": "This modular tank allows for many customizations. You can swap out models as well as change the diameter and length. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "s": "This modular tank allows for many customizations. You can swap out models as well as change the diameter and length. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "t": "该模块化贮箱支持多种自定义设置。你可以更换外观模型，并调整其直径与长度。它包含多种不同的贮箱类型，可在下方选择。每种贮箱类型具有不同的基础质量、成本以及可用容积率。标记为 HP 的高压版本适用于需要增压输送的发动机。", "mod": "ROTanks"}
+{"h": "62c711a63294be48", "n": "4:3-Flat", "s": "4:3-Flat", "t": "4:3-扁平", "mod": "ROTanks"}
+{"h": "634a07203e5e4efc", "n": "Dome-A", "s": "Dome-A", "t": "球冠-A", "mod": "ROTanks"}
+{"h": "634a0a203e5e5415", "n": "Dome-B", "s": "Dome-B", "t": "球冠-B", "mod": "ROTanks"}
+{"h": "635ec5a86287041d", "n": "reDIRECT Modular Tank", "s": "reDIRECT Modular Tank", "t": "reDIRECT 模块化贮箱", "mod": "ROTanks"}
+{"h": "64035fdd9891e194", "n": "RND Skeleton (Comp) Closed", "s": "RND Skeleton (Comp) Closed", "t": "RND 紧凑封闭骨架平台", "mod": "ROTanks"}
+{"h": "64200853f613b3c7", "n": "Jupiter US Mount", "s": "Jupiter US Mount", "t": "朱庇特上面级发动机支架", "mod": "ROTanks"}
+{"h": "6475bc54368110ed", "n": "Saturn S-IVB", "s": "Saturn S-IVB", "t": "土星 S-IVB", "mod": "ROTanks"}
+{"h": "65b0db0965b2b817", "n": "SQR Closed", "s": "SQR Closed", "t": "SQR 封闭平台", "mod": "ROTanks"}
+{"h": "65bad7bce86d3037", "n": "Truss Interstage Decoupler", "s": "Truss Interstage Decoupler", "t": "桁架级间分离器", "mod": "ROTanks"}
+{"h": "667fecc6d2c2b6df", "n": "Nova", "s": "Nova", "t": "新星", "mod": "ROTanks"}
+{"h": "675fbeb0cc7f4a87", "n": "Delta Blue", "s": "Delta Blue", "t": "德尔塔蓝", "mod": "ROTanks"}
+{"h": "6911e37dc8a11ba3", "n": "Medium Gold A", "s": "Medium Gold A", "t": "中型金箔 A", "mod": "ROTanks"}
+{"h": "69735b0cce43a7e2", "n": "Sputnik 3", "s": "Sputnik 3", "t": "人造卫星 3 号", "mod": "ROTanks"}
+{"h": "69a05bc2ae3bd5fd", "n": "LDC Adapter", "s": "LDC Adapter", "t": "LDC 转接段", "mod": "ROTanks"}
+{"h": "6a8619cada4aeae0", "n": "QUBE Bus", "s": "QUBE Bus", "t": "QUBE 服务舱平台", "mod": "ROTanks"}
+{"h": "6c2689e241b9f162", "n": "Ares Interstage", "s": "Ares Interstage", "t": "战神级间段", "mod": "ROTanks"}
+{"h": "6c2fcc8cd8472135", "n": "Recolor No USA", "s": "Recolor No USA", "t": "重涂装 无USA", "mod": "ROTanks"}
+{"h": "6dbbe2646b239ca5", "n": "Closed", "s": "Closed", "t": "封闭平台", "mod": "ROTanks"}
+{"h": "6dbe9d069695d5ec", "n": "Aerobee Interstage", "s": "Aerobee Interstage", "t": "加洛比级间段", "mod": "ROTanks"}
+{"h": "6f7b4128c6b3be87", "n": "STS Booster", "s": "STS Booster", "t": "STS 助推器", "mod": "ROTanks"}
+{"h": "71644fc4c3521ad7", "n": "Kerbodyne 1", "s": "Kerbodyne 1", "t": "坎巴拉动力 1", "mod": "ROTanks"}
+{"h": "716450c4c3521c8a", "n": "Kerbodyne 2", "s": "Kerbodyne 2", "t": "坎巴拉动力 2", "mod": "ROTanks"}
+{"h": "716451c4c3521e3d", "n": "Kerbodyne 3", "s": "Kerbodyne 3", "t": "坎巴拉动力 3", "mod": "ROTanks"}
+{"h": "72d119368e0869bd", "n": "Atlas Rivets", "s": "Atlas Rivets", "t": "宇宙神铆钉", "mod": "ROTanks"}
+{"h": "733e520b2b346216", "n": "Skeletal (LG)", "s": "Skeletal (LG)", "t": "骨架（大）", "mod": "ROTanks"}
+{"h": "73c6ad85b7235b4e", "n": "Skeleton", "s": "Skeleton", "t": "骨架平台", "mod": "ROTanks"}
+{"h": "7534a7feb14308df", "n": "HECS2 Skeleton (Comp) Closed", "s": "HECS2 Skeleton (Comp) Closed", "t": "HECS2 紧凑封闭骨架平台", "mod": "ROTanks"}
+{"h": "75a230e2301346c1", "n": "Atlas Mount", "s": "Atlas Mount", "t": "宇宙神发动机支架", "mod": "ROTanks"}
+{"h": "75abba6ccd096181", "n": "RND Closed (Comp)", "s": "RND Closed (Comp)", "t": "RND 紧凑封闭平台", "mod": "ROTanks"}
+{"h": "78360ba42ca5b311", "n": "Boattail", "s": "Boattail", "t": "艇尾整流罩", "mod": "ROTanks"}
+{"h": "783d13195e1256ff", "n": "ET Nose", "s": "ET Nose", "t": "外贮箱鼻锥", "mod": "ROTanks"}
+{"h": "78772b7b330f23ea", "n": "OKTO Closed", "s": "OKTO Closed", "t": "OKTO 封闭平台", "mod": "ROTanks"}
+{"h": "78ca6b8af6d00b9b", "n": "OKTO Skeleton Closed", "s": "OKTO Skeleton Closed", "t": "OKTO 封闭骨架平台", "mod": "ROTanks"}
+{"h": "7a04aa95962e22cc", "n": "Explorer 33", "s": "Explorer 33", "t": "探索者 33 号", "mod": "ROTanks"}
+{"h": "7a53630b2ec4c8b2", "n": "Skeletal (MD)", "s": "Skeletal (MD)", "t": "骨架结构 (MD)", "mod": "ROTanks"}
+{"h": "7aa7c1c72a9867fd", "n": "OKTO Skeleton", "s": "OKTO Skeleton", "t": "OKTO 骨架平台", "mod": "ROTanks"}
+{"h": "7c79eed2c5c8e71b", "n": "HECS Skeleton (Comp)", "s": "HECS Skeleton (Comp)", "t": "HECS 紧凑骨架平台", "mod": "ROTanks"}
+{"h": "7c87dc5c593f3de6", "n": "Compact", "s": "Compact", "t": "紧凑平台", "mod": "ROTanks"}
+{"h": "7da7f373718b4971", "n": "QUBE Skeleton (Comp)", "s": "QUBE Skeleton (Comp)", "t": "QUBE 骨架 (复合)", "mod": "ROTanks"}
+{"h": "7f8b90fe06e78f96", "n": "3:4 Ratio Adapter - Flat", "s": "3:4 Ratio Adapter - Flat", "t": "3:4 比例转接段 - 扁平", "mod": "ROTanks"}
+{"h": "802bde66d9f68880", "n": "The Modular Cargo Bay gives you the flexibility to design the size and style of cargo bay needed for every mission and spacecraft. These are based on the Mars DRM trusses.", "s": "The Modular Cargo Bay gives you the flexibility to design the size and style of cargo bay needed for every mission and spacecraft. These are based on the Mars DRM trusses.", "t": "模块化货舱具有极高的灵活性，可根据各项任务和航天器的需求定制尺寸与样式。其基于火星 DRM 桁架设计。", "mod": "ROTanks"}
+{"h": "805b78b9443877ca", "n": "HECS Bus", "s": "HECS Bus", "t": "HECS 服务舱平台", "mod": "ROTanks"}
+{"h": "8162e2f99d0e76a6", "n": "Oscar-D", "s": "Oscar-D", "t": "奥斯卡-D", "mod": "ROTanks"}
+{"h": "8162e3f99d0e7859", "n": "Oscar-E", "s": "Oscar-E", "t": "奥斯卡-E", "mod": "ROTanks"}
+{"h": "8162e4f99d0e7a0c", "n": "Oscar-B", "s": "Oscar-B", "t": "奥斯卡-B", "mod": "ROTanks"}
+{"h": "8162e5f99d0e7bbf", "n": "Oscar-C", "s": "Oscar-C", "t": "奥斯卡-C", "mod": "ROTanks"}
+{"h": "8162e7f99d0e7f25", "n": "Oscar-A", "s": "Oscar-A", "t": "奥斯卡-A", "mod": "ROTanks"}
+{"h": "8201df4e31e0f2b1", "n": "ET End Cap", "s": "ET End Cap", "t": "外贮箱底盖", "mod": "ROTanks"}
+{"h": "823c9f7cba320db7", "n": "3:2-Long", "s": "3:2-Long", "t": "3:2-长型", "mod": "ROTanks"}
+{"h": "829cf7780bb65db6", "n": "Octogon (Voyager)", "s": "Octogon (Voyager)", "t": "八边形（旅行者）", "mod": "ROTanks"}
+{"h": "83e68bb08cf52f5f", "n": "Modular Tank", "s": "Modular Tank", "t": "模块化贮箱", "mod": "ROTanks"}
+{"h": "84341d98b323b76c", "n": "The Ring Decoupler allows you to change the Diameter of the part to fit many different configurations for your craft. It allows for customization of Decoupling just the bottom node as normal, or both nodes like a separator.", "s": "The Ring Decoupler allows you to change the Diameter of the part to fit many different configurations for your craft. It allows for customization of Decoupling just the bottom node as normal, or both nodes like a separator.", "t": "该环形分离器允许修改部件直径，以适配航天器的各种不同构型。它支持自定义分离方式，既可像普通分离器一样仅分离底部节点，也能像双向分离器一样同时分离上下两个节点。", "mod": "ROTanks"}
+{"h": "84fdc2a5959c8408", "n": "OKTO Closed (Comp)", "s": "OKTO Closed (Comp)", "t": "OKTO 紧凑封闭平台", "mod": "ROTanks"}
+{"h": "85c62be92515e152", "n": "4:3 Adapter - Short", "s": "4:3 Adapter - Short", "t": "4:3 转接段 - 短型", "mod": "ROTanks"}
+{"h": "8627a900976b8baa", "n": "3:1 Adapter - Flat", "s": "3:1 Adapter - Flat", "t": "3:1 转接段 - 扁平", "mod": "ROTanks"}
+{"h": "86dcbd07faa0feec", "n": "Atlas Skirt Decoupler", "s": "Atlas Skirt Decoupler", "t": "宇宙神裙部分离器", "mod": "ROTanks"}
+{"h": "87582c2d5a853ff8", "n": "Soft Shell 1", "s": "Soft Shell 1", "t": "软外壳 1", "mod": "ROTanks"}
+{"h": "87582e2d5a85435e", "n": "Soft Shell 3", "s": "Soft Shell 3", "t": "软外壳 3", "mod": "ROTanks"}
+{"h": "87582f2d5a854511", "n": "Soft Shell 2", "s": "Soft Shell 2", "t": "软外壳 2", "mod": "ROTanks"}
+{"h": "8758302d5a8546c4", "n": "Soft Shell 5", "s": "Soft Shell 5", "t": "软外壳 5", "mod": "ROTanks"}
+{"h": "8758312d5a854877", "n": "Soft Shell 4", "s": "Soft Shell 4", "t": "软外壳 4", "mod": "ROTanks"}
+{"h": "89552b81aa850341", "n": "Ares SRB Interstage", "s": "Ares SRB Interstage", "t": "战神 SRB 级间段", "mod": "ROTanks"}
+{"h": "8960b3dbfd1284c8", "n": "Ring Decoupler", "s": "Ring Decoupler", "t": "环形分离器", "mod": "ROTanks"}
+{"h": "8a4be376234d6a46", "n": "2:1 Ratio Adapter - Flat", "s": "2:1 Ratio Adapter - Flat", "t": "2:1 比例转接段 - 扁平", "mod": "ROTanks"}
+{"h": "8a8682e2c4f39e26", "n": "Modular Landing Tank", "s": "Modular Landing Tank", "t": "模块化着陆贮箱", "mod": "ROTanks"}
+{"h": "8c4c300ad7f51334", "n": "Dome-Half", "s": "Dome-Half", "t": "半球形球冠", "mod": "ROTanks"}
+{"h": "8e1a671dca2bc274", "n": "LDC Dual", "s": "LDC Dual", "t": "LDC 双发", "mod": "ROTanks"}
+{"h": "92db0cbb13daa148", "n": "The resizable Procedural Probe Core uses Procedural Avionics to allow for varying avionics control.", "s": "The resizable Procedural Probe Core uses Procedural Avionics to allow for varying avionics control.", "t": "尺寸可调的程序化探测器核心采用程序化航电系统，可提供不同级别的航电控制能力。", "mod": "ROTanks"}
+{"h": "957da8bd026aae53", "n": "Truss 1", "s": "Truss 1", "t": "桁架 1", "mod": "ROTanks"}
+{"h": "957da9bd026ab006", "n": "Truss 2", "s": "Truss 2", "t": "桁架 2", "mod": "ROTanks"}
+{"h": "957daabd026ab1b9", "n": "Truss 3", "s": "Truss 3", "t": "桁架 3", "mod": "ROTanks"}
+{"h": "957dabbd026ab36c", "n": "Truss 4", "s": "Truss 4", "t": "桁架 4", "mod": "ROTanks"}
+{"h": "95dfbcf6dd73f1fa", "n": "Vulcan", "s": "Vulcan", "t": "火神", "mod": "ROTanks"}
+{"h": "964b29fe3f23cd84", "n": "FASA Titan 2", "s": "FASA Titan 2", "t": "FASA 大力神 2", "mod": "ROTanks"}
+{"h": "98e5938fc3862df1", "n": "RND Bus", "s": "RND Bus", "t": "RND 服务舱平台", "mod": "ROTanks"}
+{"h": "99529e35c453b59f", "n": "The resizable Avionics Core uses Procedural Avionics to allow for varying avionics control.", "s": "The resizable Avionics Core uses Procedural Avionics to allow for varying avionics control.", "t": "尺寸可调的航电核心采用程序化航电系统，可提供不同级别的航电控制能力。", "mod": "ROTanks"}
+{"h": "996d10455fdaaaeb", "n": "1:2 Ratio Adapter - Long", "s": "1:2 Ratio Adapter - Long", "t": "1:2 比例转接段 - 长型", "mod": "ROTanks"}
+{"h": "9a006e7b78afa4d6", "n": "4:1-Flat", "s": "4:1-Flat", "t": "4:1-扁平", "mod": "ROTanks"}
+{"h": "9a4dc33bf415b19c", "n": "SQR Compact", "s": "SQR Compact", "t": "SQR 紧凑平台", "mod": "ROTanks"}
+{"h": "9b7aa657f305935a", "n": "2:3-Flat", "s": "2:3-Flat", "t": "2:3-扁平", "mod": "ROTanks"}
+{"h": "9bd436c24b09808c", "n": "Soyuz-L", "s": "Soyuz-L", "t": "联盟-L", "mod": "ROTanks"}
+{"h": "9bd437c24b09823f", "n": "Soyuz-M", "s": "Soyuz-M", "t": "联盟-M", "mod": "ROTanks"}
+{"h": "9bd44dc24b09a7a1", "n": "Soyuz-S", "s": "Soyuz-S", "t": "联盟-S", "mod": "ROTanks"}
+{"h": "9c4e0e88cf91a9a6", "n": "Tri-Prism", "s": "Tri-Prism", "t": "三棱柱", "mod": "ROTanks"}
+{"h": "9c4f5821ac1aa38b", "n": "Hexagon (Pioneer 10)", "s": "Hexagon (Pioneer 10)", "t": "六边形（先驱精神 10 号）", "mod": "ROTanks"}
+{"h": "9c6670fba340fbad", "n": "1:2 Ratio Adapter - Short", "s": "1:2 Ratio Adapter - Short", "t": "1:2 比例转接段 - 短型", "mod": "ROTanks"}
+{"h": "9c9eb13c241bd516", "n": "SLS Mount", "s": "SLS Mount", "t": "SLS 发动机支架", "mod": "ROTanks"}
+{"h": "9dab2e575a1dd501", "n": "1:3-Ext", "s": "1:3-Ext", "t": "1:3-加长", "mod": "ROTanks"}
+{"h": "9dc97b991ebb65d7", "n": "Procedural Probe Core", "s": "Procedural Probe Core", "t": "程序化探测器核心", "mod": "ROTanks"}
+{"h": "9f396b211827c2d5", "n": "HECS2 Skeleton", "s": "HECS2 Skeleton", "t": "HECS2 骨架平台", "mod": "ROTanks"}
+{"h": "9ff87b4696da4c67", "n": "1:3 Ratio Adapter - Flat", "s": "1:3 Ratio Adapter - Flat", "t": "1:3 比例转接段 - 扁平", "mod": "ROTanks"}
+{"h": "a0936ff25d9ea40b", "n": "HECS2 Compact", "s": "HECS2 Compact", "t": "HECS2 紧凑平台", "mod": "ROTanks"}
+{"h": "a0993b1f690145b4", "n": "Skeleton (Comp)", "s": "Skeleton (Comp)", "t": "紧凑骨架平台", "mod": "ROTanks"}
+{"h": "a1b56345714d8ae0", "n": "4:1 Adapter - Short", "s": "4:1 Adapter - Short", "t": "4:1 转接段 - 短型", "mod": "ROTanks"}
+{"h": "a3c3501ea98dbf42", "n": "Short Gold A", "s": "Short Gold A", "t": "短型金箔 A", "mod": "ROTanks"}
+{"h": "a6aa1dc4a89cfba7", "n": "4:3-Short", "s": "4:3-Short", "t": "4:3-短型", "mod": "ROTanks"}
+{"h": "a769ea72628be531", "n": "2:3 Ratio Adapter - Long", "s": "2:3 Ratio Adapter - Long", "t": "2:3 比例转接段 - 长型", "mod": "ROTanks"}
+{"h": "a7903dd3d5e71d8a", "n": "Jupiter Tank", "s": "Jupiter Tank", "t": "朱庇特贮箱", "mod": "ROTanks"}
+{"h": "a7afef1f06a8ae3f", "n": "1:2-Short", "s": "1:2-Short", "t": "1:2-短型", "mod": "ROTanks"}
+{"h": "a7e8663b634e3443", "n": "Probe 2", "s": "Probe 2", "t": "探测器 2", "mod": "ROTanks"}
+{"h": "a7e8673b634e35f6", "n": "Probe 1", "s": "Probe 1", "t": "探测器 1", "mod": "ROTanks"}
+{"h": "a89f5d2d00dcfa90", "n": "HECS2 Closed (Comp)", "s": "HECS2 Closed (Comp)", "t": "HECS2 紧凑封闭平台", "mod": "ROTanks"}
+{"h": "a8ed8b5112710ae5", "n": "3:1 Adapter - Short", "s": "3:1 Adapter - Short", "t": "3:1 转接段 - 短型", "mod": "ROTanks"}
+{"h": "aa2ef9d518142dcf", "n": "Ares Adapter 2", "s": "Ares Adapter 2", "t": "战神转接段 2", "mod": "ROTanks"}
+{"h": "ab16f4a25f48c7ac", "n": "This modular tank is based on the Atlas launch vehicle that was used by the United States in the 1950's and 1960's. You can integrate top and bottom adapters, adjust the length and the diameter as well.", "s": "This modular tank is based on the Atlas launch vehicle that was used by the United States in the 1950's and 1960's. You can integrate top and bottom adapters, adjust the length and the diameter as well.", "t": "该模块化贮箱基于美国在 20 世纪 50 至 60 年代使用的宇宙神（Atlas）运载火箭设计。你可以集成顶部和底部适配器，并调整其长度与直径。", "mod": "ROTanks"}
+{"h": "abbab225af85e0b1", "n": "OKTO Skeleton (Comp)", "s": "OKTO Skeleton (Comp)", "t": "OKTO 紧凑骨架平台", "mod": "ROTanks"}
+{"h": "acb8483e2c3add26", "n": "Ares Tank", "s": "Ares Tank", "t": "战神贮箱", "mod": "ROTanks"}
+{"h": "acc4dcfd60b4e1bf", "n": "BDB Titan 2", "s": "BDB Titan 2", "t": "BDB 大力神 2", "mod": "ROTanks"}
+{"h": "adbee4e6a0da456c", "n": "Skeleton (Comp) Closed", "s": "Skeleton (Comp) Closed", "t": "紧凑封闭骨架平台", "mod": "ROTanks"}
+{"h": "ae22c8bcab0e7fb0", "n": "Saturn SII 7X", "s": "Saturn SII 7X", "t": "土星 SII 7 发", "mod": "ROTanks"}
+{"h": "ae3cc1d61138d7f5", "n": "2:1-Long", "s": "2:1-Long", "t": "2:1-长型", "mod": "ROTanks"}
+{"h": "af41bdf1ff53e453", "n": "Ares US Mount", "s": "Ares US Mount", "t": "战神上面级发动机支架", "mod": "ROTanks"}
+{"h": "b0e97584dc715a5c", "n": "Full", "s": "Full", "t": "全涂装", "mod": "ROTanks"}
+{"h": "b1648734d992cfdb", "n": "reDIRECT Avionics", "s": "reDIRECT Avionics", "t": "reDIRECT 航电舱", "mod": "ROTanks"}
+{"h": "b1f3b93214b37527", "n": "Modular Toroidal Tank", "s": "Modular Toroidal Tank", "t": "模块化环形贮箱", "mod": "ROTanks"}
+{"h": "b4f13f415c503a02", "n": "reDIRECT Decoupler", "s": "reDIRECT Decoupler", "t": "reDIRECT 分离器", "mod": "ROTanks"}
+{"h": "b5f4f6b5b96c87a3", "n": "Jupiter Mount", "s": "Jupiter Mount", "t": "朱庇特发动机支架", "mod": "ROTanks"}
+{"h": "b661f1ee899f6e3d", "n": "QUBE Skeleton", "s": "QUBE Skeleton", "t": "QUBE 骨架平台", "mod": "ROTanks"}
+{"h": "b78fda8bb07cdb1e", "n": "2:1 Adapter - Short", "s": "2:1 Adapter - Short", "t": "2:1 转接段 - 短型", "mod": "ROTanks"}
+{"h": "b86e8d8482728736", "n": "Atlas V CCB", "s": "Atlas V CCB", "t": "宇宙神 V CCB", "mod": "ROTanks"}
+{"h": "b98571d959862ab5", "n": "Saturn SII", "s": "Saturn SII", "t": "土星 SII", "mod": "ROTanks"}
+{"h": "bd18f444e65e92cc", "n": "3:4-Flat", "s": "3:4-Flat", "t": "3:4-扁平", "mod": "ROTanks"}
+{"h": "bd7b9fe094e878b7", "n": "Helios", "s": "Helios", "t": "太阳神", "mod": "ROTanks"}
+{"h": "be3a2e7185c3489c", "n": "BDB LDC Titan", "s": "BDB LDC Titan", "t": "BDB LDC 大力神", "mod": "ROTanks"}
+{"h": "bf2b7c164bd25935", "n": "2:3-Short", "s": "2:3-Short", "t": "2:3-短型", "mod": "ROTanks"}
+{"h": "bfffcd43afcccde7", "n": "QUBE Skeleton (Comp) Closed", "s": "QUBE Skeleton (Comp) Closed", "t": "QUBE 紧凑封闭骨架平台", "mod": "ROTanks"}
+{"h": "c1a4e2a7a8e20d58", "n": "Base", "s": "Base", "t": "基座", "mod": "ROTanks"}
+{"h": "c3bea2033c7e42fa", "n": "Ares US Tank", "s": "Ares US Tank", "t": "战神上面级贮箱", "mod": "ROTanks"}
+{"h": "c3e51adeeaf12580", "n": "Silver", "s": "Silver", "t": "银色", "mod": "ROTanks"}
+{"h": "c416c97e0d3218b3", "n": "Gold", "s": "Gold", "t": "金色", "mod": "ROTanks"}
+{"h": "c451738c832c4b88", "n": "HECS2 Bus", "s": "HECS2 Bus", "t": "HECS2 服务舱平台", "mod": "ROTanks"}
+{"h": "c4730f0ef4766e91", "n": "3:2 Adapter - Flat", "s": "3:2 Adapter - Flat", "t": "3:2 转接段 - 扁平", "mod": "ROTanks"}
+{"h": "c63d192fa09015ce", "n": "RND Skeleton Closed", "s": "RND Skeleton Closed", "t": "RND 封闭骨架平台", "mod": "ROTanks"}
+{"h": "c8c50ea5eace8ce5", "n": "3:1-Flat", "s": "3:1-Flat", "t": "3:1-扁平", "mod": "ROTanks"}
+{"h": "c97d7b283c0c7830", "n": "3:2 Adapter - Short", "s": "3:2 Adapter - Short", "t": "3:2 转接段 - 短型", "mod": "ROTanks"}
+{"h": "cae8e10830ba6b3a", "n": "Atlas Modular Tank", "s": "Atlas Modular Tank", "t": "宇宙神模块化贮箱", "mod": "ROTanks"}
+{"h": "cb034b99a614b2bd", "n": "Hexagon (LG)", "s": "Hexagon (LG)", "t": "六边形（大）", "mod": "ROTanks"}
+{"h": "cb178eee41df7b06", "n": "LDC Single", "s": "LDC Single", "t": "LDC 单发", "mod": "ROTanks"}
+{"h": "cc77ca5d8a4f9a4d", "n": "RND Closed", "s": "RND Closed", "t": "RND 封闭平台", "mod": "ROTanks"}
+{"h": "d00872549d78390c", "n": "HECS Closed", "s": "HECS Closed", "t": "HECS 封闭平台", "mod": "ROTanks"}
+{"h": "d0138c4b2760bec9", "n": "Round 2", "s": "Round 2", "t": "球形 2", "mod": "ROTanks"}
+{"h": "d06fb3d5966bd30d", "n": "Jupiter Decoupler", "s": "Jupiter Decoupler", "t": "朱庇特分离器", "mod": "ROTanks"}
+{"h": "d0b87d0b5fa3c43d", "n": "Skeletal (SM)", "s": "Skeletal (SM)", "t": "骨架结构 (SM)", "mod": "ROTanks"}
+{"h": "d161ec52959b1450", "n": "Saturn S-II", "s": "Saturn S-II", "t": "土星 S-II", "mod": "ROTanks"}
+{"h": "d161f652959b254e", "n": "Saturn S-IC", "s": "Saturn S-IC", "t": "土星 S-IC", "mod": "ROTanks"}
+{"h": "d1aac65f05b4e113", "n": "Delta-IV", "s": "Delta-IV", "t": "德尔塔-IV", "mod": "ROTanks"}
+{"h": "d1bb1913cc348824", "n": "Steel", "s": "Steel", "t": "钢制", "mod": "ROTanks"}
+{"h": "d1ca5af6ff230ab0", "n": "3:2-Ext", "s": "3:2-Ext", "t": "3:2-加长", "mod": "ROTanks"}
+{"h": "d1e058a6f92bf58e", "n": "Modular Mount (Structural)", "s": "Modular Mount (Structural)", "t": "模块化安装架（结构）", "mod": "ROTanks"}
+{"h": "d2ffa3736dce11bd", "n": "CMES Modular Tank", "s": "CMES Modular Tank", "t": "CMES 模块化贮箱", "mod": "ROTanks"}
+{"h": "d3422c258147bb74", "n": "Soyuz-XL", "s": "Soyuz-XL", "t": "联盟-XL", "mod": "ROTanks"}
+{"h": "d3c65ef5c380c046", "n": "Inset", "s": "Inset", "t": "内凹", "mod": "ROTanks"}
+{"h": "d54afc97ee75b241", "n": "4:1-Short", "s": "4:1-Short", "t": "4:1-短型", "mod": "ROTanks"}
+{"h": "d5a349259aaf2f54", "n": "1:3-Long", "s": "1:3-Long", "t": "1:3-长型", "mod": "ROTanks"}
+{"h": "d647e30a18e5d448", "n": "Long 1", "s": "Long 1", "t": "长型 1", "mod": "ROTanks"}
+{"h": "d647e50a18e5d7ae", "n": "Long 3", "s": "Long 3", "t": "长型 3", "mod": "ROTanks"}
+{"h": "d647e60a18e5d961", "n": "Long 2", "s": "Long 2", "t": "长型 2", "mod": "ROTanks"}
+{"h": "d65c57267e616503", "n": "HECS2 Skeleton Closed", "s": "HECS2 Skeleton Closed", "t": "HECS2 封闭骨架平台", "mod": "ROTanks"}
+{"h": "d8933d0e55a3eb93", "n": "Stripes-1", "s": "Stripes-1", "t": "条纹-1", "mod": "ROTanks"}
+{"h": "d8933e0e55a3ed46", "n": "Stripes-2", "s": "Stripes-2", "t": "条纹-2", "mod": "ROTanks"}
+{"h": "d8933f0e55a3eef9", "n": "Stripes-3", "s": "Stripes-3", "t": "条纹-3", "mod": "ROTanks"}
+{"h": "d893400e55a3f0ac", "n": "Stripes-4", "s": "Stripes-4", "t": "条纹-4", "mod": "ROTanks"}
+{"h": "d8e2412a3ccbb79d", "n": "Pyrios", "s": "Pyrios", "t": "派里奥斯", "mod": "ROTanks"}
+{"h": "d97abd1eedf0faf8", "n": "Venera", "s": "Venera", "t": "金星号", "mod": "ROTanks"}
+{"h": "daf677d0261de066", "n": "3:2-Flat", "s": "3:2-Flat", "t": "3:2-扁平", "mod": "ROTanks"}
+{"h": "dd7c32887241d103", "n": "SQR Bus", "s": "SQR Bus", "t": "SQR 服务舱平台", "mod": "ROTanks"}
+{"h": "de07837a076fac86", "n": "Ares Avionics", "s": "Ares Avionics", "t": "战神航电舱", "mod": "ROTanks"}
+{"h": "dfe7fef1566d1aa8", "n": "Metallic", "s": "Metallic", "t": "金属", "mod": "ROTanks"}
+{"h": "e0a39f3bf01ea19e", "n": "Jupiter US Tank", "s": "Jupiter US Tank", "t": "朱庇特上面级贮箱", "mod": "ROTanks"}
+{"h": "e2031b233eca893f", "n": "Tiny Gold", "s": "Tiny Gold", "t": "微型金箔", "mod": "ROTanks"}
+{"h": "e3c4b6c05e7481b1", "n": "HECS Skeleton (Comp) Closed", "s": "HECS Skeleton (Comp) Closed", "t": "HECS 紧凑封闭骨架平台", "mod": "ROTanks"}
+{"h": "e850591342b4881e", "n": "This spherical tank allows for many customizations. You can adjust the dimensions and the part will scale. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "s": "This spherical tank allows for many customizations. You can adjust the dimensions and the part will scale. It is comprised of many different tank types. You can choose the tank type below. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. The HP versions of the tanks are Highly Pressurized and are used for engines that require it.", "t": "该球形贮箱支持多种自定义设置。调整尺寸即可缩放该部件。它包含多种不同的贮箱类型，可在下方选择。每种贮箱类型具有不同的基础质量、成本以及可用容积率。标记为 HP 的高压版本适用于需要增压输送的发动机。", "mod": "ROTanks"}
+{"h": "e908bf11af3011bf", "n": "Shroud (Tight)", "s": "Shroud (Tight)", "t": "紧凑型整流罩", "mod": "ROTanks"}
+{"h": "e9c5ea19c6a9a982", "n": "Pill", "s": "Pill", "t": "胶囊形", "mod": "ROTanks"}
+{"h": "eaff6c199874084c", "n": "Goo", "s": "Goo", "t": "神秘粘液", "mod": "ROTanks"}
+{"h": "eb7f23f97e6d98c8", "n": "The Hollow Interstage allows you to change the Diameter of the part to fit many different configurations for your craft. It allows for customization of Decoupling just the bottom node as normal, or both nodes like a separator.", "s": "The Hollow Interstage allows you to change the Diameter of the part to fit many different configurations for your craft. It allows for customization of Decoupling just the bottom node as normal, or both nodes like a separator.", "t": "空心中级段允许你修改部件直径，以适配飞行器的多种不同构型。它支持自定义分离方式：既可按常规仅分离底部节点，也可像分离器一样同时分离两个节点。", "mod": "ROTanks"}
+{"h": "eb85d791e547e1e9", "n": "RD-108 45-deg", "s": "RD-108 45-deg", "t": "RD-108 45度", "mod": "ROTanks"}
+{"h": "ec676250591dfedf", "n": "Shuttle External Tank", "s": "Shuttle External Tank", "t": "航天飞机外贮箱", "mod": "ROTanks"}
+{"h": "ed2c760106b49e69", "n": "3:1-Ext", "s": "3:1-Ext", "t": "3:1-加长", "mod": "ROTanks"}
+{"h": "ed5b8e87762f5093", "n": "2:3-Long", "s": "2:3-Long", "t": "2:3-长型", "mod": "ROTanks"}
+{"h": "ed96a12369a1a03f", "n": "Modular Booster Tank", "s": "Modular Booster Tank", "t": "模块化助推器贮箱", "mod": "ROTanks"}
+{"h": "eedcd46ed55a2505", "n": "Large Gold A", "s": "Large Gold A", "t": "大型金箔 A", "mod": "ROTanks"}
+{"h": "efe9713780eb54bc", "n": "Modular Nose Tank", "s": "Modular Nose Tank", "t": "模块化整流罩鼻锥贮箱", "mod": "ROTanks"}
+{"h": "f2b0993e5fb2aee2", "n": "HECS2 Closed", "s": "HECS2 Closed", "t": "HECS2 封闭平台", "mod": "ROTanks"}
+{"h": "f44c37c205f1e235", "n": "Square (SM)", "s": "Square (SM)", "t": "正方形（小）", "mod": "ROTanks"}
+{"h": "f454e0fcb3af060f", "n": "LDC Titan Interstage Decoupler", "s": "LDC Titan Interstage Decoupler", "t": "LDC 大力神级间分离器", "mod": "ROTanks"}
+{"h": "f5fc5d2869282021", "n": "Xenon", "s": "Xenon", "t": "氙气", "mod": "ROTanks"}
+{"h": "f6811359c9bfc433", "n": "HECS Skeleton", "s": "HECS Skeleton", "t": "HECS 骨架平台", "mod": "ROTanks"}
+{"h": "f8416d5e8c3b41e2", "n": "Centaur Common Tank", "s": "Centaur Common Tank", "t": "半人马通用贮箱", "mod": "ROTanks"}
+{"h": "f85692a69c99a5ae", "n": "SQR Skeleton (Comp) Closed", "s": "SQR Skeleton (Comp) Closed", "t": "SQR 紧凑封闭骨架平台", "mod": "ROTanks"}
+{"h": "f8917cd26c03aee2", "n": "Another Modular Tank", "s": "Another Modular Tank", "t": "另一款模块化贮箱", "mod": "ROTanks"}
+{"h": "fab8c1514998c90d", "n": "Rockomax 64", "s": "Rockomax 64", "t": "洛克玛克斯 64", "mod": "ROTanks"}
+{"h": "fabf3151499df30b", "n": "Rockomax 48", "s": "Rockomax 48", "t": "洛克玛克斯 48", "mod": "ROTanks"}
+{"h": "fac2b15149a10262", "n": "Rockomax 32", "s": "Rockomax 32", "t": "洛克玛克斯 32", "mod": "ROTanks"}
+{"h": "fac34317c8aa5af0", "n": "3:1 Adapter - Extended", "s": "3:1 Adapter - Extended", "t": "3:1 转接段 - 加长", "mod": "ROTanks"}
+{"h": "fac9bd5149a73574", "n": "Rockomax 16", "s": "Rockomax 16", "t": "洛克玛克斯 16", "mod": "ROTanks"}
+{"h": "fbcc158b419d780f", "n": "Atlas Skirt", "s": "Atlas Skirt", "t": "宇宙神裙部", "mod": "ROTanks"}
+{"h": "fcefd5726e0a0a99", "n": "HECS2 Skeleton (Comp)", "s": "HECS2 Skeleton (Comp)", "t": "HECS2 紧凑骨架平台", "mod": "ROTanks"}
+{"h": "fd1ae285071972da", "n": "Flat", "s": "Flat", "t": "扁平", "mod": "ROTanks"}
+{"h": "fec1aa43475a90e3", "n": "QUBE Compact", "s": "QUBE Compact", "t": "QUBE 紧凑平台", "mod": "ROTanks"}
+{"h": "ffd7c29bca02d301", "n": "Jupiter Adapter 4-3", "s": "Jupiter Adapter 4-3", "t": "朱庇特 4-3 转接段", "mod": "ROTanks"}
+{"h": "ffe95a19edbcb662", "n": "Large Gold", "s": "Large Gold", "t": "大型金箔", "mod": "ROTanks"}
