@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
@@ -26,8 +27,52 @@ namespace UI18n.Runtime
     [KSPAddon(KSPAddon.Startup.Instantly, true)]
     public sealed class UI18nAddon : MonoBehaviour
     {
-        internal const string Version = "0.1.0";
         internal const string HarmonyId = "com.universali18n.runtime";
+
+        private static string _version;
+
+        /// <summary>
+        /// 程序集版本串，形如 <c>1.0.0+9238f1a…</c>：<c>+</c> 前是发布版本（构建时 <c>-p:Version=</c> 写进去的），
+        /// <c>+</c> 后是构建时 HEAD 的 commit（.NET SDK 的 <c>SourceRevisionId</c>，见 README §10.8）。
+        /// 日志<b>原样打印整串</b> —— 玩家贴一行日志就能定位到确切 commit，比只打 <c>1.0.0</c> 有用。
+        /// 只读一次并缓存；读不到就回落 <c>AssemblyName.Version</c>。
+        /// </summary>
+        internal static string Version
+        {
+            get
+            {
+                if (_version == null) { _version = ReadVersion(); }
+                return _version;
+            }
+        }
+
+        /// <summary>读程序集版本：优先 <see cref="AssemblyInformationalVersionAttribute"/>（带 commit），回落 <c>AssemblyName.Version</c>。</summary>
+        private static string ReadVersion()
+        {
+            try
+            {
+                Assembly assembly = typeof(UI18nAddon).Assembly;
+
+                object[] attributes = assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
+                if (attributes != null && attributes.Length > 0)
+                {
+                    AssemblyInformationalVersionAttribute info = attributes[0] as AssemblyInformationalVersionAttribute;
+                    if (info != null && !string.IsNullOrEmpty(info.InformationalVersion))
+                    {
+                        return info.InformationalVersion;
+                    }
+                }
+
+                System.Version assemblyVersion = assembly.GetName().Version;
+                if (assemblyVersion != null) { return assemblyVersion.ToString(); }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("version probe failed: " + ex.GetType().Name + ": " + ex.Message);
+            }
+
+            return "unknown";
+        }
 
         /// <summary>统计日志间隔（P2：16 个目标的命中数必须能在日志里看到）。</summary>
         private const float StatsIntervalSeconds = 20f;

@@ -89,7 +89,7 @@ content.text = ...
 正常（中文 + 有语言包）：
 
 ```
-[UI18n] v0.1.0 starting (harmony id com.universali18n.runtime)
+[UI18n] v1.0.0+9238f1acc43f8249be734ceb2e2dccf2d6920ad0 starting (harmony id com.universali18n.runtime)
 [UI18n] language=zh-cn, enabled=True, forceOverride=False
 [UI18n] font mode=OsFont, tmp mode=Auto, os font="Microsoft YaHei"
 [UI18n] packs: lang=zh-cn, dir=zh-cn, files=42
@@ -100,8 +100,12 @@ content.text = ...
 [UI18n] patch ok: UnityEngine.UI.Text.set_text(string value)
 …
 [UI18n] installed 16/16 patches
-[UI18n] ready: patches=16/16, dict entries=10027, language=zh-cn, version=0.1.0
+[UI18n] ready: patches=16/16, dict entries=10027, language=zh-cn, version=1.0.0+9238f1acc43f8249be734ceb2e2dccf2d6920ad0
 ```
+
+> `version=` 后面是**程序集自带的完整版本串**（`AssemblyInformationalVersion`），格式 `<发布版本>+<构建时 HEAD 的 commit>`，
+> 由 `UI18nAddon.Version` 从程序集读出来，不再硬编码 —— 玩家贴一行日志就能定位到确切 commit（见 10.8）。
+> 本机联调从 `build\bin` 直接构建时，`+` 后就是当时 HEAD；正式发布包由 `build-release.ps1 -Version 1.0.0` 构建。
 
 非中文（**预期行为**：0 个 patch）：
 
@@ -500,6 +504,9 @@ pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0
 
 # 复用已有 build\bin（CI 里已经编过时）
 pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0 -SkipBuild
+
+# 脏工作树出包（默认会 throw；只在明确知道自己在干什么时用，日志会留 WARN）
+pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0 -AllowDirty
 ```
 
 | 产物 | 说明 |
@@ -526,12 +533,20 @@ GameData/UI18n/
 `Packs/` **只从仓库 `packs/<lang>/` 取**（那是运行时字典）。`packs/pool.jsonl` 与 `packs/glossary.jsonl` 是翻译流水线的
 生产端输入，不是运行时格式，进包只会让每一行都 ParseError —— 断言会拦（见 10.3 第 6 条）。
 
-### 10.3 硬断言（`release-checks.ps1` 的 `Assert-ReleaseTree`）
+### 10.3 硬断言（`release-checks.ps1`）
 
-出包前对 staging 树逐条检查，**命中任意一条就 throw，并且一次把所有违规列出来**：
+出包前逐条检查，**命中任意一条就 throw，并且一次把所有违规列出来**。两个入口，顺序固定：
+
+- `Assert-ReleaseProvenance`（第 8、9 条，**先跑**）：来源不对就不必看内容了；
+- `Assert-ReleaseTree`（第 1-7 条，**后跑**）：staging 树里不该有的东西。
 
 | # | 规则 | 为什么 |
 | --- | --- | --- |
+| 8a | 已跟踪文件不许有改动/删除/暂存未提交（`git status --porcelain --untracked-files=no` 为空） | 脏树编出来的二进制不对应任何已提交源码 |
+| 8b | 未跟踪文件不许落在 `src/` `tests/` `tools/` `packs/` 之下 | 这些是构建输入：会进构建或进包，未提交就等于不可复现 |
+| 8c | 其余未跟踪文件（`reports/` `build/` `dist/` `_scratch/` …）**只告警不阻断** | 每轮验证都会产生 `reports/verify-*.log`；若把它当脏，重建永远报脏 |
+| 9a | staging 里两个 DLL 内嵌标记的 `+` 前必须等于 `-Version` | 发布版本 == DLL 版本（构建时用 `-p:Version=` 写进程序集） |
+| 9b | 内嵌标记的 `+` 后必须等于 `git rev-parse HEAD` | 二进制必须能指认自己的源码（见 10.8） |
 | 1 | 不许有 `UI18n.Probe.dll` | 取证插件，只在本机联调用 |
 | 2 | 不许有 `*_smoke.jsonl` | 冒烟字典只随 `deploy.ps1 -Smoke` 装 |
 | 3 | 不许有 `*.pdb` | 调试符号 |
@@ -574,12 +589,56 @@ GameData/UI18n/
 | manifest `files` | 47 |
 | `packFiles` / `packRows` / `packBytes` | 41 / 9,990 / 3,504,392 |
 
+> 这一组数字来自 2026-10-23 的**脏树构建**（DLL 内嵌 `fc1c2b2`，见 10.8 的事故复盘），只作量级参考；
+> 正式出包必须按 10.8 从干净树重建，届时以 `dist/manifest.json` 为准。
+
 **zip 的字节数与 sha256 每次出包都会变**（zip 条目里存了文件时间戳，`UI18n.version` 每次重写），
 所以对外公布的值一律以当次生成的 `dist/manifest.json` 的 `zip.sha256` 为准，不要抄 README 里的历史值。
 `packFiles/packRows/packBytes` 与 `files` 数量是稳定的，可用作回归断言。
 
 ### 10.7 版本号只在一个地方写
 
-`-Version` 同时决定：zip 文件名、`manifest.version`、zip 内 `UI18n.version` 的 `VERSION`、netkan 的 `version`/`download`/`sha256`。
-`GameData/UI18n/UI18n.version` 模板里的 `1.0.0` 只是给 `deploy.ps1`（本机联调）用的默认值；正式发布以 `-Version` 为准。
+`-Version` 同时决定：zip 文件名、`manifest.version`、zip 内 `UI18n.version` 的 `VERSION`、`UI18n.cfg` 的 `Version`、netkan 的 `version`/`download`/`sha256`，以及**两个 DLL 内嵌的发布版本**（`-p:Version=`）。
+
+模板里的 `1.0.0`（`GameData/UI18n/UI18n.version` 与 `GameData/UI18n/UI18n.cfg`）只是给 `deploy.ps1`（本机联调）用的默认值：
+出包时 `build-release.ps1` 会把 staging 里这两处都改写成 `-Version`（日志 `[release] staged  : UI18n.cfg (Version=1.0.0)` / `UI18n.version (VERSION=1.0.0)`），
+所以**发布包里不会留模板默认值**；若发现包里版本号与 zip 名不一致，说明有人手工 stage 过而不是走 `build-release.ps1`。
+
+运行时日志里的 `version=` 打的是程序集版本串（`<version>+<commit>`），来源同上（见 10.8）。
+
+### 10.8 发布来源标记（DLL 内嵌 commit）与干净工作树
+
+三句话说完：
+
+1. **发布必须从干净工作树构建 —— 判据是三档，不是裸 `git status`。** 裸判据会把每轮验证产生的 `reports/verify-*.log` 当成脏，让重建永远报脏，所以 `Assert-ReleaseProvenance` 这样分档：
+   - **阻断**：已跟踪文件有改动/删除/暂存未提交 → `dirty working tree: tracked changes: <前 5 条> (+N more)`；
+   - **阻断**：未跟踪文件落在 `src/` `tests/` `tools/` `packs/` 之下 → 每条一个 `untracked build input: <path>`（这些是构建输入，未提交就不可复现）；
+   - **只告警**：其余未跟踪文件 → `WARN: N untracked file(s) outside build inputs (ignored by this assertion): …`。
+
+   确需脏树出包只能显式传 `-AllowDirty`，此时前两档降级为 `WARN: working tree is dirty (N tracked change(s), M untracked build input(s)), release built with -AllowDirty`。
+2. **DLL 内嵌的 `<version>+<commit>` 是有意的来源标记，不是巧合。** .NET SDK 把 `SourceRevisionId`（= 构建时的 `git rev-parse HEAD`）追加进 `AssemblyInformationalVersion`，所以拿到任何一个 UI18n 的 DLL 都能反查它出自哪个 commit。脚本把 staging 里两个 DLL 的这个串**拆成两半分别判**：
+   - `+` 前必须等于 `-Version`（文案「版本号 1.0.0 与 -Version 2.0.0 不一致」）；
+   - `+` 后必须等于当前 HEAD（文案「DLL 内嵌 <x> / HEAD <y>」）。
+
+   **`-Version` 必须真的传进编译**：构建命令行是 `dotnet build <sln> -c Release -p:Version=<version>`；不传的话 DLL 里永远是 SDK 默认版本号，9a 那条就永远过不了。
+   运行时日志 `version=` 打的也是这个完整串（`UI18nAddon.Version` 优先读 `AssemblyInformationalVersionAttribute`，读不到回落 `AssemblyName.Version`），所以玩家贴的日志能直接对到 commit。
+3. **因此「同一 commit 重建 == 发布字节」成立，跨 commit 一定不同** —— 那是来源标记在变，不是构建不确定性。`Directory.Build.props` 的 `Deterministic=true` 保证同一 commit、同一 SDK、同一输入编出逐字节相同的 DLL；而 `SourceRevisionId` 本身就是输入的一部分，commit 变了字节必然变。**不要为了「字节稳定」去关 `Deterministic` 或 `SourceRevisionId`**，那会把来源可追溯性一起关掉。
+
+**为什么加这两条（事故复盘）**：`dist/UI18n-1.0.0.zip` 第一次是用**脏工作树**出的包，里面两个 DLL 内嵌 `1.0.0+fc1c2b2`，而 `HitSampleLimit`、README 那批改动当时还没提交 —— 二进制声称的 commit 并不包含它自己的源码，等于发布物无法溯源。随后提交 `9238f1a` 再构建，字节就变了（Core `3C33CB55…` → `BBD022FB…`、Runtime `D906F956…` → `4357C25E…`，大小不变）。所以流程固定为：
+
+```text
+改代码 → 提交（干净树）→ 从该 commit 构建 → deploy → 出包
+```
+
+**自查（不构建也能看任何一个 DLL 声称的 commit）**：
+
+```powershell
+$p = 'GameData\UI18n\Plugins\UI18n.Runtime.dll'
+$t = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($p))
+[regex]::Match($t, '[0-9]+\.[0-9]+\.[0-9]+\+[0-9a-f]{40}').Value   # 例：1.0.0+9238f1acc43f8249be734ceb2e2dccf2d6920ad0
+git rev-parse HEAD                                                    # 两者必须相同
+```
+
+实测（2026-10-23，本机）：部署中的 `GameData\UI18n\Plugins\UI18n.Runtime.dll` 内嵌 `1.0.0+fc1c2b20…`，而当时 HEAD 已是 `9238f1a…` —— 正是这条断言要拦的形态；按上面的流程重建 + 重新 deploy 后两者一致。
+
 

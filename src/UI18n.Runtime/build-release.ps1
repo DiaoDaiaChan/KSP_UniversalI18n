@@ -16,6 +16,13 @@
     build\、_scratch\、_audit\、packs 根下的 pool.jsonl / glossary.jsonl。
     Packs 只从仓库 packs\<lang>\ 取（那是运行时字典），不取 packs\ 根下的生产端输入。
 
+    另外两道「来源断言」跑在内容断言之前（见 README §10.8）：
+      8. 工作树判据（三档）：已跟踪文件有改动 -> 阻断；未跟踪文件落在 src/ tests/ tools/ packs/
+         之下 -> 阻断；其余未跟踪文件（reports/ build/ dist/ _scratch/ …）只告警不阻断。
+         -AllowDirty 把前两档降级成 WARN。
+      9. staging 里两个 DLL 内嵌的 <version>+<commit>：+ 前必须等于 -Version，
+         + 后必须等于 git rev-parse HEAD（构建时用 -p:Version=<version> 写进程序集）。
+
 .EXAMPLE
     pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0
 
@@ -33,7 +40,9 @@ param(
     [string]$RepoSlug = 'UniversalI18n/UniversalI18n',
     [string]$License = 'MIT',
     [string]$Author = 'UI18n contributors',
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    # 默认要求工作树干净（发布物必须来自已提交源码）；确需脏树出包时显式传本开关，会打 WARN
+    [switch]$AllowDirty
 )
 
 $ErrorActionPreference = 'Stop'
@@ -66,8 +75,11 @@ if ($License -eq 'MIT') {
 }
 
 # 1) 构建（默认重新编；-SkipBuild 复用 build\bin）
+#    -Version 必须传进编译（-p:Version=），否则 DLL 里永远是默认版本号，
+#    来源断言第 9 条的「发布版本 == DLL 版本」就永远过不了（见 README §10.8）。
 if (-not $SkipBuild) {
-    & dotnet build $sln -c $Configuration
+    Write-Host ("[release] build     : dotnet build -c {0} -p:Version={1}" -f $Configuration, $Version)
+    & dotnet build $sln -c $Configuration -p:Version=$Version
     if ($LASTEXITCODE -ne 0) { throw "[release] dotnet build failed (exit $LASTEXITCODE)" }
 }
 
@@ -91,6 +103,14 @@ foreach ($cfg in @('UI18n.cfg', 'Config.cfg')) {
     Copy-Item $src $stageMod -Force
     Write-Host "[release] staged  : $cfg"
 }
+
+# UI18n.cfg：模板里的 Version = x.y.z 是给本机 deploy 用的默认值，发布包必须改成这次的 -Version
+# （否则包里会留一个和 zip 名、manifest、DLL 都不一致的版本号 —— 版本号只在一个地方写的例外就是这里）。
+$modCfgPath = Join-Path $stageMod 'UI18n.cfg'
+$modCfg = Get-Content -LiteralPath $modCfgPath -Raw -Encoding UTF8
+$modCfg = $modCfg -replace '(?m)^(\s*Version\s*=\s*)\S+\s*$', ('1' + $Version)
+Set-Content -LiteralPath $modCfgPath -Value $modCfg -Encoding UTF8
+Write-Host "[release] staged  : UI18n.cfg (Version=$Version)"
 
 # UI18n.version：把模板里的 VERSION 换成这次的 -Version（KSP-AVC）
 $versionTemplate = Join-Path $templates 'UI18n.version'
@@ -121,6 +141,12 @@ Write-Host ("[release] staged  : Packs\{0}\ ({1} file(s), {2:N0} B)" -f $langNor
 
 # 3) 硬断言：命中即 throw（规则在 release-checks.ps1 里，便于单测每一条）
 . (Join-Path $scriptDir 'release-checks.ps1')
+
+# 3a) 来源断言先跑（第 8、9 条）：脏树或来源不符时，内容再干净也不该出包
+$provenance = Assert-ReleaseProvenance -StageMod $stageMod -RepoRoot $repoRoot -Version $Version -AllowDirty:$AllowDirty
+Write-Host ("[release] provenance: HEAD={0}, dirty={1} entry(ies), untracked-ignored={2}, Core={3}, Runtime={4}" -f $provenance.HeadSha, $provenance.DirtyCount, $provenance.UntrackedIgnored, $provenance.Embedded['UI18n.Core.dll'], $provenance.Embedded['UI18n.Runtime.dll'])
+
+# 3b) 内容断言（第 1-7 条）
 $stagedFiles = Assert-ReleaseTree -StageRoot $stageRoot -StageMod $stageMod
 
 # 4) 打 zip（不加外层目录：解压即得 GameData/UI18n/...）
