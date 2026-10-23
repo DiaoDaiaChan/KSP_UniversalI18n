@@ -15,6 +15,8 @@
   7. glossary：英文只从 cfg 行尾注释取（dictionary.cfg 自己的中文行绝不能被当成英文），
      注释键要补 # 才能与字典键配对；
   8. 产物自检：packs/pool.jsonl 与既有真值逐字节一致（有真值文件时才检查）。
+  9. 包索引：packs/index.json 的排序确定性、字段齐全、sha256/rows/keepRows 与真实文件一致、
+     幂等（除 generatedAt 外逐字节相同）、--check 正例 exit 0 与四种负例 exit 1。
 """
 
 from __future__ import annotations
@@ -26,7 +28,7 @@ import shutil
 import sys
 import tempfile
 
-from . import cfgparse, ensure_stdout, fnv, glossary, harvest, textnorm
+from . import cfgparse, ensure_stdout, fnv, glossary, harvest, packindex, textnorm
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -240,6 +242,187 @@ def test_glossary(base):
 
 
 # ---------------------------------------------------------------------------
+# 7. 包索引 packs/index.json（假 packs：顺序即契约 / 幂等 / --check 正负例）
+# ---------------------------------------------------------------------------
+def _pack_row(text_n, text_s, text_t, mod):
+    """按定稿包的真实行 schema 造一行：{"h","mod","n","s","t"}，h = FNV-1a64(n)。
+
+    字段名与顺序复刻 packs/zh-cn/*.jsonl（json.dumps 默认分隔符、键序 h/mod/n/s/t），
+    这样 fixture 与真实产物同构，测出来的行为才对得上。
+    """
+    row = {"h": fnv.hash_text(text_n), "mod": mod, "n": text_n, "s": text_s, "t": text_t}
+    return json.dumps(row, ensure_ascii=False)
+
+
+def build_fake_packs(base):
+    """三个包文件，mod 名故意让 ordinal 序与 case-insensitive 序不同。
+
+    ordinal 升序      = Mmm, ZZZ, aaa（大写字母码点更小）
+    case-insensitive = aaa, Mmm, ZZZ
+    只有按 ordinal 排才会得到 ["Mmm","ZZZ","aaa"]；这是"顺序即契约"的守卫。
+    """
+    packs = os.path.join(base, "packs")
+    lang_dir = os.path.join(packs, "zh-cn")
+    files = {
+        "aaa": [("Alpha", "Alpha", "阿尔法")],                        # 1 行 / keep 1
+        "Mmm": [("Bravo", "Bravo", "布拉沃"),                         # 2 行 / keep 1
+                ("Charlie", "Charlie v2", "查理")],
+        "ZZZ": [("Delta", "Delta v2", "德尔塔"),                      # 3 行 / keep 0
+                ("Echo", "Echo v2", "回声"),
+                ("Foxtrot", "Foxtrot v2", "狐步")],
+    }
+    for mod, items in files.items():
+        _write(os.path.join(lang_dir, mod + ".jsonl"),
+               "\n".join(_pack_row(n, s, t, mod) for n, s, t in items) + "\n")
+    pool = [
+        {"h": fnv.hash_text("Alpha"), "text": "Alpha", "src": "cfg", "mod": "aaa"},
+        {"h": fnv.hash_text("Bravo"), "text": "Bravo", "src": "loc", "mod": "Mmm"},
+        {"h": fnv.hash_text("Charlie"), "text": "Charlie", "src": "cfg", "mod": "Mmm"},
+        {"h": fnv.hash_text("Zulu"), "text": "Zulu", "src": "loc", "mod": "ZZZ"},
+    ]
+    _write(os.path.join(packs, "pool.jsonl"),
+           "\n".join(json.dumps(r, ensure_ascii=False) for r in pool) + "\n")
+    return packs
+
+
+def _strip_generated_at(raw):
+    """抹平 generatedAt 那一行，用来证明"除 generatedAt 外逐字节相同"。"""
+    out = []
+    for line in raw.split(b"\n"):
+        out.append(b'"generatedAt": "<X>",' if b'"generatedAt"' in line else line)
+    return b"\n".join(out)
+
+
+def test_packindex(base):
+    print("[7] 包索引 packs/index.json（假 packs）")
+    packs = build_fake_packs(base)
+    entries = packindex.scan_packs(packs, "zh-cn")
+    eq("包文件数", len(entries), 3)
+    eq("排序 = mod 名 ordinal 升序（不是 case-insensitive）",
+       [e["mod"] for e in entries], ["Mmm", "ZZZ", "aaa"])
+    eq("条目字段顺序固定", list(entries[0].keys()), list(packindex.ENTRY_FIELDS))
+    for e in entries:
+        path = os.path.join(packs, e["file"].replace("/", os.sep))
+        with open(path, "rb") as fh:
+            raw = fh.read()
+        rows = [json.loads(x) for x in raw.decode("utf-8").split("\n") if x.strip()]
+        eq("sha256(%s) 与真实文件一致" % e["mod"], e["sha256"], hashlib.sha256(raw).hexdigest())
+        eq("bytes(%s) 与文件大小一致" % e["mod"], e["bytes"], len(raw))
+        eq("rows(%s) 与文件行数一致" % e["mod"], e["rows"], len(rows))
+        eq("keepRows(%s) 与 t==s 行数一致" % e["mod"], e["keepRows"],
+           sum(1 for r in rows if r["t"] == r["s"]))
+    doc = packindex.build_index(entries, "zh-cn", "2026-01-01T00:00:00Z")
+    eq("顶层字段顺序", list(doc.keys()),
+       ["schema", "lang", "generatedAt", "totalRows", "totalBytes", "packCount", "packs"])
+    eq("schema == 1", doc["schema"], 1)
+    eq("lang == zh-cn", doc["lang"], "zh-cn")
+    eq("packCount == len(packs)", doc["packCount"], len(doc["packs"]))
+    eq("totalRows == sum(rows)", doc["totalRows"], sum(e["rows"] for e in entries))
+    eq("totalBytes == sum(bytes)", doc["totalBytes"], sum(e["bytes"] for e in entries))
+    want_bytes = sum(os.path.getsize(os.path.join(packs, "zh-cn", m + ".jsonl"))
+                     for m in ("aaa", "Mmm", "ZZZ"))
+    eq("假 packs 三条汇总", (doc["totalRows"], doc["totalBytes"], doc["packCount"]),
+       (6, want_bytes, 3))
+
+    # 幂等：同样输入两次生成，只有 generatedAt 那一行能变
+    a = os.path.join(base, "index_a.json")
+    b = os.path.join(base, "index_b.json")
+    packindex.write_index(a, packindex.build_index(packindex.scan_packs(packs), "zh-cn",
+                                                  "2026-01-01T00:00:00Z"))
+    packindex.write_index(b, packindex.build_index(packindex.scan_packs(packs), "zh-cn",
+                                                  "2026-01-02T00:00:00Z"))
+    with open(a, "rb") as fh:
+        raw_a = fh.read()
+    with open(b, "rb") as fh:
+        raw_b = fh.read()
+    check("两次生成确实不同（generatedAt 生效）", raw_a != raw_b)
+    check("两次生成除 generatedAt 外逐字节相同",
+          _strip_generated_at(raw_a) == _strip_generated_at(raw_b))
+
+    # 正例：生成 -> 校验 -> 退出码 0
+    idx = os.path.join(packs, "index.json")
+    cov = os.path.join(base, "coverage.md")
+    eq("生成 index 的 main 退出码",
+       packindex.main(["--packs-dir", packs, "--index", idx, "--coverage", cov,
+                       "--pool", os.path.join(packs, "pool.jsonl"), "--quiet"]), 0)
+    ok, diffs, doc2 = packindex.check_index(idx, packs)
+    check("--check 正例：一致", ok, repr(diffs))
+    eq("--check 正例无差异", diffs, [])
+    eq("--check 正例退出码 0",
+       packindex.main(["--check", "--packs-dir", packs, "--index", idx, "--quiet"]), 0)
+    eq("磁盘 index 三总数", (doc2["packCount"], doc2["totalRows"], doc2["totalBytes"]),
+       (3, 6, want_bytes))
+
+    # coverage.md：口径必须写在数字旁边
+    with open(cov, encoding="utf-8") as fh:
+        ctext = fh.read()
+    check("coverage 写明分母 = pool 行数", "分母 = " in ctext and "的 4 行" in ctext)
+    check("coverage 写明分子 = h 精确命中", "精确命中" in ctext)
+    check("coverage 覆盖率 = 3 / 4 = 75.00%", "75.00%" in ctext)
+    check("coverage 声明不引用人手填的百分比", "不引用任何人手填的百分比" in ctext)
+    check("coverage 逐 mod 表按 rows 降序",
+          ctext.index("| ZZZ |") < ctext.index("| Mmm |") < ctext.index("| aaa |"))
+
+    # 负例：每个都用全新副本，避免上一条的破坏污染下一条
+    def fresh(tag):
+        dst = os.path.join(base, "neg_" + tag)
+        shutil.copytree(packs, dst)
+        i = os.path.join(dst, "index.json")
+        packindex.main(["--packs-dir", dst, "--index", i, "--no-coverage", "--quiet"])
+        return dst, i
+
+    d, i = fresh("byte")
+    with open(os.path.join(d, "zh-cn", "Mmm.jsonl"), "ab") as fh:
+        fh.write(b" ")
+    ok, diffs, _ = packindex.check_index(i, d)
+    check("负例 改一个字节 -> 不一致", not ok)
+    check("负例 改一个字节 -> 报出 sha256 变了",
+          any("sha256 变了" in x for x in diffs), repr(diffs))
+    eq("负例 改一个字节 -> 退出码 1",
+       packindex.main(["--check", "--packs-dir", d, "--index", i, "--quiet"]), 1)
+
+    d, i = fresh("rows")
+    with open(os.path.join(d, "zh-cn", "ZZZ.jsonl"), "a", encoding="utf-8", newline="") as fh:
+        fh.write(_pack_row("Golf", "Golf", "高尔夫", "ZZZ") + "\n")   # 追加，不是覆盖
+    ok, diffs, _ = packindex.check_index(i, d)
+    check("负例 加一行 -> rows 变了", not ok and any("rows 变了" in x for x in diffs), repr(diffs))
+    eq("负例 加一行 -> 退出码 1",
+       packindex.main(["--check", "--packs-dir", d, "--index", i, "--quiet"]), 1)
+
+    d, i = fresh("extra")
+    _write(os.path.join(d, "zh-cn", "Yyy.jsonl"), _pack_row("Hotel", "Hotel", "旅馆", "Yyy") + "\n")
+    ok, diffs, _ = packindex.check_index(i, d)
+    check("负例 多出文件 -> 未登记文件",
+          not ok and any("未登记文件" in x for x in diffs), repr(diffs))
+    eq("负例 多出文件 -> 退出码 1",
+       packindex.main(["--check", "--packs-dir", d, "--index", i, "--quiet"]), 1)
+
+    d, i = fresh("missing")
+    os.remove(os.path.join(d, "zh-cn", "aaa.jsonl"))
+    ok, diffs, _ = packindex.check_index(i, d)
+    check("负例 删文件 -> 文件缺失", not ok and any("文件缺失" in x for x in diffs), repr(diffs))
+    eq("负例 删文件 -> 退出码 1",
+       packindex.main(["--check", "--packs-dir", d, "--index", i, "--quiet"]), 1)
+
+
+def test_packindex_real():
+    print("[8] 索引产物自检（真实 packs/index.json）")
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    index_path = os.path.join(repo, "packs", "index.json")
+    if not os.path.isfile(index_path):
+        print("  [skip] packs/index.json 还不存在（先跑 python -m i18n_tools.packindex）")
+        return
+    doc = packindex.load_index(index_path)
+    eq("真实 packCount == 41", doc["packCount"], 41)
+    eq("真实 totalRows == 9990", doc["totalRows"], 9990)
+    eq("真实 totalBytes == 3504392", doc["totalBytes"], 3504392)
+    eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
+    entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
+    eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)
+    eq("真实 --check 退出码 0", packindex.main(["--check", "--quiet"]), 0)
+
+
+# ---------------------------------------------------------------------------
 # 6. 真实产物自检（有真值文件时才查）
 # ---------------------------------------------------------------------------
 def test_artifacts():
@@ -285,9 +468,11 @@ def main(argv=None) -> int:
     try:
         test_pipeline(os.path.join(base, "pipeline"))
         test_glossary(os.path.join(base, "glossary"))
+        test_packindex(os.path.join(base, "packindex"))
     finally:
         shutil.rmtree(base, ignore_errors=True)
     test_artifacts()
+    test_packindex_real()
     print("")
     if _FAILED:
         print("[selftest] 失败 %d / %d 项：" % (len(_FAILED), _CHECKED))

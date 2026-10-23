@@ -1,0 +1,451 @@
+{
+ "lang": "zh-cn",
+ "dry_run": false,
+ "packs_dir": "C:\\Users\\43701\\Documents\\github\\UniversalI18n\\packs\\zh-cn",
+ "glossary": "C:\\Users\\43701\\Documents\\github\\UniversalI18n\\packs\\glossary.jsonl",
+ "glossary_version": "024c4e9a",
+ "files": 41,
+ "keyref_total": 992,
+ "resolved": 928,
+ "unresolvable": 0,
+ "existing": 30,
+ "duplicate": 34,
+ "gated": 0,
+ "not_key_ref": 9051,
+ "rows_before": 10043,
+ "rows_after": 10971,
+ "hash_s_rows_before": 992,
+ "hash_s_rows_after": 992,
+ "prefer_official": true,
+ "by_file": {
+  "KSPCommunityFixes.jsonl": {
+   "rows_before": 5,
+   "key_rows": 2,
+   "resolved": 2,
+   "existing": 0,
+   "duplicate": 0,
+   "unresolvable": 0,
+   "gated": 0,
+   "not_key_ref": 3,
+   "rows_after": 7
+  },
+  "ReStock.jsonl": {
+   "rows_before": 8,
+   "key_rows": 6,
+   "resolved": 6,
+   "existing": 0,
+   "duplicate": 0,
+   "unresolvable": 0,
+   "gated": 0,
+   "not_key_ref": 2,
+   "rows_after": 14
+  },
+  "RealismOverhaul.jsonl": {
+   "rows_before": 1774,
+   "key_rows": 2,
+   "resolved": 2,
+   "existing": 0,
+   "duplicate": 0,
+   "unresolvable": 0,
+   "gated": 0,
+   "not_key_ref": 1772,
+   "rows_after": 1776
+  },
+  "Squad.jsonl": {
+   "rows_before": 982,
+   "key_rows": 981,
+   "resolved": 918,
+   "existing": 29,
+   "duplicate": 34,
+   "unresolvable": 0,
+   "gated": 0,
+   "not_key_ref": 1,
+   "rows_after": 1900
+  }
+ },
+ "conflicts": [
+  {
+   "h": "8e985aeeca6a8166",
+   "key": "#autoLOC_8007119",
+   "mod": "ProceduralFairings",
+   "official": "白色",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "c1a106a7a8de61ad",
+   "key": "#autoLOC_6005117",
+   "mod": "Squad",
+   "official": "裸露",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "18b9a74ca16f3bbc",
+   "key": "#autoLOC_8014160",
+   "mod": "Squad",
+   "official": "正交四喷嘴",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "378c4f90abc4f00d",
+   "key": "#autoLOC_8014161",
+   "mod": "Squad",
+   "official": "正交五喷嘴",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "5c8602845d0c92de",
+   "key": "#autoLOC_8014162",
+   "mod": "Squad",
+   "official": "斜角四喷嘴",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "d6b1d1c765ce5f9b",
+   "key": "#autoLOC_8014159",
+   "mod": "Squad",
+   "official": "正交三喷嘴",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "33b651c26015f922",
+   "key": "#autoLOC_8014158",
+   "mod": "Squad",
+   "official": "正交双喷嘴",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "87addf41ec605371",
+   "key": "#autoLOC_500188",
+   "mod": "Squad",
+   "official": "带集成整流罩的大型热防护罩",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "728e24b8e5a2f571",
+   "key": "#autoLOC_500105",
+   "mod": "Squad",
+   "official": "科学家",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "e5f22074de484172",
+   "key": "#autoLOC_500202",
+   "mod": "Squad",
+   "official": "可调节坡度进气道",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "a7a6a742dafe7fd7",
+   "key": "#autoLOC_501681",
+   "mod": "Squad",
+   "official": "极限火箭集团",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "c3d46633a0d6763e",
+   "key": "#autoLOC_500551",
+   "mod": "Squad",
+   "official": "为喷气燃料准备的小型容器。",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "27f9c5745184c667",
+   "key": "#autoLOC_500550",
+   "mod": "Squad",
+   "official": "Mk0液体燃料罐",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "a9774546d4a414b3",
+   "key": "#autoLOC_500554",
+   "mod": "Squad",
+   "official": "一台引擎还不够？我们给你塞满！",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "dd60f463a99ea33c",
+   "key": "#autoLOC_500412",
+   "mod": "Squad",
+   "official": "J-90“歌利亚”涡轮风扇引擎",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "10ef215edaf41c9d",
+   "key": "#autoLOC_500413",
+   "mod": "Squad",
+   "official": "在所有喷气式引擎中脱颖而出，拥有最大最强的推力。这款引擎在低巡航速度和全海拔飞行中表现最佳。",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "3d2cc8d952adebec",
+   "key": "#autoLOC_6006063",
+   "mod": "Squad",
+   "official": "小",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "c8736ef79380e634",
+   "key": "#autoLOC_6006065",
+   "mod": "Squad",
+   "official": "大",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "7cf888a26f685d89",
+   "key": "#autoLOC_500737",
+   "mod": "Squad",
+   "official": "标准结构机身。不带燃料，只是纯粹的结构元件，因而其重量更轻，强度更大。",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "63d1a63292fd3f5b",
+   "key": "#autoLOC_500646",
+   "mod": "Squad",
+   "official": "燃料电池",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "ae1c7f13b7c0c47f",
+   "key": "#autoLOC_501020",
+   "mod": "Squad",
+   "official": "起点",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "6fcfff80a3839522",
+   "key": "#autoLOC_501022",
+   "mod": "Squad",
+   "official": "基础火箭学",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "c387ff67f2d05968",
+   "key": "#autoLOC_501028",
+   "mod": "Squad",
+   "official": "稳定性",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "3004aa19bf78a853",
+   "key": "#autoLOC_501007",
+   "mod": "Squad",
+   "official": "矿石",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "7e34eccbec831bfe",
+   "key": "#autoLOC_501012",
+   "mod": "Squad",
+   "official": "地表样本",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "3ff52397adbec47e",
+   "key": "#autoLOC_501076",
+   "mod": "Squad",
+   "official": "超音速飞行",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "f1b618c08f046ea8",
+   "key": "#autoLOC_501074",
+   "mod": "Squad",
+   "official": "高级着陆",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "1530febcf0fd0a0f",
+   "key": "#autoLOC_501114",
+   "mod": "Squad",
+   "official": "超音速飞行",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "836b02b04a4421dd",
+   "key": "#autoLOC_500916",
+   "mod": "Squad",
+   "official": "一种设计精妙的货运移动系统，可用于地面、海面、半空或真空运输。任何你能想到的场景，真的。",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  },
+  {
+   "h": "0de229fbd9856a2a",
+   "key": "#autoLOC_500915",
+   "mod": "Squad",
+   "official": "Mk3货运坡道",
+   "reason": "h 已在包内（跳过，不改已有行）"
+  }
+ ],
+ "samples": [
+  {
+   "h": "d984be4b5284d727",
+   "s": "Stratus Corporation",
+   "t": "层云公司",
+   "mod": "KSPCommunityFixes"
+  },
+  {
+   "h": "8f57086456cd01d7",
+   "s": "LightYear Tire Company",
+   "t": "光年轮胎公司",
+   "mod": "KSPCommunityFixes"
+  },
+  {
+   "h": "33b651c26015f922",
+   "s": "Orthogonal 2-horn",
+   "t": "正交双喷嘴",
+   "mod": "ReStock"
+  },
+  {
+   "h": "18b9a74ca16f3bbc",
+   "s": "Orthogonal 4-horn",
+   "t": "正交四喷嘴",
+   "mod": "ReStock"
+  },
+  {
+   "h": "d6b1d1c765ce5f9b",
+   "s": "Orthogonal 3-horn",
+   "t": "正交三喷嘴",
+   "mod": "ReStock"
+  },
+  {
+   "h": "5c8602845d0c92de",
+   "s": "Angled 4-horn",
+   "t": "斜角四喷嘴",
+   "mod": "ReStock"
+  },
+  {
+   "h": "378c4f90abc4f00d",
+   "s": "Orthogonal 5-horn",
+   "t": "正交五喷嘴",
+   "mod": "ReStock"
+  },
+  {
+   "h": "547db423bd92c9cc",
+   "s": "Gray with Stripes",
+   "t": "灰色条纹",
+   "mod": "ReStock"
+  },
+  {
+   "h": "a27b143c18e78193",
+   "s": "Reversed",
+   "t": "反向",
+   "mod": "RealismOverhaul"
+  },
+  {
+   "h": "9fc3568ec8629bda",
+   "s": "Forward",
+   "t": "前进",
+   "mod": "RealismOverhaul"
+  },
+  {
+   "h": "1ea25a96d5d356b7",
+   "s": "The TR-XL Stack Separator is the largest available from O.M.B, designed for slicing the largest of rockets in twain. Unlike Decouplers, Separators will eject anything connected to themselves. This is good, as it removes the need to worry about which side needs to be pointed away from face. Try to not look at it too much though.",
+   "t": "TR-XL分级切分器是O.M.B.设计的最大并能将最大的火箭分成两半的装置。和分离器不一样，切分器会断开与它连接的所有物体的连接。这样就不用再担心弄错那一边不能对着脸。不过最好还是别总盯着看。",
+   "mod": "Squad"
+  },
+  {
+   "h": "47874c81f0ce359b",
+   "s": "Rockomax Brand Decoupler",
+   "t": "极限火箭牌分离器",
+   "mod": "Squad"
+  }
+ ],
+ "build": "2026-10-23T08:14:30",
+ "official_overrides": 1,
+ "official_skipped_gate": 0,
+ "official_already": 954,
+ "official_ambiguous": 16,
+ "official_ambiguous_ok": 8,
+ "official_ambiguous_diff": 0,
+ "official_ambiguous_details": [],
+ "official_errors": 0,
+ "official_details": [
+  {
+   "file": "SXT.jsonl",
+   "line": 450,
+   "mod": "SXT",
+   "s": "J-90 \"Goliath\" Turbofan Engine",
+   "old_t": "J-90“歌利亚”涡轮风扇发动机",
+   "new_t": "J-90“歌利亚”涡轮风扇引擎"
+  }
+ ],
+ "official_skipped": [],
+ "official_ambiguous_examples": [
+  {
+   "en": "aero )cap cargo cone contain drag fairing hollow inter nose payload protect rocket shroud stage (stor transport",
+   "zh": [
+    "航空 )运载 货舱 锥头 容器 阻力 整流 中空 内部 头锥 装备 保护 火箭 护罩 阶段 (存储 运输",
+    "航空 )运载 阻力 火箭 锥头 头锥 货舱 包含 整流 中空 内部 负荷 保护 护罩 阶段 (存 运输 3.75 庞大 超大 硕大 特大 5.0",
+    "航空 )运载 阻力 火箭 锥头 头锥 货舱 包含 整流 中空 内部 负荷 保护 护罩 阶段 (存 运输 常规 标准 平均 中等 1.875"
+   ]
+  },
+  {
+   "en": "The Big-S line of wings are C7's largest lifting surfaces to date. Not only are they Sturdy and heat resistant enough to survive reentry, but also have enough internal volume to carry optional fuel tanks.",
+   "zh": [
+    "大S系列机翼是C7迄今为止生产的最大号升力面。不仅仅是因为它们坚固耐热，足以撑过再入大气层，其足够大的内部容积还能携带可选的燃料箱。",
+    "大S系列机翼是迄今为止C7生产的最大号升力面。不仅仅是因为它们坚固耐热，足以撑过再入大气层，其足够大的内部容积还能携带可选的燃料箱。"
+   ]
+  },
+  {
+   "en": "cmg command control fly gyro moment react stab steer torque",
+   "zh": [
+    "方位 指令 控制 飞行 动量 反应 稳定 转向 扭矩",
+    "方位 指令 控制 飞行 陀螺 动量 反应 稳定 转向 扭矩"
+   ]
+  },
+  {
+   "en": "fueltank mono monopropellant propellant",
+   "zh": [
+    "燃料 推进剂 燃料箱 贮箱 单元 常规 标准 平均 中等 交叉 供给 1.875",
+    "燃料箱 单元 单组元 推进"
+   ]
+  },
+  {
+   "en": "base contain outpost passenger statio (stor tour",
+   "zh": [
+    "基地 容器 前哨 乘客 站 (存 旅行",
+    "基地 容器 前哨 乘客 站 (存 环游"
+   ]
+  },
+  {
+   "en": "Moving Parts Experts Group",
+   "zh": [
+    "运动部件专家小组",
+    "运动部件专家组"
+   ]
+  },
+  {
+   "en": "Description Creation Pending",
+   "zh": [
+    "O.M.B.很高兴为您介绍最新的分离技术——可提供足够爆发力的分离器，而且是排名第二品牌产品的两倍大！和它那较小、性能更令人遗憾的竞争品一样，分离器有方便的箭头，以指示它将从哪一侧脱离。",
+    "TD-06分级分离器是小型火箭使用的分离装置",
+    "TD-12分级分离器备有一个（但愿是）小型炸药包，用于分离本体和其所连接的物体。两边都画着用于分辨分离方向的箭头。",
+    "TS-06是用于将火箭一分两半的装置，但外型更紧凑。手册上说其中的爆炸物含量正好可以以安全、受控的方式将所有连接到该装置上的物体分离出去。但是送来它的快递员却穿了全套防爆服，所以要小心别把它掉到地上。",
+    "TS-25是用来将最大的火箭分成两半的装置。和分离器不一样，切分器会断开与它连接的所有物体的连接。这样就不用再担心弄错那一边不能对着脸。不过最好还是别总盯着看。",
+    "原本是用于将卡在一起的建筑分开的，但O.M.B.将这些爆炸螺栓重新设计后用于大型火箭的分级脱离。",
+    "这款切分器非常危险，请小心安装。。"
+   ]
+  },
+  {
+   "en": "decouple",
+   "zh": [
+    "分离",
+    "分离切分"
+   ]
+  },
+  {
+   "en": "EVA Report",
+   "zh": [
+    "EVA报告",
+    "舱外报告"
+   ]
+  },
+  {
+   "en": "Lights Off",
+   "zh": [
+    "关灯",
+    "灯光关"
+   ]
+  }
+ ],
+ "rows_added": 928
+}

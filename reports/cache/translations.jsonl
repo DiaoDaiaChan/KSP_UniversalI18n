@@ -12958,3 +12958,96 @@
 {"k": "525184e83d7b56bf|024c4e9a|3|gemini-3.8-flash-high", "s": "Boeing", "zh": "波音", "st": "ok", "m": "gemini-3.8-flash-high"}
 {"k": "1e54f45f25840309|024c4e9a|3|gemini-3.8-flash-high", "s": "Convair", "zh": "康维尔", "st": "ok", "m": "gemini-3.8-flash-high"}
 {"k": "e54ceea24be005c0|024c4e9a|3|gemini-3.8-flash-high", "s": "Cordant Technologies", "zh": "科尔丹特技术公司", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "8426187e60dd9610|024c4e9a|3|gemini-3.8-flash-high", "s": ").symmetryCounterparts.Count =", "zh": ").<<M0>>.Count =", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "89fdad1961054e43|024c4e9a|3|gemini-3.8-flash-high", "s": "rcs", "zh": "rcs", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "e23c352c6990dfc1|024c4e9a|3|gemini-3.8-flash-high", "s": "PP-CustomEnds", "zh": "PP-<<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "08aae9f47acdc0ba|024c4e9a|3|gemini-3.8-flash-high", "s": "Coatl", "zh": "Coatl", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "e71fa2190541574b|024c4e9a|3|gemini-3.8-flash-high", "s": "abc", "zh": "abc", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "075ba6594b3909dc|024c4e9a|3|gemini-3.8-flash-high", "s": "Direct", "zh": "Direct", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "cecf0ae9e297ba1d|024c4e9a|3|gemini-3.8-flash-high", "s": "ReStock 45", "zh": "<<M0>> 45", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "ec07a2f760550a91|024c4e9a|3|gemini-3.8-flash-high", "s": "Squad", "zh": "Squad", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "dbe03f02898cac01|024c4e9a|3|gemini-3.8-flash-high", "s": "NERVA XE Prime", "zh": "NERVA XE Prime", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "238ffe99f812d8fb|024c4e9a|3|gemini-3.8-flash-high", "s": "1x6 ReStock", "zh": "1x6 <<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "751df8dc9d0e1b1d|024c4e9a|3|gemini-3.8-flash-high", "s": "3x2 ReStock", "zh": "3x2 <<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d34022d0eb938e4a|024c4e9a|3|gemini-3.8-flash-high", "s": "3x2 Vens", "zh": "3x2 Vens", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "bb19e370bf689020|024c4e9a|3|gemini-3.8-flash-high", "s": "(?<=Phase\\sAngle\\:\\s+)\\S+(?=°)", "zh": "<<M0>>\\S+<<M1>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "b3dc38f280e876ef|024c4e9a|3|gemini-3.8-flash-high", "s": "KerbalAlarmClock.KACAlarm", "zh": "<<M0>>.KACAlarm", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "179f19ac8e012b3f|024c4e9a|3|gemini-3.8-flash-high", "s": ".err-", "zh": ".err-", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "fac00c2b540a916d|024c4e9a|3|gemini-3.8-flash-high", "s": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sprograde)", "zh": "<<M0>>\\S+<<M1>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "9d462a7b78ea884a|024c4e9a|3|gemini-3.8-flash-high", "s": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sretrograde)", "zh": "<<M0>>\\S+<<M1>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "5d6d240a0c614187|024c4e9a|3|gemini-3.8-flash-high", "s": "KerbalEngineer.Flight.Readouts.Orbital.ManoeuvreNode.ManoeuvreProcessor", "zh": "<<M0>>.Flight.Readouts.Orbital.<<M1>>.<<M2>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "700e3929f2aab6a5|024c4e9a|3|gemini-3.8-flash-high", "s": "description = #OscarEtank_Part_description", "zh": "description = #OscarEtank_Part_description", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "77c9ba7bc441cb27|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-alpha-noise-1", "zh": "fx-alpha-noise-1", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d6812ff7244eaf4e|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-noise-1", "zh": "fx-noise-1", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d6812ef7244ead9b|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-noise-2", "zh": "fx-noise-2", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d6812df7244eabe8|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-noise-3", "zh": "fx-noise-3", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d68134f7244eb7cd|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-noise-4", "zh": "fx-noise-4", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d68133f7244eb61a|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-noise-5", "zh": "fx-noise-5", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d68132f7244eb467|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-noise-6", "zh": "fx-noise-6", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "53ae3cf38653d917|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-ion-noise", "zh": "fx-ion-noise", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cfff01bd6141888|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-1", "zh": "fx-katniss-noise-1", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "7d74e73c6b8867f9|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-1-blurred", "zh": "fx-katniss-noise-1-blurred", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cfff31bd6141da1|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-2", "zh": "fx-katniss-noise-2", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "8f54aebcce5637e9|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-2-extradense", "zh": "fx-katniss-noise-2-extradense", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cfff21bd6141bee|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-3", "zh": "fx-katniss-noise-3", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d7397ae5c5751a5b|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-3-blurred", "zh": "fx-katniss-noise-3-blurred", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cfff51bd6142107|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-4", "zh": "fx-katniss-noise-4", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "12728f072be2d7c6|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-4-blurred", "zh": "fx-katniss-noise-4-blurred", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cfff41bd6141f54|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-5", "zh": "fx-katniss-noise-5", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "757279319017ba3d|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-5-blurred", "zh": "fx-katniss-noise-5-blurred", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cfff71bd614246d|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-6", "zh": "fx-katniss-noise-6", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cfff61bd61422ba|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-7", "zh": "fx-katniss-noise-7", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1cffe91bd6140ca3|024c4e9a|3|gemini-3.8-flash-high", "s": "fx-katniss-noise-8", "zh": "fx-katniss-noise-8", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d314757c17907755|024c4e9a|3|gemini-3.8-flash-high", "s": "fx_flaresimple01", "zh": "fx_flaresimple01", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "94b03368600fdc67|024c4e9a|3|gemini-3.8-flash-high", "s": "fx_flarelens01", "zh": "fx_flarelens01", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "94b03468600fde1a|024c4e9a|3|gemini-3.8-flash-high", "s": "fx_flarelens02", "zh": "fx_flarelens02", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d314727c1790723c|024c4e9a|3|gemini-3.8-flash-high", "s": "fx_flaresimple02", "zh": "fx_flaresimple02", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d22846d1a62d5fb7|024c4e9a|3|gemini-3.8-flash-high", "s": "fx_flareglow-1", "zh": "fx_flareglow-1", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "415acb712337171c|024c4e9a|3|gemini-3.8-flash-high", "s": "fx_flarelamp-1", "zh": "fx_flarelamp-1", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "cdc1a57d84ac9304|024c4e9a|3|gemini-3.8-flash-high", "s": "Aerojet 1.8KS-7800", "zh": "Aerojet 1.8KS-7800", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "088672a6dd077d20|024c4e9a|3|gemini-3.8-flash-high", "s": "Aerojet 2.5KS-18000", "zh": "Aerojet 2.5KS-18000", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "c800d6db4195437a|024c4e9a|3|gemini-3.8-flash-high", "s": "Model 39", "zh": "Model 39", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "70fac22a4fe63eb8|024c4e9a|3|gemini-3.8-flash-high", "s": "Aerobee", "zh": "Aerobee", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1b6afe76daf712a0|024c4e9a|3|gemini-3.8-flash-high", "s": "Aestus", "zh": "Aestus", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "beb1ddc441a0d0ee|024c4e9a|3|gemini-3.8-flash-high", "s": "AJ23 Transtar", "zh": "<<M0>> Transtar", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "fe0338227d85ae4c|024c4e9a|3|gemini-3.8-flash-high", "s": "Alcyone 1 BE-3", "zh": "Alcyone 1 <<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d6451de23758c3c6|024c4e9a|3|gemini-3.8-flash-high", "s": "Alcyone 1A BE-3A", "zh": "Alcyone 1A <<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d57de81530a97df3|024c4e9a|3|gemini-3.8-flash-high", "s": "Algol III", "zh": "Algol III", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "58bd7c8cc0a9810b|024c4e9a|3|gemini-3.8-flash-high", "s": "Altair X-248", "zh": "Altair <<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "6dfe4b257819010a|024c4e9a|3|gemini-3.8-flash-high", "s": "Altair III FW-4S", "zh": "Altair III <<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "49cfb62a1e227f4f|024c4e9a|3|gemini-3.8-flash-high", "s": "Astris", "zh": "Astris", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "b4939d28a9bf0d68|024c4e9a|3|gemini-3.8-flash-high", "s": "Castor 1", "zh": "Castor 1", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "b493a028a9bf1281|024c4e9a|3|gemini-3.8-flash-high", "s": "Castor 2", "zh": "Castor 2", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "51b05985b323d63a|024c4e9a|3|gemini-3.8-flash-high", "s": "Castor 120", "zh": "Castor 120", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d06b0ab4bcde4344|024c4e9a|3|gemini-3.8-flash-high", "s": "Gamma 2", "zh": "Gamma 2", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d06b04b4bcde3912|024c4e9a|3|gemini-3.8-flash-high", "s": "Gamma 8", "zh": "Gamma 8", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "124fcba85bf85977|024c4e9a|3|gemini-3.8-flash-high", "s": "Gamma-201/301", "zh": "Gamma-201/301", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "5a2d0ebde13e452c|024c4e9a|3|gemini-3.8-flash-high", "s": "Nerva XE-Prime", "zh": "Nerva XE-Prime", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "76a6511ee036c58a|024c4e9a|3|gemini-3.8-flash-high", "s": "P4 Rita I", "zh": "P4 Rita I", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d8f618799138014f|024c4e9a|3|gemini-3.8-flash-high", "s": "RL60/Vinci", "zh": "RL60/Vinci", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "3c0b4f56eea77aac|024c4e9a|3|gemini-3.8-flash-high", "s": "P0.6 Rubis", "zh": "P0.6 Rubis", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "c17f92c669f78cd4|024c4e9a|3|gemini-3.8-flash-high", "s": "STBE (Rocketdyne)", "zh": "STBE (Rocketdyne)", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "0301a6ce926b6170|024c4e9a|3|gemini-3.8-flash-high", "s": "Ad Astra Rocket Company", "zh": "Ad Astra Rocket Company", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "2bae7b2a28a58cc3|024c4e9a|3|gemini-3.8-flash-high", "s": "Aerojet", "zh": "Aerojet", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "55504cb7d63fdaa3|024c4e9a|3|gemini-3.8-flash-high", "s": "Aerojet Rocketdyne", "zh": "Aerojet Rocketdyne", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "4dab3aa2c5a16881|024c4e9a|3|gemini-3.8-flash-high", "s": "Atomics International", "zh": "Atomics International", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "08500971822d7795|024c4e9a|3|gemini-3.8-flash-high", "s": "Axiom Space", "zh": "Axiom Space", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "bbd6fa189006dcbd|024c4e9a|3|gemini-3.8-flash-high", "s": "Bell Aerosystems", "zh": "Bell Aerosystems", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "a7f44f633ae331a3|024c4e9a|3|gemini-3.8-flash-high", "s": "Bigelow Aerospace", "zh": "Bigelow Aerospace", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "76e135afcbfdcfdf|024c4e9a|3|gemini-3.8-flash-high", "s": "CFM International", "zh": "CFM International", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "adfbe44771f7b432|024c4e9a|3|gemini-3.8-flash-high", "s": "Collins Radio", "zh": "Collins Radio", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "cf0b3e76d43c8146|024c4e9a|3|gemini-3.8-flash-high", "s": "Curtiss-Wright", "zh": "Curtiss-Wright", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "55f3a31f143e8916|024c4e9a|3|gemini-3.8-flash-high", "s": "Dynetics", "zh": "Dynetics", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "dc5c22a293ea2cda|024c4e9a|3|gemini-3.8-flash-high", "s": "ispace", "zh": "ispace", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "92622b9ae8f2d993|024c4e9a|3|gemini-3.8-flash-high", "s": "1x2 Coatl", "zh": "1x2 Coatl", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "dd60f463a99ea33c|024c4e9a|3|gemini-3.8-flash-high", "s": "J-90 \"Goliath\" Turbofan Engine", "zh": "<<M0>>“歌利亚”涡轮风扇发动机", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "1b5244ea42d07fbd|024c4e9a|3|gemini-3.8-flash-high", "s": "The EAS 316 is a lightweight observation pod that works in the same way as the EAS-1 External Command Seat. Features a 'No key' start button, though that just means that the pilots have normally gone back to the KSC to find the non-existent keys on launch.", "zh": "EAS 316 是一款轻型观测舱，工作方式与 <<M0>> 外部指挥座椅相同。配备“免钥匙”启动按钮，不过这往往意味着飞行员在发射时总会跑回 KSC 寻找根本不存在的钥匙。", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "b748b01905b3d7d1|024c4e9a|3|gemini-3.8-flash-high", "s": "After the fervorous response from fans, Rockomax has decide to up the ante with the Extra-Large Rockomax HubMax Multi-Point Connector, seamlessly integrating 2.5 meter parts on a very large hub. Unfortunately, no one died of shock that day.", "zh": "在粉丝们的热烈反响之后，极限火箭集团决定加大力度，推出超大型Rockomax <<M0>>多向连接器，将2.5米部件无缝集成到一个超大集线器上。遗憾的是，当天并没有人因此震惊致死。", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "d61b981cb7457f49|024c4e9a|3|gemini-3.8-flash-high", "s": "Extra-Large Rockomax HubMax Multi-Point Connector", "zh": "极限火箭特大号<<M0>>多向连接器", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "a191addc066a0f09|024c4e9a|3|gemini-3.8-flash-high", "s": "O-40 \"Breeze\" Heavy MonoPropellant Engine", "zh": "<<M0>>“微风”重型<<M1>>发动机", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "ba3fa10dc6f3e3eb|024c4e9a|3|gemini-3.8-flash-high", "s": "O-1 \"Huff\" Tiny MonoPropellant Fuel Engine", "zh": "<<M0>>“哈夫”微型<<M1>>液体燃料发动机", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "4de6bfb97f41c783|024c4e9a|3|gemini-3.8-flash-high", "s": "Kerbodyne ADTP-2-3-H", "zh": "坎巴拉动力 <<M0>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "92622b9ae8f2d993|024c4e9a|3|gemini-3.8-flash-high", "s": "1x2 Coatl", "zh": "1x2 Coatl", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "92622b9ae8f2d993|024c4e9a|3|gemini-3.8-flash-high", "s": "1x2 Coatl", "zh": "1x2 Coatl", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "92622b9ae8f2d993|024c4e9a|3|gemini-3.8-flash-high", "s": "1x2 Coatl", "zh": "1x2 Coatl", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "92622b9ae8f2d993|024c4e9a|3|gemini-3.8-flash-high", "s": "1x2 Coatl", "zh": "1x2 Coatl 太阳能电池翼", "st": "ok", "m": "gemini-3.8-flash-high"}

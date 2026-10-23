@@ -2,6 +2,9 @@
 build/
 bin/
 obj/
+
+# 发布产物（zip / manifest / netkan 由 build-release.ps1 生成，不入库）
+dist/
 *.user
 .vs/
 
@@ -23,3 +26,7 @@ packs/**/*.bin
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# 大样本（可复现，10 个文件 19.6 MB，不入库）
+reports/sample-*.jsonl
+

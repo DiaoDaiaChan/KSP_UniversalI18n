@@ -65,6 +65,7 @@
 {"h": "7ca0c680e79f55a3", "n": "orthographic:", "s": "orthographic:", "t": "正交：", "mod": "EditorExtensionsRedux"}
 {"h": "8120450fa0756d3f", "n": "Strut/fuel align:", "s": "Strut/fuel align:", "t": "连接筋/燃料管对齐：", "mod": "EditorExtensionsRedux"}
 {"h": "8422cd55e9c654e2", "n": "attached part", "s": "attached part", "t": "已连接部件", "mod": "EditorExtensionsRedux"}
+{"h": "8426187e60dd9610", "n": ").symmetryCounterparts.Count =", "s": ").symmetryCounterparts.Count =", "t": ").symmetryCounterparts.Count =", "mod": "EditorExtensionsRedux"}
 {"h": "866324a9ba8b11c7", "n": "All Rigid", "s": "All Rigid", "t": "全部刚性连接", "mod": "EditorExtensionsRedux"}
 {"h": "892f2eda453d929c", "n": "Mass Tweakables:", "s": "Mass Tweakables:", "t": "批量调整：", "mod": "EditorExtensionsRedux"}
 {"h": "8c637978c60ecfe8", "n": "Attached part:", "s": "Attached part:", "t": "连接部件：", "mod": "EditorExtensionsRedux"}

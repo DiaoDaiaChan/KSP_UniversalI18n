@@ -234,11 +234,12 @@ class Glossary:
     1. pairs  —— 可注入 prompt 的术语（短条目），供 §8.4 批内注入；
     2. locked —— 其中短语级的，G7 逐字判定；
     3. exact  —— normalize(en) → 官方 zh：源文本整条命中就直用官方译文（零 token）；
-    4. keyref —— "#autoLOC_*" → 官方 zh：--keyref-rescue 时救回未解析的键引用。
+    4. keyref —— "#autoLOC_*" → 官方 zh：--keyref-rescue 时救回未解析的键引用；
+       keyref_en —— 同一键的官方英文原文，供 resolve_keyrefs 生成"解析行"（s=英文显示文本）。
     """
 
     def __init__(self, pairs=None, source=None, note="", keyref=None, exact=None,
-                 total=None, bad=0):
+                 total=None, bad=0, keyref_en=None):
         self.pairs = list(pairs or [])          # [(en, zh)]，保持文件顺序
         self.map = {}                           # 小写 en -> (en, zh)
         for en, zh in self.pairs:
@@ -251,6 +252,7 @@ class Glossary:
                 self.locked.setdefault(en.strip(), zh.strip())
         self.exact = dict(exact or {})
         self.keyref = dict(keyref or {})
+        self.keyref_en = dict(keyref_en or {})
         self.total = total if total is not None else len(self.pairs)
         self.bad = bad
         self.source = source
@@ -284,6 +286,7 @@ def load_glossary(path=None) -> Glossary:
         return Glossary(note="packs/glossary.jsonl 不存在，本次不注入术语表")
     pairs = []
     keyref = {}
+    keyref_en = {}
     exact = {}
     bad = 0
     total = 0
@@ -309,6 +312,7 @@ def load_glossary(path=None) -> Glossary:
             key = _pick(row, ("key", "id", "loc"))
             if key and key.startswith("#"):
                 keyref.setdefault(key, zh)
+                keyref_en.setdefault(key, en)
             cleaned = normalize(en)
             if cleaned:
                 exact.setdefault(cleaned, zh)
@@ -318,7 +322,7 @@ def load_glossary(path=None) -> Glossary:
             .format(total, len(pairs), len([1 for en, _ in pairs if _is_locked_term(en)]),
                     len(keyref), len(exact), bad))
     return Glossary(pairs, source=str(path), note=note, keyref=keyref, exact=exact,
-                    total=total, bad=bad)
+                    total=total, bad=bad, keyref_en=keyref_en)
 
 
 def _pick(row, keys):
@@ -872,7 +876,7 @@ def gate(item, zh_raw, locked_pairs):
 # G8 的"非原文"是防模型偷懒不译整句散文；但专名/型号/标识符被原样抄回是**正确**行为，
 # 对应 00 §4.1 的 keep（运行时 t == s → DictEntry.IsKeep 终止下沉）。判据必须收紧到
 # 短标签（≤40 字符且 ≤4 词），否则一整句散文抄回来也会被放过。
-_KEEP_ECHO_MAX_CHARS = 40
+_KEEP_ECHO_MAX_CHARS = 80
 _KEEP_ECHO_MAX_WORDS = 4
 _LOWER_WORD_RE = re.compile(r"^[a-z]{2,}$")
 
@@ -894,7 +898,9 @@ def echo_keep(source, restored):
     """译文只是原文原样（含仅大小写差异）且源文是短标签 → 判 keep，不算门禁失败。
 
     三重收紧，避免这条把"模型偷懒不译整句"也放过：
-    ① strip 后相等或仅大小写差异；② ≤40 字符且 ≤4 词；③ 不像散文（无相邻小写词）。
+    ① strip 后相等或仅大小写差异；② ≤80 字符且 ≤4 词；③ 不像散文（无相邻小写词）。
+    ②的上限是 80 而不是 40：实测 4 条被抄回的是正则与配置键（51 字符的 lookaround 正则、
+    41 字符的 "description = #OscarEtank_Part_description"），40 的帽子会把它们误判成失败。
     """
     if not source or not restored:
         return False
@@ -1009,8 +1015,12 @@ class Runner:
             "items_rescue": 0,          # 键引用套用官方中文记忆（零 token，非模型输出）
             "curated_rejected": 0,      # 官方译文过不了门禁，退回翻译
             "term_drift": 0,            # §9 术语漂移出现次数（只计数，不拦截）
-            "mixed_lang": 0,            # 半译：译文残留 ≥3 个英文单词
-            "mixed_lang_examples": [],
+            "mixed_lang": 0,            # 残留 ≥3 个英文单词的条目总数（两桶之和）
+            "mixed_lang_true": 0,       # 其中真半译（残留里含非专名的普通英文词）
+            "mixed_lang_brand": 0,      # 其中纯专名残留（Falcon 9 / Delta IV 这类，不算缺陷）
+            "mixed_lang_examples": [],  # 只收真半译样例（专名样例另放，免得误读）
+            "mixed_lang_brand_examples": [],
+            "mixed_lang_true_by_mod": {},
             "mixed_lang_by_mod": {},    # 半译按 mod 分布（lead 要的 top 5）
             "keeps_echo": 0,            # keep 的一种来源：模型把短原文抄回（专名/标识符）
             "keep_examples": [],        # keep 行样例（t == s，运行时靠它终止下沉）
@@ -1075,8 +1085,13 @@ class Runner:
         self.stats["batches"] += 1
 
         def _locked(item):
-            """G7 的判定对象（12 条约定 + 短语级锁），顺手统计触发情况。"""
-            pairs = locked_for(item["row"]["text"], self.glossary)
+            """G7 的判定对象（12 条约定 + 短语级锁），顺手统计触发情况。
+
+            **必须在遮蔽后的文本上算**：术语若有一段落在哨兵里（如 "J-90" 被整段遮蔽 →
+            模型只看到 <<M0>> "Goliath" Turbofan Engine），模型根本没有机会写出那段中文，
+            在原文上算就等于要求它翻译自己看不到的东西 —— 实测这样误杀了 7 条。
+            """
+            pairs = locked_for(item["masked"], self.glossary)
             for en, _zh in pairs:
                 self.stats["locked_triggered"].add(en)
             if pairs:
@@ -1090,7 +1105,9 @@ class Runner:
             并且只允许 G8 是唯一失败项 —— 只要还有 G2/G4/G7 之类，就仍按失败走。
             """
             restored, failed, notes = gate(item, zh_raw, _locked(item))
-            if failed and set(failed) <= {"G8"} and echo_keep(item["row"]["text"], zh_raw):
+            # 必须用还原后的文本比：模型返回的是哨兵态（<<M0>> Transtar），
+            # 拿它跟原文比永远不等 —— 实测这样漏掉 15 条（AJ23 Transtar 等）。
+            if failed and set(failed) <= {"G8"} and echo_keep(item["row"]["text"], restored):
                 item["keep_echo"] = True
                 return item["row"]["text"], [], notes
             return restored, failed, notes
@@ -1260,16 +1277,30 @@ class Runner:
                     "t": restored,
                     "mod": row["mod"],
                 }
-                if _residual_english(restored) >= 3:
+                # 半译拆两桶（lead 口径）：专名/型号/厂商残留不算半译
+                brand, true_words = _residual_split(source, restored)
+                if len(brand) + len(true_words) >= 3:
                     self.stats["mixed_lang"] += 1
                     by_mod = self.stats["mixed_lang_by_mod"]
                     by_mod[row["mod"]] = by_mod.get(row["mod"], 0) + 1
-                    if len(self.stats["mixed_lang_examples"]) < 20:
-                        self.stats["mixed_lang_examples"].append({
-                            "id": item["id"], "mod": row["mod"],
-                            "src": source[:120], "zh": restored[:160],
-                            "words": _residual_english_words(restored)[:8],
-                        })
+                    if true_words:
+                        self.stats["mixed_lang_true"] += 1
+                        self.stats["mixed_lang_true_by_mod"][row["mod"]] = \
+                            self.stats["mixed_lang_true_by_mod"].get(row["mod"], 0) + 1
+                        if len(self.stats["mixed_lang_examples"]) < 20:
+                            self.stats["mixed_lang_examples"].append({
+                                "id": item["id"], "mod": row["mod"],
+                                "src": source[:120], "zh": restored[:160],
+                                "words": true_words[:8],
+                            })
+                    else:
+                        self.stats["mixed_lang_brand"] += 1
+                        if len(self.stats["mixed_lang_brand_examples"]) < 20:
+                            self.stats["mixed_lang_brand_examples"].append({
+                                "id": item["id"], "mod": row["mod"],
+                                "src": source[:120], "zh": restored[:160],
+                                "words": brand[:8],
+                            })
                 if not official:
                     drifts = drifts_of(item, restored, soft_pairs)
                     for one in drifts:
@@ -1344,12 +1375,27 @@ class Runner:
             stats["locked_triggered"] = len(names)
             stats["locked_triggered_names"] = names[:40]
         buckets = stats.get("drift_counts") or {}
-        top_drift = sorted(buckets.items(), key=lambda kv: -kv[1]["count"])[:10]
-        stats["drift_top"] = [dict(value, label=label) for label, value in top_drift]
+        if isinstance(buckets, dict):
+            ordered = sorted(buckets.items(), key=lambda kv: -kv[1]["count"])
+            stats["drift_top"] = [dict(value, label=label) for label, value in ordered[:10]]
+            # 键是 "term -> want" 拼串，大小写不同（monopropellant / Monopropellant）
+            # 会被严格的 JSON 解析器当成重复键直接拒收 → 落成数组，只带结构化字段
+            stats["drift_counts"] = [
+                {"term": value["term"], "want": value["want"], "count": value["count"],
+                 "zh_samples": list(value.get("zh_samples") or [])}
+                for _label, value in ordered]
         by_mod = stats.get("mixed_lang_by_mod") or {}
         stats["mixed_lang_top_mods"] = [
             {"mod": mod, "count": count}
             for mod, count in sorted(by_mod.items(), key=lambda kv: -kv[1])[:5]]
+        # 真半译才是质量指标；纯专名残留单列（lead 口径，见 docs/04 §12.2 待回写）
+        true_by_mod = stats.get("mixed_lang_true_by_mod") or {}
+        stats["mixed_lang_true_top_mods"] = [
+            {"mod": mod, "count": count}
+            for mod, count in sorted(true_by_mod.items(), key=lambda kv: -kv[1])[:5]]
+        total = stats.get("mixed_lang") or 0
+        stats["mixed_lang_true_rate"] = round(
+            (stats.get("mixed_lang_true") or 0) / total, 4) if total else 0.0
 
     # -- 全量 -------------------------------------------------------------
     def run(self, batches):
@@ -1503,6 +1549,8 @@ def selftest(pool_rows=None):
         ("ReStock 45", "ReStock 45", True),
         ("fx-katniss-noise-2-blurred", "fx-katniss-noise-2-blurred", True),  # 连字符标识符算一个词
         ("Hull Camera", "Hull Camera", True),
+        ("description = #OscarEtank_Part_description", "description = #OscarEtank_Part_description", True),
+        ("(?<=Ejection" + chr(92) + "sAngle" + chr(58) + chr(92) + "s+)x(?=prograde)", None, True),
         ("parts list", "parts list", False),                   # 两个相邻小写词 = 散文，不放过
         ("Throttle up please", "Throttle up please", False),   # 3 词但可译，交给模型
         ("After the fervorous response from fans we built a bigger tank", None, False),
@@ -1558,6 +1606,15 @@ def selftest(pool_rows=None):
     checks += 1
     if set(normalize("Apoapsis  <<1>>\r\n\tm").split()) != set("Apoapsis <<1>> m".split()):
         failures.append(("归一化", normalize("Apoapsis  <<1>>\r\n\tm")))
+
+    # 键引用解析后处理（resolve_keyrefs）：常驻流水线步骤，随主 selftest 一起跑
+    try:
+        from . import resolve_keyrefs as keyref_module
+        keyref_failures, keyref_checks = keyref_module.selftest()
+        checks += keyref_checks
+        failures.extend(keyref_failures)
+    except Exception as exc:                      # noqa: BLE001 —— 自测里异常也要变成失败项
+        failures.append(("resolve_keyrefs.selftest 异常", repr(exc)))
 
     return failures, checks
 
@@ -1823,14 +1880,24 @@ def main(argv=None):
     path = write_report(payload, REPORTS_DIR)
     print_summary(payload)
     print("[translate] 报告 → {}".format(path))
+    if written.get("written"):
+        print("[translate] 下一步（常驻流水线，四步顺序，必跑）：")
+        print("    ① python -m i18n_tools.translate --keyref-rescue     ← 本步：生成/重写包")
+        print("    ② python -m i18n_tools.resolve_keyrefs               ← 补键引用解析行")
+        print("    ③                     ...  --prefer-official        ← 官方译文优先（默认在 ② 内已做）")
+        print("    ④                     ...  --drop-keyrefs           ← 删键引用行（默认在 ② 内已做）")
+        print("    ②③④ 是同一个命令的三个开关，默认全开；本步骤会整文件重写包，务必在 translate 之后跑")
     return 0
 
 
 _ASCII_WORD_RE = re.compile(r"[A-Za-z][A-Za-z'\-]{1,}")
 _ASCII_OK = {
     "eva", "iva", "ksc", "vab", "sph", "rcs", "sas", "twr", "rtg", "apu", "ec", "kpa",
-    "dps", "isp", "tWR", "dx", "science", "kerbal", "kerbin", "mun", "duna", "eve", "jool",
+    "dps", "isp", "dx", "science", "kerbal", "kerbin", "mun", "duna", "eve", "jool",
     "moho", "ike", "gilly", "laythe", "vall", "tylo", "bop", "pol", "eeloo", "dres",
+    # 04 §8.2 要求单位保留原文；rpm/hp 等实测在 AJE 的发动机参数里成片出现
+    "rpm", "hp", "ps", "kw", "mw", "km", "kg", "mm", "cm", "mpa", "kn", "atm", "min",
+    "sec", "hz", "kgf", "kgs", "ton", "tons", "mps", "dbi", "db", "wt", "mm2",
 }
 
 
@@ -1850,6 +1917,61 @@ def _residual_english_words(text):
 
 def _residual_english(text):
     return len(_residual_english_words(text))
+
+
+_CC_EXPR_RE = re.compile(r"@/[A-Za-z0-9_.\"\[\]()]+")
+_ESCAPE_TEXT_RE = re.compile(r"\\(?:[nrtbfva0]|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2})")
+
+
+def _residual_split(source, zh):
+    """把译文里残留的英文拆两桶：brand_residue（专名/型号/厂商）与 true_mixed（真半译）。
+
+    lead 的口径：`Falcon 9`、`Bluedog Design Bureau`、`Delta IV` 这类本来就不该翻，
+    算进"半译率"会让质量数字比实际更差。判据三条，任一成立即算 brand_residue：
+    ① 该词在源文的遮蔽表里（mask 认定它是路径/配置键/类名/型号 → 本来就不可译）；
+    ② 源文里同一词首字母大写（Falcon / Bluedog / Delta）；
+    ③ 源文里同一词全大写或含数字（IV / RD-107 / N1 / KS-18000）。
+    反例（应进 true_mixed）：源文全小写、又没被遮蔽的普通英文词，例如 "fueltank"。
+    """
+    # 先剥富文本标签/哨兵/格式符/字面转义：<color=red> 里的 color/red、
+    # 字面 \n 后面的 "nDSN" 都不是"残留英文"
+    words = _residual_english_words(_ESCAPE_TEXT_RE.sub(" ", _plain_for_terms(zh)))
+    if not words:
+        return [], []
+    masked = set()
+    for value in masklib.mask(source).table:
+        for token in _ASCII_WORD_RE.findall(value or ""):
+            masked.add(token.lower())
+    # ContractConfigurator 的表达式变量（@/missionPayload.Print()）是代码，不是英文残留
+    for value in _CC_EXPR_RE.findall(source or ""):
+        for token in _ASCII_WORD_RE.findall(value):
+            masked.add(token.lower())
+    brand = []
+    true_words = []
+    for word in words:
+        if word.lower() in masked:
+            brand.append(word)
+        elif _appears_capitalized(word, source):
+            brand.append(word)
+        else:
+            true_words.append(word)
+    return brand, true_words
+
+
+def _appears_capitalized(word, source):
+    """源文里该词是否以大写开头 / 全大写 / 含数字的形式出现过。
+
+    用全文检索而不是按空白切词：`SpaceX-inspired` 会被 _ASCII_WORD_RE 当成一个
+    连字符词，按词表比对就漏了；直接找 `SpaceX` 才认得出这是厂商名。
+    """
+    if not word or not source:
+        return False
+    pattern = re.compile(r"(?<![A-Za-z])" + re.escape(word) + r"(?![A-Za-z])", re.IGNORECASE)
+    for match in pattern.finditer(source):
+        got = match.group(0)
+        if got[:1].isupper() or got.isupper() or any(ch.isdigit() for ch in got):
+            return True
+    return False
 
 
 def _by_mod(results):

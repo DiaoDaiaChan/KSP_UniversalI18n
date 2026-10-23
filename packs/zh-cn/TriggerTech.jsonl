@@ -42,6 +42,7 @@
 {"h": "165c5937ca5f6644", "n": "APIReady:", "s": "APIReady:", "t": "API 就绪：", "mod": "TriggerTech"}
 {"h": "16719dca8d641325", "n": "Nearing Ascending Node", "s": "Nearing Ascending Node", "t": "接近升交点", "mod": "TriggerTech"}
 {"h": "16b3606b313c03d2", "n": "Rendezvous", "s": "Rendezvous", "t": "交会", "mod": "TriggerTech"}
+{"h": "179f19ac8e012b3f", "n": ".err-", "s": ".err-", "t": ".err-", "mod": "TriggerTech"}
 {"h": "1800c0261e577716", "n": "Exclude Debris from Auto Alarm", "s": "Exclude Debris from Auto Alarm", "t": "自动闹钟排除碎片", "mod": "TriggerTech"}
 {"h": "18306ca6fea3941f", "n": "Time Format:", "s": "Time Format:", "t": "时间格式：", "mod": "TriggerTech"}
 {"h": "192c12bffad005de", "n": "(Unarmed)", "s": "(Unarmed)", "t": "（未就绪）", "mod": "TriggerTech"}
@@ -185,6 +186,7 @@
 {"h": "5b2ee6577cbf8fbb", "n": "Not Switching - unable to backup saves", "s": "Not Switching - unable to backup saves", "t": "未切换 - 无法备份存档", "mod": "TriggerTech"}
 {"h": "5c468e943eee8a12", "n": "Select Alarm Type:", "s": "Select Alarm Type:", "t": "选择闹钟类型：", "mod": "TriggerTech"}
 {"h": "5c9b57b63817f56f", "n": "Global Settings", "s": "Global Settings", "t": "全局设置", "mod": "TriggerTech"}
+{"h": "5d6d240a0c614187", "n": "KerbalEngineer.Flight.Readouts.Orbital.ManoeuvreNode.ManoeuvreProcessor", "s": "KerbalEngineer.Flight.Readouts.Orbital.ManoeuvreNode.ManoeuvreProcessor", "t": "KerbalEngineer.Flight.Readouts.Orbital.ManoeuvreNode.ManoeuvreProcessor", "mod": "TriggerTech"}
 {"h": "5da52af9b083c29a", "n": "Model", "s": "Model", "t": "模型", "mod": "TriggerTech"}
 {"h": "5ed2d4d910800a8f", "n": "Orbit", "s": "Orbit", "t": "轨道", "mod": "TriggerTech"}
 {"h": "5ed971e58fdde3aa", "n": "Store Man Node/Target with Crew Alarm", "s": "Store Man Node/Target with Crew Alarm", "t": "随乘组闹钟保存机动节点/目标", "mod": "TriggerTech"}
@@ -307,6 +309,7 @@
 {"h": "9b1d3e5cd6383a3a", "n": "Last Check Attempt:", "s": "Last Check Attempt:", "t": "上次检查尝试：", "mod": "TriggerTech"}
 {"h": "9c252925d844a124", "n": "Auto Create Active Alarms:", "s": "Auto Create Active Alarms:", "t": "自动创建进行中闹钟：", "mod": "TriggerTech"}
 {"h": "9c3a81e27bd431a0", "n": "Enter Raw Time Values...", "s": "Enter Raw Time Values...", "t": "输入原始时间数值...", "mod": "TriggerTech"}
+{"h": "9d462a7b78ea884a", "n": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sretrograde)", "s": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sretrograde)", "t": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sretrograde)", "mod": "TriggerTech"}
 {"h": "9da72d0d07ac0b1e", "n": "Show Eject Angle", "s": "Show Eject Angle", "t": "显示逃逸角", "mod": "TriggerTech"}
 {"h": "9dac356d42451f91", "n": "/Debris", "s": "/Debris", "t": "/残骸", "mod": "TriggerTech"}
 {"h": "9dfd3e70856e5044", "n": "Quick Action:", "s": "Quick Action:", "t": "快捷操作：", "mod": "TriggerTech"}
@@ -357,6 +360,7 @@
 {"h": "b36a842965e533f6", "n": "Orbit Node (Ap,Pe,AN,DN) Recalculation is enabled", "s": "Orbit Node (Ap,Pe,AN,DN) Recalculation is enabled", "t": "已启用轨道节点（Ap、Pe、AN、DN）重新计算", "mod": "TriggerTech"}
 {"h": "b38d497d992ab4a4", "n": "Center", "s": "Center", "t": "居中", "mod": "TriggerTech"}
 {"h": "b397334014cd42d6", "n": "Science Lab", "s": "Science Lab", "t": "科学实验室", "mod": "TriggerTech"}
+{"h": "b3dc38f280e876ef", "n": "KerbalAlarmClock.KACAlarm", "s": "KerbalAlarmClock.KACAlarm", "t": "KerbalAlarmClock.KACAlarm", "mod": "TriggerTech"}
 {"h": "b3fbaba21290181a", "n": "KSP Time", "s": "KSP Time", "t": "KSP 时间", "mod": "TriggerTech"}
 {"h": "b42c6721a1437504", "n": "UT (raw seconds):", "s": "UT (raw seconds):", "t": "UT（原始秒数）：", "mod": "TriggerTech"}
 {"h": "b43f4fe25ad3fa0d", "n": "Display What:", "s": "Display What:", "t": "显示内容：", "mod": "TriggerTech"}
@@ -373,6 +377,7 @@
 {"h": "b9f16c9b3a61c125", "n": "Level:", "s": "Level:", "t": "级别：", "mod": "TriggerTech"}
 {"h": "ba59c1e3e9af2e1a", "n": "Hide Alarm Clock when game is paused", "s": "Hide Alarm Clock when game is paused", "t": "游戏暂停时隐藏闹钟", "mod": "TriggerTech"}
 {"h": "bb14c77274fde81c", "n": "- Science Lab alarm", "s": "- Science Lab alarm", "t": "- 科学实验室闹钟", "mod": "TriggerTech"}
+{"h": "bb19e370bf689020", "n": "(?<=Phase\\sAngle\\:\\s+)\\S+(?=°)", "s": "(?<=Phase\\sAngle\\:\\s+)\\S+(?=°)", "t": "(?<=Phase\\sAngle\\:\\s+)\\S+(?=°)", "mod": "TriggerTech"}
 {"h": "bb235e4f013292db", "n": "Enable to select unique sounds or the Raw sound will be used", "s": "Enable to select unique sounds or the Raw sound will be used", "t": "启用以选择独特音效，否则将使用原始音效", "mod": "TriggerTech"}
 {"h": "bb298eea9633792b", "n": "Kerbal Name", "s": "Kerbal Name", "t": "乘员姓名", "mod": "TriggerTech"}
 {"h": "bb980b38227e171f", "n": "Calendar", "s": "Calendar", "t": "日历", "mod": "TriggerTech"}
@@ -482,6 +487,7 @@
 {"h": "f9cc99bdf0cd5319", "n": "SOI Quick Alarms", "s": "SOI Quick Alarms", "t": "SOI 快捷闹钟", "mod": "TriggerTech"}
 {"h": "fa03ee610b92b8e2", "n": "Alarm Clock Visible", "s": "Alarm Clock Visible", "t": "显示闹钟", "mod": "TriggerTech"}
 {"h": "fa8524bca7b18369", "n": "NOTE: This already appears to be the target", "s": "NOTE: This already appears to be the target", "t": "注意：此天体似乎已经是目标", "mod": "TriggerTech"}
+{"h": "fac00c2b540a916d", "n": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sprograde)", "s": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sprograde)", "t": "(?<=Ejection\\sAngle\\:\\s+)\\S+(?=°\\sto\\sprograde)", "mod": "TriggerTech"}
 {"h": "fc62b3a27df7683c", "n": "Override Stock Toolbar", "s": "Override Stock Toolbar", "t": "覆盖原生工具栏", "mod": "TriggerTech"}
 {"h": "fc63e31ac7c956ed", "n": "Select", "s": "Select", "t": "选择", "mod": "TriggerTech"}
 {"h": "fdbdbc3aef182118", "n": "Next Contract Offer", "s": "Next Contract Offer", "t": "下一个待选合同", "mod": "TriggerTech"}

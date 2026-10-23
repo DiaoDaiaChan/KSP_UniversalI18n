@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using UI18n.Core.Config;
@@ -100,6 +101,10 @@ namespace UI18n.Runtime
                 {
                     config.BundledFontPath = bundledPath;
                 }
+
+                // 诊断项（round 2）：首次命中样本上限，0 = 关闭采样；负数按 0 处理（不阻断启动）。
+                int hitSampleLimit = ReadInt(node, "HitSampleLimit", config.HitSampleLimit);
+                config.HitSampleLimit = hitSampleLimit < 0 ? 0 : hitSampleLimit;
             }
             catch (Exception ex)
             {
@@ -118,119 +123,81 @@ namespace UI18n.Runtime
         internal const string PacksFolderName = "Packs";
 
         /// <summary>
-        /// 把游戏语言（<c>zh-cn</c> / <c>zh_CN</c> / <c>zh-Hans</c> …）规整成目录名：小写、下划线换连字符。
-        /// 空 / 纯空白返回 null。
-        /// </summary>
-        internal static string NormalizeLanguage(string language)
-        {
-            if (string.IsNullOrEmpty(language))
-            {
-                return null;
-            }
-
-            string v = language.Trim().Replace('_', '-').ToLowerInvariant();
-            return v.Length == 0 ? null : v;
-        }
-
-        /// <summary>
-        /// 语言目录候选，按优先级：完整语言（<c>zh-cn</c>）→ 主语言（<c>zh</c>）。
-        /// 这样玩家把 <c>zh-CN</c> 的包放在 <c>Packs/zh/</c> 也能读到，反过来不行（精确目录优先）。
-        /// </summary>
-        internal static string[] LanguageCandidates(string language)
-        {
-            string normalized = NormalizeLanguage(language);
-            if (normalized == null)
-            {
-                return new string[0];
-            }
-
-            int dash = normalized.IndexOf('-');
-            if (dash <= 0)
-            {
-                return new[] { normalized };
-            }
-
-            string primary = normalized.Substring(0, dash);
-            return string.Equals(primary, normalized, StringComparison.Ordinal) ? new[] { normalized } : new[] { normalized, primary };
-        }
-
-        /// <summary>按语言解析出实际存在的字典目录；找不到返回 null（不算错误）。</summary>
-        internal static string ResolvePackDir(string language)
-        {
-            string root = PacksPath;
-            foreach (string candidate in LanguageCandidates(language))
-            {
-                string dir = Path.Combine(root, candidate);
-                if (Directory.Exists(dir))
-                {
-                    return dir;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// 读 <c>GameData/UI18n/Packs/&lt;lang&gt;/*.jsonl</c>（D35 布局）。
+        /// 目录发现全部交给 <see cref="PackLocator"/>（Core 里单测覆盖）：这里<b>不允许</b>再自己拼 Packs 路径
+        /// 或判断 <c>Directory.Exists</c> —— 那正是 P1 那次「按契约放的包一条都读不到」事故的复发路径。
         /// 目录不存在 / 该语言没有包都只记日志、返回空字典，不抛异常。
         /// </summary>
         internal static DictPack LoadPacks(UI18nConfig config, string language)
         {
             var pack = new DictPack();
-            string root = PacksPath;
 
             try
             {
-                if (!Directory.Exists(root))
+                string root = PacksPath;
+                PackResolution packs = PackLocator.Resolve(root, language);
+
+                // 事故现场必须显式说出来：Packs 根下的平铺 jsonl 是生产端产物（pool/glossary），运行时永不读。
+                if (packs.FlatFileCount > 0)
                 {
-                    Log.Info("packs dir not found: " + root + ", dictionary is empty");
+                    Log.Warn("packs: " + packs.FlatFileCount + " flat *.jsonl file(s) directly under " + root
+                             + " are ignored (expected " + PacksFolderName + "/<lang>/<modId>.jsonl); " + packs.Describe());
+                }
+
+                if (packs.Status != PackDirStatus.Found)
+                {
+                    Log.Warn(packs.Describe() + ", dictionary is empty");
                     return pack;
                 }
 
-                string dir = ResolvePackDir(language);
-                if (dir == null)
+                if (packs.Files.Length == 0)
                 {
-                    Log.Warn("no pack dir for language=" + PrintableLanguage(language) + " (looked for "
-                             + DescribeCandidates(language) + " under " + root + "), dictionary is empty"
-                             + DescribeAvailablePackDirs(root));
+                    Log.Warn(packs.Describe() + ", no *.jsonl in the pack dir, dictionary is empty");
                     return pack;
                 }
 
-                string[] files = Directory.GetFiles(dir, "*.jsonl", SearchOption.TopDirectoryOnly);
-                Array.Sort(files, StringComparer.OrdinalIgnoreCase);
-
-                if (files.Length == 0)
-                {
-                    Log.Warn("no *.jsonl in " + dir + ", dictionary is empty");
-                    return pack;
-                }
+                Log.Info("packs: lang=" + PrintableLanguage(language) + ", dir=" + packs.SelectedLanguage
+                         + ", files=" + packs.Files.Length);
 
                 int limit = config != null && config.MaxEntries > 0 ? config.MaxEntries : UI18nConfig.Default.MaxEntries;
-                string langFolder = Path.GetFileName(dir);
+                string langFolder = packs.SelectedLanguage;
 
-                for (int i = 0; i < files.Length; i++)
+                // 加载耗时（毫秒）必须进日志：玩家报「启动变慢」时这是唯一的客观依据。
+                var totalWatch = Stopwatch.StartNew();
+                int loadedFiles = 0;
+
+                for (int i = 0; i < packs.Files.Length; i++)
                 {
+                    string file = packs.Files[i];
                     if (pack.Entries >= limit)
                     {
                         Log.Warn("MaxEntries=" + limit + " reached, remaining pack files ignored ("
-                                 + (files.Length - i) + " file(s) skipped, e.g. " + langFolder + "/" + Path.GetFileName(files[i]) + ")");
+                                 + (packs.Files.Length - i) + " file(s) skipped, e.g. " + langFolder + "/" + Path.GetFileName(file) + ")");
                         break;
                     }
 
                     int before = pack.Entries;
-                    foreach (string line in File.ReadLines(files[i]))
+                    var fileWatch = Stopwatch.StartNew();
+                    foreach (string line in File.ReadLines(file))
                     {
                         if (pack.Entries >= limit)
                         {
-                            Log.Warn("MaxEntries=" + limit + " reached, rest of " + langFolder + "/" + Path.GetFileName(files[i]) + " ignored");
+                            Log.Warn("MaxEntries=" + limit + " reached, rest of " + langFolder + "/" + Path.GetFileName(file) + " ignored");
                             break;
                         }
 
                         pack.AddJsonLine(line);
                     }
 
-                    Log.Info("pack loaded: " + langFolder + "/" + Path.GetFileName(files[i]) + ", entries=+" + (pack.Entries - before));
+                    fileWatch.Stop();
+                    loadedFiles++;
+                    Log.Info("pack loaded: " + langFolder + "/" + Path.GetFileName(file) + ", entries=+" + (pack.Entries - before)
+                             + ", " + fileWatch.ElapsedMilliseconds + " ms");
                 }
+
+                totalWatch.Stop();
+                Log.Info("dictionary load: files=" + loadedFiles + ", entries=" + pack.Entries + ", parseErrors=" + pack.ParseErrors
+                         + ", " + totalWatch.ElapsedMilliseconds + " ms");
             }
             catch (Exception ex)
             {
@@ -243,65 +210,6 @@ namespace UI18n.Runtime
         private static string PrintableLanguage(string language)
         {
             return string.IsNullOrEmpty(language) ? "<null>" : language;
-        }
-
-        private static string DescribeCandidates(string language)
-        {
-            string[] candidates = LanguageCandidates(language);
-            if (candidates.Length == 0)
-            {
-                return "Packs/<any>";
-            }
-
-            var sb = new System.Text.StringBuilder();
-            for (int i = 0; i < candidates.Length; i++)
-            {
-                if (i > 0)
-                {
-                    sb.Append(" or ");
-                }
-
-                sb.Append(PacksFolderName).Append('/').Append(candidates[i]);
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>诊断用：列出 Packs 下实际存在哪些语言目录（最多 8 个），帮玩家发现目录名拼错。</summary>
-        private static string DescribeAvailablePackDirs(string root)
-        {
-            try
-            {
-                string[] dirs = Directory.GetDirectories(root);
-                if (dirs.Length == 0)
-                {
-                    return "; " + root + " has no language subdirectory";
-                }
-
-                Array.Sort(dirs, StringComparer.OrdinalIgnoreCase);
-                var sb = new System.Text.StringBuilder("; available: ");
-                int shown = Math.Min(dirs.Length, 8);
-                for (int i = 0; i < shown; i++)
-                {
-                    if (i > 0)
-                    {
-                        sb.Append(", ");
-                    }
-
-                    sb.Append(Path.GetFileName(dirs[i]));
-                }
-
-                if (dirs.Length > shown)
-                {
-                    sb.Append(", …(+").Append(dirs.Length - shown).Append(')');
-                }
-
-                return sb.ToString();
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
         }
 
         internal static ConfigNode FindUi18nNode(ConfigNode root)

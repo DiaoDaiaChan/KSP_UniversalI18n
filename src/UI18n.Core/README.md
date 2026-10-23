@@ -14,6 +14,8 @@ KSP 通用 i18n Mod 的核心库：**纯 BCL，零第三方依赖，零 UnityEng
 | `UI18n.Core.Policy` | `LanguageGate` | 语言门禁（非中文一个 patch 都不装，D24/D28） |
 | `UI18n.Core.Config` | `UI18nConfig` | 用户配置 POCO |
 
+`Dict/PackLocator.cs`（包发现：`Packs/<lang>/<modId>.jsonl` 的定位、语言回退、平铺包永不读）的 API 契约、优先级规则与 Runtime 接线示例见 [`Dict/README-PackLocator.md`](Dict/README-PackLocator.md)。
+
 ## 契约要点
 
 - **键 = 16 位小写 hex**：`TextKey.Ctx(asm, type, member, ordinal, hash)` 等；哈希与 python 侧

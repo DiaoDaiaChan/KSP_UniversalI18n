@@ -28,6 +28,14 @@ namespace UI18n.Core.Config
         public int MaxEntries { get; set; } = 60000;
 
         /// <summary>
+        /// 「首次命中样本」上限（配置键 <c>HitSampleLimit</c>，默认 64，<b>0 = 关闭采样</b>）。
+        /// 只控制诊断日志 <c>hit sample:</c> 的条数：Runtime 在某个原文<b>第一次</b>被翻译成功时
+        /// 记一条样本（原文 + 译文 + 命中层级 + 首次命中的 patch 名），超过上限只加计数不再记样本。
+        /// 与 <c>distinct hits</c>（全量去重计数）无关——那个不受本上限影响，永远精确。
+        /// </summary>
+        public int HitSampleLimit { get; set; } = 64;
+
+        /// <summary>
         /// 旧版 uGUI 字体兜底模式（配置键 <c>FontMode</c>，默认 <c>OsFont</c>）。
         /// uGUI 能从系统字体动态建字面，中文可以真修；TMP 不行，见 <c>TmpMode</c>。
         /// </summary>

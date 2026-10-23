@@ -1,0 +1,200 @@
+[10:25:10] round start: lang=zh-cn tag=zhcn-r2final withProbe=False keepProbe=False closeGame=False preflightOnly=False waitForExit=False waitMinutes=480 processName=KSP_x64 expectEntries=10024
+[10:25:10] report: C:\Users\43701\Documents\github\UniversalI18n\reports\verify-20261023-102510.log
+[10:25:10] A) settings.cfg LANGUAGE = zh-cn
+[10:25:10] B) packs deployed: 42 file(s), 3,508,296 B ; repo: 41 file(s), 3,504,392 B
+[10:25:10] B) packs: allowed extra _smoke.jsonl 3904 B
+[10:25:10] C) UI18n.Runtime.dll deployed=D906F956A4D0DF36 expect(pinned)=D906F956A4D0DF36  [build\bin 不参与判定]
+[10:25:10] C) UI18n.Core.dll deployed=3C33CB556614E935 expect(pinned)=3C33CB556614E935  [build\bin 不参与判定]
+[10:25:10] preflight: A/B/C passed
+[10:25:10] settings.cfg LANGUAGE=zh-cn (backup kept until end)
+[10:25:10] D) probe: not installed, running without probe (assertion D not applicable)
+[10:25:10] starting D:\Kerbal Space Program_newmod\KSP_x64.exe
+[10:25:10] started pid=40668
+[10:25:10] round start: lang=zh-cn tag=dtest withProbe=False keepProbe=False closeGame=False preflightOnly=True waitForExit=False waitMinutes=480 processName=KSP_x64 expectEntries=10024
+[10:25:11] report: C:\Users\43701\Documents\github\UniversalI18n\reports\verify-20261023-102510.log
+[10:25:11] A) settings.cfg LANGUAGE = zh-cn
+[10:25:11] B) packs deployed: 41 file(s), 3,504,392 B ; repo: 41 file(s), 3,504,392 B
+[10:25:11] B) packs: WARN _smoke.jsonl 不在部署目录（本轮没有 smoke 证据，但不中止）
+[10:25:11] C) UI18n.Runtime.dll deployed=D906F956A4D0DF36 build=D906F956A4D0DF36
+[10:25:11] C) UI18n.Core.dll deployed=3C33CB556614E935 build=3C33CB556614E935
+[10:25:11] preflight: A/B/C passed
+[10:25:11] D) probe: not installed, assertion D not applicable (no -WithProbe)
+[10:25:11] preflight: A/B/C/D passed (-PreflightOnly: no launch, settings.cfg untouched)
+[10:25:41] waiting: elapsed 30s, scanned 82,235 B, log 82,235 B, no MAINMENU yet
+[10:26:11] waiting: elapsed 61s, scanned 23,877,938 B, log 23,877,938 B, no MAINMENU yet
+[10:26:41] waiting: elapsed 91s, scanned 24,285,260 B, log 24,285,260 B, no MAINMENU yet
+[10:26:56] verdict=mainmenu after 106s (log 24,545,092 B, scanned 24,545,092 B) -> dwell 60s
+[10:27:56] dwell done, screenshot (restore + topmost first, then self-check)
+[10:28:00] shot: hwnd=4264536 title="Kerbal Space Program" visible=True iconic=True rect=-32000,-32000,-31840,-31972 foreground=False fgWindow="慧助考·操作系统 (20031) 交互式做题系统 和另外 16 个页面 - 个人 - Microsoft​ Edge"
+[10:28:00] shot: restored from minimized (ShowWindow SW_MAXIMIZE), waiting 2000 ms
+[10:28:00] shot: coverage points=9/9 belong to KSP pid=40668
+[10:28:00] shot: pre-capture iconic=True rect=-32000,-32000,-31840,-31972 foreground=False (foreground 只是旁证：SetWindowPos 成功时活动窗口仍可能是别人)
+[10:28:00] shot: saved C:\Users\43701\Documents\github\UniversalI18n\build\shots\verify-20261023-102510.png (502.2 KB, 3440x1440) colors=25 distinct (40x24 sample)
+[10:28:00] shot: SUSPECT (KSP still minimized at capture time)
+[10:28:00] shot: exit=3, suspect=True
+[10:28:00] KSP left running at main menu on purpose (player may continue)
+[10:28:03] --- summary ---
+[10:28:03] installed line : [LOG 10:25:45.118] [UI18n] installed 16/16 patches
+[10:28:03] patch ok       : 16 ; patch failed: 0
+[10:28:03] dictionary     : [LOG 10:25:45.003] [UI18n] dictionary load: files=42, entries=10024, parseErrors=0, 55 ms
+[10:28:04] entries        : actual=10024 -> OK (expected 10024), entries matched branch: <unknown>
+[10:28:04] parseErrors    : 0
+[10:28:04] pack load ms   : files=42 min=0 median=0 max=16 sum=40 ; dictionary load total=55 ms
+[10:28:04] pack > 50 ms   : none
+[10:28:04] pack top-3 ms  : zh-cn/RP-1.jsonl=16, zh-cn/RealismOverhaul.jsonl=9, zh-cn/Squad.jsonl=4
+[10:28:04] ready          : [LOG 10:25:45.118] [UI18n] ready: patches=16/16, dict entries=10024, language=zh-cn, version=0.1.0
+[10:28:04] first call     : 2 target(s)
+[10:28:04]   FC: [LOG 10:25:45.125] [UI18n] first call: TMPro.TMP_Text.set_text
+[10:28:04]   FC: [LOG 10:25:46.166] [UI18n] first call: ScreenMessages.PostMessage
+[10:28:04] patch stats    : [LOG 10:26:51.626] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=13420 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[10:28:04] font stats     : [LOG 10:26:51.626] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[10:28:04]   UnityEngine.UI.Text.set_text calls=0 hit=0
+[10:28:04]   TMPro.TMP_Text.set_text calls=13420 hit=0
+[10:28:04]   GUI.Label calls=0 hit=0
+[10:28:04] patch stats targets present: 16/16
+[10:28:04] uGUI font      : injected=0 already-ok=0
+[10:28:04] C assertion    : pinned sha256 [build\bin 不参与判定]: runtime=D906F956A4D0DF36 core=3C33CB556614E935
+[10:28:04] D assertion    : not required (-WithProbe absent), probe absent
+[10:28:04] probe pass done: N <MISSING>
+[10:28:04] probe auto-stop: N <not yet, 180 s 未到或游戏已关>
+[10:28:04] probe modal    : N <MISSING>
+[10:28:04] probe lines    : 0
+[10:28:04] distinct hits  : [LOG 10:26:51.626] [UI18n] distinct hits: 0
+[10:28:04] hit sample     : 0 line(s)
+[10:28:04] --- verdict table ---
+[10:28:04] | installed        | [LOG 10:25:45.118] [UI18n] installed 16/16 patches |
+[10:28:04] | patch failed     | 0 |
+[10:28:04] | entries          | actual=10024 expect=10024 -> OK (expected 10024), entries matched branch: <unknown> |
+[10:28:04] | pack load ms     | files=42 min=0 median=0 max=16 total=55 |
+[10:28:04] | GUI.Label        | GUI.Label calls=0 hit=0 |
+[10:28:04] | UnityEngine.UI.Text | UnityEngine.UI.Text.set_text calls=0 hit=0 |
+[10:28:04] | TMPro.TMP_Text   | TMPro.TMP_Text.set_text calls=13420 hit=0 |
+[10:28:04] | uGUI font        | injected=0 already-ok=0 |
+[10:28:04] | C dll            | pinned sha256 [build\bin 不参与判定]: runtime=D906F956A4D0DF36 core=3C33CB556614E935 |
+[10:28:04] | D probe          | not required (-WithProbe absent), probe absent |
+[10:28:04] | probe pass done  | N |
+[10:28:04] | distinct hits    | [LOG 10:26:51.626] [UI18n] distinct hits: 0 |
+[10:28:04] | hit sample       | 0 line(s) |
+[10:28:04] | screenshot       | C:\Users\43701\Documents\github\UniversalI18n\build\shots\verify-20261023-102510.png  **SUSPECT (KSP not foreground / blank)** |
+[10:28:04] | verdict          | mainmenu |
+[10:28:04] --- all [UI18n] lines ---
+[LOG 10:25:44.940] [UI18n] v0.1.0 starting (harmony id com.universali18n.runtime)
+[LOG 10:25:44.943] [UI18n] font mode=OsFont, tmp mode=Auto, os font="Microsoft YaHei"
+[LOG 10:25:44.943] [UI18n] language=zh-cn, enabled=True, forceOverride=False
+[LOG 10:25:44.948] [UI18n] packs: lang=zh-cn, dir=zh-cn, files=42
+[LOG 10:25:44.949] [UI18n] pack loaded: zh-cn/000_TexturesUnlimited.jsonl, entries=+24, 1 ms
+[LOG 10:25:44.949] [UI18n] pack loaded: zh-cn/001_ToolbarControl.jsonl, entries=+8, 0 ms
+[LOG 10:25:44.949] [UI18n] pack loaded: zh-cn/AJE.jsonl, entries=+20, 0 ms
+[LOG 10:25:44.949] [UI18n] pack loaded: zh-cn/B9_Aerospace_ProceduralWings.jsonl, entries=+4, 0 ms
+[LOG 10:25:44.949] [UI18n] pack loaded: zh-cn/BurstPQS.jsonl, entries=+1, 0 ms
+[LOG 10:25:44.949] [UI18n] pack loaded: zh-cn/CommunityResourcePack.jsonl, entries=+2, 0 ms
+[LOG 10:25:44.950] [UI18n] pack loaded: zh-cn/ConformalDecals.jsonl, entries=+124, 0 ms
+[LOG 10:25:44.950] [UI18n] pack loaded: zh-cn/ContractConfigurator.jsonl, entries=+3, 0 ms
+[LOG 10:25:44.951] [UI18n] pack loaded: zh-cn/EditorExtensionsRedux.jsonl, entries=+141, 0 ms
+[LOG 10:25:44.951] [UI18n] pack loaded: zh-cn/KSCSwitcher.jsonl, entries=+2, 0 ms
+[LOG 10:25:44.951] [UI18n] pack loaded: zh-cn/KSPCommunityFixes.jsonl, entries=+5, 0 ms
+[LOG 10:25:44.951] [UI18n] pack loaded: zh-cn/KerbalChangelog.jsonl, entries=+32, 0 ms
+[LOG 10:25:44.951] [UI18n] pack loaded: zh-cn/KerbalFoundries.jsonl, entries=+49, 0 ms
+[LOG 10:25:44.952] [UI18n] pack loaded: zh-cn/KerbalismConfig.jsonl, entries=+131, 0 ms
+[LOG 10:25:44.952] [UI18n] pack loaded: zh-cn/Kopernicus.jsonl, entries=+3, 0 ms
+[LOG 10:25:44.952] [UI18n] pack loaded: zh-cn/MechJeb2.jsonl, entries=+6, 0 ms
+[LOG 10:25:44.956] [UI18n] pack loaded: zh-cn/ModularLaunchPads.jsonl, entries=+498, 3 ms
+[LOG 10:25:44.957] [UI18n] pack loaded: zh-cn/Parallax_StockPlanetTextures.jsonl, entries=+11, 0 ms
+[LOG 10:25:44.957] [UI18n] pack loaded: zh-cn/Parallax_StockTerrainTextures.jsonl, entries=+12, 0 ms
+[LOG 10:25:44.957] [UI18n] pack loaded: zh-cn/Principia.jsonl, entries=+1, 0 ms
+[LOG 10:25:44.957] [UI18n] pack loaded: zh-cn/ProceduralFairings.jsonl, entries=+68, 0 ms
+[LOG 10:25:44.958] [UI18n] pack loaded: zh-cn/ProceduralParts.jsonl, entries=+145, 0 ms
+[LOG 10:25:44.959] [UI18n] pack loaded: zh-cn/ROCapsules.jsonl, entries=+362, 1 ms
+[LOG 10:25:44.961] [UI18n] pack loaded: zh-cn/ROEngines.jsonl, entries=+268, 1 ms
+[LOG 10:25:44.961] [UI18n] pack loaded: zh-cn/ROHeatshields.jsonl, entries=+39, 0 ms
+[LOG 10:25:44.961] [UI18n] pack loaded: zh-cn/ROLib.jsonl, entries=+14, 0 ms
+[LOG 10:25:44.963] [UI18n] pack loaded: zh-cn/ROSolar.jsonl, entries=+181, 0 ms
+[LOG 10:25:44.964] [UI18n] pack loaded: zh-cn/ROTanks.jsonl, entries=+320, 1 ms
+[LOG 10:25:44.980] [UI18n] pack loaded: zh-cn/RP-1.jsonl, entries=+3382, 16 ms
+[LOG 10:25:44.980] [UI18n] pack loaded: zh-cn/ReStock.jsonl, entries=+8, 0 ms
+[LOG 10:25:44.981] [UI18n] pack loaded: zh-cn/ReStockPlus.jsonl, entries=+19, 0 ms
+[LOG 10:25:44.981] [UI18n] pack loaded: zh-cn/RealAntennas.jsonl, entries=+37, 0 ms
+[LOG 10:25:44.981] [UI18n] pack loaded: zh-cn/RealChute.jsonl, entries=+44, 0 ms
+[LOG 10:25:44.981] [UI18n] pack loaded: zh-cn/RealFuels.jsonl, entries=+6, 0 ms
+[LOG 10:25:44.991] [UI18n] pack loaded: zh-cn/RealismOverhaul.jsonl, entries=+1774, 9 ms
+[LOG 10:25:44.993] [UI18n] pack loaded: zh-cn/SXT.jsonl, entries=+526, 2 ms
+[LOG 10:25:44.994] [UI18n] pack loaded: zh-cn/Sol-Configs.jsonl, entries=+12, 0 ms
+[LOG 10:25:44.998] [UI18n] pack loaded: zh-cn/Squad.jsonl, entries=+930, 4 ms
+[LOG 10:25:45.000] [UI18n] pack loaded: zh-cn/TriggerTech.jsonl, entries=+496, 1 ms
+[LOG 10:25:45.003] [UI18n] pack loaded: zh-cn/VenStockRevamp.jsonl, entries=+229, 1 ms
+[LOG 10:25:45.003] [UI18n] pack loaded: zh-cn/Waterfall.jsonl, entries=+53, 0 ms
+[LOG 10:25:45.003] [UI18n] pack loaded: zh-cn/_smoke.jsonl, entries=+34, 0 ms
+[LOG 10:25:45.003] [UI18n] dictionary load: files=42, entries=10024, parseErrors=0, 55 ms
+[LOG 10:25:45.004] [UI18n] dictionary: entries=10024, parseErrors=0
+[LOG 10:25:45.030] [UI18n] patch ok: UnityEngine.UI.Text.set_text(string value)
+[LOG 10:25:45.049] [UI18n] patch ok: TMPro.TMP_Text.set_text(string value)
+[LOG 10:25:45.054] [UI18n] patch ok: GUILayout.DoLabel(GUIContent #0, GUIStyle, GUILayoutOption[])
+[LOG 10:25:45.059] [UI18n] patch ok: GUILayout.DoButton(GUIContent #0, GUIStyle, GUILayoutOption[])
+[LOG 10:25:45.064] [UI18n] patch ok: GUILayout.DoRepeatButton(GUIContent #0, GUIStyle, GUILayoutOption[])
+[LOG 10:25:45.068] [UI18n] patch ok: GUILayout.DoToggle(bool, GUIContent #1, GUIStyle, GUILayoutOption[])
+[LOG 10:25:45.072] [UI18n] patch ok: GUILayout.DoWindow(int, Rect, GUI.WindowFunction, GUIContent #3, GUIStyle, GUILayoutOption[])
+[LOG 10:25:45.076] [UI18n] patch ok: GUI.Label(Rect, GUIContent #1, GUIStyle)
+[LOG 10:25:45.081] [UI18n] patch ok: GUI.Box(Rect, GUIContent #1, GUIStyle)
+[LOG 10:25:45.085] [UI18n] patch ok: GUI.Button(Rect, GUIContent #1, GUIStyle)
+[LOG 10:25:45.088] [UI18n] patch ok: GUI.RepeatButton(Rect, GUIContent #1, GUIStyle)
+[LOG 10:25:45.092] [UI18n] patch ok: GUI.Toggle(Rect, bool, GUIContent #2, GUIStyle)
+[LOG 10:25:45.097] [UI18n] patch ok: GUI.Toggle(Rect, int, bool, GUIContent #3, GUIStyle)
+[LOG 10:25:45.100] [UI18n] patch ok: GUI.DoWindow(int, Rect, GUI.WindowFunction, GUIContent #3 title, GUIStyle, GUISkin, bool)
+[LOG 10:25:45.104] [UI18n] patch ok: GUI.DoModalWindow(int, Rect, GUI.WindowFunction, GUIContent #3 content, GUIStyle, GUISkin)
+[LOG 10:25:45.118] [UI18n] patch ok: ScreenMessages.PostMessage(ScreenMessage, string #1 msg, ScreenMessagesText, float, ScreenMessageStyle, Color)
+[LOG 10:25:45.118] [UI18n] installed 16/16 patches
+[LOG 10:25:45.118] [UI18n] ready: patches=16/16, dict entries=10024, language=zh-cn, version=0.1.0
+[LOG 10:25:45.125] [UI18n] first call: TMPro.TMP_Text.set_text
+[LOG 10:25:46.166] [UI18n] first call: ScreenMessages.PostMessage
+[LOG 09:59:57.232] :BEFORE[UI18N] pass
+[LOG 09:59:57.232] :FOR[UI18N] pass
+[LOG 09:59:57.232] :AFTER[UI18N] pass
+[LOG 09:59:57.232] :BEFORE[UI18N.CORE] pass
+[LOG 09:59:57.232] :FOR[UI18N.CORE] pass
+[LOG 09:59:57.232] :AFTER[UI18N.CORE] pass
+[LOG 09:59:57.232] :BEFORE[UI18N.RUNTIME] pass
+[LOG 09:59:57.232] :FOR[UI18N.RUNTIME] pass
+[LOG 09:59:57.232] :AFTER[UI18N.RUNTIME] pass
+[LOG 10:26:08.871] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=11482 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 10:26:08.871] [UI18n] distinct hits: 0
+[LOG 10:26:08.872] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 10:26:28.906] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=13299 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 10:26:28.906] [UI18n] distinct hits: 0
+[LOG 10:26:28.906] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 10:26:51.626] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=13420 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 10:26:51.626] [UI18n] distinct hits: 0
+[LOG 10:26:51.626] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 10:26:57.074] [UI18n] font probe: scene=MAINMENU
+[LOG 10:26:57.098] [UI18n] font probe: TMP faces=26 (with CJK 2), legacy Font faces=36 (with CJK 23), sample="中测推"
+[LOG 10:26:57.116] [UI18n]   tmp asset[0] "LiberationSans SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[1] "Roboto-Bold SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[2] "Arial SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[3] "Calibri SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[4] "Calibri-Greek Cyrilic SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[5] "Dotty SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[6] "851H-kktt-J SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[7] "851H-kktt01 SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[8] "851H-kktt02 SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[9] "NotoSansCJK-J-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[10] "NotoSansCJK-Jext-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[11] "drfont_daraehand_Basic SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[12] "NotoSansCJK-K01-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[13] "NotoSansCJK-K02-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[14] "Dited SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[15] "HappyZcool01 SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[16] "HappyZcool02 SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[17] "HappyZcool03 SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[18] "HappyZcool04 SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[19] "NotoSansCJK01-Regular SDF" cjk(中)=True cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[20] "NotoSansCJK02-Regular SDF" cjk(中)=False cjk(测)=True
+[LOG 10:26:57.116] [UI18n]   tmp asset[21] "NotoSansCJK03-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[22] "NotoSansCJK04-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[23] "JD-LCD_rounded SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[24] "NotoSans-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.116] [UI18n]   tmp asset[25] "NotoSansCJKjp-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 10:26:57.117] [UI18n] font probe: TMP assets with both 中 and 测 = 0/26
+[LOG 10:26:57.117] [UI18n] font probe: CJK glyphs available (TMP assets with CJK=2, legacy Font with CJK=23)
+[10:28:04] UI18n error lines: 0
+[10:28:04] round done: verdict=mainmenu
+[10:28:04] settings.cfg restored (LANGUAGE = zh-cn)
+[10:28:04] Plugins now: UI18n.Core.dll, UI18n.Core.dll.old-01f1c154, UI18n.Runtime.dll, UI18n.Runtime.dll.old-9c712ab1

@@ -1,0 +1,302 @@
+[09:03:54] round start: lang=zh-cn tag=zhcn withProbe=True keepProbe=False closeGame=False preflightOnly=False waitForExit=True waitMinutes=480 processName=KSP_x64 expectEntries=10024
+[09:03:54] report: C:\Users\43701\Documents\github\UniversalI18n\reports\verify-20261023-090354.log
+[09:03:54] wait: KSP_x64 running (pid=47464), waiting up to 480 min for it to exit (-WaitForExit)
+[09:08:54] waiting for KSP_x64 pid 47464 to exit (elapsed 05:00)
+[09:09:54] wait: KSP_x64 exited after 06:00; sleeping 45 s so KSP.log / Player.log / settings.cfg are flushed
+[09:10:39] wait: continuing with the round
+[09:10:39] A) settings.cfg LANGUAGE = zh-cn
+[09:10:40] B) packs deployed: 42 file(s), 3,508,296 B ; repo: 41 file(s), 3,504,392 B
+[09:10:40] B) packs: allowed extra _smoke.jsonl 3904 B
+[09:10:40] C) UI18n.Runtime.dll deployed=4F43A79199947A45 expect(pinned)=4F43A79199947A45  [build\bin 不参与判定]
+[09:10:40] C) UI18n.Core.dll deployed=7E9915E4A2456596 expect(pinned)=7E9915E4A2456596  [build\bin 不参与判定]
+[09:10:40] preflight: A/B/C passed
+[09:10:40] settings.cfg LANGUAGE=zh-cn (backup kept until end)
+[09:10:40] probe: installed probe: D:\Kerbal Space Program_newmod\GameData\UI18n\Plugins\UI18n.Probe.dll
+[09:10:40] probe: sha256=24EAFE8D3D44EA1D719309E46CA06070AAF20B8120017FB00FEB4652A1F5D5AC
+[09:10:40] probe: next KSP start (zh-cn) will draw the probe window; remember to Remove afterwards
+[09:10:40] probe: 
+[09:10:40] probe: Plugins now contains:
+[09:10:40] probe:   UI18n.Core.dll                              19968 B
+[09:10:40] probe:   UI18n.Core.dll.old-01f1c154                 15872 B
+[09:10:40] probe:   UI18n.Probe.dll                             12288 B
+[09:10:40] probe:   UI18n.Runtime.dll                           42496 B
+[09:10:40] probe:   UI18n.Runtime.dll.old-9c712ab1              26112 B
+[09:10:40] D) probe sha256=24EAFE8D3D44EA1D expect=24EAFE8D3D44EA1D
+[09:10:40] preflight: D passed
+[09:10:41] starting D:\Kerbal Space Program_newmod\KSP_x64.exe
+[09:10:41] started pid=15292
+[09:18:42] verdict=mainmenu after 481s (log 24,882,195 B) -> dwell 60s
+[09:26:43] dwell done, screenshot
+[09:26:45] shot: [shot] saved D:\Kerbal Space Program_newmod\UniversalI18n\build\shots\verify-20261023-090354.png (764.4 KB, 3440x1440)
+[09:26:46] probe: removed probe: D:\Kerbal Space Program_newmod\GameData\UI18n\Plugins\UI18n.Probe.dll
+[09:26:46] probe: 
+[09:26:46] probe: Plugins now contains:
+[09:26:46] probe:   UI18n.Core.dll                              19968 B
+[09:26:46] probe:   UI18n.Core.dll.old-01f1c154                 15872 B
+[09:26:46] probe:   UI18n.Runtime.dll                           42496 B
+[09:26:46] probe:   UI18n.Runtime.dll.old-9c712ab1              26112 B
+[09:26:46] probe removed from disk: True
+[09:26:46] KSP left running at main menu on purpose (player may continue)
+[09:26:49] --- summary ---
+[09:26:49] installed line : [LOG 09:11:29.064] [UI18n] installed 16/16 patches
+[09:26:49] patch ok       : 16 ; patch failed: 0
+[09:26:49] dictionary     : [LOG 09:11:28.802] [UI18n] dictionary load: files=42, entries=10024, parseErrors=0, 72 ms
+[09:26:49] entries        : actual=10024 -> OK (expected 10024), entries matched branch: <unknown>
+[09:26:49] parseErrors    : 0
+[09:26:49] pack load ms   : files=42 min=0 median=0 max=21 sum=54 ; dictionary load total=72 ms
+[09:26:49] pack > 50 ms   : none
+[09:26:49] pack top-3 ms  : zh-cn/RP-1.jsonl=21, zh-cn/RealismOverhaul.jsonl=13, zh-cn/Squad.jsonl=5
+[09:26:49] ready          : [LOG 09:11:29.064] [UI18n] ready: patches=16/16, dict entries=10024, language=zh-cn, version=0.1.0
+[09:26:49] first call     : 15 target(s)
+[09:26:49]   FC: [LOG 09:11:29.084] [UI18n] first call: TMPro.TMP_Text.set_text
+[09:26:49]   FC: [LOG 09:11:31.317] [UI18n] first call: ScreenMessages.PostMessage
+[09:26:49]   FC: [LOG 09:18:43.812] [UI18n] first call: GUI.DoWindow(title)
+[09:26:49]   FC: [LOG 09:18:43.813] [UI18n] first call: GUILayout.DoWindow
+[09:26:49]   FC: [LOG 09:18:43.813] [UI18n] first call: GUI.DoModalWindow
+[09:26:49]   FC: [LOG 09:18:43.813] [UI18n] first call: GUI.Label
+[09:26:49]   FC: [LOG 09:18:43.814] [UI18n] first call: GUI.Box
+[09:26:49]   FC: [LOG 09:18:43.814] [UI18n] first call: GUI.Button
+[09:26:49]   FC: [LOG 09:18:43.814] [UI18n] first call: GUI.Toggle
+[09:26:49]   FC: [LOG 09:18:43.814] [UI18n] first call: GUI.Toggle(int)
+[09:26:49]   FC: [LOG 09:18:43.816] [UI18n] first call: GUILayout.DoLabel
+[09:26:49]   FC: [LOG 09:18:44.001] [UI18n] first call: GUILayout.DoButton
+[09:26:49]   FC: [LOG 09:18:44.001] [UI18n] first call: GUILayout.DoRepeatButton
+[09:26:49]   FC: [LOG 09:18:44.002] [UI18n] first call: GUI.RepeatButton
+[09:26:49]   FC: [LOG 09:18:44.002] [UI18n] first call: GUILayout.DoToggle
+[09:26:49] patch stats    : [LOG 09:21:36.731] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=289829 hit=48296 | GUI.Box=96591 hit=96591 | GUI.Button=144886 hit=48296 | GUI.RepeatButton=96590 hit=0 | GUI.Toggle=144886 hit=48296 | GUI.Toggle(int)=48296 hit=48296 | GUI.DoWindow(title)=96592 hit=48296 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=144941 hit=144941 | GUILayout.DoButton=96590 hit=96590 | GUILayout.DoRepeatButton=96590 hit=96590 | GUILayout.DoToggle=96590 hit=96590 | GUILayout.DoWindow=48296 hit=48296 | ScreenMessages.PostMessage=2 hit=1
+[09:26:49] font stats     : [LOG 09:21:36.732] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[09:26:50]   UnityEngine.UI.Text.set_text calls=0 hit=0
+[09:26:50]   TMPro.TMP_Text.set_text calls=481381 hit=2
+[09:26:50]   GUI.Label calls=289829 hit=48296
+[09:26:50] patch stats targets present: 16/16
+[09:26:50] uGUI font      : injected=0 already-ok=0
+[09:26:50] probe pass done: Y -> [LOG 09:18:43.814] [UI18n] [probe] imgui pass done: 13 targets: GUI.Label, GUI.Box, GUI.Button, GUI.RepeatButton, GUI.Toggle, GUI.Toggle(int), GUI.DoWindow(title), GUI.DoModalWindow, GUILayout.DoLabel, GUILayout.DoButton, GUILayout.DoRepeatButton, GUILayout.DoToggle, GUILayout.DoWindow
+[09:26:50] probe auto-stop: Y -> [LOG 09:18:43.290] [UI18n] [probe] loaded, scene=MAINMENU; IMGUI probe draws from OnGUI, left column only, auto-stop after 180 s
+[09:26:50] probe modal    : Y -> [LOG 09:18:56.534] [UI18n] [probe] modal window closed after 30 draw calls (layout/repaint only; GUI.DoModalWindow target already exercised; never drawn on mouse events so it cannot swallow the player's clicks)
+[09:26:50] probe lines    : 14
+[09:26:50]   P: [LOG 09:18:43.290] [UI18n] [probe] loaded, scene=MAINMENU; IMGUI probe draws from OnGUI, left column only, auto-stop after 180 s
+[09:26:50]   P: [LOG 09:18:43.811] [UI18n] [probe] imgui skin=GameSkin
+[09:26:50]   P: [LOG 09:18:43.811] [UI18n] [probe] imgui skin.font = "Arial" dynamic=True hasCJK(中)=True hasCJK(推)=True
+[09:26:50]   P: [LOG 09:18:43.812] [UI18n] [probe] imgui label.font = <null> (inherits skin font)
+[09:26:50]   P: [LOG 09:18:43.812] [UI18n] [probe] imgui box.font = <null> (inherits skin font)
+[09:26:50]   P: [LOG 09:18:43.812] [UI18n] [probe] imgui button.font = <null> (inherits skin font)
+[09:26:50]   P: [LOG 09:18:43.812] [UI18n] [probe] imgui window.font = <null> (inherits skin font)
+[09:26:50]   P: [LOG 09:18:43.812] [UI18n] [probe] verdict hint: if '推力 中文测试 UI18n' renders as boxes, the IMGUI skin font lacks CJK (then ImGuiFontGate=Auto is justified)
+[09:26:50]   P: [LOG 09:18:43.814] [UI18n] [probe] imgui pass done: 13 targets: GUI.Label, GUI.Box, GUI.Button, GUI.RepeatButton, GUI.Toggle, GUI.Toggle(int), GUI.DoWindow(title), GUI.DoModalWindow, GUILayout.DoLabel, GUILayout.DoButton, GUILayout.DoRepeatButton, GUILayout.DoToggle, GUILayout.DoWindow
+[09:26:50]   P: [LOG 09:18:56.534] [UI18n] [probe] modal window closed after 30 draw calls (layout/repaint only; GUI.DoModalWindow target already exercised; never drawn on mouse events so it cannot swallow the player's clicks)
+[09:26:50]   P: [LOG 09:18:56.655] [UI18n] [probe] posted ScreenMessages test message (ScreenMessages.PostMessage should go 0 -> 1)
+[09:26:50]   P: [LOG 09:18:56.891] [UI18n] [probe] OnGUI reached 120 frames, probe is live (patch stats should show IMGUI targets > 0)
+[09:26:50]   P: [LOG 09:21:43.296] [UI18n] [probe] auto-stop after 180 s: probe windows no longer draw (safe to keep playing; dll can be removed from disk)
+[09:26:50]   P: [ERR 09:21:43.298] [UI18n] [probe] window contents failed: System.ArgumentException: Getting control 6's position in a group with only 6 controls when doing repaint
+[09:26:50] --- verdict table ---
+[09:26:50] | installed        | [LOG 09:11:29.064] [UI18n] installed 16/16 patches |
+[09:26:50] | patch failed     | 0 |
+[09:26:50] | entries          | actual=10024 expect=10024 -> OK (expected 10024), entries matched branch: <unknown> |
+[09:26:50] | pack load ms     | files=42 min=0 median=0 max=21 total=72 |
+[09:26:50] | GUI.Label        | GUI.Label calls=289829 hit=48296 |
+[09:26:50] | UnityEngine.UI.Text | UnityEngine.UI.Text.set_text calls=0 hit=0 |
+[09:26:50] | TMPro.TMP_Text   | TMPro.TMP_Text.set_text calls=481381 hit=2 |
+[09:26:50] | uGUI font        | injected=0 already-ok=0 |
+[09:26:50] | probe pass done  | Y |
+[09:26:50] | screenshot       | C:\Users\43701\Documents\github\UniversalI18n\build\shots\verify-20261023-090354.png |
+[09:26:50] | verdict          | mainmenu |
+[09:26:50] --- all [UI18n] lines ---
+[LOG 09:11:28.725] [UI18n] v0.1.0 starting (harmony id com.universali18n.runtime)
+[LOG 09:11:28.727] [UI18n] font mode=OsFont, tmp mode=Auto, os font="Microsoft YaHei"
+[LOG 09:11:28.727] [UI18n] language=zh-cn, enabled=True, forceOverride=False
+[LOG 09:11:28.732] [UI18n] pack loaded: zh-cn/000_TexturesUnlimited.jsonl, entries=+24, 2 ms
+[LOG 09:11:28.733] [UI18n] pack loaded: zh-cn/001_ToolbarControl.jsonl, entries=+8, 0 ms
+[LOG 09:11:28.733] [UI18n] pack loaded: zh-cn/AJE.jsonl, entries=+20, 0 ms
+[LOG 09:11:28.733] [UI18n] pack loaded: zh-cn/B9_Aerospace_ProceduralWings.jsonl, entries=+4, 0 ms
+[LOG 09:11:28.733] [UI18n] pack loaded: zh-cn/BurstPQS.jsonl, entries=+1, 0 ms
+[LOG 09:11:28.734] [UI18n] pack loaded: zh-cn/CommunityResourcePack.jsonl, entries=+2, 0 ms
+[LOG 09:11:28.734] [UI18n] pack loaded: zh-cn/ConformalDecals.jsonl, entries=+124, 0 ms
+[LOG 09:11:28.734] [UI18n] pack loaded: zh-cn/ContractConfigurator.jsonl, entries=+3, 0 ms
+[LOG 09:11:28.734] [UI18n] pack loaded: zh-cn/EditorExtensionsRedux.jsonl, entries=+141, 0 ms
+[LOG 09:11:28.735] [UI18n] pack loaded: zh-cn/KerbalChangelog.jsonl, entries=+32, 0 ms
+[LOG 09:11:28.736] [UI18n] pack loaded: zh-cn/KerbalFoundries.jsonl, entries=+49, 0 ms
+[LOG 09:11:28.736] [UI18n] pack loaded: zh-cn/KerbalismConfig.jsonl, entries=+131, 0 ms
+[LOG 09:11:28.736] [UI18n] pack loaded: zh-cn/Kopernicus.jsonl, entries=+3, 0 ms
+[LOG 09:11:28.736] [UI18n] pack loaded: zh-cn/KSCSwitcher.jsonl, entries=+2, 0 ms
+[LOG 09:11:28.736] [UI18n] pack loaded: zh-cn/KSPCommunityFixes.jsonl, entries=+5, 0 ms
+[LOG 09:11:28.737] [UI18n] pack loaded: zh-cn/MechJeb2.jsonl, entries=+6, 0 ms
+[LOG 09:11:28.741] [UI18n] pack loaded: zh-cn/ModularLaunchPads.jsonl, entries=+498, 4 ms
+[LOG 09:11:28.742] [UI18n] pack loaded: zh-cn/Parallax_StockPlanetTextures.jsonl, entries=+11, 0 ms
+[LOG 09:11:28.742] [UI18n] pack loaded: zh-cn/Parallax_StockTerrainTextures.jsonl, entries=+12, 0 ms
+[LOG 09:11:28.742] [UI18n] pack loaded: zh-cn/Principia.jsonl, entries=+1, 0 ms
+[LOG 09:11:28.743] [UI18n] pack loaded: zh-cn/ProceduralFairings.jsonl, entries=+68, 0 ms
+[LOG 09:11:28.744] [UI18n] pack loaded: zh-cn/ProceduralParts.jsonl, entries=+145, 0 ms
+[LOG 09:11:28.744] [UI18n] pack loaded: zh-cn/RealAntennas.jsonl, entries=+37, 0 ms
+[LOG 09:11:28.744] [UI18n] pack loaded: zh-cn/RealChute.jsonl, entries=+44, 0 ms
+[LOG 09:11:28.744] [UI18n] pack loaded: zh-cn/RealFuels.jsonl, entries=+6, 0 ms
+[LOG 09:11:28.758] [UI18n] pack loaded: zh-cn/RealismOverhaul.jsonl, entries=+1774, 13 ms
+[LOG 09:11:28.758] [UI18n] pack loaded: zh-cn/ReStock.jsonl, entries=+8, 0 ms
+[LOG 09:11:28.758] [UI18n] pack loaded: zh-cn/ReStockPlus.jsonl, entries=+19, 0 ms
+[LOG 09:11:28.761] [UI18n] pack loaded: zh-cn/ROCapsules.jsonl, entries=+362, 2 ms
+[LOG 09:11:28.762] [UI18n] pack loaded: zh-cn/ROEngines.jsonl, entries=+268, 1 ms
+[LOG 09:11:28.763] [UI18n] pack loaded: zh-cn/ROHeatshields.jsonl, entries=+39, 0 ms
+[LOG 09:11:28.763] [UI18n] pack loaded: zh-cn/ROLib.jsonl, entries=+14, 0 ms
+[LOG 09:11:28.764] [UI18n] pack loaded: zh-cn/ROSolar.jsonl, entries=+181, 0 ms
+[LOG 09:11:28.766] [UI18n] pack loaded: zh-cn/ROTanks.jsonl, entries=+320, 1 ms
+[LOG 09:11:28.787] [UI18n] pack loaded: zh-cn/RP-1.jsonl, entries=+3382, 21 ms
+[LOG 09:11:28.788] [UI18n] pack loaded: zh-cn/Sol-Configs.jsonl, entries=+12, 0 ms
+[LOG 09:11:28.794] [UI18n] pack loaded: zh-cn/Squad.jsonl, entries=+930, 5 ms
+[LOG 09:11:28.797] [UI18n] pack loaded: zh-cn/SXT.jsonl, entries=+526, 2 ms
+[LOG 09:11:28.799] [UI18n] pack loaded: zh-cn/TriggerTech.jsonl, entries=+496, 2 ms
+[LOG 09:11:28.801] [UI18n] pack loaded: zh-cn/VenStockRevamp.jsonl, entries=+229, 1 ms
+[LOG 09:11:28.802] [UI18n] pack loaded: zh-cn/Waterfall.jsonl, entries=+53, 0 ms
+[LOG 09:11:28.802] [UI18n] pack loaded: zh-cn/_smoke.jsonl, entries=+34, 0 ms
+[LOG 09:11:28.802] [UI18n] dictionary load: files=42, entries=10024, parseErrors=0, 72 ms
+[LOG 09:11:28.802] [UI18n] dictionary: entries=10024, parseErrors=0
+[LOG 09:11:28.844] [UI18n] patch ok: UnityEngine.UI.Text.set_text(string value)
+[LOG 09:11:28.876] [UI18n] patch ok: TMPro.TMP_Text.set_text(string value)
+[LOG 09:11:28.885] [UI18n] patch ok: GUILayout.DoLabel(GUIContent #0, GUIStyle, GUILayoutOption[])
+[LOG 09:11:28.897] [UI18n] patch ok: GUILayout.DoButton(GUIContent #0, GUIStyle, GUILayoutOption[])
+[LOG 09:11:28.908] [UI18n] patch ok: GUILayout.DoRepeatButton(GUIContent #0, GUIStyle, GUILayoutOption[])
+[LOG 09:11:28.917] [UI18n] patch ok: GUILayout.DoToggle(bool, GUIContent #1, GUIStyle, GUILayoutOption[])
+[LOG 09:11:28.927] [UI18n] patch ok: GUILayout.DoWindow(int, Rect, GUI.WindowFunction, GUIContent #3, GUIStyle, GUILayoutOption[])
+[LOG 09:11:28.937] [UI18n] patch ok: GUI.Label(Rect, GUIContent #1, GUIStyle)
+[LOG 09:11:28.948] [UI18n] patch ok: GUI.Box(Rect, GUIContent #1, GUIStyle)
+[LOG 09:11:28.963] [UI18n] patch ok: GUI.Button(Rect, GUIContent #1, GUIStyle)
+[LOG 09:11:28.974] [UI18n] patch ok: GUI.RepeatButton(Rect, GUIContent #1, GUIStyle)
+[LOG 09:11:28.986] [UI18n] patch ok: GUI.Toggle(Rect, bool, GUIContent #2, GUIStyle)
+[LOG 09:11:28.999] [UI18n] patch ok: GUI.Toggle(Rect, int, bool, GUIContent #3, GUIStyle)
+[LOG 09:11:29.013] [UI18n] patch ok: GUI.DoWindow(int, Rect, GUI.WindowFunction, GUIContent #3 title, GUIStyle, GUISkin, bool)
+[LOG 09:11:29.027] [UI18n] patch ok: GUI.DoModalWindow(int, Rect, GUI.WindowFunction, GUIContent #3 content, GUIStyle, GUISkin)
+[LOG 09:11:29.064] [UI18n] patch ok: ScreenMessages.PostMessage(ScreenMessage, string #1 msg, ScreenMessagesText, float, ScreenMessageStyle, Color)
+[LOG 09:11:29.064] [UI18n] installed 16/16 patches
+[LOG 09:11:29.064] [UI18n] ready: patches=16/16, dict entries=10024, language=zh-cn, version=0.1.0
+[LOG 09:11:29.084] [UI18n] first call: TMPro.TMP_Text.set_text
+[LOG 09:11:31.317] [UI18n] first call: ScreenMessages.PostMessage
+[LOG 09:11:49.073] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=1582 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:11:49.074] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:12:09.073] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=14354 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:12:09.073] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:12:29.074] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=57741 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:12:29.074] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:12:49.075] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=88337 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:12:49.075] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:13:09.079] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=138509 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:13:09.079] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:13:29.089] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=170336 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:13:29.089] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:13:49.091] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=194233 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:13:49.091] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:14:09.094] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=233015 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:14:09.095] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:14:28.724] [UI18n] font probe: scene=LOADING (fallback after 180s)
+[LOG 09:14:28.730] [UI18n] font probe: TMP faces=24 (with CJK 2), legacy Font faces=36 (with CJK 23), sample="中测推"
+[LOG 09:14:28.734] [UI18n]   tmp asset[0] "LiberationSans SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.734] [UI18n]   tmp asset[1] "Roboto-Bold SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.734] [UI18n]   tmp asset[2] "Calibri SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.734] [UI18n]   tmp asset[3] "Calibri-Greek Cyrilic SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.734] [UI18n]   tmp asset[4] "851H-kktt-J SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[5] "851H-kktt01 SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[6] "851H-kktt02 SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[7] "NotoSansCJK-J-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[8] "NotoSansCJK-Jext-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[9] "drfont_daraehand_Basic SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[10] "NotoSansCJK-K01-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[11] "NotoSansCJK-K02-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[12] "Dited SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[13] "HappyZcool01 SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[14] "HappyZcool02 SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[15] "HappyZcool03 SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[16] "HappyZcool04 SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[17] "NotoSansCJK01-Regular SDF" cjk(中)=True cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[18] "NotoSansCJK02-Regular SDF" cjk(中)=False cjk(测)=True
+[LOG 09:14:28.735] [UI18n]   tmp asset[19] "NotoSansCJK03-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[20] "NotoSansCJK04-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[21] "JD-LCD_rounded SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[22] "NotoSans-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n]   tmp asset[23] "NotoSansCJKjp-Regular SDF" cjk(中)=False cjk(测)=False
+[LOG 09:14:28.735] [UI18n] font probe: TMP assets with both 中 and 测 = 0/24
+[LOG 09:14:28.735] [UI18n] font probe: CJK glyphs available (TMP assets with CJK=2, legacy Font with CJK=23)
+[LOG 09:14:29.097] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=266241 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:14:29.098] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:14:49.098] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=287373 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:14:49.099] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:15:09.104] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=307985 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:15:09.104] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:15:29.109] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=337982 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:15:29.109] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:15:49.109] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=359374 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:15:49.109] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:16:09.117] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=395481 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:16:09.119] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:16:29.120] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=422712 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:16:29.120] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:16:49.122] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=465549 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:16:49.122] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:15:05.111] :BEFORE[UI18N] pass
+[LOG 09:15:05.111] :FOR[UI18N] pass
+[LOG 09:15:05.111] :AFTER[UI18N] pass
+[LOG 09:15:05.111] :BEFORE[UI18N.CORE] pass
+[LOG 09:15:05.111] :FOR[UI18N.CORE] pass
+[LOG 09:15:05.111] :AFTER[UI18N.CORE] pass
+[LOG 09:15:05.111] :BEFORE[UI18N.PROBE] pass
+[LOG 09:15:05.111] :FOR[UI18N.PROBE] pass
+[LOG 09:15:05.111] :AFTER[UI18N.PROBE] pass
+[LOG 09:15:05.111] :BEFORE[UI18N.RUNTIME] pass
+[LOG 09:15:05.111] :FOR[UI18N.RUNTIME] pass
+[LOG 09:15:05.111] :AFTER[UI18N.RUNTIME] pass
+[LOG 09:17:13.364] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=473650 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:17:13.364] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:17:33.373] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=475822 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:17:33.373] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:17:53.374] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=479069 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:17:53.374] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:18:36.662] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481291 hit=0 | GUI.Label=0 hit=0 | GUI.Box=0 hit=0 | GUI.Button=0 hit=0 | GUI.RepeatButton=0 hit=0 | GUI.Toggle=0 hit=0 | GUI.Toggle(int)=0 hit=0 | GUI.DoWindow(title)=0 hit=0 | GUI.DoModalWindow=0 hit=0 | GUILayout.DoLabel=0 hit=0 | GUILayout.DoButton=0 hit=0 | GUILayout.DoRepeatButton=0 hit=0 | GUILayout.DoToggle=0 hit=0 | GUILayout.DoWindow=0 hit=0 | ScreenMessages.PostMessage=1 hit=0
+[LOG 09:18:36.662] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:18:43.290] [UI18n] [probe] loaded, scene=MAINMENU; IMGUI probe draws from OnGUI, left column only, auto-stop after 180 s
+[LOG 09:18:43.811] [UI18n] [probe] imgui skin=GameSkin
+[LOG 09:18:43.811] [UI18n] [probe] imgui skin.font = "Arial" dynamic=True hasCJK(中)=True hasCJK(推)=True
+[LOG 09:18:43.812] [UI18n] [probe] imgui label.font = <null> (inherits skin font)
+[LOG 09:18:43.812] [UI18n] [probe] imgui box.font = <null> (inherits skin font)
+[LOG 09:18:43.812] [UI18n] [probe] imgui button.font = <null> (inherits skin font)
+[LOG 09:18:43.812] [UI18n] [probe] imgui window.font = <null> (inherits skin font)
+[LOG 09:18:43.812] [UI18n] [probe] verdict hint: if '推力 中文测试 UI18n' renders as boxes, the IMGUI skin font lacks CJK (then ImGuiFontGate=Auto is justified)
+[LOG 09:18:43.812] [UI18n] first call: GUI.DoWindow(title)
+[LOG 09:18:43.813] [UI18n] first call: GUILayout.DoWindow
+[LOG 09:18:43.813] [UI18n] first call: GUI.DoModalWindow
+[LOG 09:18:43.813] [UI18n] first call: GUI.Label
+[LOG 09:18:43.814] [UI18n] first call: GUI.Box
+[LOG 09:18:43.814] [UI18n] first call: GUI.Button
+[LOG 09:18:43.814] [UI18n] first call: GUI.Toggle
+[LOG 09:18:43.814] [UI18n] first call: GUI.Toggle(int)
+[LOG 09:18:43.814] [UI18n] [probe] imgui pass done: 13 targets: GUI.Label, GUI.Box, GUI.Button, GUI.RepeatButton, GUI.Toggle, GUI.Toggle(int), GUI.DoWindow(title), GUI.DoModalWindow, GUILayout.DoLabel, GUILayout.DoButton, GUILayout.DoRepeatButton, GUILayout.DoToggle, GUILayout.DoWindow
+[LOG 09:18:43.816] [UI18n] first call: GUILayout.DoLabel
+[LOG 09:18:44.001] [UI18n] first call: GUILayout.DoButton
+[LOG 09:18:44.001] [UI18n] first call: GUILayout.DoRepeatButton
+[LOG 09:18:44.002] [UI18n] first call: GUI.RepeatButton
+[LOG 09:18:44.002] [UI18n] first call: GUILayout.DoToggle
+[LOG 09:18:56.534] [UI18n] [probe] modal window closed after 30 draw calls (layout/repaint only; GUI.DoModalWindow target already exercised; never drawn on mouse events so it cannot swallow the player's clicks)
+[LOG 09:18:56.655] [UI18n] [probe] posted ScreenMessages test message (ScreenMessages.PostMessage should go 0 -> 1)
+[LOG 09:18:56.707] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=440 hit=64 | GUI.Box=128 hit=128 | GUI.Button=192 hit=64 | GUI.RepeatButton=128 hit=0 | GUI.Toggle=192 hit=64 | GUI.Toggle(int)=64 hit=64 | GUI.DoWindow(title)=128 hit=64 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=248 hit=248 | GUILayout.DoButton=128 hit=128 | GUILayout.DoRepeatButton=128 hit=128 | GUILayout.DoToggle=128 hit=128 | GUILayout.DoWindow=64 hit=64 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:18:56.707] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:18:56.891] [UI18n] [probe] OnGUI reached 120 frames, probe is live (patch stats should show IMGUI targets > 0)
+[LOG 09:19:16.710] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=38588 hit=6422 | GUI.Box=12844 hit=12844 | GUI.Button=19266 hit=6422 | GUI.RepeatButton=12844 hit=0 | GUI.Toggle=19266 hit=6422 | GUI.Toggle(int)=6422 hit=6422 | GUI.DoWindow(title)=12844 hit=6422 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=19322 hit=19322 | GUILayout.DoButton=12844 hit=12844 | GUILayout.DoRepeatButton=12844 hit=12844 | GUILayout.DoToggle=12844 hit=12844 | GUILayout.DoWindow=6422 hit=6422 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:19:16.710] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:19:36.712] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=72356 hit=12050 | GUI.Box=24100 hit=24100 | GUI.Button=36150 hit=12050 | GUI.RepeatButton=24100 hit=0 | GUI.Toggle=36150 hit=12050 | GUI.Toggle(int)=12050 hit=12050 | GUI.DoWindow(title)=24100 hit=12050 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=36206 hit=36206 | GUILayout.DoButton=24100 hit=24100 | GUILayout.DoRepeatButton=24100 hit=24100 | GUILayout.DoToggle=24100 hit=24100 | GUILayout.DoWindow=12050 hit=12050 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:19:36.712] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:19:56.717] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=111620 hit=18594 | GUI.Box=37188 hit=37188 | GUI.Button=55782 hit=18594 | GUI.RepeatButton=37188 hit=0 | GUI.Toggle=55782 hit=18594 | GUI.Toggle(int)=18594 hit=18594 | GUI.DoWindow(title)=37188 hit=18594 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=55838 hit=55838 | GUILayout.DoButton=37188 hit=37188 | GUILayout.DoRepeatButton=37188 hit=37188 | GUILayout.DoToggle=37188 hit=37188 | GUILayout.DoWindow=18594 hit=18594 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:19:56.717] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:20:16.722] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=146900 hit=24474 | GUI.Box=48948 hit=48948 | GUI.Button=73422 hit=24474 | GUI.RepeatButton=48948 hit=0 | GUI.Toggle=73422 hit=24474 | GUI.Toggle(int)=24474 hit=24474 | GUI.DoWindow(title)=48948 hit=24474 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=73478 hit=73478 | GUILayout.DoButton=48948 hit=48948 | GUILayout.DoRepeatButton=48948 hit=48948 | GUILayout.DoToggle=48948 hit=48948 | GUILayout.DoWindow=24474 hit=24474 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:20:16.722] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:20:36.723] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=179648 hit=29932 | GUI.Box=59864 hit=59864 | GUI.Button=89796 hit=29932 | GUI.RepeatButton=59864 hit=0 | GUI.Toggle=89796 hit=29932 | GUI.Toggle(int)=29932 hit=29932 | GUI.DoWindow(title)=59864 hit=29932 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=89852 hit=89852 | GUILayout.DoButton=59864 hit=59864 | GUILayout.DoRepeatButton=59864 hit=59864 | GUILayout.DoToggle=59864 hit=59864 | GUILayout.DoWindow=29932 hit=29932 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:20:36.723] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:20:56.728] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=216773 hit=36120 | GUI.Box=72239 hit=72239 | GUI.Button=108358 hit=36120 | GUI.RepeatButton=72238 hit=0 | GUI.Toggle=108358 hit=36120 | GUI.Toggle(int)=36120 hit=36120 | GUI.DoWindow(title)=72240 hit=36120 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=108413 hit=108413 | GUILayout.DoButton=72238 hit=72238 | GUILayout.DoRepeatButton=72238 hit=72238 | GUILayout.DoToggle=72238 hit=72238 | GUILayout.DoWindow=36120 hit=36120 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:20:56.728] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:21:16.729] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=252485 hit=42072 | GUI.Box=84143 hit=84143 | GUI.Button=126214 hit=42072 | GUI.RepeatButton=84142 hit=0 | GUI.Toggle=126214 hit=42072 | GUI.Toggle(int)=42072 hit=42072 | GUI.DoWindow(title)=84144 hit=42072 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=126269 hit=126269 | GUILayout.DoButton=84142 hit=84142 | GUILayout.DoRepeatButton=84142 hit=84142 | GUILayout.DoToggle=84142 hit=84142 | GUILayout.DoWindow=42072 hit=42072 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:21:16.729] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:21:36.731] [UI18n] patch stats: UnityEngine.UI.Text.set_text=0 hit=0 | TMPro.TMP_Text.set_text=481381 hit=2 | GUI.Label=289829 hit=48296 | GUI.Box=96591 hit=96591 | GUI.Button=144886 hit=48296 | GUI.RepeatButton=96590 hit=0 | GUI.Toggle=144886 hit=48296 | GUI.Toggle(int)=48296 hit=48296 | GUI.DoWindow(title)=96592 hit=48296 | GUI.DoModalWindow=30 hit=30 | GUILayout.DoLabel=144941 hit=144941 | GUILayout.DoButton=96590 hit=96590 | GUILayout.DoRepeatButton=96590 hit=96590 | GUILayout.DoToggle=96590 hit=96590 | GUILayout.DoWindow=48296 hit=48296 | ScreenMessages.PostMessage=2 hit=1
+[LOG 09:21:36.732] [UI18n] font stats: uGUI injected=0 already-ok=0 unavailable=0 off=0 | TMP injected=0 already-ok=2 kept-src=0 unavailable=0 | mode=OsFont/Auto
+[LOG 09:21:43.296] [UI18n] [probe] auto-stop after 180 s: probe windows no longer draw (safe to keep playing; dll can be removed from disk)
+[ERR 09:21:43.298] [UI18n] [probe] window contents failed: System.ArgumentException: Getting control 6's position in a group with only 6 controls when doing repaint
+[09:26:50] UI18n error lines: 3
+[09:26:50]   E: [LOG 09:11:28.802] [UI18n] dictionary load: files=42, entries=10024, parseErrors=0, 72 ms
+[09:26:50]   E: [LOG 09:11:28.802] [UI18n] dictionary: entries=10024, parseErrors=0
+[09:26:50]   E: [ERR 09:21:43.298] [UI18n] [probe] window contents failed: System.ArgumentException: Getting control 6's position in a group with only 6 controls when doing repaint
+[09:26:50] round done: verdict=mainmenu
+[09:26:50] settings.cfg restored (LANGUAGE = zh-cn)
+[09:26:50] Plugins now: UI18n.Core.dll, UI18n.Core.dll.old-01f1c154, UI18n.Runtime.dll, UI18n.Runtime.dll.old-9c712ab1

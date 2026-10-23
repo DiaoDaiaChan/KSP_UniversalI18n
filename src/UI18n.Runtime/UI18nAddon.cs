@@ -233,6 +233,7 @@ namespace UI18n.Runtime
 
             _lastTotalCalls = calls;
             Log.Info(PatchStats.Dump());
+            Log.Info("distinct hits: " + Translator.DistinctHits);
             Log.Info(FontResolver.Describe());
         }
 
@@ -252,7 +253,17 @@ namespace UI18n.Runtime
                 Log.Info(stats);
             }
 
+            Log.Info("distinct hits: " + Translator.DistinctHits);
             Log.Info(FontResolver.Describe());
+
+            // 「到底翻了哪些串」（round 2）：只在退出时打，条数受 HitSampleLimit 限制（默认 64，0 = 关）。
+            // 追加在既有行之后，不改任何既有日志行。
+            var sampleLines = new System.Collections.Generic.List<string>();
+            Translator.AppendSampleLines(sampleLines);
+            for (int i = 0; i < sampleLines.Count; i++)
+            {
+                Log.Info(sampleLines[i]);
+            }
         }
 
         private static string SafeSceneName()

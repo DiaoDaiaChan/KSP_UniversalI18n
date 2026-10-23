@@ -37,7 +37,7 @@ namespace UI18n.Runtime.Patches
 
             try
             {
-                string translated = Translator.Translate(value);
+                string translated = Translator.Translate(value, PatchNames.UnityText);
                 if (translated == null)
                 {
                     return;
@@ -72,7 +72,7 @@ namespace UI18n.Runtime.Patches
 
             try
             {
-                string translated = Translator.Translate(value);
+                string translated = Translator.Translate(value, PatchNames.TmpText);
                 if (translated == null)
                 {
                     return;

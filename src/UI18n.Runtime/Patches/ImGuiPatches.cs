@@ -139,7 +139,7 @@ namespace UI18n.Runtime.Patches
 
             try
             {
-                GUIContent translated = Translator.TranslateContent(content);
+                GUIContent translated = Translator.TranslateContent(content, name);
                 if (translated != null)
                 {
                     content = translated;

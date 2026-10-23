@@ -1,0 +1,24 @@
+[09:40:34] round start: lang=zh-cn tag=zhcn2 withProbe=True keepProbe=False closeGame=False preflightOnly=False waitForExit=False waitMinutes=480 processName=KSP_x64 expectEntries=10024
+[09:40:34] report: C:\Users\43701\Documents\github\UniversalI18n\reports\verify-20261023-094034.log
+[09:40:34] A) settings.cfg LANGUAGE = zh-cn
+[09:40:34] B) packs deployed: 42 file(s), 3,508,296 B ; repo: 41 file(s), 3,504,392 B
+[09:40:34] B) packs: allowed extra _smoke.jsonl 3904 B
+[09:40:34] C) UI18n.Runtime.dll deployed=D906F956A4D0DF36 expect(pinned)=D906F956A4D0DF36  [build\bin 不参与判定]
+[09:40:34] C) UI18n.Core.dll deployed=3C33CB556614E935 expect(pinned)=3C33CB556614E935  [build\bin 不参与判定]
+[09:40:34] preflight: A/B/C passed
+[09:40:34] settings.cfg LANGUAGE=zh-cn (backup kept until end)
+[09:40:35] probe: installed probe: D:\Kerbal Space Program_newmod\GameData\UI18n\Plugins\UI18n.Probe.dll
+[09:40:35] probe: sha256=24EAFE8D3D44EA1D719309E46CA06070AAF20B8120017FB00FEB4652A1F5D5AC
+[09:40:35] probe: next KSP start (zh-cn) will draw the probe window; remember to Remove afterwards
+[09:40:35] probe: 
+[09:40:35] probe: Plugins now contains:
+[09:40:35] probe:   UI18n.Core.dll                              26624 B
+[09:40:35] probe:   UI18n.Core.dll.old-01f1c154                 15872 B
+[09:40:35] probe:   UI18n.Probe.dll                             12288 B
+[09:40:35] probe:   UI18n.Runtime.dll                           43520 B
+[09:40:35] probe:   UI18n.Runtime.dll.old-9c712ab1              26112 B
+[09:40:35] D) probe sha256=24EAFE8D3D44EA1D expect=24EAFE8D3D44EA1D
+[09:40:35] preflight: D passed
+[09:40:35] starting D:\Kerbal Space Program_newmod\KSP_x64.exe
+[09:40:35] started pid=41056
+[09:47:31] verdict=mainmenu after 416s (log 24,876,024 B) -> dwell 60s

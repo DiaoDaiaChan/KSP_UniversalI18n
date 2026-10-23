@@ -31,6 +31,11 @@ glossary 另有 `--short-max-words`、`--short-min-len`。
 Windows 控制台是 GBK，若直接重定向输出中文可能 `UnicodeEncodeError`：各模块 main 已
 `sys.stdout.reconfigure(encoding="utf-8", errors="replace")`，脚本外部建议另设 `$env:PYTHONIOENCODING='utf-8'`。
 
+仓库里另有一个 **非 python** 的脚本 `tools/run-tests.ps1`（C# 单测入口，不属数据流水线）：
+`pwsh tools\run-tests.ps1` 先构建再跑 `UI18n.Core.Tests.dll`，退出码原样透传。
+**本机不要用 `dotnet test`**——VSTest testhost 启动即崩 `Win32Exception (5): 拒绝访问`（parent-exit 监视打不开父进程句柄），
+一条用例都不会执行；详见 `docs/06-工程骨架与构建.md` §4.2。
+
 ## 1 产物与真实数字（本机实测，可复现）
 
 ### 1.1 packs/pool.jsonl —— 候选池
@@ -229,11 +234,15 @@ tools/
     textnorm.py             归一化、CJK 检测、纯数字/URL/键判定、特征位、长度桶
     harvest.py              扫 GameData → 候选池 + inventory（含 --verify）
     glossary.py             Squad 注释英文 × dictionary.cfg 中文 → 术语表
-    selftest.py             79 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/产物校验）
+    packindex.py            包索引 packs/index.json + 覆盖报告 reports/coverage.md（含 --check）
+    selftest.py             128 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/产物校验）
 packs/
   pool.jsonl                12,792 行候选池（sha256 FEF515EA…D4C）
   inventory.json            统计清单
   glossary.jsonl            2,126 行双语术语表
+  index.json                分发清单（schema 1：41 个包 / 9,990 行 / 3,504,392 字节）
+reports/
+  coverage.md               zh-cn 覆盖报告（覆盖率 9,073 / 12,792 = 70.93%，口径写在报告里）
 ```
 
 harvest 各阶段耗时（本机 SSD，6,212 个 cfg）：`walk 0.10 s + loc 0.16 s + cfg 2.22 s + 过滤 0.27 s + 落盘 0.06 s = 2.83 s`
@@ -248,3 +257,37 @@ glossary 耗时 `英文 0.05 s + 中文 0.02 s + 组装 0.00 s + 落盘 0.01 s =
 - `src=loc` 的行带 `key`，命中游戏原生本地化表时可直接按 `key` 回填；`src=cfg` 的行带 `field`，
   回填时必须保持“构造新对象、绝不原地写 `content.text`”的红线（Unity `GUIContent.Temp` 返回共享实例）。
 - `glossary.jsonl` 的 `short=true`（≤5 词且 ≥4 字符，887 条）可作术语约束注入；`en` 与 `zh` 均为原文，未做任何改写。
+
+## 9 包索引与覆盖报告（`packindex.py`）
+
+```powershell
+# 生成：packs/index.json + reports/coverage.md（秒级）
+python -m i18n_tools.packindex
+
+# 校验：磁盘 index 与真实包文件是否一致；一致 exit 0，不一致 exit 1 并列差异
+python -m i18n_tools.packindex --check
+#   index ok: 41 packs, 9990 rows, 3504392 bytes
+
+# 只写 index、不写报告；或换目录/换语言
+python -m i18n_tools.packindex --no-coverage
+python -m i18n_tools.packindex --packs-dir <dir> --index <file> --coverage <file> --pool <file> --lang zh-cn
+```
+
+`packs/index.json` 的 schema（**已发布，字段名与顺序都不许随便改**）：
+
+- 顶层顺序：`schema`（=1）、`lang`（`"zh-cn"`）、`generatedAt`（ISO8601，秒级 UTC）、`totalRows`、`totalBytes`、`packCount`、`packs`
+- `packs[]` 每项顺序：`mod`、`file`（`zh-cn/<mod>.jsonl`，正斜杠）、`rows`、`bytes`、`sha256`（**文件级**）、`keepRows`
+- **`packs` 按 `mod` 名 ordinal（码点）升序**——顺序即契约：不用 case-insensitive，因为不同 Python/区域设置会给出不同结果，而增量分发靠“同一份清单逐行比对”，顺序一变就全失效
+- `keepRows` = 该文件里 `t == s` 的行数（直通行：译文等于原文）。它不是统计口径，是**运行时语义**：下沉查找靠它终止
+- 三条汇总与逐文件累加强制相等（`build_index` 里有断言，宁可崩也不写假清单）
+- 幂等：同样输入连跑两次，除 `generatedAt` 那一行外**逐字节相同**（`selftest` 的 [7] 实测这一点）
+
+`reports/coverage.md` 的覆盖率口径（引用这个数字时必须连口径一起说）：
+
+- **分母** = `packs/pool.jsonl` 的行数（12,792）。这是抽取阶段已经剔除 `empty` / `already-cjk` / `pure-number` / `too-short` / `search-tags` / `url-only` / `dup` 之后的**待译英文串总量**；被剔除的本来就不需要译，算进分母只会把覆盖率压低且失去意义
+- **分子** = 这 12,792 行里 `h` 能在 `packs/zh-cn/*.jsonl` 精确命中的行数（9,073）
+- **覆盖率 = 9,073 / 12,792 = 70.93%**（按来源：`loc` 2,646/2,948 = 89.76%、`cfg` 6,427/9,844 = 65.29%）
+- 两个**失真**数字列在报告里防止误引：`9,990 / 12,792 = 78.10%`（分子混进 917 条池外条目）、`8,985 / 12,792 = 70.24%`（剔除 88 行直通）
+
+改动 `packs/zh-cn/**` 之后**必须重跑 `python -m i18n_tools.packindex`**：`selftest` 的 [8] 会拿清单与现场扫描逐项比对，
+一旦漂移就会报 `清单条目与现场扫描逐项一致（清单不能与磁盘漂移）` 失败——这是故意的护栏，不是噪声。

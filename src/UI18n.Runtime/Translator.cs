@@ -23,6 +23,11 @@ namespace UI18n.Runtime
     /// <b>绝不能做的事</b>：不写 <c>content.text</c>（<c>GUIContent.Temp</c> 返回共享实例，写它会污染所有同文本控件），
     /// 只 <c>new GUIContent(...)</c> 并写回 <c>ref</c> 参数；本类只读游戏状态，不碰玩法 API。
     /// </para>
+    /// <para>
+    /// <b>诊断（round 2）</b>：某个原文<b>第一次</b>被翻译成功时，记一条样本（原文 + 译文 + 命中层级 +
+    /// 首次命中的 patch 名），并有全量去重计数 <see cref="DistinctHits"/>。两者都只在缓存未命中路径上
+    /// 各做一次，不改变任何既有日志行，也不参与翻译决策。
+    /// </para>
     /// <para>线程模型：只允许主线程调用（IMGUI / uGUI 都在主线程）。</para>
     /// </summary>
     internal static class Translator
@@ -30,12 +35,33 @@ namespace UI18n.Runtime
         /// <summary>缓存上限，超过就整体清空（UI 文本种类远小于此，正常游戏不会触发）。</summary>
         private const int CacheLimit = 20000;
 
+        /// <summary>样本里 source / translation 的截断长度（超出只留前 N 个字符并加 <c>...</c>）。</summary>
+        private const int SampleTextLimit = 80;
+
         private static readonly Dictionary<string, string> TextCache = new Dictionary<string, string>(StringComparer.Ordinal);
         private static readonly Dictionary<string, GUIContent> ContentCache = new Dictionary<string, GUIContent>(StringComparer.Ordinal);
         private static readonly HashSet<string> ReportedFailures = new HashSet<string>(StringComparer.Ordinal);
 
+        /// <summary>首次命中样本（有上限，见 <c>UI18nConfig.HitSampleLimit</c>）。</summary>
+        private static readonly List<HitSample> Samples = new List<HitSample>();
+
+        /// <summary>已经翻译成功过的原文集合：distinct 计数与样本去重都靠它。</summary>
+        private static readonly HashSet<string> HitSources = new HashSet<string>(StringComparer.Ordinal);
+
         private static UI18nConfig _config;
         private static DictPack _pack;
+        private static int _sampleLimit;
+        private static bool _sampleCapped;
+        private static long _distinctHits;
+
+        /// <summary>一条首次命中样本（只读快照，dump 时才拼字符串，热路径不分配）。</summary>
+        private struct HitSample
+        {
+            internal string Patch;
+            internal string Source;
+            internal string Translation;
+            internal KeyLevel Level;
+        }
 
         /// <summary>语言 / 开关已过门禁且字典非空 —— patch 前缀的第一道短路（05 §6.2）。</summary>
         internal static bool HasAnyTranslation
@@ -58,6 +84,24 @@ namespace UI18n.Runtime
             get { return TextCache.Count; }
         }
 
+        /// <summary>本局翻译成功过的<b>不同原文</b>条数（全量去重，不受采样上限影响）。</summary>
+        internal static long DistinctHits
+        {
+            get { return _distinctHits; }
+        }
+
+        /// <summary>样本是否因达到上限而被截断（true 时 <c>hit sample:</c> 只是前 N 条）。</summary>
+        internal static bool SampleCapped
+        {
+            get { return _sampleCapped; }
+        }
+
+        /// <summary>已记录的样本条数。</summary>
+        internal static int SampleCount
+        {
+            get { return Samples.Count; }
+        }
+
         internal static void Initialize(UI18nConfig config, DictPack pack)
         {
             _config = config ?? UI18nConfig.Default;
@@ -65,6 +109,13 @@ namespace UI18n.Runtime
             TextCache.Clear();
             ContentCache.Clear();
             ReportedFailures.Clear();
+            Samples.Clear();
+            HitSources.Clear();
+            _distinctHits = 0;
+            _sampleCapped = false;
+
+            int limit = _config.HitSampleLimit;
+            _sampleLimit = limit < 0 ? 0 : limit;
         }
 
         /// <summary>
@@ -72,6 +123,15 @@ namespace UI18n.Runtime
         /// 未命中也会缓存（存空串），避免同一串被反复哈希。
         /// </summary>
         internal static string Translate(string source)
+        {
+            return Translate(source, null);
+        }
+
+        /// <summary>
+        /// 同上，另外把「谁第一个翻到它」记进样本表（<paramref name="patch"/> 是 patch 短名，可为 null）。
+        /// 样本只在首次命中时记录，所以热路径上没有额外分配。
+        /// </summary>
+        internal static string Translate(string source, string patch)
         {
             if (string.IsNullOrEmpty(source) || _pack == null)
             {
@@ -98,9 +158,11 @@ namespace UI18n.Runtime
             {
                 ulong hash = Fnv1a.Hash(normalized);
                 string hit;
-                if (_pack.TryGet(hash, normalized, out hit))
+                KeyLevel level;
+                if (_pack.TryGet(hash, normalized, out hit, out level))
                 {
                     translation = hit;
+                    RecordHit(patch, source, translation, level);
                 }
             }
 
@@ -120,13 +182,19 @@ namespace UI18n.Runtime
         /// </summary>
         internal static GUIContent TranslateContent(GUIContent content)
         {
+            return TranslateContent(content, null);
+        }
+
+        /// <summary>同上，<paramref name="patch"/> 只用于首次命中样本（诊断）。</summary>
+        internal static GUIContent TranslateContent(GUIContent content, string patch)
+        {
             if (content == null)
             {
                 return null;
             }
 
             string text = content.text;
-            string translation = Translate(text);
+            string translation = Translate(text, patch);
             if (translation == null)
             {
                 return null;
@@ -150,6 +218,29 @@ namespace UI18n.Runtime
             return cached;
         }
 
+        /// <summary>
+        /// 拼 <c>hit sample:</c> 诊断行（含表头）。表头格式固定：
+        /// <c>hit sample: distinct=&lt;N&gt; (capped=&lt;bool&gt;)</c>；每条样本一行：
+        /// <c>hit sample: [&lt;patch&gt;] &lt;原文&gt; =&gt; &lt;译文&gt; (&lt;层级&gt;)</c>。
+        /// 原文/译文各截断到 80 字符、换行转义成 <c>\n</c>，保证一条样本永远只占一行。
+        /// </summary>
+        internal static void AppendSampleLines(List<string> sink)
+        {
+            if (sink == null)
+            {
+                return;
+            }
+
+            sink.Add("hit sample: distinct=" + _distinctHits + " (capped=" + (_sampleCapped ? "true" : "false") + ")");
+
+            for (int i = 0; i < Samples.Count; i++)
+            {
+                HitSample sample = Samples[i];
+                sink.Add("hit sample: [" + (string.IsNullOrEmpty(sample.Patch) ? "unknown" : sample.Patch) + "] "
+                         + Clip(sample.Source) + " => " + Clip(sample.Translation) + " (" + LevelName(sample.Level) + ")");
+            }
+        }
+
         /// <summary>patch 前缀里的异常只记一次（红线 6），不打断游戏、不刷屏。</summary>
         internal static void ReportPrefixFailure(string patch, Exception exception)
         {
@@ -160,6 +251,67 @@ namespace UI18n.Runtime
 
             Log.Error("prefix failed: " + patch + " → " + exception.GetType().Name + ": " + exception.Message
                       + "（同类错误每局只记一次）");
+        }
+
+        /// <summary>记一条首次命中：distinct 计数 + 有上限的样本表。同一原文只记一次。</summary>
+        private static void RecordHit(string patch, string source, string translation, KeyLevel level)
+        {
+            if (!HitSources.Add(source))
+            {
+                return;
+            }
+
+            _distinctHits++;
+
+            if (_sampleLimit <= 0)
+            {
+                return;
+            }
+
+            if (Samples.Count >= _sampleLimit)
+            {
+                _sampleCapped = true;
+                return;
+            }
+
+            HitSample sample = new HitSample();
+            sample.Patch = patch;
+            sample.Source = source;
+            sample.Translation = translation;
+            sample.Level = level;
+            Samples.Add(sample);
+        }
+
+        /// <summary>单行化 + 截断：日志里一条样本必须只占一行（原文可能带换行）。</summary>
+        private static string Clip(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            string oneLine = text.Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t");
+            if (oneLine.Length <= SampleTextLimit)
+            {
+                return oneLine;
+            }
+
+            return oneLine.Substring(0, SampleTextLimit) + "...";
+        }
+
+        private static string LevelName(KeyLevel level)
+        {
+            switch (level)
+            {
+                case KeyLevel.Ctx:
+                    return "ctx";
+                case KeyLevel.Site:
+                    return "site";
+                case KeyLevel.Global:
+                    return "global";
+                default:
+                    return "miss";
+            }
         }
     }
 }

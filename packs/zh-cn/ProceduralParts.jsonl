@@ -122,6 +122,7 @@
 {"h": "d7994be0f048b497", "n": "Procedural Tank max volume is 20 kL", "s": "Procedural Tank max volume is 20 kL", "t": "程序化储罐最大容积为 20 kL", "mod": "ProceduralParts"}
 {"h": "d8cdb1afc11fbef4", "n": "Metal Twisted Stripes", "s": "Metal Twisted Stripes", "t": "金属扭曲条纹", "mod": "ProceduralParts"}
 {"h": "d95337bad28d3881", "n": "Procedural Batteries can contain 4800 EC", "s": "Procedural Batteries can contain 4800 EC", "t": "程序化电池最大储电量为 4800 EC", "mod": "ProceduralParts"}
+{"h": "e23c352c6990dfc1", "n": "PP-CustomEnds", "s": "PP-CustomEnds", "t": "PP-CustomEnds", "mod": "ProceduralParts"}
 {"h": "e31d56453d3952e3", "n": "Redstone (Metal)", "s": "Redstone (Metal)", "t": "Redstone (金属)", "mod": "ProceduralParts"}
 {"h": "e570e635e4252a74", "n": "Metal Long Stripes", "s": "Metal Long Stripes", "t": "金属长条纹", "mod": "ProceduralParts"}
 {"h": "e5cd4d92b155fad5", "n": "Procedural SRB (40 kL)", "s": "Procedural SRB (40 kL)", "t": "程序化SRB (40 kL)", "mod": "ProceduralParts"}

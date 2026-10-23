@@ -1,6 +1,15 @@
 {"h": "01fdba1ac3965ab1", "n": "A simple test single multi-emitter system", "s": "A simple test single multi-emitter system", "t": "简单的多发射器测试系统", "mod": "Waterfall"}
 {"h": "05bfb7ef9212746a", "n": "A simple test single-emitter system", "s": "A simple test single-emitter system", "t": "简单的单发射器测试系统", "mod": "Waterfall"}
+{"h": "12728f072be2d7c6", "n": "fx-katniss-noise-4-blurred", "s": "fx-katniss-noise-4-blurred", "t": "fx-katniss-noise-4-blurred", "mod": "Waterfall"}
 {"h": "1ceb3f60648d32da", "n": "A basic light", "s": "A basic light", "t": "基础光源", "mod": "Waterfall"}
+{"h": "1cffe91bd6140ca3", "n": "fx-katniss-noise-8", "s": "fx-katniss-noise-8", "t": "fx-katniss-noise-8", "mod": "Waterfall"}
+{"h": "1cfff01bd6141888", "n": "fx-katniss-noise-1", "s": "fx-katniss-noise-1", "t": "fx-katniss-noise-1", "mod": "Waterfall"}
+{"h": "1cfff21bd6141bee", "n": "fx-katniss-noise-3", "s": "fx-katniss-noise-3", "t": "fx-katniss-noise-3", "mod": "Waterfall"}
+{"h": "1cfff31bd6141da1", "n": "fx-katniss-noise-2", "s": "fx-katniss-noise-2", "t": "fx-katniss-noise-2", "mod": "Waterfall"}
+{"h": "1cfff41bd6141f54", "n": "fx-katniss-noise-5", "s": "fx-katniss-noise-5", "t": "fx-katniss-noise-5", "mod": "Waterfall"}
+{"h": "1cfff51bd6142107", "n": "fx-katniss-noise-4", "s": "fx-katniss-noise-4", "t": "fx-katniss-noise-4", "mod": "Waterfall"}
+{"h": "1cfff61bd61422ba", "n": "fx-katniss-noise-7", "s": "fx-katniss-noise-7", "t": "fx-katniss-noise-7", "mod": "Waterfall"}
+{"h": "1cfff71bd614246d", "n": "fx-katniss-noise-6", "s": "fx-katniss-noise-6", "t": "fx-katniss-noise-6", "mod": "Waterfall"}
 {"h": "1d1960dc2ed2f60d", "n": "Simple plane", "s": "Simple plane", "t": "简单平面", "mod": "Waterfall"}
 {"h": "216dfc1b4d8ef9cc", "n": "Volumetric simple plume", "s": "Volumetric simple plume", "t": "体积简易羽流", "mod": "Waterfall"}
 {"h": "2eb7b4116e92d3a3", "n": "A Unity Shuriken particle system", "s": "A Unity Shuriken particle system", "t": "Unity Shuriken粒子系统", "mod": "Waterfall"}
@@ -8,17 +17,35 @@
 {"h": "3696743d1a4a8275", "n": "Additive shader-driven animated noise mimicing particle behavior", "s": "Additive shader-driven animated noise mimicing particle behavior", "t": "模拟粒子行为的叠加型着色器驱动动态噪点", "mod": "Waterfall"}
 {"h": "3725e350020ef1d2", "n": "Alpha bone-driven deformation material. \\nWARNING: be careful with sorting", "s": "Alpha bone-driven deformation material. \\nWARNING: be careful with sorting", "t": "透明通道骨骼驱动形变材质。\\n警告：请注意渲染排序", "mod": "Waterfall"}
 {"h": "38b276aeacadf97b", "n": "Complex deforming plume with 5 bones", "s": "Complex deforming plume with 5 bones", "t": "5骨骼复杂变形羽流", "mod": "Waterfall"}
+{"h": "415acb712337171c", "n": "fx_flarelamp-1", "s": "fx_flarelamp-1", "t": "fx_flarelamp-1", "mod": "Waterfall"}
 {"h": "445bcd97ad690daa", "n": "Repeated additive shader-driven deformation material", "s": "Repeated additive shader-driven deformation material", "t": "重复叠加型着色器驱动形变材质", "mod": "Waterfall"}
 {"h": "479e13d18fab9305", "n": "Simple plane with sharp edges", "s": "Simple plane with sharp edges", "t": "锐利边缘简单平面", "mod": "Waterfall"}
+{"h": "53ae3cf38653d917", "n": "fx-ion-noise", "s": "fx-ion-noise", "t": "fx-ion-noise", "mod": "Waterfall"}
 {"h": "560d6d799ae5440e", "n": "Additive billboard shader with directional fading", "s": "Additive billboard shader with directional fading", "t": "带定向渐变的叠加型广告牌（Billboard）着色器", "mod": "Waterfall"}
 {"h": "62591aeb9dfbc9dd", "n": "Alpha shader-driven deformation material. \\nWARNING: be careful with sorting", "s": "Alpha shader-driven deformation material. \\nWARNING: be careful with sorting", "t": "透明通道着色器驱动形变材质。\\n警告：请注意渲染排序", "mod": "Waterfall"}
+{"h": "757279319017ba3d", "n": "fx-katniss-noise-5-blurred", "s": "fx-katniss-noise-5-blurred", "t": "fx-katniss-noise-5-blurred", "mod": "Waterfall"}
+{"h": "77c9ba7bc441cb27", "n": "fx-alpha-noise-1", "s": "fx-alpha-noise-1", "t": "fx-alpha-noise-1", "mod": "Waterfall"}
+{"h": "7d74e73c6b8867f9", "n": "fx-katniss-noise-1-blurred", "s": "fx-katniss-noise-1-blurred", "t": "fx-katniss-noise-1-blurred", "mod": "Waterfall"}
 {"h": "85b2046ae1bd1755", "n": "Fixed set of 40 particles", "s": "Fixed set of 40 particles", "t": "固定40粒子组", "mod": "Waterfall"}
+{"h": "8f54aebcce5637e9", "n": "fx-katniss-noise-2-extradense", "s": "fx-katniss-noise-2-extradense", "t": "fx-katniss-noise-2-extradense", "mod": "Waterfall"}
+{"h": "94b03368600fdc67", "n": "fx_flarelens01", "s": "fx_flarelens01", "t": "fx_flarelens01", "mod": "Waterfall"}
+{"h": "94b03468600fde1a", "n": "fx_flarelens02", "s": "fx_flarelens02", "t": "fx_flarelens02", "mod": "Waterfall"}
 {"h": "96638a13dd284a8b", "n": "Additive billboard shader.", "s": "Additive billboard shader.", "t": "叠加公告板着色器。", "mod": "Waterfall"}
 {"h": "974c6714d2e9bfd7", "n": "Distortion shader", "s": "Distortion shader", "t": "扭曲着色器", "mod": "Waterfall"}
 {"h": "995517019b635bb6", "n": "Additive shader-driven deformation material", "s": "Additive shader-driven deformation material", "t": "叠加型着色器驱动形变材质", "mod": "Waterfall"}
 {"h": "b0196bbb56c9bc96", "n": "Shader-driven dynamic cylinder", "s": "Shader-driven dynamic cylinder", "t": "着色器驱动动态圆柱体", "mod": "Waterfall"}
 {"h": "c46f9ba81fb602dd", "n": "Simple deforming plume with 3 bones", "s": "Simple deforming plume with 3 bones", "t": "3骨骼简单变形羽流", "mod": "Waterfall"}
 {"h": "d0005686007135d5", "n": "Additive bone-driven deformation material.", "s": "Additive bone-driven deformation material.", "t": "叠加型骨骼驱动形变材质。", "mod": "Waterfall"}
+{"h": "d22846d1a62d5fb7", "n": "fx_flareglow-1", "s": "fx_flareglow-1", "t": "fx_flareglow-1", "mod": "Waterfall"}
+{"h": "d314727c1790723c", "n": "fx_flaresimple02", "s": "fx_flaresimple02", "t": "fx_flaresimple02", "mod": "Waterfall"}
+{"h": "d314757c17907755", "n": "fx_flaresimple01", "s": "fx_flaresimple01", "t": "fx_flaresimple01", "mod": "Waterfall"}
+{"h": "d6812df7244eabe8", "n": "fx-noise-3", "s": "fx-noise-3", "t": "fx-noise-3", "mod": "Waterfall"}
+{"h": "d6812ef7244ead9b", "n": "fx-noise-2", "s": "fx-noise-2", "t": "fx-noise-2", "mod": "Waterfall"}
+{"h": "d6812ff7244eaf4e", "n": "fx-noise-1", "s": "fx-noise-1", "t": "fx-noise-1", "mod": "Waterfall"}
+{"h": "d68132f7244eb467", "n": "fx-noise-6", "s": "fx-noise-6", "t": "fx-noise-6", "mod": "Waterfall"}
+{"h": "d68133f7244eb61a", "n": "fx-noise-5", "s": "fx-noise-5", "t": "fx-noise-5", "mod": "Waterfall"}
+{"h": "d68134f7244eb7cd", "n": "fx-noise-4", "s": "fx-noise-4", "t": "fx-noise-4", "mod": "Waterfall"}
+{"h": "d7397ae5c5751a5b", "n": "fx-katniss-noise-3-blurred", "s": "fx-katniss-noise-3-blurred", "t": "fx-katniss-noise-3-blurred", "mod": "Waterfall"}
 {"h": "e66314176b8e2883", "n": "Fixed set of 20 particles", "s": "Fixed set of 20 particles", "t": "固定20粒子组", "mod": "Waterfall"}
 {"h": "e7455b44a290d22f", "n": "Simple billboarded plane", "s": "Simple billboarded plane", "t": "简单公告板平面", "mod": "Waterfall"}
 {"h": "e7566bda18d8284e", "n": "Additive volumetric deformation material", "s": "Additive volumetric deformation material", "t": "叠加型体积形变材质", "mod": "Waterfall"}

@@ -91,13 +91,16 @@ content.text = ...
 ```
 [UI18n] v0.1.0 starting (harmony id com.universali18n.runtime)
 [UI18n] language=zh-cn, enabled=True, forceOverride=False
-[UI18n] pack loaded: zh-cn/pool.jsonl, entries=+12792
-[UI18n] dictionary: entries=12792, parseErrors=0
-[UI18n] font probe: TMP faces=… (with CJK …), legacy Font faces=… (with CJK …), sample="中推。"
+[UI18n] font mode=OsFont, tmp mode=Auto, os font="Microsoft YaHei"
+[UI18n] packs: lang=zh-cn, dir=zh-cn, files=42
+[UI18n] pack loaded: zh-cn/KSP.jsonl, entries=+3120, 41 ms
+[UI18n] pack loaded: zh-cn/RP-1.jsonl, entries=+5407, 63 ms
+…
+[UI18n] dictionary load: files=42, entries=10027, parseErrors=0, 137 ms
 [UI18n] patch ok: UnityEngine.UI.Text.set_text(string value)
 …
 [UI18n] installed 16/16 patches
-[UI18n] ready: patches=16/16, dict entries=12792, language=zh-cn, version=0.1.0
+[UI18n] ready: patches=16/16, dict entries=10027, language=zh-cn, version=0.1.0
 ```
 
 非中文（**预期行为**：0 个 patch）：
@@ -110,16 +113,24 @@ content.text = ...
 没有语言包（`Packs` 目录都不存在）：
 
 ```
-[UI18n] packs dir not found: …\GameData/UI18n/Packs, dictionary is empty
+[UI18n] packs: status=PacksRootMissing language=zh-cn normalized=zh-cn candidates=[zh-cn,zh] dir=(none) files=0 flat=0 available=[], dictionary is empty
 [UI18n] dictionary is empty, patches skipped (install a pack under GameData/UI18n/Packs/<lang>/)
 ```
 
 `Packs` 目录存在、但没有当前语言的子目录（拼错 / 只装了别的语言）：
 
 ```
-[UI18n] no pack dir for language=zh-cn (looked for Packs/zh-cn or Packs/zh under …\GameData/UI18n\Packs), dictionary is empty; available: en-us, ja
+[UI18n] packs: status=LanguageDirMissing language=zh-cn normalized=zh-cn candidates=[zh-cn,zh] dir=(none) files=0 flat=0 available=[en-us,ja], dictionary is empty
 [UI18n] dictionary is empty, patches skipped (install a pack under GameData/UI18n/Packs/<lang>/)
 ```
+
+`Packs` 根下被塞了平铺 `*.jsonl`（流水线产物误拷 / 直接从仓库 `packs\` 根跑）：
+
+```
+[UI18n] packs: 2 flat *.jsonl file(s) directly under C:\…\packs are ignored (expected Packs/<lang>/<modId>.jsonl); packs: status=Found language=zh-cn normalized=zh-cn candidates=[zh-cn,zh] dir=C:\…\packs\zh-cn files=41 flat=2 available=[zh-cn]
+```
+
+这条是**告警不是故障**：平铺文件永不被读取，字典照样从 `Packs/<lang>/` 加载。
 
 有 patch 装不上（**每次出现都要查**）：
 
@@ -144,25 +155,37 @@ dotnet build .\src\UI18n.Runtime\UI18n.Runtime.csproj -c Release
 # staging 到 build\GameData\UI18n\（默认不动 KSP）
 pwsh -File .\src\UI18n.Runtime\deploy.ps1
 
-# 显式安装进 KSP（已存在的 Config.cfg 会保留）
+# 显式安装进 KSP（已存在的 Config.cfg 会保留，缺失的新键按默认值补进去）
 pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install
+
+# 用模板整体覆盖已存在的 Config.cfg（丢弃玩家改过的值）
+pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install -ForceConfig
 
 # 安装并带上内置冒烟字典（联调用；正式发布不带）
 pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install -Smoke
 
 # 换语言目录（默认 zh-cn）
 pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install -Lang en-us
+
+# 取证轮：探针 UI18n.Probe.dll 在位时 deploy 默认会 throw（防误发）；
+# 只有显式 -AllowProbe 才放行，并打一行醒目警告（取证轮结束后必须摘掉探针再正式 deploy）
+pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install -AllowProbe
+
+# 打发布包（dist\UI18n-<version>.zip + manifest.json + netkan，见 §10）
+pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0
 ```
 
 ### 5.1 安装目录布局（D34 / D35，06 §6.4）
 
 ```text
 GameData/UI18n/
-├─ Config.cfg                 ← 玩家配置（UI18N 节点；已存在则安装时保留）
+├─ Config.cfg                 ← 玩家配置（UI18N 节点；已存在则安装时保留，缺失的新键自动补默认值）
 ├─ UI18n.cfg                  ← 插件元数据（Name/Version/PacksDir）
+├─ UI18n.version              ← KSP-AVC 版本文件（随包发布，deploy 与 build-release 都带）
 ├─ Plugins/
 │  ├─ UI18n.Runtime.dll
 │  └─ UI18n.Core.dll
+├─ Fonts/                     ← FontMode=Bundled 时玩家放 AssetBundle 的位置（默认只有 README.txt）
 └─ Packs/
    └─ <lang>/                 ← 语言目录，按 `Localizer.CurrentLanguage` 小写匹配（zh-cn → zh-cn，回落 zh）
       ├─ <modId>.jsonl        ← 运行时字典，唯一格式（D35）
@@ -171,16 +194,23 @@ GameData/UI18n/
 
 **`packs` 根目录下的 `pool.jsonl` / `glossary.jsonl` / `inventory.json` 是流水线源产物，永远不装进运行时** ——
 它们不是字典格式，装进去只会让每一行都 ParseError。`deploy.ps1` 只拷 `packs\<lang>\*.jsonl`。
+万一它们真的出现在 `Packs` 根下，启动日志会报一条 `packs: N flat *.jsonl file(s) directly under … are ignored` 的 Warn，
+运行期**仍然不读**（目录发现由 `PackLocator` 单点负责，见 §8）。
 
 字典文件里每一行是一条 JSON（D35）：`{"h":"16 位小写 hex 的 Fnv1a64(utf8(归一化原文))","n":归一化原文,"s":原文,"t":译文,"mod":归属 mod,"ctx":可选上下文}`。
 `h` 与 `s` 都要对得上才算命中（`s` 不匹配按 miss 处理，用来兜住 FNV 碰撞）；译文 == 源文记 `keep`，按 miss 计但单独计数。
+
+**装完自检**：`deploy.ps1 -Install` 结束时逐文件比对 staging 与部署副本的 sha256，不一致直接 throw 并列出文件名
+（规则在 `install-check.ps1` 的 `Assert-InstallTree`，可以喂合成目录单独测）。`Config.cfg` 例外 ——
+它保留玩家设置、只补新键，内容本来就可能与模板不同；部署目录里多出来的文件（例如 `.old-*` 回滚备份）只告警、不动。
 
 机器相关路径可用 `-p:KspManagedDir=…` / `-p:HarmonyDir=…` 覆盖（见 csproj）。
 游戏侧程序集一律 `<Private>false</Private>`（不复制进产物，KSP 自己提供）。
 
 ## 6. 已知边界（不在本程序集处理）
 
-- 字体：**不注入、不替换**。没装 CJK 字库时中文显示为 □，`font probe` 日志会明确提示。
+- 字体：**uGUI 会在 `FontMode=OsFont/Bundled` 时注入系统 CJK 字体**（见 §9）；TMP 走「可判定降级」，
+  找不到含汉字的 TMP 资产就保留原文而不是显示方框。`FontMode=Off` 时完全不碰字体（缺字即 □，玩家自担）。
 - 数据层文本（A 类 cfg 字段 9,844 条、B 类 Localization key 2,948 条）：走语言包 + 数据字典，**不装 hook**（决策 D23）。
 - 长文本（>200 字符）：按 D26 用「长度 + 首尾 8 字符」判据，不在本骨架范围内（后续优化项）。
 
@@ -257,6 +287,299 @@ ScreenMessages.PostScreenMessage(…) ×10 → PostMessage 5 参 → PostMessage
 - **`GUIContent` 只 `new` 新对象写回 `ref`**；`GUIContent.Temp` 返回共享实例，就地写 `content.text` 会污染所有同文本控件（红线 4）。
 - **命中路径缓存 `GUIContent` 实例**（决策 D25），未命中零分配；`Translator.HasAnyTranslation` 是全局短路（05 §6.2）。
 - **语言不是 `zh*` 时一个 patch 都不装**（红线 5），日志同时给出跳过原因与 `ForceOverride=True` 的开关提示。
-- **字典只从 `Packs/<lang>/` 读，不读 `Packs/` 根下的平铺文件**（D35 / 06 §6.4）。语言目录名按 `Localizer.CurrentLanguage` 小写 + 下划线转连字符后匹配，先精确（`zh-cn`）后主语言（`zh`）。这样 `pool.jsonl`、`glossary.jsonl` 这类流水线源产物即使被误拷进 `Packs/` 也不会污染运行期。
+- **字典目录发现只有一处实现：`UI18n.Core.Dict.PackLocator.Resolve`**（81 例单测覆盖）。`ConfigLoader.LoadPacks` 只按 `PackResolution.Files` 读文件，**不允许**自己拼 `Packs` 路径或判断 `Directory.Exists` —— 那正是 P1 那次「按契约放的包一条都读不到」事故的复发路径。规则：语言目录名按 `Localizer.CurrentLanguage` 小写 + 下划线转连字符，先精确（`zh-cn`）后主语言（`zh`），单向回退；`Packs/` 根下的平铺文件永不读（D35 / 06 §6.4），发现就报 Warn。
 - **`deploy.ps1` 只写两处**：仓库内 `build\`（staging）与 `<KspRoot>\GameData\UI18n\`（`-Install` 时）。KSP 目录里其它 mod 一律不碰（红线 7）。
+## 9. 字体注入与 TMP 三档（P2）
+
+翻译出来的中文要能显示，必须解决字形：KSP 1.12 的 IMGUI 默认字体（`Arial`/`Calibri` 动态字面）与 TMP 图集都没有汉字，
+直接换成中文只会得到一片 □。本节的三个开关就是「缺字时怎么办」的全部策略。
+
+### 9.1 FontMode（uGUI / IMGUI 这条线）
+
+| 值 | 行为 | 适用场景 |
+| --- | --- | --- |
+| `OsFont`（默认） | 从系统已装字体里挑一个含汉字的**动态字面**（`Font.CreateDynamicFontFromOSFont`），注入到 `UnityEngine.UI.Text.font`；拿不到就**保留原文** | 绝大多数玩家的正解 |
+| `Bundled` | 先按 `BundledFontPath` 加载 AssetBundle 取 `Font`（或含汉字的 `TMP_FontAsset`）；路径不存在 / 加载失败 → 记 Warn 并**回落 `OsFont`** | 想做「自带字体」的整合包 |
+| `Off` | 完全不碰字体，译文照常写入（缺字就是 □，玩家自担） | 玩家自己装了字库 / 只想看 IMGUI 以外的东西 |
+
+字体可用性判据（**不赌**）：先 `Font.GetOSInstalledFontNames()` **精确名匹配**（不用注册表家族名，避免别名/本地化名对不上），
+再 `CreateDynamicFontFromOSFont` 建出来，最后 `HasCharacter('中') && HasCharacter('推')` **实测**；三步任一失败就换下一个候选。
+候选顺序：`OsFontName` → `Microsoft YaHei` → `Microsoft YaHei UI` → `SimHei` → `Noto Sans SC` → `DengXian` → `SimSun` → `Microsoft JhengHei`。
+每个 `fontSize` 单独缓存一个 `Font` 实例（不同字号不共用）。全部失败时只记一条 Warn：
+
+```
+[UI18n] font: no usable CJK OS font (tried: …) → uGUI translations will be kept in English (set FontMode=Off to translate anyway)
+```
+
+### 9.2 TmpMode（TMP 这条线）
+
+KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasCharacter` / `AddGlyphInfo` / `ReadFontDefinition` 这类方法，
+没有 `TMP_FontAssetUtilities`、没有 `atlasPopulationMode`、没有 `TryAddCharacters`，`FontEngine.LoadFontFace` 走的是 TextCore（TMP 1.2 不用它）
+⇒ **没有运行时造字入口**。所以这里的策略是「可判定降级」，不是「尽力而为」：
+
+| 值 | 行为 |
+| --- | --- |
+| `Auto`（默认） | 先用 `Resources.FindObjectsOfTypeAll<TMP_FontAsset>()` 找**已加载的含汉字 TMP 资产**：找到 → 追加进 `fallbackFontAssets` 并复核 `HasCharacter('中', true)`；找不到 → **保留原文**（不显示 □），并记一条 Warn 说明原因 |
+| `KeepSource` | 一律不碰 TMP，TMP 文本永远保留原文（连资产扫描都跳过） |
+| `Force` | 照常翻译，接受 □（调试 / 玩家自备 TMP 资产时用） |
+
+扫描时机：**不在 `Startup.Instantly` 做**（那一阶段全场景 `FindObjectsOfTypeAll` 是启动期卡顿/被 OS 判无响应的风险点），
+而是第一次真的遇到 TMP 文本、且 `HighLogic.LoadedScene == MAINMENU` 之后才惰性执行一次（另有 180 s 启动兜底）。
+探针输出（`font probe: scene=…` / `tmp asset[i] …`）只在启动后打一次，运行期计数见 §9.4。
+
+### 9.3 配置键表（`GameData/UI18n/Config.cfg`，全部有默认值）
+
+| 键 | 默认值 | 说明 |
+| --- | --- | --- |
+| `Enabled` | `True` | 总开关。`False` = 一个 patch 都不装，行为与没装本 Mod 一致 |
+| `ForceOverride` | `False` | 语言不是中文时也翻译（调试用，决策 D32 默认关） |
+| `CheckForUpdates` | `True` | 语言包更新检查（数据层，不产生 hook） |
+| `AutoDownload` | `False` | 自动下载语言包更新（默认只提示不下载） |
+| `ReportOptIn` | `False` | 匿名上报未翻译文本（默认不上报任何东西） |
+| `MaxEntries` | `60000` | 字典条目上限，防异常语言包吃光内存 |
+| `FontMode` | `OsFont` | `Off` / `OsFont` / `Bundled`（§9.1）。非法值记 Warn 后用默认 |
+| `OsFontName` | `Microsoft YaHei` | 首选系统字体名，精确匹配；不存在按内置候选回退 |
+| `BundledFontPath` | 空 | `FontMode=Bundled` 的字体包路径，相对路径按 `GameData/UI18n` 解析 |
+| `TmpMode` | `Auto` | `Auto` / `KeepSource` / `Force`（§9.2）。非法值记 Warn 后用默认 |
+| `HitSampleLimit` | `64` | 退出时最多打印多少条「首次命中样本」（§9.4）。`0` = 关闭采样；**只影响日志条数**，`distinct hits` 计数永远精确 |
+
+安装新版本时 `deploy.ps1 -Install` 会**保留玩家已改的值**，并把模板里有、玩家配置里缺的键按默认值补到 `UI18N` 节点末尾
+（日志 `merged  : Config.cfg (kept player values, added N new key(s): …)`）；`-ForceConfig` 才整体覆盖。
+
+### 9.4 运行期统计日志（每 20 s 一次，计数没变化就不打）
+
+```
+[UI18n] patch stats: UnityEngine.UI.Text.set_text=1234 hit=980 | TMPro.TMP_Text.set_text=8421 hit=3100 kept-src=5321 | GUI.Label=210 hit=205 | GUI.Box=0 hit=0 | … （16 个目标全在，含 0 命中）
+[UI18n] distinct hits: 812
+[UI18n] font stats: uGUI injected=87 already-ok=12 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=5321 unavailable=0 | mode=OsFont/Auto [os-font="Microsoft YaHei"]
+```
+
+- `hit` = 真的换成译文的次数；`kept-src` = 命中译文但因字体不可用而保留原文的次数（两者互斥）。
+- **`hit` 不是「翻了多少句」**：它按调用计。同一句每帧重画就每帧 +1（IMGUI 每帧 Layout + Repaint 两趟），
+  嵌套调用还会重复算（`GUILayout.DoLabel` → `GUI.Label`，同一句过两次前缀）。所以 `hit` 可以远大于条目数。
+  **「翻了多少句」只看 `distinct hits`**（按原文去重，不受重画与嵌套影响）。
+- `distinct hits` = 本局**不同原文**被翻译成功的条数（全量去重，不受 `HitSampleLimit` 影响）。它紧跟在 `patch stats` 之后打。
+- 每个目标**第一次被调用**时打一行 `[UI18n] first call: <短名>` —— 即使进程后来被杀，也能证明该目标在本局是活的。
+- 退出 / addon 销毁时打 `[UI18n] final dump (quit): calls=N, hits=N` + 完整 `patch stats` + `distinct hits` + `font stats`，
+  **最后**再追加「首次命中样本」（默认最多 64 条，`HitSampleLimit` 控制）：
+
+```
+[UI18n] hit sample: distinct=812 (capped=false)
+[UI18n] hit sample: [GUI.Label] Modular Launch Pads: General_Bases/... => 模块化发射台：基础/... (site)
+[UI18n] hit sample: [TMPro.TMP_Text.set_text] ModuleManager: 81182 patches applied => ModuleManager：已应用 81182 个补丁 (global)
+```
+
+  表头固定是 `hit sample: distinct=<N> (capped=<bool>)`；每条样本一行 `hit sample: [<patch>] <原文> => <译文> (<层级>)`，
+  原文 / 译文各截断到 80 字符（超出加 `...`），换行转义成 `\n`，所以一条样本永远只占一行。
+  `capped=true` 表示去重后超过上限、后面的只计数不记样本（想全看就把 `HitSampleLimit` 调大，`0` = 关）。
+  层级只会是 `site` / `global`：Runtime 这条路径没有位置信息，按 §4 的约定**不碰 ctx 级条目**。
+- 计数是每个目标一个 `PatchCounter` 静态字段（热路径只有一次 `Calls++`），不做字典查询；
+  样本只在「某个原文第一次翻译成功」时记一条（缓存未命中路径），热路径不增加分配。
+- 一次真实读数（2026-10-23 round 2，新构建 43,520 B，只手动开了 Alt+F12 调试工具栏）：
+
+  ```
+  [UI18n] final dump (quit): calls=1571618, hits=745245
+  [UI18n] distinct hits: 20
+  [UI18n] hit sample: distinct=20 (capped=false)
+  [UI18n] patch stats: … GUILayout.DoLabel=83864 hit=83864 | …
+  ```
+
+  1,571,618 次调用、745,245 次命中，但 `distinct hits` 只有 **20**：那 20 条全是 Alt+F12 调试工具栏的英文原文
+  （`Debug Toolbar`→`调试工具栏`、`Console`→`控制台`、`Advanced & debug`→`高级与调试`、`Screenshot`→`截图`、
+  `Vessel mass`→`飞行器质量`、`Flight Data Engineer Multiplier`→`飞行数据工程师倍率`、`Dump Wheel Debug Data`→`导出轮组调试数据`…），
+  每帧重画。`GUILayout.DoLabel=83864 hit=83864` 这种 100% 命中率**不是计数器 bug**，是同一批 20 个串被反复画。
+  20 条全部落在 `(site)` 层（Runtime 路径没有位置信息，见上）。同一局加载期（09:41:36–09:47:28）
+  `distinct hits` 恒为 0，进主菜单才跳到 20 ⇒ 那是加载屏的覆盖缺口，不是插件没工作。
+
+### 9.5 换上新构建后怎么验（3 步）+「主菜单轮通过 ≠ 全部通过」
+
+1. 启动到主菜单，`grep "\[UI18n\]" KSP.log`：应看到 `font mode=OsFont, tmp mode=Auto, os font=…`、
+   42 条 `pack loaded: zh-cn/…, entries=+N, N ms`、`dictionary load: files=42, entries=10077, parseErrors=0, N ms`、
+   `installed 16/16 patches`、`ready: patches=16/16`。**任一条 `patch failed` / `prefix parameter name mismatch` 都算失败。**
+   - `entries=10077` 是**离线预测值**（41 个正式包 10,043 行 + `_smoke.jsonl` 34 行；用 `_scratch/p1/predictload` 对部署目录跑真 `DictPack` 得到，
+     耗时 146 ms）。实测差得远就是加载缺陷（先看有没有 `MaxEntries` 截断告警、有没有读错语言目录）。
+2. 在主菜单停 60 s 以上：应出现 `patch stats: …`（16 个目标全在，含 `=0` 的），且 `font stats` 里
+   `uGUI injected` 或 `already-ok` > 0（字体这条线通了）。
+3. 正常退出游戏，日志末尾应有 `final dump (quit): calls=N, hits=N` + 完整两份 stats。
+   **主菜单轮的通过标准**：`patches=16/16`、`parseErrors=0`、没有 `patch failed` / `prefix failed` / `font: … failed` 的 Error。
+
+**主菜单轮只能证明三件事**：两个文本层目标活着（`UnityEngine.UI.Text.set_text` / `TMPro.TMP_Text.set_text` 的 `calls`>0）、
+字体线通、字典加载正确。**它不能证明 IMGUI 那一半**（13 个目标），因为主菜单根本不是 IMGUI 界面。
+
+主菜单停 60 s 的**预期量级**（用来一眼判断「正常」还是「patch 没生效」）：
+
+| 目标 | 预期 calls | 预期 hit | 说明 |
+|---|---|---|---|
+| `TMPro.TMP_Text.set_text` | 10³–10⁵ | > 0（几十–几百） | 主菜单主体是 TMP；KSP 自带 zh-cn 字典已汉化的句子全 miss，只有 mod 英文残留命中 |
+| `UnityEngine.UI.Text.set_text` | 10²–10⁴ | > 0（个位数–几十） | 版本号、提示、加载画面残留等 legacy 文本 |
+| `GUI.Label` / `GUI.Box` / `GUI.Button` / `GUI.RepeatButton` / `GUI.Toggle` / `GUI.Toggle(int)` | **0** | 0 | 主菜单不是 IMGUI；要到 VAB/SPH、Debug Toolbar、mod 窗口才出现 |
+| `GUILayout.DoLabel` / `DoButton` / `DoRepeatButton` / `DoToggle` / `DoWindow` | 0 | 0 | 同上 |
+| `GUI.DoWindow(title)` / `GUI.DoModalWindow` | 0 | 0 | 同上 |
+| `ScreenMessages.PostMessage` | **0（必然）** | 0 | 主菜单不产生屏幕提示（进场景 / 科研完成 / 成就才出现） |
+
+判故障的口径：
+
+- **patch 没装上**：文本层两个目标 `calls=0`，或日志里没有它们的 `first call: <短名>` 行。
+- **字典没生效**：`calls`>0 但 `hit=0` 且 `kept-src=0`（查表全 miss，多半是语言目录没对上）。
+- **字体没通**：`hit=0` 而 `kept-src`>0（命中译文但被字体门禁退回英文），且 `font stats` 里 `unavailable`>0。
+- **IMGUI 是否活着**：只能靠 `first call: GUI.Label` 这类行 + 进场景后的 `calls`>0 证明，见 §9.7。
+
+### 9.6 回滚（一行）
+
+```powershell
+cd D:\Kerbal Space Program_newmod\GameData\UI18n\Plugins; Move-Item -Force UI18n.Runtime.dll.old-9c712ab1 UI18n.Runtime.dll; Move-Item -Force UI18n.Core.dll.old-01f1c154 UI18n.Core.dll
+```
+
+旧的两个 DLL 在 `deploy` 时被改名成 `*.old-<sha256 前 8 位>` 留在 `Plugins\` 里（KSP 只加载 `*.dll`，改名文件不会被加载），
+所以回滚不需要重新构建。
+
+### 9.7 IMGUI 取证：`UI18n.Probe.dll`（只用于取证，不随包发布）
+
+**为什么需要它**：主菜单轮证明不了 13 个 IMGUI 目标（见 §9.5 表）。KSP 的 Debug Toolbar 热键是
+`Input.GetKeyDown(KeyCode.F12) && GameSettings.MODIFIER_KEY.GetKey()`（IL 证据：Assembly-CSharp 全局类
+`DebugToolbar.Update()` 的 327/338 行；`GameSettings.MODIFIER_KEY = new KeyBinding(KeyCode.LeftAlt, KeyCode.RightAlt)`，
+本机 `settings.cfg` 同值 `primary = LeftAlt / secondary = RightAlt`；`InputBinding.IsLocked()` 只看 `inputLockMask`，
+该键为 0，永不上锁）。所以 Alt+F12 这个组合本身是对的 —— 用 `SendKeys` 合不出来是**注入侧**的问题：
+Unity 旧 Input Manager 只认真实输入事件（`SendInput`/`keybd_event` 且窗口必须真前台），`SendKeys` 走合成/消息路径，
+Alt 还可能被当成通用 `VK_MENU` 而不是 `KeyCode.LeftAlt`。**不要把「合成按键能开 Debug Toolbar」当成验证前提。**
+
+**替代方案**：`_scratch/p1/imgui-probe/`（不在 sln 内、不随包发布）编出 `UI18n.Probe.dll`，
+`[KSPAddon(KSPAddon.Startup.MainMenu, false)]`，在主菜单画两个 IMGUI 窗口并调用全部 IMGUI 目标：
+`GUI.Window(id, rect, func, "Debug Toolbar")`、`GUILayout.Window(id, rect, func, "Settings")`、
+`GUI.Label/Box/Button/RepeatButton/Toggle/Toggle(int)`、`GUILayout.Label/Box/Button/RepeatButton/Toggle`，
+外加一条 `ScreenMessages.PostScreenMessage("Flight Data Engineer Multiplier", …)` 与两行硬编码中文
+（`推力 中文测试 UI18n` / `Ascii 对照 0123456789`）。
+
+**用法**（三步）：
+
+```powershell
+dotnet build _scratch\p1\imgui-probe\UI18n.Probe.csproj -c Release
+pwsh -File _scratch\p1\probe.ps1 -Action Install     # 拷进 GameData\UI18n\Plugins\
+# … 启动 KSP（zh-cn），主菜单停 60 s，截图 + 抓日志 …
+pwsh -File _scratch\p1\probe.ps1 -Action Remove      # 必须移除，否则会随包发出去
+```
+
+**预期证据**：日志里出现 13 条 IMGUI 目标的 `first call: <短名>`；`patch stats` 里它们每帧增长、`hit` > 0
+（探针用的字符串全在 `_smoke.jsonl` 里：`Debug Toolbar`/`Settings`/`Performance`/`Database`/`Console`/
+`Reload Settings`/`Apply`/`Continue`/`Credits`/`All Input Locks Cleared`/`Vessel mass`/`Basic Options`/
+`Damage Options`/`High Speed Limit`/`Dump Wheel Debug Data`/`Advanced & debug`/`Screenshot`/
+`Flight Data Engineer Multiplier`）；`ScreenMessages.PostMessage` 的 `calls` 从 0 变 1。
+
+**IMGUI 字体判据**（决定要不要加门禁）：探针首帧会打
+
+```
+[UI18n.Probe] imgui skin=<name>
+[UI18n.Probe] imgui label.font = "<font>" dynamic=True hasCJK(中)=False hasCJK(推)=False
+```
+
+- 若两行中文在截图里是正常字形 ⇒ IMGUI 字体有汉字，**不需要**任何门禁。
+- 若显示为 □ 且 `hasCJK=False` ⇒ 才考虑加 `ImGuiFontGate = Auto|Off`（Auto 档：命中前只读
+  `GUI.skin.font.HasCharacter('中')`，false 就保留原文，日志 `imgui font gate: skin font lacks CJK → keep source (N times)`）。
+  **不换字体、不碰 `GUI.skin`**（红线 3）。
+
+**探针 auto-stop 会抛一次 GUILayout 组计数异常 —— 属预期，不是运行时缺陷**：
+
+```
+[ERR] [UI18n] [probe] window contents failed: System.ArgumentException: Getting control 6's position in a group with only 6 controls when doing repaint
+```
+
+探针 180 s 到点后**在帧中间**停止绘制（`enabled = false`），同一帧里 `GUILayout` 组已经开始布局、
+却少了后续控件，于是 IMGUI 自己报这一句。它只发生在探针 DLL 内，运行时（`UI18n.Runtime.dll`）零影响：
+两个程序集互不引用、探针不在 sln 里、取证后立刻从盘上移除。看到这一行不要当故障排查。
+
+**安全边界**：探针只画自己的窗口、只读字体信息、不改任何游戏状态；不在 sln 里、不在 `deploy.ps1` 的拷贝清单里，
+并且 `deploy.ps1` 在 `Plugins\` 里发现 `UI18n.Probe.dll` 时会直接报错停止（防误发）。
+
+## 10. 发布打包（build-release.ps1）
+
+### 10.1 入口与产物
+
+```powershell
+# 版本号必填（x.y.z），不给直接 throw；默认先 dotnet build 再出包
+pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0
+
+# 复用已有 build\bin（CI 里已经编过时）
+pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0 -SkipBuild
+```
+
+| 产物 | 说明 |
+| --- | --- |
+| `dist/UI18n-<version>.zip` | 玩家下载的包，**直接解压进 KSP 根** |
+| `dist/manifest.json` | 版本 / 构建时间 / 逐文件 bytes+sha256 / zip 自身 sha256 / 字典统计 |
+| `dist/UI18n.netkan` | CKAN 元数据（从 `ckan/UI18n.netkan.template` 生成） |
+
+`dist/` 在 `.gitignore` 里：包与 manifest 都是产物，不入库；入库的是脚本与模板。
+
+### 10.2 zip 内布局（= 直接解压进 KSP 根）
+
+```text
+GameData/UI18n/
+├─ UI18n.cfg
+├─ Config.cfg
+├─ UI18n.version              ← VERSION 被替换成 -Version 的值
+├─ Plugins/UI18n.Core.dll
+├─ Plugins/UI18n.Runtime.dll
+├─ Fonts/README.txt
+└─ Packs/zh-cn/*.jsonl        ← 只来自仓库 packs\zh-cn\
+```
+
+`Packs/` **只从仓库 `packs/<lang>/` 取**（那是运行时字典）。`packs/pool.jsonl` 与 `packs/glossary.jsonl` 是翻译流水线的
+生产端输入，不是运行时格式，进包只会让每一行都 ParseError —— 断言会拦（见 10.3 第 6 条）。
+
+### 10.3 硬断言（`release-checks.ps1` 的 `Assert-ReleaseTree`）
+
+出包前对 staging 树逐条检查，**命中任意一条就 throw，并且一次把所有违规列出来**：
+
+| # | 规则 | 为什么 |
+| --- | --- | --- |
+| 1 | 不许有 `UI18n.Probe.dll` | 取证插件，只在本机联调用 |
+| 2 | 不许有 `*_smoke.jsonl` | 冒烟字典只随 `deploy.ps1 -Smoke` 装 |
+| 3 | 不许有 `*.pdb` | 调试符号 |
+| 4 | 不许有 `*.old-<hex>` | deploy 留下的回滚备份 |
+| 5 | 路径不许含 `build/` `_scratch/` `_audit/` `dist/` | 内部目录 |
+| 6 | 不许有 `packs/pool.jsonl`、`packs/glossary.jsonl` | 生产端输入 |
+| 7 | `Plugins/` 里只能有 `UI18n.Core.dll` + `UI18n.Runtime.dll` | 防止夹带 |
+
+抽成独立文件是为了能在**不出包**的前提下用合成 stage 树逐条验证（见 `_scratch` 里的 relcheck 脚本）。
+
+### 10.4 manifest.json
+
+```json
+{ "version": "1.0.0", "builtAt": "…", "kspVersion": "1.12.5", "language": "zh-cn",
+  "zip":   { "name": "UI18n-1.0.0.zip", "bytes": 993009, "sha256": "…" },
+  "files": [ { "path": "GameData/UI18n/…", "bytes": 0, "sha256": "…" } ],
+  "packFiles": 41, "packRows": 9990, "packBytes": 3504392 }
+```
+
+`packRows` 按字典文件的非空行数统计，用来和运行时日志 `dictionary load: … entries=N` 对账（两者应相等）。
+
+### 10.5 netkan 里必须人工确认的占位值
+
+| 字段 | 当前值 | 状态 |
+| --- | --- | --- |
+| `license` | `MIT`（`-License` 可覆盖） | **占位，发布前必须确认** |
+| `resources.homepage` / `repository` / `download` | `https://github.com/UniversalI18n/UniversalI18n`（`-RepoSlug` 可覆盖） | **占位，发布前必须确认** |
+| `author` | `UI18n contributors`（`-Author` 可覆盖） | 占位 |
+| `ksp_version` | `1.12` | 按 KSP 1.12.5 实测环境填 |
+| `depends` | `Harmony2`、`ModuleManager` | 已按本机 CKAN 元数据（`identifier`）核对，不是猜的 |
+| `release_status` | `testing` | 首发可改 `stable` |
+
+### 10.6 一次真实出包的数字（1.0.0，2026-10-23）
+
+| 项 | 值 |
+| --- | --- |
+| `dist/UI18n-1.0.0.zip` | 996,170 B |
+| zip sha256 | `BBE56FF737E6BE788FDCA921DE88418263E70C37D2AF314E39414869E5619524` |
+| zip 内条目 | 47（6 个元数据/插件/字体 + 41 个字典） |
+| manifest `files` | 47 |
+| `packFiles` / `packRows` / `packBytes` | 41 / 9,990 / 3,504,392 |
+
+**zip 的字节数与 sha256 每次出包都会变**（zip 条目里存了文件时间戳，`UI18n.version` 每次重写），
+所以对外公布的值一律以当次生成的 `dist/manifest.json` 的 `zip.sha256` 为准，不要抄 README 里的历史值。
+`packFiles/packRows/packBytes` 与 `files` 数量是稳定的，可用作回归断言。
+
+### 10.7 版本号只在一个地方写
+
+`-Version` 同时决定：zip 文件名、`manifest.version`、zip 内 `UI18n.version` 的 `VERSION`、netkan 的 `version`/`download`/`sha256`。
+`GameData/UI18n/UI18n.version` 模板里的 `1.0.0` 只是给 `deploy.ps1`（本机联调）用的默认值；正式发布以 `-Version` 为准。
 

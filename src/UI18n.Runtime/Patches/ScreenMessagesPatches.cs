@@ -39,7 +39,7 @@ namespace UI18n.Runtime.Patches
 
             try
             {
-                string translated = Translator.Translate(msg);
+                string translated = Translator.Translate(msg, PatchNames.ScreenMessage);
                 if (translated != null)
                 {
                     msg = translated;

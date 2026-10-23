@@ -28,6 +28,7 @@
 {"h": "1d10dc242719bef1", "n": "Solar Panel Tech Level 8 (1990s)", "s": "Solar Panel Tech Level 8 (1990s)", "t": "太阳能电池板技术等级 8 (1990年代)", "mod": "ROSolar"}
 {"h": "1f85f1891504745a", "n": "3x2 Panel Folding Solar Panel from Vens", "s": "3x2 Panel Folding Solar Panel from Vens", "t": "来自 Vens 的 3x2 折叠式太阳能电池板", "mod": "ROSolar"}
 {"h": "20519ea235db668c", "n": "Ranger (Angled)", "s": "Ranger (Angled)", "t": "漫游者（倾斜）", "mod": "ROSolar"}
+{"h": "238ffe99f812d8fb", "n": "1x6 ReStock", "s": "1x6 ReStock", "t": "1x6 ReStock", "mod": "ROSolar"}
 {"h": "23edaa0730878499", "n": "The Nautilus solar panel. Credit: NearFutureSolar by Nertea", "s": "The Nautilus solar panel. Credit: NearFutureSolar by Nertea", "t": "“鹦鹉螺号”太阳能电池板。致谢：Nertea 制作的 NearFutureSolar", "mod": "ROSolar"}
 {"h": "2507b619b8961c14", "n": "Lab", "s": "Lab", "t": "实验舱", "mod": "ROSolar"}
 {"h": "260dc6219e84f263", "n": "<b>Solar panels TL3</b> \\n <color=white>Mass: 10.6kg/m2</color> \\n <color=green>Cost: 350/m2</color> \\n <color=orange>Power: 100W/m2</color> \\n <color=#00ffff>20% degradation after 30 days</color> \\n NOTE: You must purchase this upgrade here before you can use it.", "s": "<b>Solar panels TL3</b> \\n <color=white>Mass: 10.6kg/m2</color> \\n <color=green>Cost: 350/m2</color> \\n <color=orange>Power: 100W/m2</color> \\n <color=#00ffff>20% degradation after 30 days</color> \\n NOTE: You must purchase this upgrade here before you can use it.", "t": "<b>太阳能电池板 TL3</b> \\n <color=white>质量：10.6kg/m2</color> \\n <color=green>成本：350/m2</color> \\n <color=orange>功率：100W/m2</color> \\n <color=#00ffff>30天后衰减20%</color> \\n 注意：在使用之前，必须先在此处购买该升级。", "mod": "ROSolar"}
@@ -44,6 +45,7 @@
 {"h": "3165d43bcd5a4f8a", "n": "The Hayabusa solar panel. Credit: NearFutureSolar by Nertea", "s": "The Hayabusa solar panel. Credit: NearFutureSolar by Nertea", "t": "“隼鸟号”太阳能电池板。致谢：Nertea 制作的 NearFutureSolar", "mod": "ROSolar"}
 {"h": "31bb9a8456329dbc", "n": "SMC (Large)", "s": "SMC (Large)", "t": "SMC（大型）", "mod": "ROSolar"}
 {"h": "3790ed638391d5bd", "n": "ReStock Gigantor", "s": "ReStock Gigantor", "t": "ReStock 巨像", "mod": "ROSolar"}
+{"h": "3a9fccb719f3366c", "n": "1x6 Vens", "s": "1x6 Vens", "t": "1x6 Ven式", "mod": "ROSolar"}
 {"h": "3c0550554b22a847", "n": "Ranger (Sm)", "s": "Ranger (Sm)", "t": "漫游者（小型）", "mod": "ROSolar"}
 {"h": "3c5ed89061fd5749", "n": "Solar Panel Tech Level 4 (1964)", "s": "Solar Panel Tech Level 4 (1964)", "t": "太阳能电池板技术等级 4 (1964)", "mod": "ROSolar"}
 {"h": "3f7526100f7f6ea1", "n": "Mariner-2 (Straight)", "s": "Mariner-2 (Straight)", "t": "水手 2 号（平直）", "mod": "ROSolar"}
@@ -77,6 +79,7 @@
 {"h": "6fe89a3ab7a3e9a8", "n": "The ARM solar panel. Credit: NearFutureSolar by Nertea", "s": "The ARM solar panel. Credit: NearFutureSolar by Nertea", "t": "ARM 太阳能电池板。致谢：Nertea 制作的 NearFutureSolar", "mod": "ROSolar"}
 {"h": "70796546a41c07a7", "n": "SMB (Small)", "s": "SMB (Small)", "t": "SMB（小型）", "mod": "ROSolar"}
 {"h": "70ae9c0df419436b", "n": "Mariner 8/9", "s": "Mariner 8/9", "t": "水手 8/9 号", "mod": "ROSolar"}
+{"h": "751df8dc9d0e1b1d", "n": "3x2 ReStock", "s": "3x2 ReStock", "t": "3x2 ReStock", "mod": "ROSolar"}
 {"h": "76821529d3f85133", "n": "Small Square Hinged Solar Panel from Bluedog", "s": "Small Square Hinged Solar Panel from Bluedog", "t": "来自 Bluedog 的小型方形铰接太阳能电池板", "mod": "ROSolar"}
 {"h": "7a22a6e154626c65", "n": "Solar Panel Tech Level 1 (1958)", "s": "Solar Panel Tech Level 1 (1958)", "t": "太阳能电池板技术等级 1 (1958)", "mod": "ROSolar"}
 {"h": "7a878615947cc1bb", "n": "Dragon [Retractable]", "s": "Dragon [Retractable]", "t": "龙飞船 [可收回]", "mod": "ROSolar"}
@@ -96,6 +99,7 @@
 {"h": "8a1a377d0f4d86b7", "n": "Solar Panel Tech Level 5 (1967)", "s": "Solar Panel Tech Level 5 (1967)", "t": "太阳能电池板技术等级 5 (1967)", "mod": "ROSolar"}
 {"h": "8fad55ce13c4ce44", "n": "The Orion ESM solar panel. Credit: NearFutureSolar by Nertea", "s": "The Orion ESM solar panel. Credit: NearFutureSolar by Nertea", "t": "“猎户座”ESM 太阳能电池板。致谢：Nertea 制作的 NearFutureSolar", "mod": "ROSolar"}
 {"h": "91a1423605fd4871", "n": "Small Ranger Hinged Solar Panel from Bluedog", "s": "Small Ranger Hinged Solar Panel from Bluedog", "t": "来自 Bluedog 的小型“游民”铰接太阳能电池板", "mod": "ROSolar"}
+{"h": "92622b9ae8f2d993", "n": "1x2 Coatl", "s": "1x2 Coatl", "t": "1x2 Coatl 太阳能电池翼", "mod": "ROSolar"}
 {"h": "95cd54eaf1d57aae", "n": "SMA (Medium)", "s": "SMA (Medium)", "t": "SMA（中）", "mod": "ROSolar"}
 {"h": "96172dd1ea6e9265", "n": "Solar Panel Tech Level 7 (1980s)", "s": "Solar Panel Tech Level 7 (1980s)", "t": "太阳能电池板技术等级 7 (1980年代)", "mod": "ROSolar"}
 {"h": "974f160a11506008", "n": "Mariner-2 (Angled)", "s": "Mariner-2 (Angled)", "t": "水手 2 号（倾斜）", "mod": "ROSolar"}
@@ -139,6 +143,7 @@
 {"h": "ccbdb73fac78aa6b", "n": "The HUB solar panel. Credit: NearFutureSolar by Nertea", "s": "The HUB solar panel. Credit: NearFutureSolar by Nertea", "t": "HUB 太阳能电池板。致谢：Nertea 制作的 NearFutureSolar", "mod": "ROSolar"}
 {"h": "cd48110253ee319a", "n": "Wing", "s": "Wing", "t": "机翼型", "mod": "ROSolar"}
 {"h": "cfb82ede2c3af60f", "n": "SMB (Large)", "s": "SMB (Large)", "t": "SMB（大型）", "mod": "ROSolar"}
+{"h": "d34022d0eb938e4a", "n": "3x2 Vens", "s": "3x2 Vens", "t": "3x2 Vens", "mod": "ROSolar"}
 {"h": "d3bb95c3a687ee57", "n": "1x3 Panel Folding Solar Panel from Vens", "s": "1x3 Panel Folding Solar Panel from Vens", "t": "来自 Vens 的 1x3 折叠式太阳能电池板", "mod": "ROSolar"}
 {"h": "d3d9fde34cf7894f", "n": "Small Rectangle Static Solar Panel from ReStock", "s": "Small Rectangle Static Solar Panel from ReStock", "t": "来自 ReStock 的小型矩形固定式太阳能电池板", "mod": "ROSolar"}
 {"h": "d6ce0f3894e82b3e", "n": "1967 Era", "s": "1967 Era", "t": "1967 时代", "mod": "ROSolar"}
@@ -154,6 +159,7 @@
 {"h": "e591f3700e2d2910", "n": "<b>Solar panels TL8</b> \\n <color=white>Mass: 1.9kg/m2</color> \\n <color=green>Cost: 25/m2</color> \\n <color=orange>Power: 233W/m2</color> \\n <color=#00ffff>20% degradation after 2.5 years</color> \\n NOTE: You must purchase this upgrade here before you can use it.", "s": "<b>Solar panels TL8</b> \\n <color=white>Mass: 1.9kg/m2</color> \\n <color=green>Cost: 25/m2</color> \\n <color=orange>Power: 233W/m2</color> \\n <color=#00ffff>20% degradation after 2.5 years</color> \\n NOTE: You must purchase this upgrade here before you can use it.", "t": "<b>太阳能电池板 TL8</b> \\n <color=white>质量：1.9kg/m2</color> \\n <color=green>成本：25/m2</color> \\n <color=orange>功率：233W/m2</color> \\n <color=#00ffff>2.5年后衰减20%</color> \\n 注意：在使用之前，必须先在此处购买该升级。", "mod": "ROSolar"}
 {"h": "e5b907146d74cf12", "n": "1x3 Large", "s": "1x3 Large", "t": "1x3 大型", "mod": "ROSolar"}
 {"h": "e65146bb41118431", "n": "DOS (Small Rect)", "s": "DOS (Small Rect)", "t": "DOS（小型矩形）", "mod": "ROSolar"}
+{"h": "e6ebac94ba4cbb75", "n": "1x3 Vens", "s": "1x3 Vens", "t": "1x3 Vens 太阳能电池阵", "mod": "ROSolar"}
 {"h": "e9cb5a8ec74748ea", "n": "1963 Era", "s": "1963 Era", "t": "1963 时代", "mod": "ROSolar"}
 {"h": "ea5eff7e86e5d478", "n": "Magellan", "s": "Magellan", "t": "麦哲伦号", "mod": "ROSolar"}
 {"h": "eb7f39ae47a80930", "n": "Mariner-2 (Sail Straight)", "s": "Mariner-2 (Sail Straight)", "t": "水手 2 号（带翼平直）", "mod": "ROSolar"}

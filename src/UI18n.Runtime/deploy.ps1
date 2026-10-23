@@ -9,7 +9,9 @@
        字典布局严格按 D35 / 06 §6.4：Packs\<lang>\<modId>.jsonl（每语言一个子目录）。
        **packs\ 根下的平铺文件一律不装**：那里放的是流水线源产物（pool.jsonl / glossary.jsonl /
        inventory.json），装进运行时只会让每一行都 ParseError。运行时只认 Packs\<lang>\ 里的东西。
-    3) 只有显式加 -Install 才会写 KSP 的 GameData（已存在的 Config.cfg 默认保留，避免覆盖玩家设置）
+    3) 只有显式加 -Install 才会写 KSP 的 GameData。已存在的 Config.cfg 默认保留（避免覆盖玩家设置），
+       但会把模板里有、玩家配置里缺的键**按默认值补到 UI18N 节点末尾**（新增键不会因为保留旧配置而丢失）；
+       -ForceConfig 则直接用模板整体覆盖（丢弃玩家改过的值）
     4) -Smoke 额外装入仓库自带的冒烟字典 Packs\<lang>\_smoke.jsonl（联调/演示用，正式发布不带）
 
 .EXAMPLE
@@ -25,6 +27,9 @@
 param(
     [switch]$Install,
     [switch]$Smoke,
+    [switch]$ForceConfig,
+    # 取证插件 UI18n.Probe.dll 默认禁止随包发布；只有显式传这个开关才放行（用于「本轮需要 probe 在位 + 包要同步」）。
+    [switch]$AllowProbe,
     [string]$Lang = 'zh-cn',
     [string]$Configuration = 'Release',
     [string]$KspRoot = 'D:\Kerbal Space Program_newmod'
@@ -43,6 +48,21 @@ $langNorm = $Lang.Trim().Replace('_', '-').ToLowerInvariant()
 Write-Host "[deploy] repo    : $repoRoot"
 Write-Host "[deploy] project : $project"
 Write-Host "[deploy] language: $langNorm"
+
+# 0) 取证插件守卫：UI18n.Probe.dll 只用于 IMGUI 取证（_scratch\p1\probe.ps1），绝不随包发布。
+#    默认 throw（防误发）；显式 -AllowProbe 才放行，用于「本轮需要 probe 在位 + 包要同步」的合法场景。
+$probeDirs = @((Join-Path $stage 'Plugins'))
+if ($Install) { $probeDirs += (Join-Path $KspRoot 'GameData\UI18n\Plugins') }
+foreach ($probeDir in $probeDirs) {
+    if (-not (Test-Path $probeDir)) { continue }
+    $probeHit = Join-Path $probeDir 'UI18n.Probe.dll'
+    if (-not (Test-Path $probeHit)) { continue }
+    if ($AllowProbe) {
+        Write-Host "[deploy] WARN: probe dll present, deploy continues because -AllowProbe was passed ($probeHit)" -ForegroundColor Yellow
+        continue
+    }
+    throw "[deploy] 发现取证插件 $probeHit —— 它只用于 IMGUI 取证，不能随包发布。先跑：pwsh -File _scratch\p1\probe.ps1 -Action Remove（若确需本轮同步包，加 -AllowProbe）"
+}
 
 # 递归复制一棵目录树（目标目录已存在时按文件覆盖，不嵌套）
 function Copy-Tree {
@@ -82,11 +102,19 @@ foreach ($dll in @('UI18n.Runtime.dll', 'UI18n.Core.dll')) {
     Write-Host "[deploy] staged  : Plugins\$dll"
 }
 
-foreach ($cfg in @('Config.cfg', 'UI18n.cfg')) {
+foreach ($cfg in @('Config.cfg', 'UI18n.cfg', 'UI18n.version')) {
     $src = Join-Path $templates $cfg
     if (-not (Test-Path $src)) { throw "missing template: $src" }
     Copy-Item $src $stage -Force
     Write-Host "[deploy] staged  : $cfg"
+}
+
+# Fonts：FontMode=Bundled 时玩家放 AssetBundle 的位置；模板里只有一个 README.txt，
+# 但目录必须存在，否则玩家不知道往哪放（见 GameData\UI18n\Fonts\README.txt）
+$fontsTemplate = Join-Path $templates 'Fonts'
+if (Test-Path $fontsTemplate) {
+    Copy-Item $fontsTemplate (Join-Path $stage 'Fonts') -Recurse -Force
+    Write-Host "[deploy] staged  : Fonts\"
 }
 
 # 3) 语言包：只装 packs\<lang>\ 这一层（D35 布局；packs\ 根下的源产物不装）
@@ -123,6 +151,52 @@ if ($Smoke) {
 
 Write-Host "[deploy] staged  : $stage"
 
+# 把模板里存在、目标配置里缺失的键补到 UI18N 节点末尾（保留玩家已改的值与全部注释）。
+# 返回补上的键名数组；目标文件不存在或已包含全部键时返回空数组。
+function Merge-ConfigKeys {
+    param([string]$Existing, [string]$Template)
+
+    $templateKeys = New-Object System.Collections.Generic.List[string]
+    $templateValues = @{}
+    foreach ($line in Get-Content -LiteralPath $Template -Encoding UTF8) {
+        if ($line -match '^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=(.*)$') {
+            $key = $Matches[1]
+            if (-not $templateValues.ContainsKey($key)) {
+                $templateKeys.Add($key)
+                $templateValues[$key] = $line.Trim()
+            }
+        }
+    }
+
+    $text = Get-Content -LiteralPath $Existing -Raw -Encoding UTF8
+    $missing = New-Object System.Collections.Generic.List[string]
+    foreach ($key in $templateKeys) {
+        if ($text -notmatch ('(?m)^\s*' + [regex]::Escape($key) + '\s*=')) {
+            $missing.Add($key)
+        }
+    }
+
+    if ($missing.Count -eq 0) {
+        return @()
+    }
+
+    $lastBrace = $text.LastIndexOf('}')
+    if ($lastBrace -lt 0) {
+        throw "existing Config.cfg has no closing brace, refusing to edit: $Existing"
+    }
+
+    $block = New-Object System.Text.StringBuilder
+    [void]$block.AppendLine()
+    [void]$block.AppendLine("`t// [deploy] 以下键在模板里存在但本文件缺失，已按模板默认值补上（可直接改）。")
+    foreach ($key in $missing) {
+        [void]$block.AppendLine("`t" + $templateValues[$key])
+    }
+
+    $merged = $text.Substring(0, $lastBrace) + $block.ToString() + $text.Substring($lastBrace)
+    Set-Content -LiteralPath $Existing -Value $merged -Encoding UTF8 -NoNewline
+    return $missing.ToArray()
+}
+
 # 5) 可选安装进 KSP（默认不碰游戏目录；只写 <KspRoot>\GameData\UI18n，红线 7）
 if (-not $Install) {
     Write-Host "[deploy] done (staging only). 加 -Install 才会写 $KspRoot\GameData\UI18n"
@@ -132,10 +206,21 @@ if (-not $Install) {
 $target = Join-Path $KspRoot 'GameData\UI18n'
 New-Item -ItemType Directory -Path $target -Force | Out-Null
 
-$keepConfig = Test-Path (Join-Path $target 'Config.cfg')
+$installedConfig = Join-Path $target 'Config.cfg'
+$keepConfig = (Test-Path $installedConfig) -and (-not $ForceConfig)
+
+if ($keepConfig) {
+    $added = Merge-ConfigKeys -Existing $installedConfig -Template (Join-Path $templates 'Config.cfg')
+    if ($added.Count -gt 0) {
+        Write-Host ("[deploy] merged  : Config.cfg (kept player values, added {0} new key(s): {1})" -f $added.Count, ($added -join ', '))
+    }
+    else {
+        Write-Host "[deploy] kept    : Config.cfg (existing player settings, no new keys)"
+    }
+}
+
 Get-ChildItem -Path $stage -Force | ForEach-Object {
     if ($keepConfig -and $_.Name -eq 'Config.cfg') {
-        Write-Host "[deploy] kept    : Config.cfg (existing player settings)"
         return
     }
 
@@ -150,6 +235,18 @@ Get-ChildItem -Path $stage -Force | ForEach-Object {
 }
 
 Write-Host "[deploy] installed into $target"
+
+# 6) 装完自检：逐文件比对 staging 与部署副本的 sha256（规则在 install-check.ps1 里，便于单测）
+. (Join-Path $scriptDir 'install-check.ps1')
+$check = Assert-InstallTree -Stage $stage -Target $target
+Write-Host ("[deploy] verified: {0} file(s) sha256 match between staging and {1}" -f $check.Checked, $target)
+
+# 部署目录里多出来的文件只告警（例如 .old-* 回滚备份、上一版残留）
+if ($check.Extra.Count -gt 0) {
+    Write-Host ("[deploy] WARN: {0} extra file(s) in {1} (not part of this build, left untouched):" -f $check.Extra.Count, $target) -ForegroundColor Yellow
+    foreach ($e in $check.Extra) { Write-Host ("[deploy]   extra   : " + $e) }
+}
+
 Write-Host "[deploy] tree:"
 Get-ChildItem -Path $target -Recurse -File | ForEach-Object {
     Write-Host ("[deploy]   {0}  ({1:N0} B)" -f $_.FullName.Substring($target.Length + 1), $_.Length)
