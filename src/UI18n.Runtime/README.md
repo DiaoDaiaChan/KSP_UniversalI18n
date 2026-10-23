@@ -538,7 +538,7 @@ GameData/UI18n/
 出包前逐条检查，**命中任意一条就 throw，并且一次把所有违规列出来**。两个入口，顺序固定：
 
 - `Assert-ReleaseProvenance`（第 8、9 条，**先跑**）：来源不对就不必看内容了；
-- `Assert-ReleaseTree`（第 1-7 条，**后跑**）：staging 树里不该有的东西。
+- `Assert-ReleaseTree`（第 1-7 条 + 第 10、11 条，**后跑**）：staging 树里不该有的东西 + 版本文件内容没被改坏。
 
 | # | 规则 | 为什么 |
 | --- | --- | --- |
@@ -554,6 +554,9 @@ GameData/UI18n/
 | 5 | 路径不许含 `build/` `_scratch/` `_audit/` `dist/` | 内部目录 |
 | 6 | 不许有 `packs/pool.jsonl`、`packs/glossary.jsonl` | 生产端输入 |
 | 7 | `Plugins/` 里只能有 `UI18n.Core.dll` + `UI18n.Runtime.dll` | 防止夹带 |
+| 10a | staging 的 `UI18n.cfg` 里版本行必须**恰好 1 行**，形如 `Version = <version>`，且值等于 `-Version` | 版本号必须与 zip 名 / manifest / DLL 一致 |
+| 10b | 不许出现「只有裸版本号、键名丢失」的畸形行（`^\s*[0-9]+\.[0-9]+\.[0-9]+\s*$`） | 2026-10-23 事故：改写把 `Version = 1.0.0` 写成了 `11.0.0`，KSP 的 ConfigNode 解析器会当畸形行（见 10.9） |
+| 11 | staging 的 `UI18n.version`（KSP-AVC）里 `VERSION` 必须等于 `-Version` | 该文件由 `-Version` 生成，不许留模板默认值 |
 
 抽成独立文件是为了能在**不出包**的前提下用合成 stage 树逐条验证（见 `_scratch` 里的 relcheck 脚本）。
 
@@ -602,7 +605,7 @@ GameData/UI18n/
 
 模板里的 `1.0.0`（`GameData/UI18n/UI18n.version` 与 `GameData/UI18n/UI18n.cfg`）只是给 `deploy.ps1`（本机联调）用的默认值：
 出包时 `build-release.ps1` 会把 staging 里这两处都改写成 `-Version`（日志 `[release] staged  : UI18n.cfg (Version=1.0.0)` / `UI18n.version (VERSION=1.0.0)`），
-所以**发布包里不会留模板默认值**；若发现包里版本号与 zip 名不一致，说明有人手工 stage 过而不是走 `build-release.ps1`。
+所以**发布包里不会留模板默认值**（第 10、11 条断言会读改写后的产物校验，见 10.9）；若发现包里版本号与 zip 名不一致，说明有人手工 stage 过而不是走 `build-release.ps1`。
 
 运行时日志里的 `version=` 打的是程序集版本串（`<version>+<commit>`），来源同上（见 10.8）。
 
@@ -640,5 +643,31 @@ git rev-parse HEAD                                                    # 两者�
 ```
 
 实测（2026-10-23，本机）：部署中的 `GameData\UI18n\Plugins\UI18n.Runtime.dll` 内嵌 `1.0.0+fc1c2b20…`，而当时 HEAD 已是 `9238f1a…` —— 正是这条断言要拦的形态；按上面的流程重建 + 重新 deploy 后两者一致。
+
+### 10.9 教训：断言查了「文件集合」，没查「文件内容」
+
+2026-10-23 出包时抓到一个**只有人眼核 zip 才发现的缺陷**：`build-release.ps1` 改写 staging 里 `UI18n.cfg` 的 `Version` 时把整行写坏了 ——
+
+- 仓库模板是对的（`	Version = 1.0.0`）；
+- 包里变成了孤零零的 `11.0.0`：键名 `Version =` 整段丢失、值前面多一个 `1`；
+- 根因是替换串写法：`('$1' + $Version)` 里 `$1` 紧跟数字会被 .NET 当成组引用 `$11`；而把 `${1}` 写进外层模板语言（这里是 JS 模板串）会直接变成字面 `1` —— 两种写法都得到 `11.0.0`。
+- **更值得记的是为什么没被拦住**：`Assert-ReleaseTree` 第 1-7 条只回答「staging 里有没有不该有的文件」，没有一条检查「文件内容是否被改写坏」。于是断言全绿、zip 生成成功、manifest 自洽，坏内容照样出包。
+
+修法与新增断言：
+
+1. 改写改成**按 Match 索引做字符串拼接**（完全不涉及替换串语义），并要求 `Version` 行恰好 1 行，否则直接 throw；
+2. `Assert-ReleaseTree` 新增第 10 条（版本行恰好 1 行、值 == `-Version`、不许有裸版本号畸形行）与第 11 条（`UI18n.version` 的 `VERSION` == `-Version`）；
+3. 改写逻辑用「从 `build-release.ps1` 里按行区间取出**真实代码**执行」的方式离线实测两个版本号（`1.0.0` 与 `2.0.0` 都必须得到 `	Version = x.y.z`），另加 3 条负向（没有版本行 / 两行版本 / 事故形态）。
+
+**通用教训**：凡是 staging 阶段的「改写 / 注入」，都必须有一条断言去读**改写后的产物**并校验语义（不是只校验文件存在、也不是只校验字节数）；否则「文件在、内容坏」这一类缺陷只能靠人核包。
+
+自查（不跑出包也能看一个 staging 树的版本文件对不对）：
+
+```powershell
+# 版本行必须恰好 1 行、且是完整的一行
+Select-String -Path build\release\UI18n-1.0.0\GameData\UI18n\UI18n.cfg -Pattern '^\s*Version\s*='
+# 畸形行（裸版本号）必须 0 条 —— 命中就是被写坏了
+Select-String -Path build\release\UI18n-1.0.0\GameData\UI18n\UI18n.cfg -Pattern '^\s*[0-9]+\.[0-9]+\.[0-9]+\s*$'
+```
 
 

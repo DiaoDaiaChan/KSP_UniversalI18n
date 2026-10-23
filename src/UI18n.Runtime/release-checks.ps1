@@ -13,6 +13,9 @@
 #   5. build\ / _scratch\ / _audit\ / dist\ 路径
 #   6. packs\pool.jsonl、packs\glossary.jsonl（生产端输入，不是运行时字典）
 #   7. Plugins\ 里只能有 UI18n.Core.dll 与 UI18n.Runtime.dll
+#  10. UI18n.cfg 的版本行必须是完整的一行「Version = <version>」（恰好 1 行、值等于 -Version），
+#      且不许出现「裸版本号」这种畸形行（键名丢失）
+#  11. UI18n.version（KSP-AVC）的 VERSION 必须等于 -Version
 #
 # 下面两条由 Assert-ReleaseProvenance 执行，顺序在最前面（脏树/来源不对就没必要看内容）：
 #   8. 工作树必须干净（git status --porcelain 为空；-AllowDirty 显式放行并打 WARN）
@@ -21,7 +24,9 @@
 function Assert-ReleaseTree {
     param(
         [Parameter(Mandatory = $true)][string]$StageRoot,
-        [Parameter(Mandatory = $true)][string]$StageMod
+        [Parameter(Mandatory = $true)][string]$StageMod,
+        # 发布版本号：第 10、11 条要拿它比对 staging 里两个版本文件的内容。空串则只做「形状」检查。
+        [string]$Version = ''
     )
 
     $StageRoot = [System.IO.Path]::GetFullPath($StageRoot)
@@ -46,6 +51,55 @@ function Assert-ReleaseTree {
     $expectedPlugins = @('UI18n.Core.dll', 'UI18n.Runtime.dll')
     if (($stagedPlugins -join ',') -ne ($expectedPlugins -join ',')) {
         $violations.Add(("plugins: Plugins\ 里应只有 {0}，实际 {1}" -f ($expectedPlugins -join ', '), ($stagedPlugins -join ', ')))
+    }
+
+    # 第 10 条：UI18n.cfg 的版本行必须是完整的一行「Version = x.y.z」。
+    # 为什么必须查内容：第 1-7 条只查「有没有多余文件」，查不出「文件被改写坏」。
+    # 2026-10-23 的事故：staging 把「Version = 1.0.0」改写成裸的「11.0.0」（键名整段丢失），
+    # zip 里就多了一条 KSP ConfigNode 解析不了的畸形行；所有自动化断言都放过了，靠人核 zip 才发现。
+    $modCfgPath = Join-Path $StageMod 'UI18n.cfg'
+    if (-not (Test-Path $modCfgPath)) {
+        $violations.Add('cfg missing: UI18n.cfg（包里必须有 Mod 元数据）')
+    }
+    else {
+        $cfgLines = @(Get-Content -LiteralPath $modCfgPath -Encoding UTF8)
+        $versionLines = @($cfgLines | Where-Object { $_ -match '^\s*Version\s*=' })
+        $bareVersionLines = @($cfgLines | Where-Object { $_ -match '^\s*[0-9]+\.[0-9]+\.[0-9]+\s*$' })
+
+        if ($versionLines.Count -ne 1) {
+            $shown = ($versionLines | ForEach-Object { '[' + $_.Trim() + ']' }) -join ' / '
+            $violations.Add(("cfg version: UI18n.cfg 的版本行应恰好 1 行（形如 Version = 1.0.0），实际 " + $versionLines.Count + " 行" + $(if ($shown) { "：$shown" } else { '（一行都没有）' })))
+        }
+        elseif ($Version) {
+            $actual = ''
+            if ($versionLines[0] -match '^\s*Version\s*=\s*(\S+)\s*$') { $actual = $Matches[1] }
+            if ($actual -ne $Version) {
+                $violations.Add(("cfg version: UI18n.cfg 的 Version = " + $actual + " 与 -Version " + $Version + " 不一致（实际行：[" + $versionLines[0].Trim() + "]）"))
+            }
+        }
+
+        if ($bareVersionLines.Count -gt 0) {
+            $shown = ($bareVersionLines | ForEach-Object { '[' + $_.Trim() + ']' }) -join ' / '
+            $violations.Add(("cfg malformed: UI18n.cfg 有畸形行（只有裸版本号、键名丢失）：$shown"))
+        }
+    }
+
+    # 第 11 条：UI18n.version（KSP-AVC）的 VERSION 必须等于 -Version（模板里的 1.0.0 只是默认值）。
+    $avcPath = Join-Path $StageMod 'UI18n.version'
+    if (-not (Test-Path $avcPath)) {
+        $violations.Add('avc missing: UI18n.version（KSP-AVC 读它做版本提示）')
+    }
+    elseif ($Version) {
+        try {
+            $avc = Get-Content -LiteralPath $avcPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $avcVersion = ('{0}.{1}.{2}' -f $avc.VERSION.MAJOR, $avc.VERSION.MINOR, $avc.VERSION.PATCH)
+            if ($avcVersion -ne $Version) {
+                $violations.Add(("avc version: UI18n.version 的 VERSION = " + $avcVersion + " 与 -Version " + $Version + " 不一致"))
+            }
+        }
+        catch {
+            $violations.Add(("avc parse: UI18n.version 不是合法 JSON：" + $_.Exception.Message))
+        }
     }
 
     if ($violations.Count -gt 0) {

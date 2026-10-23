@@ -105,12 +105,27 @@ foreach ($cfg in @('UI18n.cfg', 'Config.cfg')) {
 }
 
 # UI18n.cfg：模板里的 Version = x.y.z 是给本机 deploy 用的默认值，发布包必须改成这次的 -Version
-# （否则包里会留一个和 zip 名、manifest、DLL 都不一致的版本号 —— 版本号只在一个地方写的例外就是这里）。
+# （否则包里会留一个和 zip 名、manifest、DLL 都不一致的版本号）。
+#
+# 坑（2026-10-23 实际踩到，zip 里才发现）：不要用 -replace 的替换串去拼版本号。
+#   - '$1' + $Version 会被当成 '$11'（组 11 不存在）；
+#   - 把 ${1} 写进外层模板语言（例如 JS 模板串）会直接变成字面 '1'。
+#   上一版就是这样把「Version = 1.0.0」改成了裸的「11.0.0」：键名整段丢失，
+#   KSP 的 ConfigNode 解析器会把这一行当畸形行。原有断言只查「有没有多余文件」，
+#   查不出「文件内容被改写坏」，所以这次同时加了 Assert-ReleaseTree 第 10 条。
+# 所以这里按 Match 的索引做纯字符串拼接，完全不涉及替换串语义。
 $modCfgPath = Join-Path $stageMod 'UI18n.cfg'
 $modCfg = Get-Content -LiteralPath $modCfgPath -Raw -Encoding UTF8
-$modCfg = $modCfg -replace '(?m)^(\s*Version\s*=\s*)\S+\s*$', ('1' + $Version)
+$modCfgPattern = '(?m)^([ \t]*Version[ \t]*=[ \t]*)(\S+)[ \t]*\r?$'
+$modCfgMatches = [regex]::Matches($modCfg, $modCfgPattern)
+if ($modCfgMatches.Count -ne 1) {
+    throw ('[release] staging 的 UI18n.cfg 里 Version = x.y.z 应恰好 1 行，实际 ' + $modCfgMatches.Count + ' 行（模板被改坏了？）')
+}
+$modCfgMatch = $modCfgMatches[0]
+$modCfg = $modCfg.Substring(0, $modCfgMatch.Index) + $modCfgMatch.Groups[1].Value + $Version + $modCfg.Substring($modCfgMatch.Index + $modCfgMatch.Length)
+$modCfg = $modCfg.TrimEnd([char[]]@(13, 10))
 Set-Content -LiteralPath $modCfgPath -Value $modCfg -Encoding UTF8
-Write-Host "[release] staged  : UI18n.cfg (Version=$Version)"
+Write-Host ('[release] staged  : UI18n.cfg (Version=' + $Version + ')')
 
 # UI18n.version：把模板里的 VERSION 换成这次的 -Version（KSP-AVC）
 $versionTemplate = Join-Path $templates 'UI18n.version'
@@ -147,7 +162,7 @@ $provenance = Assert-ReleaseProvenance -StageMod $stageMod -RepoRoot $repoRoot -
 Write-Host ("[release] provenance: HEAD={0}, dirty={1} entry(ies), untracked-ignored={2}, Core={3}, Runtime={4}" -f $provenance.HeadSha, $provenance.DirtyCount, $provenance.UntrackedIgnored, $provenance.Embedded['UI18n.Core.dll'], $provenance.Embedded['UI18n.Runtime.dll'])
 
 # 3b) 内容断言（第 1-7 条）
-$stagedFiles = Assert-ReleaseTree -StageRoot $stageRoot -StageMod $stageMod
+$stagedFiles = Assert-ReleaseTree -StageRoot $stageRoot -StageMod $stageMod -Version $Version
 
 # 4) 打 zip（不加外层目录：解压即得 GameData/UI18n/...）
 Add-Type -AssemblyName System.IO.Compression.FileSystem | Out-Null
