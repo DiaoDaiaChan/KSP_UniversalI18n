@@ -1,0 +1,18 @@
+{"h":"019b9736f6a8b443","n":"Research & Development","s":"Research & Development","t":"研发","mod":"TestFlightCore"}
+{"h":"02594bed7e21fcb0","n":"Flight Data Multiplier","s":"Flight Data Multiplier","t":"飞行数据乘数","mod":"TestFlightCore"}
+{"h":"19e882c77b82dae2","n":"TestFlight is not currently tracking any vessels","s":"TestFlight is not currently tracking any vessels","t":"TestFlight 当前未追踪任何载具","mod":"TestFlightCore"}
+{"h":"3797803e753044a5","n":"Flight Data Engineer Multiplier","s":"Flight Data Engineer Multiplier","t":"飞行数据工程师乘数","mod":"TestFlightCore"}
+{"h":"3f0caa8b8513c0c9","n":"R&D is not available because TestFlight is disabled in this save. You can enable it from the settings tab.","s":"R&D is not available because TestFlight is disabled in this save.\nYou can enable it from the settings tab.","t":"研发不可用，因为此存档中已禁用 TestFlight。\n可在设置标签页中启用。","mod":"TestFlightCore"}
+{"h":"4436d64cc2cc0594","n":"MSD Size","s":"MSD Size","t":"MSD 尺寸","mod":"TestFlightCore"}
+{"h":"5730d4857c1ebfd8","n":"The costs and research rate varies by team","s":"The costs and research rate varies by team","t":"不同团队的花费与研究速率各不相同","mod":"TestFlightCore"}
+{"h":"609b34b8bc997ae0","n":"Here you can manage engineering teams working on your hardware. You can start new research programs from the VAB.","s":"Here you can manage engineering teams working on your hardware.\nYou can start new research programs from the VAB.","t":"在此管理负责硬件的工程团队。\n可在 VAB 中启动新的研究计划。","mod":"TestFlightCore"}
+{"h":"6175f98d0d2e1b80","n":"Open Settings Panel","s":"Open Settings Panel","t":"打开设置面板","mod":"TestFlightCore"}
+{"h":"65b2eead409c22a6","n":"TestFlight is starting up...","s":"TestFlight is starting up...","t":"TestFlight 正在启动...","mod":"TestFlightCore"}
+{"h":"8270f1e974f8d396","n":"Research teams deduct funds and add flight data to your part","s":"Research teams deduct funds and add flight data to your part","t":"研究团队会扣除资金并为部件增加飞行数据","mod":"TestFlightCore"}
+{"h":"858b708d11521776","n":"Stop Research","s":"Stop Research","t":"停止研究","mod":"TestFlightCore"}
+{"h":"8c16021c41a73dcc","n":"Hire Team","s":"Hire Team","t":"雇佣团队","mod":"TestFlightCore"}
+{"h":"9321ce4a694bf3ca","n":"Middle click to show TestFlight info...","s":"Middle click to show TestFlight info...","t":"中键点击显示 TestFlight 信息...","mod":"TestFlightCore"}
+{"h":"abe6ee042aa82205","n":"Hire Research Team","s":"Hire Research Team","t":"雇佣研究团队","mod":"TestFlightCore"}
+{"h":"b70aca260b006071","n":"Part flight data meets or exceeds maximum lab R&D amount","s":"Part flight data meets or exceeds maximum lab R&D amount","t":"部件飞行数据已达到或超过实验室研发上限","mod":"TestFlightCore"}
+{"h":"cf6dd05036a75f60","n":"At the end of each cycle, funds will be deducted and data added","s":"At the end of each cycle, funds will be deducted and data added","t":"每个周期结束时将扣除资金并增加数据","mod":"TestFlightCore"}
+{"h":"e21f2928e01aa937","n":"Visual settings for the Master Status Display can be set in the settings page in the Flight scene","s":"Visual settings for the Master Status Display can be set in the settings page in the Flight scene","t":"主状态显示器（MSD）的视觉设置可在飞行场景的设置页面中调整","mod":"TestFlightCore"}

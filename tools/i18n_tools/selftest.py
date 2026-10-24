@@ -17,6 +17,9 @@
   8. 产物自检：packs/pool.jsonl 与既有真值逐字节一致（有真值文件时才检查）。
   9. 包索引：packs/index.json 的排序确定性、字段齐全、sha256/rows/keepRows 与真实文件一致、
      幂等（除 generatedAt 外逐字节相同）、--check 正例 exit 0 与四种负例 exit 1。
+  10. IL 采集：sink 白名单与 PatchRegistry 一致（Debug.Log 绝不算 sink）、真解 IL 的偏移、
+      签名里的 CLASS/VALUETYPE 与 CMOD_* 都按压缩 TypeDefOrRefEncoded 读（读错会让实参整体
+      错位、字面量全丢）、候选行去重排序与 h 口径、落盘幂等。
 """
 
 from __future__ import annotations
@@ -28,7 +31,8 @@ import shutil
 import sys
 import tempfile
 
-from . import cfgparse, ensure_stdout, fnv, glossary, harvest, packindex, textnorm
+from . import (capture_ingest, cfgparse, ensure_stdout, fnv, glossary, harvest, ilmeta,
+                ilstrings, packindex, textnorm)
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -413,12 +417,18 @@ def test_packindex_real():
         print("  [skip] packs/index.json 还不存在（先跑 python -m i18n_tools.packindex）")
         return
     doc = packindex.load_index(index_path)
-    eq("真实 packCount == 41", doc["packCount"], 41)
-    eq("真实 totalRows == 9990", doc["totalRows"], 9990)
-    eq("真实 totalBytes == 3504392", doc["totalBytes"], 3504392)
+    # 真值随手上的包体变化：改了 packs/zh-cn 就必须重跑 python -m i18n_tools.packindex
+    # 并同步这三个数字，否则本项失败——这是「清单不许与磁盘漂移」的最后一道提示。
+    eq("真实 packCount == 89", doc["packCount"], 89)
+    eq("真实 totalRows == 11089", doc["totalRows"], 11089)
+    eq("真实 totalBytes == 3685087", doc["totalBytes"], 3685087)
     eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
     entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
     eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)
+    eq("cfg 包 41 / IL 包 48", (sum(1 for e in entries if not e["file"].endswith(".il.jsonl")),
+                              sum(1 for e in entries if e["file"].endswith(".il.jsonl"))), (41, 48))
+    eq("唯一 mod 数 74（同名 IL 包与 cfg 包合并成同一个 mod 身份）",
+       len({e["mod"] for e in entries}), 74)
     eq("真实 --check 退出码 0", packindex.main(["--check", "--quiet"]), 0)
 
 
@@ -457,6 +467,210 @@ def test_artifacts():
         print("  [skip] packs/glossary.jsonl 还不存在（先跑 python -m i18n_tools.glossary）")
 
 
+# ---------------------------------------------------------------------------
+# 9. IL 字符串采集（ilstrings.py）
+# ---------------------------------------------------------------------------
+class _FakeResolver:
+    """selftest 用的假签名解析器：只认识 GUIContent..ctor 与 Debug.Log 两个 token。"""
+
+    TABLE = {
+        0x0A000001: {"type": "UnityEngine.GUIContent", "name": ".ctor",
+                     "params": ["System.String"], "ret": "System.Void"},
+        0x0A000002: {"type": "UnityEngine.Debug", "name": "Log",
+                     "params": ["System.Object"], "ret": "System.Void"},
+        0x0A000003: {"type": "TMPro.TMP_InputField", "name": "set_text",
+                     "params": ["System.String"], "ret": "System.Void"},
+    }
+
+    def resolve(self, token):
+        return self.TABLE.get(token)
+
+
+def _census_entry(group, family):
+    return {"group": group, "family": family, "calls": 0, "methods": set(),
+            "lits": set(), "dlls": {}, "reflection_text": False}
+
+
+def test_ilstrings(base):
+    print("[9] IL 字符串采集（ilstrings.py）")
+    # --- sink 白名单：必须与 PatchRegistry 一致，Debug.Log 绝不算 sink ---
+    eq("sink: GUI.Label 在 A 组", ilstrings.classify("UnityEngine.GUI", "Label"),
+       ("A", "GUI.Label"))
+    eq("sink: GUILayout.Label 走公开前门 -> DoLabel",
+       ilstrings.classify("UnityEngine.GUILayout", "Label"), ("A", "GUILayout.DoLabel"))
+    eq("sink: GUIContent..ctor 算 sink（IMGUI 文本入口）",
+       ilstrings.classify("UnityEngine.GUIContent", ".ctor"), ("A", "GUIContent..ctor"))
+    eq("sink: TMPro.TMP_Text.set_text 在 A 组",
+       ilstrings.classify("TMPro.TMP_Text", "set_text"), ("A", "TMPro.TMP_Text.set_text"))
+    eq("Debug.Log 归 LOG（对照），不是 sink",
+       ilstrings.classify("UnityEngine.Debug", "Log")[0], "LOG")
+    check("A 组里没有任何 Debug 方法",
+          all(not api.startswith("UnityEngine.Debug")
+              for grp, api in ilstrings.API_TABLE.values() if grp == "A"))
+    eq("B 组: TMPro.TMP_InputField.set_text",
+       ilstrings.classify("TMPro.TMP_InputField", "set_text")[0], "B")
+    eq("REFL: PropertyInfo.SetValue",
+       ilstrings.classify("System.Reflection.PropertyInfo", "SetValue")[0], "REFL")
+    check("REFL 字段名白名单含 text / m_text",
+          {"text", "m_text"} <= ilstrings.REFL_FIELD_NAMES)
+
+    # --- 真解 IL：手写字节码 ldstr / newobj / ret ---
+    insns = ilmeta.decode_il(bytes.fromhex("7201000070" "730100000a" "2a"))
+    eq("decode_il: 操作码序列", [i[1] for i in insns], ["ldstr", "newobj", "ret"])
+    eq("decode_il: 偏移按操作数长度累加", [i[0] for i in insns], [0, 5, 10])
+    eq("decode_il: ldstr 操作数是 #US 偏移", insns[0][2] & 0xFFFFFF, 1)
+    try:
+        ilmeta.decode_il(bytes.fromhex("7201000070" "28"))
+        truncated = False
+    except ilmeta.IlError:
+        truncated = True
+    check("decode_il: 操作数越界抛 IlError（不许静默吞掉）", truncated)
+
+    # --- 数据流：ldstr -> GUIContent..ctor 必须产出 1 条 hit ---
+    census = {"GUIContent..ctor": _census_entry("A", "GUIContent..ctor")}
+    hits = []
+    ilstrings.Analyzer(_FakeResolver(), {1: "Load Vessel"}, "X.dll", "X", "X.Y", "M()",
+                       census, hits, {"aborted": 0, "dataflow": 0}).run(insns)
+    eq("人造 IL: GUIContent..ctor 收到 1 条字面量", len(hits), 1)
+    eq("人造 IL: 文本", hits[0]["text"] if hits else None, "Load Vessel")
+    eq("人造 IL: sink", hits[0]["sink"] if hits else None, "GUIContent..ctor")
+    eq("人造 IL: type 是被分析方法的声明类型", hits[0]["type"] if hits else None, "X.Y")
+    eq("人造 IL: ilOffset 是 ldstr 的偏移", hits[0]["ilOffset"] if hits else None, 0)
+
+    # --- 负例：Debug.Log 不算 sink（同一条 ldstr 流进去也不产 hit）---
+    log_insns = ilmeta.decode_il(bytes.fromhex("7201000070" "280200000a" "2a"))
+    log_census = {"UnityEngine.Debug.Log": _census_entry("LOG", "UnityEngine.Debug.Log*")}
+    log_hits = []
+    log_stats = {"aborted": 0, "dataflow": 0}
+    ilstrings.Analyzer(_FakeResolver(), {1: "Loading..."}, "X.dll", "X", "X.Y", "M()",
+                       log_census, log_hits, log_stats).run(log_insns)
+    eq("负例: Debug.Log 的字面量不进候选", len(log_hits), 0)
+    eq("负例: 也没有把 Debug.Log 当未解析 token", log_stats["aborted"], 0)
+
+    # --- B 组（疑似盲区）：进普查计数，但不进候选 ---
+    b_insns = ilmeta.decode_il(bytes.fromhex("7201000070" "280300000a" "2a"))
+    b_census = {"TMPro.TMP_InputField.set_text": _census_entry(
+        "B", "TMPro.TMP_InputField.set_text")}
+    b_hits = []
+    ilstrings.Analyzer(_FakeResolver(), {1: "Search..."}, "X.dll", "X", "X.Y", "M()",
+                       b_census, b_hits, {"aborted": 0, "dataflow": 0}).run(b_insns)
+    eq("B 组: 不进候选", len(b_hits), 0)
+    eq("B 组: 但字面量进普查计数",
+       len(b_census["TMPro.TMP_InputField.set_text"]["lits"]), 1)
+
+    # --- 签名解析回归：CLASS/VALUETYPE 与 CMOD_* 后面都是压缩的 TypeDefOrRefEncoded ---
+    res = ilstrings.Resolver.__new__(ilstrings.Resolver)
+    res._type_names = {}
+    res.typedef_name = lambda rid: "T%d" % rid
+    res.class_name = lambda cls: "R%d" % cls[1]
+    eq("签名: VALUETYPE + 压缩 coded 索引",
+       ilstrings.Resolver._parse_type(res, bytes.fromhex("1105"), 0)[0], "R1")
+    eq("签名: CMOD_REQD 后是压缩索引（不是 4 字节 token）",
+       ilstrings.Resolver._parse_type(res, bytes.fromhex("1f8145" "10" "1128"), 0)[0], "T10&")
+
+    # --- 候选行：去重 / 排序 / h 口径 ---
+    raw = [
+        {"asm": "B.dll", "type": "T", "method": "M()", "ilOffset": 0, "sink": "GUI.Label",
+         "text": "Beta"},
+        {"asm": "A.dll", "type": "T", "method": "M()", "ilOffset": 0, "sink": "GUI.Label",
+         "text": "  Alpha  "},
+        {"asm": "A.dll", "type": "T", "method": "M()", "ilOffset": 9, "sink": "GUI.Button",
+         "text": "Alpha"},
+    ]
+    rows = ilstrings.build_candidates(raw)
+    eq("候选: 同一 asm 同一文本只留一行", len(rows), 2)
+    eq("候选: 按 asm 升序", [r["asm"] for r in rows], ["A.dll", "B.dll"])
+    eq("候选: n 是归一化后的文本", rows[0]["n"], "Alpha")
+    eq("候选: h == fnv.hash_text(n)（与 pool 同口径）", rows[0]["h"], fnv.hash_text("Alpha"))
+    check("候选: h 是 16 位小写 hex",
+          all(len(r["h"]) == 16 and r["h"] == r["h"].lower() for r in rows))
+    eq("候选: 字段齐全且顺序固定", list(rows[0]),
+       ["asm", "type", "method", "ilOffset", "sink", "text", "h", "n"])
+
+    # --- 落盘：幂等 + 无 BOM + LF ---
+    path = os.path.join(base, "il-candidates.jsonl")
+    ilstrings.write_jsonl(path, rows)
+    with open(path, "rb") as fh:
+        first = fh.read()
+    ilstrings.write_jsonl(path, rows)
+    with open(path, "rb") as fh:
+        second = fh.read()
+    check("write_jsonl: 跑两遍逐字节相同", first == second)
+    check("write_jsonl: 无 BOM、只有 LF、末尾有换行",
+          not first.startswith(b"\xef\xbb\xbf") and b"\r" not in first
+          and first.endswith(b"\n"))
+
+    # --- 噪声分类 / 漏斗 ---
+    eq("noise: #autoLOC_ 键引用", ilstrings.noise_class("#autoLOC_500460"), "键引用")
+    eq("noise: URL", ilstrings.noise_class("https://example.com/a"), "URL")
+    eq("noise: 句子 -> 其他（含待译句子）", ilstrings.noise_class("Load Vessel"),
+       "其他（含待译句子）")
+    funnel = ilstrings.funnel_stats(["", "ab", "A real sentence here", "123"])
+    eq("漏斗: #US 去重计数", funnel["us_distinct"], 4)
+    eq("漏斗: 过滤后只剩 2 条（空 / 纯数字被丢）", funnel["filtered"], 2)
+    eq("漏斗: >=4 字符 1 条（ab 只有 2 字符）", funnel["ge4"], 1)
+    eq("漏斗: 像 UI 文本 1 条", funnel["ui"], 1)
+
+
+def test_ilstrings_real():
+    print("[10] IL 候选产物自检（真实 packs/il-candidates.jsonl）")
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    path = os.path.join(repo, "packs", "il-candidates.jsonl")
+    if not os.path.isfile(path):
+        print("  [skip] packs/il-candidates.jsonl 还不存在（先跑 python -m i18n_tools.ilstrings）")
+        return
+    with open(path, "rb") as fh:
+        raw = fh.read()
+    rows = [json.loads(x) for x in raw.decode("utf-8").split("\n") if x]
+    check("真实候选行数 > 2000", len(rows) > 2000, "got=%d" % len(rows))
+    bad_h = [r for r in rows if r["h"] != fnv.hash_text(textnorm.normalize(r["text"]))]
+    eq("每行 h == fnv.hash_text(normalize(text))（与 pool 同口径）", len(bad_h), 0)
+    bad_n = [r for r in rows if r["n"] != textnorm.normalize(r["text"])]
+    eq("每行 n == normalize(text)", len(bad_n), 0)
+    keys = [(r["asm"], r["n"]) for r in rows]
+    eq("按 (asm, n) 无重复", len(set(keys)), len(keys))
+    eq("按 (asm, n) 升序稳定排序", keys, sorted(keys))
+    sink_ok = {api for grp, api in ilstrings.API_TABLE.values() if grp == "A"}
+    bad_sink = [r for r in rows if r["sink"] not in sink_ok]
+    eq("sink 全在白名单内", len(bad_sink), 0)
+    check("没有任何一行的 sink 是日志 API", not any("Debug" in r["sink"] for r in rows))
+    check("无 BOM、只有 LF",
+          not raw.startswith(b"\xef\xbb\xbf") and b"\r" not in raw)
+
+
+def test_capture_ingest(base):
+    print("[11] 运行时捕获摄入（capture_ingest.py）")
+    for name, ok, detail in capture_ingest.selftest_cases(base):
+        check(name, ok, detail)
+
+
+def test_capture_real():
+    print("[12] 捕获候选产物自检（真实 packs/capture-candidates.jsonl）")
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    path = os.path.join(repo, "packs", "capture-candidates.jsonl")
+    if not os.path.isfile(path):
+        print("  [skip] packs/capture-candidates.jsonl 还不存在"
+              "（先跑 python -m i18n_tools.capture_ingest）")
+        return
+    with open(path, "rb") as fh:
+        raw = fh.read()
+    rows = [json.loads(x) for x in raw.decode("utf-8").split("\n") if x]
+    check("真实捕获候选行数 > 1000", len(rows) > 1000, "got=%d" % len(rows))
+    eq("只有 candidate / template 两档",
+       sorted({r["bucket"] for r in rows}), ["candidate", "template"])
+    eq("每行 h == fnv.hash_text(normalize(n))（与 pool 同口径）",
+       sum(1 for r in rows if r["h"] != fnv.hash_text(textnorm.normalize(r["n"]))), 0)
+    eq("h 无重复", len({r["h"] for r in rows}), len(rows))
+    order = [capture_ingest.BUCKET_ORDER[r["bucket"]] for r in rows]
+    eq("排序 = (bucket 序, h)", order, sorted(order))
+    eq("字段顺序固定", list(rows[0]), list(capture_ingest.OUT_FIELDS))
+    check("mods 是非空列表", all(isinstance(r["mods"], list) and r["mods"] for r in rows))
+    eq("没有本该 never 的串混进产物",
+       sum(1 for r in rows if capture_ingest.classify_capture(r["n"])[0] == "never"), 0)
+    check("无 BOM、只有 LF、末尾有换行",
+          not raw.startswith(b"\xef\xbb\xbf") and b"\r" not in raw and raw.endswith(b"\n"))
+
+
 def main(argv=None) -> int:
     ensure_stdout()
     print("[selftest] i18n_tools 自检（python %s）" %
@@ -469,10 +683,14 @@ def main(argv=None) -> int:
         test_pipeline(os.path.join(base, "pipeline"))
         test_glossary(os.path.join(base, "glossary"))
         test_packindex(os.path.join(base, "packindex"))
+        test_ilstrings(os.path.join(base, "ilstrings"))
+        test_capture_ingest(os.path.join(base, "capture_ingest"))
     finally:
         shutil.rmtree(base, ignore_errors=True)
     test_artifacts()
     test_packindex_real()
+    test_ilstrings_real()
+    test_capture_real()
     print("")
     if _FAILED:
         print("[selftest] 失败 %d / %d 项：" % (len(_FAILED), _CHECKED))

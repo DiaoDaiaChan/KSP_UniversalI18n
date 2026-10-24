@@ -235,14 +235,27 @@ tools/
     harvest.py              扫 GameData → 候选池 + inventory（含 --verify）
     glossary.py             Squad 注释英文 × dictionary.cfg 中文 → 术语表
     packindex.py            包索引 packs/index.json + 覆盖报告 reports/coverage.md（含 --check）
-    selftest.py             128 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/产物校验）
+    ilstrings.py            DLL 的 IL 字面量采集 → packs/il-candidates.jsonl
+    ilmeta.py               反编译 .cs 里声明的 sink 元数据（给 ilstrings 判可达性）
+    buckets.py              字面量分流 buckets（translate / short_label / template / never）
+    iltranslatable.py       il-candidates → packs/il-translatable.jsonl（送译清单）
+    translate_il.py         IL 串翻译（八门禁 + conventions/overrides 两条人工通道）→ packs/zh-cn/<mod>.il.jsonl
+    capture_ingest.py       运行时捕获 capture-*.jsonl → packs/capture-candidates.jsonl
+    resolve_keyrefs.py      键引用解析 + --prefer-official + --drop-keyrefs（+--ambiguous-guard）
+    translate.py            主翻译流水线（缓存/门禁/断点续跑）
+    selftest.py             216 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验）
 packs/
   pool.jsonl                12,792 行候选池（sha256 FEF515EA…D4C）
   inventory.json            统计清单
   glossary.jsonl            2,126 行双语术语表
-  index.json                分发清单（schema 1：41 个包 / 9,990 行 / 3,504,392 字节）
+  index.json                分发清单（schema 1：89 个包 / 11,089 行 / 3,685,087 字节；74 个 mod 身份）
+  conventions.jsonl         12 条专有约定（G6 长度比下界豁免的唯一依据）
+  overrides.jsonl           人工覆盖（4 条，模型之前生效、零 token）
+  il-candidates.jsonl       DLL IL 字面量候选（2,285 行）
+  il-translatable.jsonl     送译清单（1,746 行：translate 1,145 / short_label 429 / template 172）
+  capture-candidates.jsonl  运行时捕获候选（2,008 行，v1.1 不进包）
 reports/
-  coverage.md               zh-cn 覆盖报告（覆盖率 9,073 / 12,792 = 70.93%，口径写在报告里）
+  coverage.md               zh-cn 覆盖报告（三节：pool 覆盖率 70.93% / IL 覆盖率 95.98% / 捕获通道现状）
 ```
 
 harvest 各阶段耗时（本机 SSD，6,212 个 cfg）：`walk 0.10 s + loc 0.16 s + cfg 2.22 s + 过滤 0.27 s + 落盘 0.06 s = 2.83 s`
@@ -266,7 +279,8 @@ python -m i18n_tools.packindex
 
 # 校验：磁盘 index 与真实包文件是否一致；一致 exit 0，不一致 exit 1 并列差异
 python -m i18n_tools.packindex --check
-#   index ok: 41 packs, 9990 rows, 3504392 bytes
+#   index ok: 89 packs, 11089 rows, 3685087 bytes
+#   [check] mod 数 74（cfg 41 + IL 48），全部 mod 都能从 file 推导
 
 # 只写 index、不写报告；或换目录/换语言
 python -m i18n_tools.packindex --no-coverage
@@ -277,7 +291,8 @@ python -m i18n_tools.packindex --packs-dir <dir> --index <file> --coverage <file
 
 - 顶层顺序：`schema`（=1）、`lang`（`"zh-cn"`）、`generatedAt`（ISO8601，秒级 UTC）、`totalRows`、`totalBytes`、`packCount`、`packs`
 - `packs[]` 每项顺序：`mod`、`file`（`zh-cn/<mod>.jsonl`，正斜杠）、`rows`、`bytes`、`sha256`（**文件级**）、`keepRows`
-- **`packs` 按 `mod` 名 ordinal（码点）升序**——顺序即契约：不用 case-insensitive，因为不同 Python/区域设置会给出不同结果，而增量分发靠“同一份清单逐行比对”，顺序一变就全失效
+- **`mod` 是 `mod` 身份，不是唯一键**：IL 包文件名尾部有 `.il`（`RealFuels.il.jsonl`），`mod` 身份要剥掉它（`RealFuels`）；同一个 mod 最多两条（cfg 包 + IL 包），**`file` 才是唯一键**，`--check` 按 `file` 比对，按 `mod` 聚合的地方必须合并计算
+- **`packs` 按 `(mod, file)` ordinal（码点）升序**——顺序即契约：不用 case-insensitive，因为不同 Python/区域设置会给出不同结果，而增量分发靠“同一份清单逐行比对”，顺序一变就全失效。同一个 mod 的两条靠 `file` 定序（`"." (0x2E) < "j" (0x6A)`，所以 `X.il.jsonl` 在 `X.jsonl` 之前）
 - `keepRows` = 该文件里 `t == s` 的行数（直通行：译文等于原文）。它不是统计口径，是**运行时语义**：下沉查找靠它终止
 - 三条汇总与逐文件累加强制相等（`build_index` 里有断言，宁可崩也不写假清单）
 - 幂等：同样输入连跑两次，除 `generatedAt` 那一行外**逐字节相同**（`selftest` 的 [7] 实测这一点）
@@ -287,7 +302,10 @@ python -m i18n_tools.packindex --packs-dir <dir> --index <file> --coverage <file
 - **分母** = `packs/pool.jsonl` 的行数（12,792）。这是抽取阶段已经剔除 `empty` / `already-cjk` / `pure-number` / `too-short` / `search-tags` / `url-only` / `dup` 之后的**待译英文串总量**；被剔除的本来就不需要译，算进分母只会把覆盖率压低且失去意义
 - **分子** = 这 12,792 行里 `h` 能在 `packs/zh-cn/*.jsonl` 精确命中的行数（9,073）
 - **覆盖率 = 9,073 / 12,792 = 70.93%**（按来源：`loc` 2,646/2,948 = 89.76%、`cfg` 6,427/9,844 = 65.29%）
-- 两个**失真**数字列在报告里防止误引：`9,990 / 12,792 = 78.10%`（分子混进 917 条池外条目）、`8,985 / 12,792 = 70.24%`（剔除 88 行直通）
+- 两个**失真**数字列在报告里防止误引：`11,089 / 12,792 = 86.69%`（分子混进 2,016 条池外条目，含全部 IL 包）、`8,985 / 12,792 = 70.24%`（剔除 88 行直通；全库 92 行直通里有 4 行在 IL 包里、不在 pool 交集内）
+- **报告是三节，三节的分母互不相加**：① pool 口径（cfg 包覆盖多少待译串，9,073 / 12,792）；② DLL 字面量口径（`il-translatable.jsonl` 的 `translate` 桶 1,145 条 → IL 包 1,099 条 = 95.98%，与 ① 的 `h` 交集 0，对 ① 贡献 0）；③ 运行时捕获通道现状（`capture-candidates.jsonl` 2,008 行 = candidate 78 + template 1,930，v1.1 不进包）
 
 改动 `packs/zh-cn/**` 之后**必须重跑 `python -m i18n_tools.packindex`**：`selftest` 的 [8] 会拿清单与现场扫描逐项比对，
 一旦漂移就会报 `清单条目与现场扫描逐项一致（清单不能与磁盘漂移）` 失败——这是故意的护栏，不是噪声。
+[8] 还钉住三个真值（`packCount == 89` / `totalRows == 11089` / `totalBytes == 3685087`）与两个构成（`cfg 41 / IL 48`、`唯一 mod 74`）：
+加包后这三行必须同步改，否则失败信息就是提醒你“包变了、清单没跟上”。

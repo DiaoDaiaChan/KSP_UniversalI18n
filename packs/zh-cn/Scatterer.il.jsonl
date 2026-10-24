@@ -1,0 +1,73 @@
+{"h":"02dd3df16b57e850","n":"Motion blending","s":"   Motion blending","t":"运动混合","mod":"Scatterer"}
+{"h":"0c956510e435acf1","n":"Eclipses (WIP, sky/orbit only for now)","s":"Eclipses (WIP, sky/orbit only for now)","t":"日食/月食（开发中，目前仅天空/轨道生效）","mod":"Scatterer"}
+{"h":"0f707b20e1275072","n":"Flatten scaled mesh","s":"Flatten scaled mesh","t":"扁平化缩放网格","mod":"Scatterer"}
+{"h":"0f8689bb07d99ced","n":"Save atmo","s":"Save atmo","t":"保存大气","mod":"Scatterer"}
+{"h":"10a71697e490ba0f","n":"Auto rescale","s":"Auto rescale","t":"自动重缩放","mod":"Scatterer"}
+{"h":"13a21534b010c9c6","n":"Config points","s":"Config points","t":"配置点","mod":"Scatterer"}
+{"h":"13a25e34b01145d1","n":"Config point:","s":"Config point:","t":"配置点：","mod":"Scatterer"}
+{"h":"1624b25c43c32795","n":"Rayleigh density scale height","s":"Rayleigh density scale height","t":"瑞利散射密度标高","mod":"Scatterer"}
+{"h":"162bb37d5346755c","n":"Legacy Godrays strength*","s":"Legacy Godrays strength*","t":"旧版云隙光强度*","mod":"Scatterer"}
+{"h":"1885652c467e771d","n":"Temporal Antialiasing (TAA), can combine with SMAA","s":"Temporal Antialiasing (TAA), can combine with SMAA","t":"时间性抗锯齿（TAA），可与 SMAA 结合","mod":"Scatterer"}
+{"h":"19a50715ed0fb2d5","n":"Customize Settings","s":"Customize Settings","t":"自定义设置","mod":"Scatterer"}
+{"h":"1bff0aedddecce59","n":"Long-Distance Terrain shadows","s":"Long-Distance Terrain shadows","t":"远距离地形阴影","mod":"Scatterer"}
+{"h":"1de78bdd37844c69","n":"Underwater light rays","s":"Underwater light rays","t":"水时光线","mod":"Scatterer"}
+{"h":"1f7418bca3a21306","n":"Post Processing","s":"Post Processing","t":"后期处理","mod":"Scatterer"}
+{"h":"25caebe5bb884ff2","n":"Apply settings/Rebuild ocean","s":"Apply settings/Rebuild ocean","t":"应用设置/重建海洋","mod":"Scatterer"}
+{"h":"267eebd8e6568c42","n":"Apply preset","s":"Apply preset","t":"应用预设","mod":"Scatterer"}
+{"h":"2b333e010b01fefd","n":"Scattering and Extinction","s":"Scattering and Extinction","t":"散射与消光","mod":"Scatterer"}
+{"h":"3338b385121a67b3","n":"Kopernicus ring shadows (linear only, tiled rings not supported)","s":"Kopernicus ring shadows (linear only, tiled rings not supported)","t":"Kopernicus 环形阴影（仅线性，不支持平铺环形）","mod":"Scatterer"}
+{"h":"36961227b514f41b","n":"Subpixel Morphological Antialiasing (SMAA), can combine with TAA","s":"Subpixel Morphological Antialiasing (SMAA), can combine with TAA","t":"亚像素形态学抗锯齿（SMAA），可与 TAA 结合","mod":"Scatterer"}
+{"h":"38ecda9fd0d5ee4b","n":"Atmo height (auto)","s":"Atmo height (auto)","t":"大气高度（自动）","mod":"Scatterer"}
+{"h":"3ae45e0c0506f4c6","n":"Disable TAA below framerate threshold (when SMAA is enabled)","s":"Disable TAA below framerate threshold (when SMAA is enabled)","t":"低于帧率阈值时禁用 TAA（当 SMAA 开启时）","mod":"Scatterer"}
+{"h":"4261630e96ce4712","n":"Edit Selected","s":"Edit Selected","t":"编辑所选","mod":"Scatterer"}
+{"h":"59408e2a6c079de6","n":"Save ocean","s":"Save ocean","t":"保存海洋","mod":"Scatterer"}
+{"h":"5a59f01817714129","n":"Disable scaled space ambient light","s":"Disable scaled space ambient light","t":"禁用缩放空间环境光","mod":"Scatterer"}
+{"h":"5d5ea54eff0498b1","n":"Average ground reflectance","s":"Average ground reflectance","t":"平均地面反射率","mod":"Scatterer"}
+{"h":"5f8887b069499023","n":"Print to Log","s":"Print to Log","t":"输出到日志","mod":"Scatterer"}
+{"h":"685f5c3bf172bfa5","n":"Ocean (brightness/contrast/saturation)","s":"Ocean (brightness/contrast/saturation)","t":"海洋（亮度/对比度/饱和度）","mod":"Scatterer"}
+{"h":"6915b7caed293a43","n":"Toggle WireFrame","s":"Toggle WireFrame","t":"开关 WireFrame","mod":"Scatterer"}
+{"h":"6f0c96657526f51a","n":"Inactive in tracking station and VAB/SPH","s":"Inactive in tracking station and VAB/SPH","t":"在追踪站与 VAB/SPH 中停用","mod":"Scatterer"}
+{"h":"70f8faa2b29b9f4c","n":"Override water drag","s":"Override water drag","t":"覆盖水体阻力","mod":"Scatterer"}
+{"h":"75462a13519d54c3","n":"Secondary lights compatibility (huge performance hit when lights on)","s":"Secondary lights compatibility (huge performance hit when lights on)","t":"辅助光源兼容（灯光开启时会有巨大性能损耗）","mod":"Scatterer"}
+{"h":"781a6b622aa0a97d","n":"Use dithering (Reduces color banding in sky and scattering, disable if you notice dithering patterns","s":"Use dithering (Reduces color banding in sky and scattering, disable if you notice dithering patterns","t":"使用抖动（减少天空与散射的色阶断层，若出现抖动噪点纹理请禁用）","mod":"Scatterer"}
+{"h":"78da60189908d54a","n":"Override max water recovery velocity","s":"Override max water recovery velocity","t":"覆盖最大水面回收速度","mod":"Scatterer"}
+{"h":"7f012472fb23060e","n":"Quality Presets","s":"Quality Presets","t":"画质预设","mod":"Scatterer"}
+{"h":"815aa7cfad7e623e","n":"Transparency and refractions","s":"Transparency and refractions","t":"透明度与折射","mod":"Scatterer"}
+{"h":"83ab34ad002329a8","n":"Stationary blending","s":"Stationary blending","t":"静态混合","mod":"Scatterer"}
+{"h":"86dc2569bcdf64ce","n":"Sunlight extinction (direct sun light changes color with sunset/dusk)","s":"Sunlight extinction (direct sun light changes color with sunset/dusk)","t":"日光消光（日落/黄昏时直射日光改变颜色）","mod":"Scatterer"}
+{"h":"8bc1c21b1f4e5136","n":"Mesh resolution (pixels covered by a mesh quad, lower is better but slower)","s":"Mesh resolution (pixels covered by a mesh quad, lower is better but slower)","t":"网格分辨率（每个网格四边形覆盖的像素数，越低画质越好但越慢）","mod":"Scatterer"}
+{"h":"90b75630b4d2bd96","n":"ScaledSpace model","s":"ScaledSpace model","t":"ScaledSpace 模型","mod":"Scatterer"}
+{"h":"914ab5f221970312","n":"Load atmo","s":"Load atmo","t":"加载大气","mod":"Scatterer"}
+{"h":"95eac4bb1af7d940","n":"Ozone layer altitude (km)","s":"Ozone layer altitude (km)","t":"臭氧层高度（km）","mod":"Scatterer"}
+{"h":"97d16f9c27278fd4","n":"Planet settings","s":"Planet settings","t":"行星设置","mod":"Scatterer"}
+{"h":"9e25364cb7fe2334","n":"Sunflare settings","s":"Sunflare settings","t":"太阳光晕设置","mod":"Scatterer"}
+{"h":"9e6eb61277703b67","n":"Ocean shaders","s":"Ocean shaders","t":"海洋着色器","mod":"Scatterer"}
+{"h":"a3f62c383938af7e","n":"Override water crash tolerance","s":"Override water crash tolerance","t":"覆盖水面撞击容限","mod":"Scatterer"}
+{"h":"a46594ce26fc7eaf","n":"EVE integration","s":"EVE integration","t":"EVE 集成","mod":"Scatterer"}
+{"h":"a50c9b19078b12fa","n":"Dim light underwater","s":"Dim light underwater","t":"水下光线变暗","mod":"Scatterer"}
+{"h":"a571475b9d95bfcf","n":"Menu scroll section height","s":"Menu scroll section height","t":"菜单滚动区域高度","mod":"Scatterer"}
+{"h":"a8834575186c56e4","n":"Ozone layer falloff/extents (km)","s":"Ozone layer falloff/extents (km)","t":"臭氧层衰减/范围 (km)","mod":"Scatterer"}
+{"h":"a9e08fe23bffaad1","n":"Scale start radius","s":"Scale start radius","t":"缩放起点半径","mod":"Scatterer"}
+{"h":"ab0c4b0b58597c7f","n":"Mie density scale height","s":"Mie density scale height","t":"米氏散射密度标高","mod":"Scatterer"}
+{"h":"ac1af02874028c6c","n":"Spec*: R","s":"Spec*: R","t":"高光*：R","mod":"Scatterer"}
+{"h":"aec98f8436dd1a1d","n":"EVE Clouds","s":"EVE Clouds","t":"EVE 云层","mod":"Scatterer"}
+{"h":"bc2bd080fc3ee723","n":"Map EVE clouds","s":"Map EVE clouds","t":"映射 EVE 云层","mod":"Scatterer"}
+{"h":"bf06e190199c04b5","n":"Delete atmo cache","s":"Delete atmo cache","t":"删除大气缓存","mod":"Scatterer"}
+{"h":"bfd3536a7610caf1","n":"Underwater caustics","s":"Underwater caustics","t":"水下焦散","mod":"Scatterer"}
+{"h":"c1eefbfe067824ba","n":"Integrate effects with EVE clouds (may require restart)","s":"Integrate effects with EVE clouds (may require restart)","t":"与 EVE 云层集成效果（可能需要重启）","mod":"Scatterer"}
+{"h":"c276dcbacbba76de","n":"(settings with a * are global and not cfgPoint dependent)","s":"(settings with a * are global and not cfgPoint dependent)","t":"（带 * 的设置项为全局设置，不依赖 cfgPoint）","mod":"Scatterer"}
+{"h":"cbef35ebf908c78e","n":"Sample spread","s":"   Sample spread","t":"采样扩散","mod":"Scatterer"}
+{"h":"cfc9637c92b23d23","n":"Surface receives shadows","s":"Surface receives shadows","t":"地表接收阴影","mod":"Scatterer"}
+{"h":"d28cd5a2ad995ba0","n":"Sky reflections","s":"Sky reflections","t":"天空反射","mod":"Scatterer"}
+{"h":"d3765576f0b0b975","n":"Override Near ClipPlane (not recommended - restart on disable)","s":"Override Near ClipPlane (not recommended - restart on disable)","t":"覆盖 Near ClipPlane（不推荐 - 禁用后需重启）","mod":"Scatterer"}
+{"h":"d5b1e93879666c3f","n":"Mie G (Mie phase function asymmetry)","s":"Mie G (Mie phase function asymmetry)","t":"Mie G（米氏相位函数不对称因子）","mod":"Scatterer"}
+{"h":"d8c6ff3b10378fec","n":"Reload shader bundles","s":"Reload shader bundles","t":"重新加载着色器包","mod":"Scatterer"}
+{"h":"e026a5f482fa2a6f","n":"Adjust scaled texture","s":"Adjust scaled texture","t":"调整缩放贴图","mod":"Scatterer"}
+{"h":"e1a97a78da699b2b","n":"New point altitude:","s":"New point altitude:","t":"新控制点高度：","mod":"Scatterer"}
+{"h":"e5875e3b88dfc26a","n":"Lens flare shader","s":"Lens flare shader","t":"镜头光晕着色器","mod":"Scatterer"}
+{"h":"e7855db732d4b025","n":"Current preset:","s":"Current preset:","t":"当前预设：","mod":"Scatterer"}
+{"h":"ea4c7446c835611f","n":"Load ocean","s":"Load ocean","t":"加载海洋","mod":"Scatterer"}
+{"h":"f555fa960a527a42","n":"Use low resolution atmosphere (for slower machines that get white atmos)","s":"Use low resolution atmosphere (for slower machines that get white atmos)","t":"使用低分辨率大气（适用于大气变白色的低配设备）","mod":"Scatterer"}
+{"h":"f78aaf65e6d4cdca","n":"Land (brightness/contrast/saturation)","s":"Land (brightness/contrast/saturation)","t":"陆地（亮度/对比度/饱和度）","mod":"Scatterer"}
+{"h":"f881ae750003481f","n":"Shadows Distance (in meters):","s":"Shadows Distance (in meters):","t":"阴影距离（米）：","mod":"Scatterer"}
+{"h":"ffdf2ea554971a1d","n":"Atmosphere start radius","s":"Atmosphere start radius     ","t":"大气起点半径","mod":"Scatterer"}

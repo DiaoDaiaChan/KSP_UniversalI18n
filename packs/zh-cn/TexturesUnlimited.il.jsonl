@@ -1,0 +1,20 @@
+{"h":"0139322359dc2f9d","n":"Store Color","s":"Store Color","t":"保存颜色","mod":"TexturesUnlimited"}
+{"h":"0b902807f4c1e156","n":"Textures Unlimited - GFX API Check","s":"Textures Unlimited - GFX API Check","t":"Textures Unlimited - 图形 API 检查","mod":"TexturesUnlimited"}
+{"h":"1bc93001eb65d16c","n":"Dump cam data","s":"Dump cam data","t":"转储相机数据","mod":"TexturesUnlimited"}
+{"h":"3161a14f410f7d70","n":"Store Pattern","s":"Store Pattern","t":"保存图案","mod":"TexturesUnlimited"}
+{"h":"3b5bde97292e6cd7","n":"Toggle Debug Sphere","s":"Toggle Debug Sphere","t":"开关调试球体","mod":"TexturesUnlimited"}
+{"h":"4d38259cc722ed6c","n":"Export Debug Cube Layer","s":"Export Debug Cube Layer","t":"导出调试立方体图层","mod":"TexturesUnlimited"}
+{"h":"509823c4e9410c20","n":"Export Debug Cube Maps","s":"Export Debug Cube Maps","t":"导出调试立方体贴图","mod":"TexturesUnlimited"}
+{"h":"5117e3a8cd6de2ac","n":"Select a preset color:","s":"Select a preset color: ","t":"选择预设颜色：","mod":"TexturesUnlimited"}
+{"h":"572615307407095d","n":"Acknowledge & Close","s":"Acknowledge & Close","t":"确认并关闭","mod":"TexturesUnlimited"}
+{"h":"955abda1ef937c99","n":"Dump world data","s":"Dump world data","t":"转储场景数据","mod":"TexturesUnlimited"}
+{"h":"995ac30ceea6ae74","n":"Force Reflection Probe Update","s":"Force Reflection Probe Update","t":"强制更新反射探针","mod":"TexturesUnlimited"}
+{"h":"99f9a5a7dddb7ac6","n":"Calculate Normalization Data","s":"Calculate Normalization Data","t":"计算归一化数据","mod":"TexturesUnlimited"}
+{"h":"9ba12394b9e58338","n":"Part Recoloring","s":"Part Recoloring","t":"部件重新着色","mod":"TexturesUnlimited"}
+{"h":"9c36a1b17c913812","n":"Textures Unlimited","s":"Textures Unlimited","t":"Textures Unlimited","mod":"TexturesUnlimited"}
+{"h":"ab6f05e7a18e05eb","n":"Is unsupported by Textures Unlimited, and some graphics may not render correctly.","s":"Is unsupported by Textures Unlimited, and some graphics may not render correctly.","t":"不受 Textures Unlimited 支持，部分图形可能无法正常渲染。","mod":"TexturesUnlimited"}
+{"h":"adc45ac9593e3d9a","n":"Textures Unlimited Development Mode","s":"Textures Unlimited Development Mode","t":"Textures Unlimited 开发者模式","mod":"TexturesUnlimited"}
+{"h":"d7bfcf0c21e32d6a","n":"Load Color","s":"Load Color","t":"加载颜色","mod":"TexturesUnlimited"}
+{"h":"e6fc39e0f54f9673","n":"Load Pattern","s":"Load Pattern","t":"加载图案","mod":"TexturesUnlimited"}
+{"h":"f2a8630e46055514","n":"Dump model UV Maps","s":"Dump model UV Maps","t":"转储模型 UV 贴图","mod":"TexturesUnlimited"}
+{"h":"fcf78bf740c68934","n":"Dump Stock Refl Data","s":"Dump Stock Refl Data","t":"转储原版反射数据","mod":"TexturesUnlimited"}

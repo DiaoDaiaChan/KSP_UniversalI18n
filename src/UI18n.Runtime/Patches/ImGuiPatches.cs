@@ -1,11 +1,13 @@
 using System;
+using UI18n.Runtime.Diagnostics;
 using UnityEngine;
 
 namespace UI18n.Runtime.Patches
 {
     /// <summary>
     /// IMGUI 层 13 个 patch（05 §2 的 10 个 + T5b2 补的 RepeatButton / DoWindow / DoModalWindow）
-    /// + 1 个 uGUI 之外的屏幕消息目标见 <see cref="ScreenMessagesPatches"/>，全项目共 16 个 hook 目标。
+    /// + 1 个 uGUI 之外的屏幕消息目标见 <see cref="ScreenMessagesPatches"/> + 1 个 Toolbar/SelectionGrid 漏斗
+    /// <see cref="ButtonGridPatches"/>，全项目共 17 个 hook 目标。
     /// <para>
     /// <b>每个目标一个前缀方法</b>（P2 的 per-target 统计要求）：前缀里只做一次
     /// <c>Counters.X.Touch()</c> 和一次查表，公共逻辑收在 <see cref="Apply"/>。
@@ -149,6 +151,15 @@ namespace UI18n.Runtime.Patches
             catch (Exception ex)
             {
                 Translator.ReportPrefixFailure(name, ex);
+            }
+
+            // task-31 影子差集的另一半：记下「现有 13 个 IMGUI hook 最终交出去的文本」。
+            // 必须放在翻译<b>之后</b>：统一出口 GUIStyle 看到的就是这里交出去的那一份，
+            // 两边口径一致，差集里才不会混进我们自己翻出来的译文。
+            // 默认关闭时 ShadowTracker.Enabled 恒为 false，这里只是一次静态字段判断。
+            if (ShadowTracker.Enabled)
+            {
+                ShadowTracker.NoteLegacy(content == null ? null : content.text);
             }
         }
     }

@@ -12,15 +12,17 @@ KSP 侧插件（net472）：**只做渲染层拦截**。数据能解决的文本
 | 3 **语言门禁** | `LanguageGate.ShouldTranslate(lang, ForceOverride)` | 判假 → **装 0 个 patch** 并 return |
 | 4 读字典 | `GameData/UI18n/Packs/<lang>/*.jsonl`（D35 布局，见 §5.1） | 目录/文件缺失 → 字典为空，不算错误 |
 | 5 字体探测 | `Fonts/FontProbe`（只探测不注入） | 异常 → warn 后继续 |
-| 6 装 patch | `Patches/PatchRegistry.InstallAll`（16 个，逐个 try/catch） | 单个失败 → 记日志并继续下一个 |
+| 6 装 patch | `Patches/PatchRegistry.InstallAll`（17 个，逐个 try/catch） | 单个失败 → 记日志并继续下一个 |
 | 7 汇总 | 一行 ready 日志 | — |
 
 **红线 5**：语言不是 `zh*` 时一个 patch 都不装。
 **红线 6**：任何失败只 `Debug.Log*`，不抛给 KSP。
 
-## 2. 16 个 hook 目标（05 §2 的 12 个 + T5b2 补的 4 个）
+## 2. 17 个 hook 目标（05 §2 的 12 个 + T5b2 补的 4 个 + T35 补的 1 个）
 
 > T5b 曾补过 `GUILayout.DoBox`，T5b2 已**撤**：它的方法体只有一句 `GUI.Box(...)`，而 `GUI.Box` 本来就在 hook 面里，多这一层只多一次必然 miss 的查表（05 §2 的 12 个里也不含它）。撤掉后 `PatchRegistry.ExpectedPatchCount` 必须与本节数字一致，不一致会打一条 `patch table has N entries` 警告。
+>
+> T35 又补了第 17 个：`GUI.DoButtonGrid`（`GUI.Toolbar` / `GUI.SelectionGrid` / `GUILayout.Toolbar` 的唯一漏斗，文本在 `GUIContent[]` 数组元素里）。它**不是**转发层 —— 体内 `case EventType.Repaint:` 直接 `GUIStyle.Draw(...)`，绕过全部 16 个 hook（IL 证据见 §7.1）。`ExpectedPatchCount = 17`。
 
 ### 2.1 文本层（2 个）
 
@@ -29,7 +31,7 @@ KSP 侧插件（net472）：**只做渲染层拦截**。数据能解决的文本
 | `UnityEngine.UI.Text.set_text(string value)` | #0 `value` | `TextPatches.UnityTextPrefix` | uGUI 文本 |
 | `TMPro.TMP_Text.set_text(string value)` | #0 `value` | `TextPatches.TmpTextPrefix` | 只能打**声明方法**；打 `TextMeshProUGUI` 会抛 `You can only patch implemented methods` |
 
-### 2.2 IMGUI（13 个）
+### 2.2 IMGUI（14 个）
 
 12 个目标的文本参数叫 `content`，共用一个前缀 `ImGuiPatches.ContentPrefix(ref GUIContent)`；`GUI.Window` 的文本参数叫 `title`，单独用 `ImGuiPatches.TitlePrefix(ref GUIContent)`（Harmony 按参数名绑定 ref 参数，名字写错不会抛，而是静默不生效）。
 
@@ -48,8 +50,11 @@ KSP 侧插件（net472）：**只做渲染层拦截**。数据能解决的文本
 | `GUI.RepeatButton(Rect position, GUIContent content, GUIStyle style)` | #1（T5b2 补） |
 | `GUI.DoWindow(int id, Rect clientRect, WindowFunction func, GUIContent title, GUIStyle style, GUISkin skin, bool forceRectOnLayout)` | **#3**（T5b2 补；私有漏斗，参数名 `title` → `TitlePrefix`） |
 | `GUI.DoModalWindow(int id, Rect clientRect, WindowFunction func, GUIContent content, GUIStyle style, GUISkin skin)` | **#3**（T5b2 补；私有漏斗，参数名 `content` → `ContentPrefix`） |
+| `GUI.DoButtonGrid(Rect position, int selected, GUIContent[] contents, string[] controlNames, int xCount, GUIStyle style, GUIStyle firstStyle, GUIStyle midStyle, GUIStyle lastStyle, GUI.ToolbarButtonSize buttonSize, bool[] contentsEnabled)` | **#2 数组元素**（T35 补；Toolbar / SelectionGrid 共用的私有漏斗，前缀 `ButtonGridPrefix` + 后缀 `ButtonGridPostfix`） |
 
 `GUI.RepeatButton` 是 `GUILayout.DoRepeatButton` 的下游（所以 GUILayout 那条链上会两层都命中，见 §7.2），但 mod `直接调 GUI.RepeatButton` 的路径只有它。
+
+`GUI.DoButtonGrid`（T35 补）的文本**不在 `GUIContent` 参数里，而在 `GUIContent[] contents` 的数组元素里**，所以它单独用 `ButtonGridPatches.ButtonGridPrefix(GUIContent[] contents, ref int __state)` + 配对 postfix：前缀把命中的元素**换成新的 `GUIContent` 对象**（绝不写 `contents[i].text`，理由见 §3），后缀按 `__state` 把原对象放回原槽位。它是 `GUI.Toolbar` / `GUI.SelectionGrid` / `GUILayout.Toolbar` 三条公开 API 的唯一漏斗，体内直接 `GUIStyle.Draw`，**绕过其余全部 16 个 hook**。
 
 **窗口标题为什么打私有漏斗而不是公开重载**：`GUI.Window(int, Rect, WindowFunction, **string**, GUIStyle)` 的 IL 是
 `return DoWindow(id, clientRect, func, GUIContent.Temp(text), skin.window, skin, forceRectOnLayout: true);` —— 它**绕过**公开的
@@ -81,6 +86,12 @@ content.text = ...
 
 前缀里**不允许**：改游戏静态状态、调玩法 API、装 / 卸 patch、抛异常、transpiler。
 
+唯一的**数组形态**是 `ButtonGridPatches.ButtonGridPrefix(GUIContent[] contents, ref int __state)`（`GUI.DoButtonGrid`，T35）：
+它把命中的元素**换成新的 `GUIContent` 对象**（`contents[i] = TranslateContent(...)`），把原对象记进栈，再由配对的 postfix
+按 `__state` 放回原槽位。**绝不写 `contents[i].text`** —— 数组元素多来自 `GUIContent.Temp(texts)` 的静态池共享实例，
+就地写会污染所有同文本控件；换槽位只改数组、共享实例一字节不动，而且原方法万一抛异常（Harmony 此时不跑 postfix）
+也不会把译文永久留在共享实例上。
+
 唯一的例外形态是 `ScreenMessagesPatches.MessagePrefix(ref string msg)`：目标方法签名里根本没有 `GUIContent`，所以它改的是 `string` 实参。它同样只改**传进来的值**，不碰 `ScreenMessage` 实例、不碰 `ScreenMessages` 的静态状态。**除这个目标外，任何 prefix 都不许改 `string` 参数。**
 命中路径缓存 GUIContent 实例（决策 D25），未命中零分配；`Translator.HasAnyTranslation` 是全局短路（05 §6.2）。
 
@@ -99,8 +110,8 @@ content.text = ...
 [UI18n] dictionary load: files=42, entries=10027, parseErrors=0, 137 ms
 [UI18n] patch ok: UnityEngine.UI.Text.set_text(string value)
 …
-[UI18n] installed 16/16 patches
-[UI18n] ready: patches=16/16, dict entries=10027, language=zh-cn, version=1.0.0+9238f1acc43f8249be734ceb2e2dccf2d6920ad0
+[UI18n] installed 17/17 patches
+[UI18n] ready: patches=17/17, dict entries=10027, language=zh-cn, version=1.0.0+9238f1acc43f8249be734ceb2e2dccf2d6920ad0
 ```
 
 > `version=` 后面是**程序集自带的完整版本串**（`AssemblyInformationalVersion`），格式 `<发布版本>+<构建时 HEAD 的 commit>`，
@@ -141,7 +152,7 @@ content.text = ...
 ```
 [UI18n] patch failed: GUILayout.DoWindow(int, Rect, GUI.WindowFunction, GUIContent #3, GUIStyle, GUILayoutOption[]) → method not found on UnityEngine.GUILayout with the expected signature (KSP/Unity version mismatch?)
 [UI18n] patch failed: TMPro.TMP_Text.set_text(string value) → You can only patch implemented methods
-[UI18n] installed 14/16 patches (2 failed, see [UI18n] patch failed lines above)
+[UI18n] installed 15/17 patches (2 failed, see [UI18n] patch failed lines above)
 ```
 
 前缀运行期异常（每局每种只记一次，不影响游戏）：
@@ -245,6 +256,7 @@ GameData/UI18n/
 | `GUI.Window(int, … **string text**, GUIStyle)` / `GUI.ModalWindow(int, … **string text**, GUIStyle)`（string 重载） | ✅ **已用私有漏斗闭合**（T5b2） | **#3** | IL 证据（`gui.cs:1874`）：`public static Rect Window(int id, Rect clientRect, WindowFunction func, string text, GUIStyle style) { return DoWindow(id, clientRect, func, GUIContent.Temp(text), skin.window, skin, forceRectOnLayout: true); }` —— string 重载**绕过**公开的 `Window(GUIContent title, GUIStyle)` 直连 `DoWindow`（`ModalWindow(string)` 同理直连 `DoModalWindow`），所以只打公开 GUIContent 重载会漏掉 `GUI.Window(id, rect, func, "标题")`。改打两个私有漏斗后，string / GUIContent 两种重载都在面内 |
 | `GUI.DoWindow(int, Rect, WindowFunction, GUIContent **title**, GUIStyle, GUISkin, bool)` | ✅（T5b2 补） | **#3** | 私有漏斗，参数名 `title` → `TitlePrefix`。它同时收 `Window(GUIContent)` 与 `Window(string)` 两路 |
 | `GUI.DoModalWindow(int, Rect, WindowFunction, GUIContent **content**, GUIStyle, GUISkin)` | ✅（T5b2 补） | **#3** | 私有漏斗，参数名 `content`（**不是** `title`，已用 `System.Reflection.Metadata` 实测）→ `ContentPrefix`。经 `Internal_DoModalWindow`，与 `DoWindow` 是两条并列漏斗 |
+| `GUI.DoButtonGrid(Rect, int **selected**, GUIContent[] **contents**, string[] controlNames, int xCount, GUIStyle ×4, GUI.ToolbarButtonSize buttonSize, bool[] contentsEnabled)` | ✅（T35 补） | **#2 数组元素** | Toolbar / SelectionGrid 的唯一漏斗：`GUI.Toolbar`、`GUI.SelectionGrid`、`GUILayout.Toolbar` 全走它。体内 `case EventType.Repaint:` 直接 `GUIStyle.Draw(rect, gUIContent, …)`，**绕过其余全部 16 个 hook** —— 这是 T31 影子实验漏掉的真缺口（§9.9）。文本在数组元素里，所以前缀换数组槽位、后缀还原（不写 `.text`，§3）。参数比早期文档多一个 `int selected`，已用 `ilspycmd -il -t UnityEngine.GUI` 实测 |
 | `GUI.DoLabel` / `GUI.DoRepeatButton` / `GUI.DoToggle` / `GUI.DoBox`（GUI 内部私有漏斗） | ❌ **有意放弃** | — | 公开入口（`GUI.Label/Button/Toggle/Box`）已经打了，且它们正是这些内部漏斗的调用者；再打会让**一次调用命中两次前缀**（多一次查表 + 语义变复杂），T5b 已按此结论排除 |
 | `GUI.Internal_DoWindow(int, int, Rect, WindowFunction, GUIContent **title**, GUIStyle, object skin, bool)` / `GUI.Internal_DoModalWindow(…, GUIContent **content**, GUIStyle, object skin)` | ❌ **有意放弃** | — | 再往下一层已无新覆盖（它们的唯一调用方 `DoWindow` / `DoModalWindow` 已经打了），且 `skin` 参数是 `object`（跨版本更脆） |
 | `ScreenMessages.PostScreenMessage(…)`（10 个公开重载） | ❌ **有意放弃** | — | 9 个收 `string message` + 1 个收 `ScreenMessage`。反编译确认它们**全部转发**到 2 个私有 `PostMessage`，而 5 参版又转发 6 参版 ⇒ 已改打 6 参版 1 个钩，10 个公开重载无需逐个打 |
@@ -264,12 +276,17 @@ GUI.Window(…GUIContent…)         → GUI.Window(公开，未单独打)      
 GUI.Window(…string…)             → GUI.DoWindow(✅ title)            ← 绕过公开 GUIContent 重载，靠漏斗闭合
 GUI.ModalWindow(…GUIContent/string…) → GUI.ModalWindow(公开，未单独打) → GUI.DoModalWindow(✅ content)   （与 DoWindow 并列的独立漏斗）
 GUI.RepeatButton(…GUIContent…)   → GUI.RepeatButton(✅)              （公开入口，无更深的 GUIContent 层）
+GUILayout.Toolbar(int, string[]) → GUILayout.Toolbar(公开，未单独打)  → GUI.Toolbar(公开，未单独打) → GUI.DoButtonGrid(✅ contents 数组元素)
+GUI.Toolbar(Rect, int, GUIContent[]) → GUI.Toolbar(公开，未单独打)   → GUI.DoButtonGrid(✅ contents 数组元素)
+GUI.SelectionGrid(…)             → GUI.SelectionGrid(公开，未单独打) → GUI.DoButtonGrid(✅ contents 数组元素)
 ScreenMessages.PostScreenMessage(…) ×10 → PostMessage 5 参 → PostMessage 6 参(✅ msg)
 ```
 
 ### 7.2 重叠链为什么无害
 
 `GUILayout.Label/Button/Toggle`、`GUILayout.RepeatButton`、`GUILayout.Window` 这几条链上前后两层都在 hook 面里。第二层看到的是**已经替换过的中文 `GUIContent`**，再查一次表必然 miss（25 ns 级），不会二次翻译 —— 除非某条译文恰好等于另一条的英文源文本（概率极低，且当前语料是 12,792 条中英一一对应）。保留两层的理由：mod 直接调 `GUI.*` 与直接调 `GUILayout.*` 的调用点都要覆盖，而这两条路径互不包含。
+
+`GUI.DoButtonGrid` 与那 16 个 hook **没有重叠**：它体内直接调 `GUIStyle.Draw`，而 `GUIStyle.Draw` 不在 hook 面里（`ShadowStyleDraw` 只是观测，不做翻译）。这也解释了 T31 影子实验为什么会得出「零收益」的错误结论：round 8 当轮屏幕上没有任何 Toolbar / SelectionGrid，影子看到的串确实全被 16 个 hook 覆盖了 —— 那个 0 是**当轮测量前提**的产物，不能推广（§9.9）。
 
 `GUI.DoWindow` / `GUI.DoModalWindow` 这两个漏斗与公开 `GUI.Window(…GUIContent…)` 的重叠是**刻意**的：`GUI.Window(…string…)` 绕过公开 GUIContent 重载直连漏斗，只有打漏斗才能覆盖 string 标题 —— 一次 window 绘制多一次必然 miss 的查表（~25 ns，一帧几十个窗口量级可忽略），换来 string / GUIContent 两种重载全覆盖。
 
@@ -279,13 +296,14 @@ ScreenMessages.PostScreenMessage(…) ×10 → PostMessage 5 参 → PostMessage
 1. 是输入框（`TextField`/`TextArea`）→ **本来就不翻**（§7 表中「有意放弃」）。
 2. 是屏幕提示（`ScreenMessages`）→ 在 hook 面内（6 参重载），翻不出来就按第 4 步查。
 3. 是窗口标题（`GUI.Window` / `GUI.ModalWindow`，含 **string 重载**）→ 在 hook 面内（走 `GUI.DoWindow` / `GUI.DoModalWindow` 漏斗），翻不出来同样按第 4 步查。
-4. 是 `GUILayout` 的 label/button/box/toggle/repeatbutton/window 或 uGUI/TMP 文本 → 应该在 hook 面内，查三件事：日志 `patch ok` 是否 16/16、`dictionary: entries` 是否 >0、字典里这条的 `s` 是否与运行时原文逐字相等（`s` 不匹配同样算 miss）。
+4. 是 `GUILayout` 的 label/button/box/toggle/repeatbutton/window 或 uGUI/TMP 文本 → 应该在 hook 面内，查三件事：日志 `patch ok` 是否 17/17、`dictionary: entries` 是否 >0、字典里这条的 `s` 是否与运行时原文逐字相等（`s` 不匹配同样算 miss）。
 
 ## 8. 设计约束（为什么这么写，别随手改）
 
 - **配置只走 `ConfigNode.Load(GameData/UI18n/Config.cfg)`，不碰 `HighLogic.CurrentGame` / `GameParameters`。** 原因有两条：① `[KSPAddon(Startup.Instantly)]` 阶段 `CurrentGame` 还不存在，读了必 NRE；② 存档参数属于玩法状态，红线 3 禁止 patch 侧读写玩法状态。任务书里写作「GlobalParameters/ConfigNode」的那半句即指 ConfigNode 这一路。
 - **Harmony 按参数名绑定 `ref` 实参。** 前缀方法参数名必须与目标参数名逐字一致 —— 这就是为什么 12 个 IMGUI 目标能共用一个 `ContentPrefix(ref GUIContent content)`，而 `GUI.Window` 的 `title`、`ScreenMessages.PostMessage` 的 `msg` 必须另起前缀。名字对不上时 Harmony **不抛异常**、而是注入静默失效，所以 `PatchRegistry.Install` 在 `harmony.Patch` 之前先自己核对参数名，对不上就记一条 `patch failed: … → prefix parameter name mismatch: …` 并计入失败数。
 - **只允许 `ScreenMessagesPatches.MessagePrefix` 改 `string` 参数**（目标签名里没有 `GUIContent`）；其余前缀一律只换 `GUIContent` 对象，绝不原地改 `.text`。
+- **数组参数只换槽位、不写元素**（`GUI.DoButtonGrid` 的 `GUIContent[] contents`）：前缀换对象 + 记原对象，postfix 还原。理由同红线 4（`GUIContent.Temp` 返回共享实例），见 §3。
 - **`private static` 目标不靠「名字 + 类型」猜重载**，一律 `AccessTools.Method(type, name, exactSignature)`；类型缺失/签名不符时只记一条 `patch failed` 并继续装下一个。
 - **没有 transpiler，也不把游戏方法体包进 try/catch。** `try/catch` 只包我们自己 prefix 里的逻辑，每类错误每局只记一条（`prefix failed`）。
 - **`GUIContent` 只 `new` 新对象写回 `ref`**；`GUIContent.Temp` 返回共享实例，就地写 `content.text` 会污染所有同文本控件（红线 4）。
@@ -346,6 +364,9 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `BundledFontPath` | 空 | `FontMode=Bundled` 的字体包路径，相对路径按 `GameData/UI18n` 解析 |
 | `TmpMode` | `Auto` | `Auto` / `KeepSource` / `Force`（§9.2）。非法值记 Warn 后用默认 |
 | `HitSampleLimit` | `64` | 退出时最多打印多少条「首次命中样本」（§9.4）。`0` = 关闭采样；**只影响日志条数**，`distinct hits` 计数永远精确 |
+| `CaptureMisses` | `True` | 缺命中捕获总开关（§9.8）：把「字典里没有、但真的被渲染层看到」的字符串去重后落到 `PluginData/UI18n/capture-*.jsonl`。**只写本地文件，不上传任何东西** |
+| `CaptureMaxEntries` | `5000` | 捕获的去重条数上限，触顶后只计数不再记录（日志 `capture: cap reached`）。负数按 `0` 处理 |
+| `ShadowStyleDraw` | `False` | **实验开关，正常玩家不要开**（§9.9）：额外给 `GUIStyle.Internal_Draw` / `Internal_Draw2` 装两个只读影子 prefix，只统计、绝不改文本。round 8 实测零收益，已归档，代码保留只作取证工具 |
 
 安装新版本时 `deploy.ps1 -Install` 会**保留玩家已改的值**，并把模板里有、玩家配置里缺的键按默认值补到 `UI18N` 节点末尾
 （日志 `merged  : Config.cfg (kept player values, added N new key(s): …)`）；`-ForceConfig` 才整体覆盖。
@@ -353,9 +374,10 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 ### 9.4 运行期统计日志（每 20 s 一次，计数没变化就不打）
 
 ```
-[UI18n] patch stats: UnityEngine.UI.Text.set_text=1234 hit=980 | TMPro.TMP_Text.set_text=8421 hit=3100 kept-src=5321 | GUI.Label=210 hit=205 | GUI.Box=0 hit=0 | … （16 个目标全在，含 0 命中）
+[UI18n] patch stats: UnityEngine.UI.Text.set_text=1234 hit=980 | TMPro.TMP_Text.set_text=8421 hit=3100 kept-src=5321 | GUI.Label=210 hit=205 | GUI.Box=0 hit=0 | … （17 个目标全在，含 0 命中）
 [UI18n] distinct hits: 812
 [UI18n] font stats: uGUI injected=87 already-ok=12 unavailable=0 off=0 | TMP injected=0 already-ok=0 kept-src=5321 unavailable=0 | mode=OsFont/Auto [os-font="Microsoft YaHei"]
+[UI18n] capture: distinct=37, written=37
 ```
 
 - `hit` = 真的换成译文的次数；`kept-src` = 命中译文但因字体不可用而保留原文的次数（两者互斥）。
@@ -377,6 +399,36 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
   原文 / 译文各截断到 80 字符（超出加 `...`），换行转义成 `\n`，所以一条样本永远只占一行。
   `capped=true` 表示去重后超过上限、后面的只计数不记样本（想全看就把 `HitSampleLimit` 调大，`0` = 关）。
   层级只会是 `site` / `global`：Runtime 这条路径没有位置信息，按 §4 的约定**不碰 ctx 级条目**。
+- 最后一行 `capture: distinct=N, written=M` 是缺命中捕获的状态（§9.8）：`distinct` = 本局累计去重到的未翻译串，
+  `written` = 已经追加进 `capture-*.jsonl` 的行数。`filtered=` / `overflow=` / `cap=reached` **只在非零时出现**；
+  这行在计数变化时每 20 s 出现一次，退出时由 `MissCapture.Shutdown()` 再补一条
+  `capture: wrote N line(s) (shutdown), capture: distinct=…`。`CaptureMisses=False` 时整条线不出现。
+- 有捕获记录时这行会带分类分桶（task-34 起）：`capture: distinct=N, written=M, candidate=N, template=N, never=N`。
+  `candidate` = 像正经界面文案（进翻译候选）；`template` = 含数字/进度的运行期模板（`Loading sound asset 0/234`、
+  `ModuleManager: 8448 patches applied`）；`never` = 资源路径（≥3 段 `/`，永远不该翻，但也**不丢**，留着看覆盖）。口径见 §9.8。
+- **退出 dump 里固定多一行 caller 聚合**（task-35）：
+
+  ```
+  [UI18n] capture callers: distinct=37, top5=[KSPWheel.KSPWheelGUI.OnWindow x9, RCSBuildAid.RCSBuildAidEditor.OnGUI x6, …], unknown=2
+  ```
+
+  `distinct` = 不同真实调用者个数（**不含**取不到栈的）；`top5` 按「来自它的 distinct 文本条数」降序、
+  同条数按 Ordinal 升序（保证可复现）；`unknown` = 取不到调用者的记录条数（空串 / `unknown`）。
+  这一行是**判断 caller 修复是否生效的唯一运行时证据**：栈在捕获那一刻取、落盘后无法回溯，
+  所以别指望拿旧的 `capture-*.jsonl` 离线重算。修好时 `distinct` 是几十~几百；修坏（记成我们自己的补丁）时只会是 1~2。
+- 场景扫描（进主菜单 / 进飞行场景各一次，进场景后延迟 3 s）会打三档 prefab 缺口：
+
+  ```
+  [UI18n] prefab gap: active=7 (never=3, scene-scan recoverable=2), inactive=42 (never=41), assets=1024 (never=1022)
+  [UI18n] prefab gap tier 1 (in scene + active + non-empty - this counts as a gap): components=7, never-through-set_text=3
+  [UI18n] prefab gap tier 2 (in scene but inactive - not counted): components=42, never-through-set_text=41
+  [UI18n] prefab gap tier 3 (not in any scene, prefab assets - not counted): components=1024, never-through-set_text=1022
+  ```
+
+  **只有 tier 1 算缺口**（在场景里 + `isActiveAndEnabled` + 文本非空）。tier 3 是根本没实例化的 prefab 资产
+  （单字母 `II`/`U`/`N`、lorem ipsum、报纸 prefab 这类噪声全在这里）。`scene-scan recoverable=K` = tier 1 里
+  「字典其实有译文、只是从没经过 `set_text`」的条数 —— 也就是一次场景扫描最多能补回多少条。
+- 开了 `ShadowStyleDraw=True`（§9.9）才会多出影子行，默认关时**一行都不打**。
 - 计数是每个目标一个 `PatchCounter` 静态字段（热路径只有一次 `Calls++`），不做字典查询；
   样本只在「某个原文第一次翻译成功」时记一条（缓存未命中路径），热路径不增加分配。
 - 一次真实读数（2026-10-23 round 2，新构建 43,520 B，只手动开了 Alt+F12 调试工具栏）：
@@ -399,16 +451,16 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 
 1. 启动到主菜单，`grep "\[UI18n\]" KSP.log`：应看到 `font mode=OsFont, tmp mode=Auto, os font=…`、
    42 条 `pack loaded: zh-cn/…, entries=+N, N ms`、`dictionary load: files=42, entries=10077, parseErrors=0, N ms`、
-   `installed 16/16 patches`、`ready: patches=16/16`。**任一条 `patch failed` / `prefix parameter name mismatch` 都算失败。**
+   `installed 17/17 patches`、`ready: patches=17/17`。**任一条 `patch failed` / `prefix parameter name mismatch` 都算失败。**
    - `entries=10077` 是**离线预测值**（41 个正式包 10,043 行 + `_smoke.jsonl` 34 行；用 `_scratch/p1/predictload` 对部署目录跑真 `DictPack` 得到，
      耗时 146 ms）。实测差得远就是加载缺陷（先看有没有 `MaxEntries` 截断告警、有没有读错语言目录）。
-2. 在主菜单停 60 s 以上：应出现 `patch stats: …`（16 个目标全在，含 `=0` 的），且 `font stats` 里
+2. 在主菜单停 60 s 以上：应出现 `patch stats: …`（17 个目标全在，含 `=0` 的），且 `font stats` 里
    `uGUI injected` 或 `already-ok` > 0（字体这条线通了）。
 3. 正常退出游戏，日志末尾应有 `final dump (quit): calls=N, hits=N` + 完整两份 stats。
-   **主菜单轮的通过标准**：`patches=16/16`、`parseErrors=0`、没有 `patch failed` / `prefix failed` / `font: … failed` 的 Error。
+   **主菜单轮的通过标准**：`patches=17/17`、`parseErrors=0`、没有 `patch failed` / `prefix failed` / `font: … failed` 的 Error。
 
 **主菜单轮只能证明三件事**：两个文本层目标活着（`UnityEngine.UI.Text.set_text` / `TMPro.TMP_Text.set_text` 的 `calls`>0）、
-字体线通、字典加载正确。**它不能证明 IMGUI 那一半**（13 个目标），因为主菜单根本不是 IMGUI 界面。
+字体线通、字典加载正确。**它不能证明 IMGUI 那一半**（14 个目标），因为主菜单根本不是 IMGUI 界面。
 
 主菜单停 60 s 的**预期量级**（用来一眼判断「正常」还是「patch 没生效」）：
 
@@ -419,6 +471,7 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `GUI.Label` / `GUI.Box` / `GUI.Button` / `GUI.RepeatButton` / `GUI.Toggle` / `GUI.Toggle(int)` | **0** | 0 | 主菜单不是 IMGUI；要到 VAB/SPH、Debug Toolbar、mod 窗口才出现 |
 | `GUILayout.DoLabel` / `DoButton` / `DoRepeatButton` / `DoToggle` / `DoWindow` | 0 | 0 | 同上 |
 | `GUI.DoWindow(title)` / `GUI.DoModalWindow` | 0 | 0 | 同上 |
+| `GUI.DoButtonGrid` | **0** | 0 | Toolbar / SelectionGrid 专用；要到 mod 的标签栏（如 Alt+F12 调试工具栏）才出现 |
 | `ScreenMessages.PostMessage` | **0（必然）** | 0 | 主菜单不产生屏幕提示（进场景 / 科研完成 / 成就才出现） |
 
 判故障的口径：
@@ -439,7 +492,7 @@ cd D:\Kerbal Space Program_newmod\GameData\UI18n\Plugins; Move-Item -Force UI18n
 
 ### 9.7 IMGUI 取证：`UI18n.Probe.dll`（只用于取证，不随包发布）
 
-**为什么需要它**：主菜单轮证明不了 13 个 IMGUI 目标（见 §9.5 表）。KSP 的 Debug Toolbar 热键是
+**为什么需要它**：主菜单轮证明不了 14 个 IMGUI 目标（见 §9.5 表）。KSP 的 Debug Toolbar 热键是
 `Input.GetKeyDown(KeyCode.F12) && GameSettings.MODIFIER_KEY.GetKey()`（IL 证据：Assembly-CSharp 全局类
 `DebugToolbar.Update()` 的 327/338 行；`GameSettings.MODIFIER_KEY = new KeyBinding(KeyCode.LeftAlt, KeyCode.RightAlt)`，
 本机 `settings.cfg` 同值 `primary = LeftAlt / secondary = RightAlt`；`InputBinding.IsLocked()` 只看 `inputLockMask`，
@@ -463,7 +516,7 @@ pwsh -File _scratch\p1\probe.ps1 -Action Install     # 拷进 GameData\UI18n\Plu
 pwsh -File _scratch\p1\probe.ps1 -Action Remove      # 必须移除，否则会随包发出去
 ```
 
-**预期证据**：日志里出现 13 条 IMGUI 目标的 `first call: <短名>`；`patch stats` 里它们每帧增长、`hit` > 0
+**预期证据**：日志里出现 13 条 IMGUI 目标的 `first call: <短名>`（探针画的 13 个；第 14 个 `GUI.DoButtonGrid` 要 Toolbar / SelectionGrid，探针没画，只能靠 mod 窗口验证，见 §7）；`patch stats` 里它们每帧增长、`hit` > 0
 （探针用的字符串全在 `_smoke.jsonl` 里：`Debug Toolbar`/`Settings`/`Performance`/`Database`/`Console`/
 `Reload Settings`/`Apply`/`Continue`/`Credits`/`All Input Locks Cleared`/`Vessel mass`/`Basic Options`/
 `Damage Options`/`High Speed Limit`/`Dump Wheel Debug Data`/`Advanced & debug`/`Screenshot`/
@@ -493,6 +546,172 @@ pwsh -File _scratch\p1\probe.ps1 -Action Remove      # 必须移除，否则会�
 
 **安全边界**：探针只画自己的窗口、只读字体信息、不改任何游戏状态；不在 sln 里、不在 `deploy.ps1` 的拷贝清单里，
 并且 `deploy.ps1` 在 `Plugins\` 里发现 `UI18n.Probe.dll` 时会直接报错停止（防误发）。
+
+### 9.8 缺命中捕获（task-30）：把「运行期才看得到的英文」捞出来
+
+**为什么要有它**：静态分析只能从 DLL 里拿到**字面量**。可真实显示在屏幕上的文本经常是运行期拼出来的 ——
+`"High Speed Limit " + limit`、`string.Format("Damage: {0}%", x)`、`part.partInfo.title + " options"`。
+这些串在 IL 里根本不存在，任何「扫字符串表」的做法都拿不到。渲染层是它们唯一的必经之路，
+所以：**字典查不到时，把那个串记下来**（只记录，不翻译、不改显示）。
+
+**落盘位置与文件名**（D34 的 `PluginData`，不是 `GameData`）：
+
+```
+<KSP 根>/PluginData/UI18n/capture-yyyyMMdd-HHmmss.jsonl     ← UTC 时间戳，每次启动一个新文件
+```
+
+每行一个 JSON 对象，字段固定（与 `packs/<lang>/*.jsonl` 的字段刻意不同，避免被当成翻译包读进去）：
+
+```json
+{"h":"bd1e98f3df6264ac","n":"High Speed Limit 30","s":"High Speed Limit 30","sink":"GUI.Label","caller":"KSPWheel.KSPWheelGUI.OnWindow","count":7,"firstSeen":"2026-10-23T10:31:02.4180000Z","template":true,"reason":"counter","bucket":"template"}
+```
+
+| 字段 | 含义 |
+| --- | --- |
+| `h` | `Fnv1a64(utf8(n))`，16 位小写 hex（与 `packs` 的 `h` 同一算法，可直接拿去查重） |
+| `n` | 归一化后的文本（`TextNormalizer.Normalize`：NFKC + 换行折叠 + 空白折叠 + trim） |
+| `s` | 原始文本（未归一化，保留原样的换行/空格） |
+| `sink` | 哪个 sink 看到的：`GUI.Label` / `TMPro.TMP_Text.set_text` / `ScreenMessages.PostMessage` …（= §2 的短名） |
+| `caller` | **首次**看到它时的**真实**调用者 `类型.方法`（见下「caller 怎么取」；取不到就是 `unknown`） |
+| `count` | 本局看到过多少次（按 `h` 聚合，重复只 `+1`，不再取栈） |
+| `firstSeen` | 首次出现的 UTC 时间（ISO-8601，`Z` 结尾） |
+| `template` | 是否是「运行期模板」（文本里含至少一个 ASCII 数字）。`true` 的串**不能直接拿去翻译**，要先把数字抽成占位符 |
+| `reason` | 分类原因：`path`（资源路径）/ `progress`（`0/234` 这种进度）/ `counter`（含数字但不是进度）/ 空串（静态文案） |
+| `bucket` | 分桶：`candidate`（静态文案，进翻译候选）/ `template`（模板，先抽占位符）/ `never`（资源路径，永远不翻） |
+
+**`caller` 怎么取**（`UI18n.Core.Capture.CaptureCaller`，task-34 修）：沿栈往下走，跳过这些帧，取第一个剩下的
+`类型.方法`（只留简单类型名，命名空间丢掉）：
+
+- 类型全名以 `UI18n` / `HarmonyLib` / `MonoMod` / `UnityEngine` / `Unity` / `TMPro` / `System` 开头（前缀按 `X` 或 `X.` 匹配）；
+- 方法名含 `_Patch`（Harmony 生成的 trampoline），或类型名含 `Patch`；
+- 类型/方法名为空。
+
+**为什么连 Unity 一起跳**：`GUILayout.DoLabel` → `GUI.Label` 是我们自己打了补丁的转发层，对「这段文本来自哪个 mod」
+零信息量；真正有用的是后面那个 mod 方法（例如 `RCSBuildAid.RCSBuildAidEditor.OnGUI`）。全都跳完还取不到就是 `unknown`。
+
+> 教训（round 8 实测）：第一版只用 `StackTrace(2)` 跳 2 帧，2,585 条记录的 `caller` 全成了
+> `TMPro.TMP_Text.set_text_Patch1` —— 那是我们自己的 Harmony 补丁，等于没记。栈是在**捕获那一刻**取的，
+> 文件落盘后无法回溯，所以这种缺陷只能靠下一次实机轮验证。
+
+**分类口径**（`UI18n.Core.Capture.CaptureClassify`，手写判断、无正则）：先判路径，再判进度，最后才判「含数字」：
+
+| 判定 | 规则 | `reason` | `bucket` | `template` |
+| --- | --- | --- | --- | --- |
+| 资源路径 | 按 `/` 切 ≥3 段、每段非空、整串无空白、至少一个 ASCII 字母（字母条件是为了不把 `1/2/3` 当路径） | `path` | `never` | 看是否含数字 |
+| 进度 | 存在某个 `/`，左边（跳空白）是数字、右边（跳空白）也是数字 —— `0/234`、`12 / 100` | `progress` | `template` | `true` |
+| 含数字 | 其它含 ASCII 数字的串 —— `ModuleManager: 8448 patches applied` | `counter` | `template` | `true` |
+| 静态文案 | 以上都不是 | 空串 | `candidate` | `false` |
+
+**什么会被过滤掉**（`UI18n.Core.Capture.CaptureFilter`，全部手写判断，无正则）：
+
+| 原因码 | 规则 |
+| --- | --- |
+| `empty` | 空串 |
+| `too-short` | 归一化后短于 `MinTextLength`（默认 2） |
+| `too-long` | 归一化文本或原文超过 `MaxTextLength`（默认 400 字符） |
+| `whitespace` | 只有空白 |
+| `already-cjk` | 归一化文本（或原文）里已经含 CJK 字符 —— 别人已经汉化过了，我们的字典只有英文键、永远命不中，记下来只是噪声。判据复用 `TextNormalizer.ContainsCjk`，与 `tools/i18n_tools/harvest.py` 的「含 CJK 即跳」一致 |
+| `digits` | 数字串：纯数字，或只由数字 + 数字分隔符（`. , : / - + % ° × ~ ±` 与空白）组成且至少有一个数字 —— `3.14159`、`1,234`、`-12`、`45%` 都归这里 |
+| `punctuation` | 只有标点/符号（允许夹空白） |
+| `identifier` | 长度 ≤ 3 且只含 `[A-Za-z0-9_.-]`（part 代号、cfg 键名这类噪声） |
+
+**原因码按 空 → 过短 → 过长 → 纯空白 → `already-cjk` → 数字 → 标点 → 标识符 顺序短路，只记第一个。**
+所以一条「超长且已含中文」的串会记成 `too-long` 而不是 `already-cjk` —— 两种规则都会拒掉它，过滤结果完全相同，
+只有计数口径不同。**round 8 真实文件按新口径量到 `already-cjk=24`（早期口头的 26 是粗估，以 24 为准）**，
+以后复算对不上先看这一句。
+
+`CaptureMisses=False` 时整条线关闭（连 `capture:` 日志都不出现），行为与 task-30 之前逐字节等价。
+
+**上限与落盘节奏**：去重后最多 `CaptureMaxEntries`（默认 5000）条；触顶后新串只累加 `overflow` 计数，
+并**只打一次** `[UI18n] WARN capture: cap reached (CaptureMaxEntries=5000), further distinct misses are counted only (overflow=N)`。
+落盘是**追加**语义：每 60 s（`MissCapture.Tick`）把新记录追加进同一个文件，退出/销毁时再 flush 一次并打 `Describe()`。
+写失败（目录不可写等）只 `Warn` 一次并记 `LastWriteError`，**不抛**、不影响游戏。
+
+**隐私边界（重要）**：
+
+- 只写本地文件，**没有任何网络代码**；`ReportOptIn` 目前也不上传任何东西（当前构建里根本没有上传实现）。
+- 记录的是**屏幕上已经显示给玩家看的文本**（外加调用者类型/方法名），不含存档、账号、机器信息。
+- 不想要就设 `CaptureMisses = False`；已经产生的文件可以直接删（下次启动会新建）。
+
+**怎么用这批数据**：`capture-*.jsonl` 是翻译流水线的**输入候选**，不是翻译包 —— 把它按 `mod` 归类后交给
+`tools/i18n_tools` 产出 `packs/<lang>/<modId>.jsonl`（`h` 已经是同一算法的 FNV-1a 64，`n` 就是 `packs` 里的 `n`）。
+没有 `mod` 字段是刻意的：运行期只知道「谁画的」（`caller`），不知道「属于哪个 mod」；归类时按 `caller` 的类型名或
+`Assembly-CSharp` 前缀人工/脚本判定，别让运行期去猜。
+
+**离线自检**（不需要 KSP）：`_scratch/p1/capturecheck`（net10.0 控制台 + `ProjectReference` 到 `UI18n.Core`）：
+
+```powershell
+dotnet run --project _scratch\p1\capturecheck\capturecheck.csproj -c Release            # 79 项断言：聚合去重 / 过滤 / cap / CountMiss / 落盘 / JSON 转义 / 杂项
+dotnet run --project _scratch\p1\capturecheck\capturecheck.csproj -c Release -- --bench # 微基准
+```
+
+实测：`checks=79 failures=0`；落盘 100 行无 BOM、每行可被 `JsonDocument.Parse`、追加不重复、非法路径不抛只记 `LastWriteError`。
+微基准（1,000,000 次 × 1000 distinct，每路径热身 + 3 轮取最快）**只能看量级**：重复 miss 的 `CountMiss` 路径与现有 miss 路径
+同量级（几 ns ~ 几十 ns，O(1)、零分配），首次 `Record`（含 `StackTrace`）约 6 µs 且每条 distinct 只发生一次。
+两轮测量里 `cache miss only` 与 `cache miss + CountMiss` 的先后关系会翻转（37.5 vs 22.2 / 63.1 vs 85.3），
+说明测量被字典 string 键的内存访问主导 —— **不要引用具体 ns 值，只引用「无数量级退化」这个结论**。
+
+**round 8 实机实测（2026-10-23，构建 Runtime `450FE46449E5DF45` / Core `89815C4276CD8AE2`，带探针 + `ShadowStyleDraw=True`）**：
+
+- 捕获文件 `PluginData/UI18n/capture-20261023-060127.jsonl` = 753,067 B / **2,610 行 / 2,610 distinct**。
+- **探针那 8 个「IL 静态扫描漏掉、屏幕上是英文」的串，运行时捕获 8/8 全抓到，且 `sink` 全对**
+  （`Vessel mass`→`GUILayout.DoLabel`、`All Input Locks Cleared`→`GUILayout.DoToggle`、`Database`→`GUI.Box`、
+  `Console`→`GUI.DoModalWindow`、`Reload Settings`→`GUILayout.DoRepeatButton`、`Basic Options`→`GUILayout.DoLabel`、
+  `Damage Options`→`GUILayout.DoButton`、`Debug Toolbar`→`GUI.DoWindow(title)`）⇒ **v1.1 的主数据源定为运行时捕获，
+  IL 静态扫描降级为离线辅助**（它连「运行期拼出来的串」都看不见）。
+- 这一轮同时暴露了上面三个缺陷（caller 记成我们自己的补丁、没滤已汉化的串、资源路径与进度模板混在候选里），
+  task-34 已修。**修完必须再跑一轮实机才能验证 `caller`**（栈取不到历史）。
+
+**离线复算**（不需要 KSP，把历史捕获文件按新规则重跑一遍，看分类是否合理）：
+
+```powershell
+dotnet run --project _scratch\p1\capclassify\capclassify.csproj -c Release -- 'D:\Kerbal Space Program_newmod\PluginData\UI18n\capture-20261023-060127.jsonl'
+```
+
+对上面那份 round 8 文件的实测输出（`checks=6 failures=0`）：
+
+```
+lines        : 2610
+would filter : already-cjk=24, other=0, kept=2586
+buckets      : template=1942, never=562, candidate=106
+reasons      : counter=1689, path=562, progress=253, (none)=106
+caller shape : patch/ui18n=2610, real=0
+```
+
+读法：2,610 条里 **1,942 条是模板、562 条是资源路径、只有 106 条是真正的静态候选** —— 这正是加 `template`/`bucket`
+的意义（否则翻译流水线会把 `Loading sound asset 0/234` 和 `ReStockPlus/Parts/…` 当文案送出去）。
+`caller shape: real=0` 是**修复前的历史数据**（栈已丢，离线无法重算），不是修复后的结果。
+
+### 9.9 影子实验（`ShadowStyleDraw`）：结论曾写错，真缺口是 `GUI.DoButtonGrid`
+
+**它是什么**：`GUIStyle` 的所有 public `Draw` 重载都汇到 private
+`Draw(Rect, GUIContent, int controlId, bool isHover, bool isActive, bool on, bool hasKeyboardFocus)`，
+体内只有 `controlId == -1 ? Internal_Draw(...) : Internal_Draw2(...)`（IL 证据：
+`UnityEngine.IMGUIModule.dll`，`_scratch/p1/shadowprobe` 的元数据校验器实测 `shadowprobe: all expectations matched`）。
+于是有个猜想：**打这 2 个 native 入口就能一网打尽所有 IMGUI 文本**，16 个目标或许能收敛成 2 个。
+
+**实验做法**：`ShadowStyleDraw = True` 时额外装 2 个影子 prefix（`GUIStyle.Internal_Draw` / `Internal_Draw2`），
+它们**按值收 `GUIContent`（不用 `ref`）= 结构上不可能改到游戏对象**，只做「归一化 → 记 distinct → 若新 distinct 才
+`Translator.Peek` 查表」；再把影子看到的 distinct 集合与现有 16 个目标看到的 distinct 集合求差集。
+
+**实测（round 8，2026-10-23，两次统计完全一致）**：
+
+```
+shadow: styleDraw calls=1479912 distinct=67, legacy distinct=69, styleDraw-only distinct=0 (translatable=0)
+shadow-20261023-060127.jsonl -> 0 行
+```
+
+**结论当时写错了（T35 纠正）。** `styleDraw-only distinct=0` 只说明「**当轮屏幕上画过的** 67 个串被 16 个目标全覆盖」，
+而 round 8 那一轮屏幕上没有任何 Toolbar / SelectionGrid（Alt+F12 合成按键 Unity 收不到、探针也没画），所以这个 0
+**不能推广**成「`GUIStyle.Internal_Draw` 是 16 hook 的严格子集」。真正被漏掉的是 `GUI.DoButtonGrid`
+（`GUI.Toolbar` / `GUI.SelectionGrid` / `GUILayout.Toolbar` 的唯一漏斗，体内直接 `GUIStyle.Draw`）—— 它已作为
+**第 17 个 hook** 补上（`ButtonGridPatches`，`ExpectedPatchCount = 16 → 17`，见 §7 / §7.1）。
+`GUIStyle.Internal_Draw` 仍然**只做影子观测、不做翻译**：它会看到 `TextField` / `TextArea` 里玩家正在输入的文本，
+把翻译点放在那里会污染输入（§7 表「有意放弃」）。`ShadowPatches.cs` 因此保留为取证工具（默认关闭，
+`ExpectedShadowPatchCount = 2` 单独计数，不计入 17）。
+
+**为什么还留着代码**：这是「统一底层存在吗」这个问题的**可复现证据**。以后有人（包括我自己）再想「能不能少打几个 hook」，
+跑一轮 `ShadowStyleDraw = True` 就能拿到当时的差集，不用重新推导。开启后的日志形态见 §9.4。
 
 ## 10. 发布打包（build-release.ps1）
 

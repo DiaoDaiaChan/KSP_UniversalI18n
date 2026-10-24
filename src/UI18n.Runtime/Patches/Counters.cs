@@ -1,10 +1,10 @@
 namespace UI18n.Runtime.Patches
 {
     /// <summary>
-    /// 16 个 hook 目标的计数器句柄（P2 新增）。由 <see cref="Counters.Initialize"/> 在装 patch 前统一创建，
+    /// 17 个 hook 目标的计数器句柄（P2 新增；第 17 个 <c>GUI.DoButtonGrid</c> 见 task-35）。由 <see cref="Counters.Initialize"/> 在装 patch 前统一创建，
     /// 之后前缀方法每次调用只做 <c>Counters.X.Touch()</c>（静态字段读 + 字段自增，无字典查找）。
     /// <para>
-    /// 为什么是 16 个字段而不是一个字典：<b>每个目标一个前缀方法</b>（见 ImGuiPatches / TextPatches），
+    /// 为什么是 17 个字段而不是一个字典：<b>每个目标一个前缀方法</b>（见 ImGuiPatches / TextPatches / ButtonGridPatches），
     /// 这样 Harmony 的参数名绑定与 per-target 计数都是逐目标的、互不干扰；共享一个字典会让热路径多一次哈希查询。
     /// </para>
     /// </summary>
@@ -30,8 +30,11 @@ namespace UI18n.Runtime.Patches
 
         internal static PatchCounter ScreenMessage;
 
+        /// <summary>Toolbar / SelectionGrid 的私有漏斗（task-35，第 17 个目标）。</summary>
+        internal static PatchCounter GuiButtonGrid;
+
         /// <summary>
-        /// 按 <see cref="PatchRegistry"/> 的表序创建 16 个计数器。
+        /// 按 <see cref="PatchRegistry"/> 的表序创建 17 个计数器。
         /// 幂等：重复调用会先清空 <see cref="PatchStats"/> 的登记表（统计随之归零）。
         /// </summary>
         internal static void Initialize()
@@ -57,6 +60,41 @@ namespace UI18n.Runtime.Patches
             GuiLayoutWindow = PatchStats.Create(PatchNames.GuiLayoutWindow);
 
             ScreenMessage = PatchStats.Create(PatchNames.ScreenMessage);
+            GuiButtonGrid = PatchStats.Create(PatchNames.GuiButtonGrid);
+
+            // 表自检（task-35）：Runtime 没有测试工程（tests/ 只引用 net10.0 的 Core，而 Runtime 是 net472 +
+            // Unity 引用，测试工程引用不了），所以把「短名唯一」做成运行时自检 —— 有人加目标时复制粘贴出重复短名，
+            // 日志里立刻能看见，而不是等 round 里数统计行才发现两个目标被合并成一行。
+            string duplicate = FindDuplicateName();
+            if (duplicate != null)
+            {
+                Log.Error("patch stats: duplicate short name \"" + duplicate + "\" in PatchNames (per-target stats would merge; see Counters.Initialize)");
+            }
+        }
+
+        /// <summary>返回第一个重复的短名（没有重复返回 <c>null</c>）。</summary>
+        private static string FindDuplicateName()
+        {
+            string[] names =
+            {
+                PatchNames.UnityText, PatchNames.TmpText,
+                PatchNames.GuiLabel, PatchNames.GuiBox, PatchNames.GuiButton, PatchNames.GuiRepeatButton,
+                PatchNames.GuiToggle, PatchNames.GuiToggleInt, PatchNames.GuiDoWindowTitle, PatchNames.GuiDoModalWindow,
+                PatchNames.GuiLayoutLabel, PatchNames.GuiLayoutButton, PatchNames.GuiLayoutRepeatButton,
+                PatchNames.GuiLayoutToggle, PatchNames.GuiLayoutWindow,
+                PatchNames.ScreenMessage, PatchNames.GuiButtonGrid,
+            };
+
+            var seen = new System.Collections.Generic.HashSet<string>(System.StringComparer.Ordinal);
+            for (int i = 0; i < names.Length; i++)
+            {
+                if (!seen.Add(names[i]))
+                {
+                    return names[i];
+                }
+            }
+
+            return null;
         }
     }
 
@@ -86,5 +124,8 @@ namespace UI18n.Runtime.Patches
         internal const string GuiLayoutWindow = "GUILayout.DoWindow";
 
         internal const string ScreenMessage = "ScreenMessages.PostMessage";
+
+        /// <summary>第 17 个目标（task-35）：Toolbar / SelectionGrid 的按钮文字。按元素计 hit（见 README §9.4）。</summary>
+        internal const string GuiButtonGrid = "GUI.DoButtonGrid(GUIContent[])";
     }
 }

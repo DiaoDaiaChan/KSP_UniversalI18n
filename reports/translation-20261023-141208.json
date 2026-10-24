@@ -1,0 +1,253 @@
+{
+  "tool": "translate_il",
+  "build": "20261023-141208",
+  "dry_run": false,
+  "offline": false,
+  "source": "auto",
+  "inputs": [
+    "reports\\il-fixture.jsonl"
+  ],
+  "ctx_mode": "drop",
+  "runtime_reachable": true,
+  "counts": {
+    "candidates": 48,
+    "groups": 42,
+    "merged": 5,
+    "skipped": 6,
+    "skip_reasons": {
+      "no-words": 2,
+      "no-letters": 2,
+      "already-cjk": 1,
+      "bucket-never": 1
+    },
+    "to_translate": 36,
+    "batches": 11
+  },
+  "stats": {
+    "calls": 4,
+    "batches": 12,
+    "batches_failed": 0,
+    "splits": 0,
+    "retried": 1,
+    "items_total": 36,
+    "items_ok": 31,
+    "items_keep": 1,
+    "items_failed": 0,
+    "items_gated_ratio": 4,
+    "gated_ratio_examples": [
+      {
+        "h": "3d24ccae1813b934",
+        "mod": "RP-1",
+        "bucket": "translate",
+        "s": "Center of Pressure",
+        "zh": "压心",
+        "why": "长度比 0.11"
+      },
+      {
+        "h": "f9e5a5e47336963a",
+        "mod": "RP-1",
+        "bucket": "translate",
+        "s": "Specific Impulse",
+        "zh": "比冲",
+        "why": "长度比 0.12"
+      },
+      {
+        "h": "bfb913d516c9e85b",
+        "mod": "RP-1",
+        "bucket": "translate",
+        "s": "Center of Mass",
+        "zh": "质心",
+        "why": "长度比 0.14"
+      },
+      {
+        "h": "c176fa5ab59f9db3",
+        "mod": "KSPCommunityFixes",
+        "bucket": "translate",
+        "s": "Insufficient electric charge",
+        "zh": "电能不足",
+        "why": "长度比 0.14"
+      }
+    ],
+    "keeps_no_cjk": 1,
+    "cache_hits": 31,
+    "finish_reasons": {
+      "stop": 4
+    },
+    "latency_total": 11.618,
+    "latencies": [
+      2.53,
+      2.92,
+      2.99,
+      3.17
+    ],
+    "gates": {
+      "G1": 0,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 0,
+      "G6": 4,
+      "G7": 0,
+      "G8": 1
+    },
+    "gate_examples": {
+      "G1": [],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [],
+      "G6": [
+        {
+          "h": "3d24ccae1813b934",
+          "mod": "RP-1",
+          "src": "Center of Pressure",
+          "zh": "压心",
+          "why": "长度比 0.11"
+        },
+        {
+          "h": "f9e5a5e47336963a",
+          "mod": "RP-1",
+          "src": "Specific Impulse",
+          "zh": "比冲",
+          "why": "长度比 0.12"
+        },
+        {
+          "h": "bfb913d516c9e85b",
+          "mod": "RP-1",
+          "src": "Center of Mass",
+          "zh": "质心",
+          "why": "长度比 0.14"
+        },
+        {
+          "h": "c176fa5ab59f9db3",
+          "mod": "KSPCommunityFixes",
+          "src": "Insufficient electric charge",
+          "zh": "电能不足",
+          "why": "长度比 0.14"
+        }
+      ],
+      "G7": [],
+      "G8": [
+        {
+          "h": "cfa7617e6ec25706",
+          "mod": "MechJeb2",
+          "src": "<b>Delta-V</b>: {0} m/s",
+          "zh": "<b>Δv</b>: {0} m/s",
+          "why": "译文无中文"
+        }
+      ]
+    },
+    "terms_injected": 20,
+    "terms_distinct": 20,
+    "locked_triggered": [
+      "Apoapsis",
+      "Booster",
+      "Center of Mass",
+      "Center of Pressure",
+      "Delta-V",
+      "EVA Report",
+      "Gimbal",
+      "Landing Gear",
+      "Monopropellant",
+      "Oxidizer",
+      "Reaction Wheel",
+      "Specific Impulse",
+      "Throttle",
+      "electric charge"
+    ],
+    "keep_examples": [
+      {
+        "h": "cfa7617e6ec25706",
+        "s": "<b>Delta-V</b>: {0} m/s",
+        "mod": "MechJeb2",
+        "zh": "<b>Δv</b>: {0} m/s"
+      }
+    ],
+    "failed_items": [],
+    "elapsed_s": 6.4,
+    "tokens": {
+      "prompt": 2528,
+      "completion": 95,
+      "reasoning": 0,
+      "requests": 4,
+      "failures": 0
+    },
+    "latency_avg_s": 2.9,
+    "latency_max_s": 3.17
+  },
+  "glossary": {
+    "version": "024c4e9a",
+    "terms": 813,
+    "locked": 588
+  },
+  "written": {
+    "files": {
+      "KSPCommunityFixes": 4,
+      "ModularLaunchPads": 1,
+      "RP-1": 7,
+      "MechJeb2": 6,
+      "RealismOverhaul": 11,
+      "Waterfall": 3
+    },
+    "total": 32,
+    "written": true,
+    "removed": []
+  },
+  "provenance": "C:\\Users\\43701\\Documents\\github\\UniversalI18n\\reports\\il-provenance-20261023-141208.jsonl",
+  "sample_out": null,
+  "il_conflict": [],
+  "input_conflicts": [],
+  "gated_ratio": [
+    {
+      "h": "3d24ccae1813b934",
+      "mod": "RP-1",
+      "bucket": "translate",
+      "s": "Center of Pressure",
+      "zh": "压心",
+      "why": "长度比 0.11"
+    },
+    {
+      "h": "f9e5a5e47336963a",
+      "mod": "RP-1",
+      "bucket": "translate",
+      "s": "Specific Impulse",
+      "zh": "比冲",
+      "why": "长度比 0.12"
+    },
+    {
+      "h": "bfb913d516c9e85b",
+      "mod": "RP-1",
+      "bucket": "translate",
+      "s": "Center of Mass",
+      "zh": "质心",
+      "why": "长度比 0.14"
+    },
+    {
+      "h": "c176fa5ab59f9db3",
+      "mod": "KSPCommunityFixes",
+      "bucket": "translate",
+      "s": "Insufficient electric charge",
+      "zh": "电能不足",
+      "why": "长度比 0.14"
+    }
+  ],
+  "keep_examples": [
+    {
+      "h": "cfa7617e6ec25706",
+      "s": "<b>Delta-V</b>: {0} m/s",
+      "mod": "MechJeb2",
+      "zh": "<b>Δv</b>: {0} m/s"
+    }
+  ],
+  "failed_items": [],
+  "by_mod": {
+    "KSPCommunityFixes": 4,
+    "ModularLaunchPads": 1,
+    "RP-1": 7,
+    "MechJeb2": 6,
+    "RealismOverhaul": 11,
+    "Waterfall": 3
+  },
+  "elapsed_s": 6.5,
+  "model": "gemini-3.8-flash-high"
+}

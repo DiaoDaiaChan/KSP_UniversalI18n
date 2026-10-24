@@ -1,0 +1,166 @@
+{
+  "tool": "translate_il",
+  "build": "20261023-142744",
+  "dry_run": true,
+  "offline": false,
+  "source": "il",
+  "inputs": [
+    "packs\\il-translatable.jsonl"
+  ],
+  "ctx_mode": "drop",
+  "runtime_reachable": true,
+  "counts": {
+    "candidates": 17,
+    "groups": 17,
+    "merged": 1,
+    "skipped": 0,
+    "skip_reasons": {},
+    "to_translate": 17,
+    "batches": 4
+  },
+  "stats": {
+    "calls": 5,
+    "batches": 5,
+    "batches_failed": 0,
+    "splits": 0,
+    "retried": 1,
+    "items_total": 17,
+    "items_ok": 13,
+    "items_keep": 1,
+    "items_failed": 0,
+    "items_gated_ratio": 0,
+    "gated_ratio_examples": [],
+    "keeps_no_cjk": 0,
+    "g6_exempt": 0,
+    "gated_ratio_exempt": [],
+    "overrides_applied": 3,
+    "override_rejected": [],
+    "bucket_status": {
+      "translate": {
+        "override": 3,
+        "ok": 6
+      },
+      "short_label": {
+        "ok": 3,
+        "keep": 1
+      },
+      "template": {
+        "ok": 4
+      }
+    },
+    "cache_hits": 1,
+    "finish_reasons": {
+      "stop": 5
+    },
+    "latency_total": 15.556,
+    "latencies": [
+      2.54,
+      3.13,
+      3.55,
+      4.05,
+      2.29
+    ],
+    "gates": {
+      "G1": 0,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 0,
+      "G6": 0,
+      "G7": 0,
+      "G8": 1
+    },
+    "gate_examples": {
+      "G1": [],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [],
+      "G6": [],
+      "G7": [],
+      "G8": [
+        {
+          "h": "234797405fce0c60",
+          "mod": "TUFX.dll",
+          "src": "<color=#ff4081>[FinalPass]</color>",
+          "zh": "<color=#ff4081>[FinalPass]</color>",
+          "why": "译文等于原文"
+        }
+      ]
+    },
+    "terms_injected": 1,
+    "terms_distinct": 1,
+    "locked_triggered": [],
+    "keep_examples": [
+      {
+        "h": "234797405fce0c60",
+        "s": "<color=#ff4081>[FinalPass]</color>",
+        "mod": "TUFX.dll",
+        "zh": "<color=#ff4081>[FinalPass]</color>"
+      }
+    ],
+    "failed_items": [],
+    "elapsed_s": 6.0,
+    "tokens": {
+      "prompt": 3523,
+      "completion": 417,
+      "reasoning": 0,
+      "requests": 5,
+      "failures": 0
+    },
+    "latency_avg_s": 3.11,
+    "latency_max_s": 4.05
+  },
+  "glossary": {
+    "version": "024c4e9a",
+    "terms": 813,
+    "locked": 588
+  },
+  "written": {
+    "files": {
+      "RealFuels.dll": 1,
+      "TUFX.dll": 16
+    },
+    "total": 17,
+    "written": false,
+    "removed": []
+  },
+  "provenance": "C:\\Users\\43701\\Documents\\github\\UniversalI18n\\reports\\il-provenance-20261023-142744.jsonl",
+  "sample_out": "C:\\Users\\43701\\Documents\\github\\UniversalI18n\\reports\\il-sample-tufx.jsonl",
+  "il_conflict": [],
+  "input_conflicts": [],
+  "gated_ratio": [],
+  "g6_exempt": 0,
+  "overrides_total": 3,
+  "overrides_applied": 3,
+  "override_rejected": [],
+  "bucket_status": {
+    "translate": {
+      "override": 3,
+      "ok": 6
+    },
+    "short_label": {
+      "ok": 3,
+      "keep": 1
+    },
+    "template": {
+      "ok": 4
+    }
+  },
+  "gated_ratio_exempt": [],
+  "keep_examples": [
+    {
+      "h": "234797405fce0c60",
+      "s": "<color=#ff4081>[FinalPass]</color>",
+      "mod": "TUFX.dll",
+      "zh": "<color=#ff4081>[FinalPass]</color>"
+    }
+  ],
+  "failed_items": [],
+  "by_mod": {
+    "RealFuels.dll": 1,
+    "TUFX.dll": 16
+  },
+  "elapsed_s": 6.1,
+  "model": "gemini-3.8-flash-high"
+}

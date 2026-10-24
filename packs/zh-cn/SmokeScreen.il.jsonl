@@ -1,0 +1,10 @@
+{"h":"1bc1953ec5dbe81e","n":"Globally disable Physical","s":"Globally disable Physical","t":"全局禁用物理效果","mod":"SmokeScreen"}
+{"h":"20fec1aca3aba78d","n":"Globally force emitOnUpdate","s":"Globally force emitOnUpdate","t":"全局强制emitOnUpdate","mod":"SmokeScreen"}
+{"h":"3f1b022163b65474","n":"Open ModelMultiShurikenPersistFX UI :","s":"Open ModelMultiShurikenPersistFX UI :","t":"打开 ModelMultiShurikenPersistFX 界面：","mod":"SmokeScreen"}
+{"h":"711306730d5424b1","n":"Clear Particles","s":"Clear Particles","t":"清除粒子","mod":"SmokeScreen"}
+{"h":"72da67862745433e","n":"Open Config Editor","s":"Open Config Editor","t":"打开配置编辑器","mod":"SmokeScreen"}
+{"h":"8427e420919affb7","n":"Share manual input values across effects","s":"Share manual input values across effects","t":"跨特效共享手动输入值","mod":"SmokeScreen"}
+{"h":"ab894f3bd0a916f9","n":"Globally force decluster","s":"Globally force decluster","t":"全局强制解聚","mod":"SmokeScreen"}
+{"h":"bf331a7db4265324","n":"Manual Inputs","s":"Manual Inputs","t":"手动输入","mod":"SmokeScreen"}
+{"h":"c638f76823dc94e1","n":"Single Emit Timer","s":"Single Emit Timer","t":"单次发射计时器","mod":"SmokeScreen"}
+{"h":"d36199972603d4bf","n":"Globally disable Collide","s":"Globally disable Collide","t":"全局禁用碰撞效果","mod":"SmokeScreen"}

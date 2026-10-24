@@ -4,6 +4,7 @@
 > `s` 以 `#` 开头的行 **22**（插入守卫拒绝的键行，故意保留，见 §9.2.1），契约校验 0 问题
 > （Lead 的 audit_packs + 本侧加严探针）。
 > 本文件只记录"怎么跑、怎么算、哪些是已知边界"，细节见 reports/translation-<ts>.json。
+> §1–§10 是 41 包（translate.py）的口径；**§11 是 IL / 捕获候选流水线（translate_il.py）**，两条流水线产物不同、G6 口径暂时不同（见 §11.5）。
 
 ## 1. 调用范式（唯一正确姿势）
 
@@ -254,3 +255,285 @@ worktree-vs-HEAD 的 `git diff --numstat` 里会看到少量 `+N/−M`（`Realis
 ## 10. 20 条游戏内截图核对清单
 
 见 `reports/verify-20.csv`（mod / s / t / h 四列）。
+
+## 11. IL / 捕获候选流水线（translate_il.py，T33）
+
+41 个 `packs/zh-cn/<mod>.jsonl`（9,990 行，1.0.0 已发布）由 `translate.py` 产出；
+IL / 运行时捕获候选走**另一条**流水线 `translate_il.py`，产物是 `packs/zh-cn/<mod>.il.jsonl`（独立文件，不与 41 包混写）。
+
+### 11.1 调用范式
+
+```powershell
+$env:PYTHONPATH='<repo>\tools'
+Set-Location '<repo>'
+python -m i18n_tools.translate_il --il packs\il-translatable.jsonl --capture packs\capture-candidates.jsonl --ctx-mode drop --g6-convention-exempt
+```
+
+- 输入：`packs/il-candidates.jsonl`（首版 2,285 行）或 task-32 产出的 `packs/il-translatable.jsonl` + `packs/capture-candidates.jsonl`。
+- 输出：`packs/zh-cn/<mod>.il.jsonl`，字段 `{"h","n","s","t","mod"}`（与 41 包逐字段一致，见 §2）。
+- `--dry-run` 只抑制写盘；`--offline` 桩响应不发请求；`--limit N` 均匀取样；`--mods a,b` 单 mod 试点。
+- 去重与合并：跨 mod 同文本合并成一行（`mod` 记首个宿主），同 `h` 不同原文变体单独统计；provenance 走 sidecar `reports/il-provenance-<ts>.jsonl`。
+
+### 11.2 ctx 决策：默认 `--ctx-mode drop`（Lead 已批准）
+
+四处源码证据 → 运行时拿不到 ctx：
+
+1. `src/UI18n.Core/Dict/DictPack.cs:148-201` `TryGet(hash, source, context, out translation, out level)`：**context 为空时跳过全部 Ctx 级条目**。
+2. `src/UI18n.Core/Dict/DictEntry.cs:24-35`：`Context` 非空 → Level.Ctx；否则 `Mod` 非空 → Level.Site。
+3. Runtime hook 侧一律 `context: null` 调用 `TryGet`（没有调用方传 ctx）。
+4. 已发布的 41 个包**根本没有 `ctx` 键**（`packs/zh-cn/TriggerTech.jsonl` 前 200 行实测 `NOCTXKEY x200`）→ drop 产出的 schema 与已发布包逐字段一致，零运行时风险。
+
+`--ctx-mode keep` 保留：行里写 `ctx = "il:<host>"`，但报告写 `runtime_reachable: false` 并打印
+`[il][WARN] ctx_mode=keep → ctx 非空的行是 Ctx 级，运行时 TryGet 传 context=null 会跳过`。默认 drop。
+
+### 11.3 状态分类（不靠放宽门禁来提通过率）
+
+| status | 含义 | 写库 | 重试 |
+| --- | --- | --- | --- |
+| `ok` | 八门禁全过 | 是 | — |
+| `keep` | 无需翻译（专名/型号/标识符，或模型只把 `Delta-V` 换成 `Δv` 后无中文可译）→ `t == s` 逐字节 | 是（keep 行） | 否 |
+| `gated_ratio` | **只有 G6 长度比**不过。长度比是这对文本的固有属性，重发不会变好 | **否**（按 untranslated，运行时回退英文） | **否** |
+| `failed` | 其余门禁（含 G1 漏 id 重发后仍失败） | 否 | 最多拆半/单条一次 |
+
+`keep` 的判定是 `T.echo_keep(...) or keep_no_cjk(...)`：`keep_no_cjk` 要求「译文无中文 **且** 剥掉哨兵/标签后已无含小写字母的可译词」，
+所以 `<b>Delta-V</b>: {0} m/s → <b>Δv</b>：{0} m/s` 落 keep，而「模型把英文抄回来但仍有可译词」不会误判成 keep。
+
+### 11.4 G6 下界豁免：只走机器可读数据（Lead 已批准）
+
+依据 `packs/conventions.jsonl`（12 行 `{"en","zh"}`，逐字节取自 docs/04 §8.2【专有约定】）：
+Booster=助推器 / Oxidizer=氧化剂 / Throttle=节流阀 / Gimbal=万向节 / Specific Impulse=比冲 / Apoapsis=远地点 /
+Periapsis=近地点 / Delta-V=Δv / Center of Mass=质心 / Center of Pressure=压心 / Reaction Wheel=动量轮 / Monopropellant=单组元推进剂
+
+`--g6-convention-exempt` 下**五条全满足**才豁免，否则照旧判 G6：
+
+1. 源串 `.strip()` 后**逐字节等于**某条 `en`（`Center of Mass of the vessel` 不算）；
+2. 译文 `.strip()` 后**逐字节等于**该条的 `zh`（`重心` 等别名不豁免）；
+3. `len(zh) >= 2`；
+4. 只处理**下界**违规（比值 ≥ 0.15 时交回正常 G6，上界 1.8 不受影响）；
+5. `packs/conventions.jsonl` 缺失或为空 → 永不豁免（并打印 WARN 关闭该开关）。
+
+豁免条数计入 `g6_exempt`，明细进报告 `gated_ratio_exempt`（h/mod/s/zh/ratio）。
+**`Insufficient electric charge → 电能不足` 不豁免**（整句不是术语），仍记 `gated_ratio` 回退英文 —— Lead 明确要求。
+
+### 11.5 分歧记录：两条流水线对 G6 的处理不同（v1.2 重跑时统一）
+
+- `translate_il.py`（IL 包）：**启用** §11.4 的约定术语豁免（`--g6-convention-exempt`）。
+- `translate.py`（41 包，1.0.0 已发布）：**未启用**，仍是纯 G6 下界 0.15。原因：1.0.0 的 9,990 行已发布并做过游戏内验证，
+  为几十条术语改口径会重写已验收产物，收益不足；且 41 包的 G6 命中只有 6 条残留（§6），风险面极小。
+- 计划：**v1.2 重跑时统一**为带 `packs/conventions.jsonl` 豁免的口径，届时两条流水线共用同一张表。
+
+### 11.6 fixture 实测（`reports/il-fixture.jsonl`，48 行自造语料）
+
+- 48 候选 → 去重 42 组 → 跳过 16（existing-h 10 / no-words 2 / no-letters 2 / already-cjk 1 / bucket-never 1）→ 送翻 26 组 / 11 批。
+- 首轮（无豁免）：ok 21 / failed 5（G6 4 + G8 1）。
+- 加 `--g6-convention-exempt`：**ok 24 / keep 1 / failed 0 / gated_ratio 1**；豁免 3 条 = Center of Pressure→压心(0.111)、
+  Specific Impulse→比冲(0.125)、Center of Mass→质心(0.143)；仍被拒的 1 条 = Insufficient electric charge→电能不足(0.14)。
+- 质量样例：`Tank`→储罐、`Apoapsis: {0} km`→远地点: {0} km、`Plume Density: %s`→羽流密度：%s、`Engine Status: %d`→发动机状态：%d、
+  `Warp to Next Maneuver`→快进至下一机动点、`Recover Vessel`→回收载具、`Radial Out`→径向外、`Retrograde`→逆行、`EVA Report`→EVA报告。
+- 真实数据预演（`packs/il-candidates.jsonl` 2,285 行，离线）：去重 2,082 组（跨 mod 合并 96）→ 跳过 579
+  （no-letters 192 / no-words 167 / existing-h 62 / key-ref 21 / already-cjk 137）→ **送翻 1,503 组 / 79 批 / 44 个 mod 文件**。
+- 全量数字与 `gated_ratio` 全量清单**待 task-32 输入到位后回填**。
+- selftest：`python -m i18n_tools.translate_il --selftest` = **95 项 0 失败**（含豁免五条的正负例、`ctx_mode` 字段集合、预筛顺序、
+  `--capture ""` 空路径，以及 §11.9 人工覆盖的 21 条断言）。
+
+### 11.7 缓存与可复现性（本轮修的坑）
+
+- 缓存文件 `reports/cache/il-translations.jsonl`（append-only），键 = `fnv1a(text)|glossaryV|il1|model`。
+- **`ok` / `keep` / `gated_ratio` 三种终态都入缓存**，存的是**哨兵态**模型原始产出（不是已还原文本 —— 命中后会再走一次 gate，
+  存已还原文本会被二次还原吃掉哨兵，制造假 G5，这是 41 包流水线踩过的同一个坑）。`failed` **不入缓存**，留给下一轮重试。
+  为什么 keep/gated_ratio 也要缓存：它们不写库/写 keep 行，但**重跑时若重新问模型会拿到不同结论**（实测 `" From Now"` 第一次判 gated_ratio(0.11)、
+  第二次模型给出可通过的译文 → 包内容随重跑漂移）。缓存后重跑结论固定。
+- `--offline`：**强制 `--dry-run` + 禁用缓存**（桩响应是假译文，绝不能进包或进缓存）。开发期曾误产出 6 个
+  `t = "【离线】Abort"` 的桩包与 1,501 条 `model=offline` 的桩缓存行，已全部清除。
+- `--sample-out` 审计物对**不写库**的 status 也记模型原始产出（`zh` 取 `entry.t`，没有 entry 时取模型输出），否则审计物里是空串。
+
+### 11.8 真实数据 `--limit 50` 预演（基于 `packs/il-candidates.jsonl`，非 task-32 新输入）
+
+- 取样 50 组 / 28 批 → **ok 46 / keep 3 / failed 0 / gated_ratio 1**；G6 1、G8 3（3 条 G8 全落成 keep = 模型只回抄标识符）。
+- 冷跑 33 次调用 / 29.3s / prompt 20,810 + completion 988；重跑缓存命中 45 → 9 次调用 / 13.4s。
+- 写盘演练（`--out %TEMP%\il-out2`）：18 文件 / 49 行，契约审计 **0 问题**（字段恒 `{h,n,s,t,mod}`、`h == fnv1a(normalize(s))`、
+  `n == normalize(s)`、t 非空、占位符多重集一致、无重复 h、无控制字符）；修复缓存后连跑两遍**字节完全相同**（第二遍 0 次调用）。
+- keep 3 条全对（`ReactionWheel` / `minDistance:` / `VertexDefineCoastLine`）。
+- 质量抽查 12 条（节选）：`Display Aero Data in Action Menus`→在动作菜单中显示气动数据、
+  `Tip: You can press Alt + 7 in the tracking station to display the shadow map`→提示：在追踪站中按 Alt + 7 可显示阴影贴图、
+  `Vessels: {0}`→载具：{0}、`Mode: Time → %`→模式：时间 → %、`Part flight data meets or exceeds maximum lab R&D amount`→部件飞行数据已达到或超过实验室研发上限。
+- **发现的 3 个质量问题**（均未放宽门禁，待 Lead 决策）：
+  1. 渲染路径词被意译：TUFX `Status: Forward Active (SSSR Mode)` → `状态：前进激活`（Forward = 前向渲染，应作「前向」）。同类风险词 Forward / Deferred / Forward+。
+  2. RP0 `Invalid Integration Rate` → `总装速率无效`（integration 更接近「集成/组装速率」），glossary 无机器依据，暂记不改。
+  3. 源文内部连续空格被折叠（`IconRefs in total:   Nodes:` → `总计 IconRefs：节点：`）；IMGUI label 无影响，建议不做。
+- `gated_ratio` 1/50（2%）：RP0 `" From Now"` → `后`（比值 0.11，源文带前导空格）。样本太小，**全量后给全量清单**再判是否值得动态下界。
+
+### 11.9 人工覆盖通道 `--overrides`（lead m01628 裁定后新增）
+
+- 文件 `packs/overrides.jsonl`，每行 `{"en": "<源文逐字节>", "zh": "<期望译文>", "note": "<为什么>"}`。
+  当前 3 行（TUFX 渲染路径词，`Forward`=前向 / `Deferred`=延迟，业界标准译法）：
+  `<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>`、
+  `[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>`、
+  `[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>`（前两行由 lead 给译文，第三行是语料里
+  「两条状态粘在一行」的同一约定组合，来源 `packs/il-translatable.jsonl:909`）。
+- 命中规则：`normalize(源文)` 与 `en` 逐字节相等（不折叠大小写、不合并变体）；同 en 多行不同 zh 只取第一行并计 `conflicts`。
+- **位置：模型之前**（命中即不请求模型、也不看缓存）—— 人工优先同时省 token；缓存里的旧模型译文不会盖掉人工译文。
+- **人工优先 ≠ 免检**：`override_gate` 仍校验**占位符 `<<n>>` 多重集**与**富文本标签多重集**，不符则跳过该条并记
+  `override_rejected`（带 why=h/empty/placeholder/richtext），随后照常走模型流程，绝不写坏行。
+  长度比（G6）不查：人工译文的长短由人负责。
+- 报告字段：`overrides_total` / `overrides_applied` / `override_rejected` / `bucket_status`（每桶状态表）。
+- 实测（`--mods TUFX.dll`，真实语料 17 组）：**override 3 / ok 13 / keep 1 / failed 0**，`overrides_applied 3`、`override_rejected 0`；
+  3 条覆盖行**零模型调用**（该 run 共 5 次调用，全部用于其余 14 条）。写盘两遍 **SHA256 完全相同**（`TUFX.dll.il.jsonl` = E916EF36…737AF）。
+- selftest 21 条新断言（命中改 t / 字段集合仍是 h-n-s-t-mod / 占位符不符被拒 / 富文本不符被拒 / 未命中不动 / 冲突取首行 /
+  空文件与缺失文件不报错 / 第二遍幂等 / override 不入缓存 / `packs/overrides.jsonl` 3 条且译文含「前向」「延迟」）；
+  总计 **95 项 0 失败**。
+
+### 11.10 lead 对三个质量问题的裁定（记录，勿再改）
+
+| 问题 | 裁定 | 落地 |
+| --- | --- | --- |
+| 渲染路径词被意译（Forward Active → 前进激活） | **不建术语表**（全库 Forward 5 条含 2 条 `warp forwards`、Deferred 2 条、Forward+ 0 条，只影响 TUFX 2 行；建表+G7+文档属过度工程） | 走 §11.9 人工覆盖通道 |
+| RP0 `Invalid Integration Rate` → 总装速率无效 | **记录不改**（glossary 无机器依据） | 留在本节，作为已知问题 |
+| 源文连续空格被折叠 | **不做**（中文排版不保留英文双空格，逐字节保真无收益） | 无 |
+| `" From Now"` → `后`（gated_ratio 0.11） | **保持 gated**（丢了 From，判断正确） | 全量后若 `gated_ratio` > 送翻 1% 再由 lead 定动态下界 |
+
+### 11.11 分桶统计口径 + v1.1 最终口径（只翻 translate）
+
+- `packs/il-translatable.jsonl` 1,746 行 = `translate 1145` + `short_label 429` + `template 172`（`reason`：sentence 1145 /
+  single_word 429 / template_format 97 / template_progress 75）。
+- 报告与日志用 `bucket_status` 给出**每桶独立的 ok/keep/override/gated_ratio/failed**；摘要打印一段「分桶统计」，
+  不再出现一个把三桶相加的总数。
+- **v1.1 最终口径（lead m01753 GO）：只翻 `bucket=translate`**；`short_label` 429 与 `template` 172 一律不翻。
+  `--only-bucket` 支持 `translate|short_label|template` 三值，下一版可单独开桶。
+  - `short_label` 不翻的理由：短词离开上下文必错。实证是 MechJeb2 `Omega`——同一批里 `Rendezvous`/`Alt`/`Lon` 是正常缩写，
+    而 `Omega` 在轨道力学是升交点赤经、在 PID 控制器面板里是自然频率 ω（同屏邻居是 `Pos PTerm/ITerm/DTerm`、`Deadband`、
+    `Desired`、`Current`、`Smooth Torque`、`Maximum Stopping Time`、`Minimum Flip Time`）。v1.1 不翻 ⇒ 保持英文上屏，风险为零。
+  - `template` 不翻的理由：含 `{0}`/`{1:N0}` 之类占位符，必须与模板匹配后按槽位译，逐句翻会把整句语序锁死。
+- 本轮真实全量（`--only-bucket translate --g6-convention-exempt`）：
+  候选 1,746 → 去重 1,746 组（跨 mod 合并 49）→ 跳过 646（`no-words 32` / `existing-h 69` / `other-bucket 545`）→
+  **送翻 1,100 组 / 52 批**；冷跑结果 **ok 1,091 / keep 4 / override 4 / gated_ratio 1 / failed 0**；
+  八门禁 `G1 0 / G2 0 / G3 0 / G4 0 / G5 0 / G6 1 / G7 0 / G8 4`（G8 的 4 条全落 keep）；
+  53 次调用 / 66.7s / **prompt 64,403 + completion 16,659 = 81,062 tokens**；
+  写盘 **48 个文件 / 1,099 行**（`packs/zh-cn/<asmBase>.il.jsonl`，行内 `mod` = 同一个 `<asmBase>`，不带 `.dll`）。
+  （`override` 由 3 增到 4 是 lead 裁定一新增的 R&D 行；`gated_ratio` 由 2 减到 1，见 §11.13。）
+- 幂等（最终态复核）：紧接着再跑一遍 → **0 次调用 / 缓存命中 1,096 / 48 个文件 SHA256 全部相同 / 1.2s**
+  （`override` 行在查缓存之前命中，所以命中数比 1,100 少 4；改名/加覆盖之前的同一命令是 1,097）。
+- 严格审计（口径对齐 lead 的 `_scratch/audit_packs2.py`，同时覆盖 41 个 cfg 包 + 48 个 IL 包）：
+  `89 文件 / 11,088 行 / 字段集合恒 {h,mod,n,s,t}（无 ctx 键）/ h==fnv1a64(normalize(s)) / n==normalize(s) /
+  t 非空 / <<n>> 多重集相等 / 富文本标签多重集相等 / 跨文件同 h 同 t（0 冲突）/ s 不含 CJK / 无控制字符`
+  → **problems 0、cross_file_h_conflicts 0、文件名与 mod 字段不一致 0**；`t==s` 92 行（cfg 88 + IL 4）。
+- 质量抽查（节选）：`Select a mission to load`→选择要加载的任务、`A <#0080ff>simple</color> line of text.`→一行<#0080ff>简单</color>的文本。、
+  `Cost: √{0:N0}`→成本：√{0:N0}、`Antennas/vessel: {0:F1}`→天线/载具：{0:F1}、`Time for Proficiency training varies\nbased on …`→
+  专精训练耗时取决于\n航天员已有的专精熟练度、`dry masswet mass`→干重/湿重（源文自身缺分隔符）。
+- 4 条 keep（G8 不过但无需求译，按 `t==s` 落库，运行时回退原文）：`Track IR`（Assembly-CSharp）、
+  `Click-Through-Blocker`（ClickThroughBlocker）、`KSP Community Fixes`（KSPCommunityFixes）、`Textures Unlimited`（TexturesUnlimited）。
+- `gated_ratio` 1 条（G6 下界 0.15，按 untranslated 处理：不写库、不重试、不放松门禁）：
+
+  | h | mod | s | zh | ratio |
+  |---|---|---|---|---|
+  | `4c34b236aee63b39` | RP0 | `" From Now"` | 后 | 0.111 |
+
+  1/1,100 = **0.09%**，远低于 lead 定的 1% 阈值 ⇒ 不启用动态下界。原先还有一条
+  `Research & Development → 研发`（0.091），**已按 lead 裁定一走人工覆盖通道**（不靠括号补英文骗 G6，见 §11.13）；
+  `" From Now"` **保持英文上屏**：它是带前导空格的拼接片段，`" 后"` 会拼出「3 后」这类残句，宁可不翻。
+- `existing_h_skipped 69`（这些 `h` 已由 41 个 cfg 包覆盖，重复写 IL 行只会制造两份同 h 同 t 的冗余）/
+  `keeps_no_cjk 0` / `il_conflict 0`（同 h 跨 mod 不同 t 的冲突为 0）/ `overrides_applied 4` / `override_rejected 0`。
+- 最终态全仓（41 cfg + 48 IL）：**89 文件 / 11,089 行 / 3,685,087 B**；lead 的 `_scratch/audit_packs2.py`
+  `files=89 (il=48) rows=11089 bytes=3685087 keep_rows=92 unique_h=11089 dup_h=0 dup_h_diff_t=0 bad_h=0 bad_n=0
+  empty_t=0 bad_placeholder=0 bad_richtext=0 cjk_in_source=0 VERDICT: PASS`。
+
+### 11.12 v1.2 待办（v1.1 不做的三件事，别忘）
+
+| 桶 | v1.1 处置 | v1.2 必须补的条件 |
+|---|---|---|
+| `short_label` 429 | 不翻，保持英文 | **先按 `ilOffset`/`type`/`sink` 回查 IL 上下文再翻**；`Omega` 就是「短词离开上下文必错」的样本（轨道力学=升交点赤经 / PID 面板=自然频率 ω） |
+| `template` 172 | 不翻 | 需模板匹配：先抽出 `{0}`/`{1:N0}` 等槽位骨架，再按槽位语义译，禁止整句自由翻译 |
+| 捕获通道 `packs/capture-candidates.jsonl`（2,008 行） | 不翻，只交付工具 + 契约 + 一轮实证 | 等**真实游玩会话**的捕获数据；lead 探针那一轮含大量假串（`Zzz control alpha/beta`、`II`、`U`、`N`） |
+| 带版本号的程序集名（`ModuleManager.4.2.3`） | **v1.1 已实现归一**（`asm_version_base`，见 §11.13） | 规则写死、不许靠猜：`asmBase` 去目录去 `.dll` 后，**尾部匹配 `(\.[0-9]+){2,}` 才整段剥掉**（`ModuleManager.4.2.3`→`ModuleManager`，`Foo.2` 保留）；换采集器 / 换语言 / 换 mod 集合时都必须沿用，否则 `packs/index.json` 会出现两套 mod 名 |
+
+另：v1.2 重跑 41 个 cfg 包时应统一两条流水线对 G6 的处理（见 §11.5 分歧记录）。
+
+### 11.13 程序集名归一规则 + 人工覆盖两处裁定（lead m01857）
+
+**① 带版本号的程序集名归一到无版本（已实现，规则写死，不靠猜）**
+
+- 规则：`asmBase` 取出后（去目录、去 `.dll`），**若尾部匹配 `(\.[0-9]+){2,}` 则整段剥掉**——≥2 段数字才算版本号，
+  避免误伤 `Foo.2` 这种真名。
+- 例：`ModuleManager.4.2.3.dll` → base `ModuleManager.4.2.3` → mod **`ModuleManager`**，文件 `ModuleManager.il.jsonl`；
+  `ksp_plugin_adapter` / `Assembly-CSharp` / `B9-PWings-Fork` 一律原样。
+- 实现：`asm_version_base()` + `_VERSION_SUFFIX_RE = re.compile(r"(?:\.[0-9]+){2,}$")`；`asm_base()` 末尾套用它，
+  所以输出文件名、行内 `mod`、`by_mod` 三处自动一致。
+- 报告字段 `asm_normalized`：`[{"asm":"ModuleManager.4.2.3.dll","base":"ModuleManager.4.2.3","mod":"ModuleManager"}]`
+  （只记 base != mod 的，避免把 48 个正常程序集全塞进报告）。
+  坑：必须在**原始行**上算，`load_candidates` 之后的 `mods` 已被归一，在归一后数据上算永远是空表（实测踩过）。
+- 旧文件清理：新增 `--prune`（限跑/单桶时也允许删除本次结果里不存在的 `<mod>.il.jsonl`），
+  否则改名后 `ModuleManager.4.2.3.il.jsonl` 会留在盘上变成两份同 h 包。本轮已删旧文件、新文件 3 行、行数不变。
+- selftest 断言（7 条）：`ModuleManager.4.2.3`→`ModuleManager`、`Foo.2`→`Foo.2`（不剥）、`Foo.2.3.4`→`Foo`、
+  `asm_base("ModuleManager.4.2.3.dll")`、无版本号原样、文件名 `ModuleManager.il.jsonl`、`asm_normalized` 只记 base != mod。
+
+**② `Research & Development` 走人工覆盖，译法用「研发」**
+
+- `packs/overrides.jsonl` 第 4 行：`{"en":"Research & Development","zh":"研发","note":"TestFlightCore 分类标签；G6 下界误拒（0.091），人工裁定短译正确，lead m01857 裁定"}`。
+- 落点 `packs/zh-cn/TestFlightCore.il.jsonl:1`：`t=研发`，`mod=TestFlightCore`；`overrides_applied 4 / override_rejected 0`。
+- **不写「研发（R&D）」**：括号补英文是为了骗过 G6 的字符比值，那是把门禁当敌人；overrides 通道的设计前提就是
+  「长度比由人负责」，所以直接写最短正确译法。
+
+**③ `" From Now"` 保持 gated_ratio（不覆盖）**
+
+- 它是带前导空格的拼接片段，`" 后"` 会拼出「3 后」这类残句 ⇒ 宁可不翻、留英文上屏。
+
+
+
+
+
+## 12. IL 候选分桶 + 捕获摄入（task-32）
+
+### 12.1 改了什么文件
+
+| 文件 | 变更 | 说明 |
+|---|---|---|
+| `tools/i18n_tools/buckets.py` | **新增** 7,130 B | 四档分桶 `translate / short_label / template / never` + 机器可读 `reason`（15 个原因码，顺序即优先级） |
+| `tools/i18n_tools/iltranslatable.py` | **新增** ~26.7 KB | 四类扩展采集 X1–X4，产出 `packs/il-translatable.jsonl` |
+| `tools/i18n_tools/ilstrings.py` | 修改（**默认行为不变**） | 加 `EXTRA_API_TABLE` / `EXTRA_CLASSIFY` / `Resolver.NESTED_TYPEREF` / `Analyzer` 三个扩展点（`_resolve_return_lit` / `_field_lit` / `_hit`）/ `scan_dll(need_no_ldstr=True)` |
+| `tools/i18n_tools/capture_ingest.py` | **新增** ~25.4 KB | 捕获摄入 + 去重 + 剔覆盖 + 分桶，产出 `packs/capture-candidates.jsonl` |
+| `tools/i18n_tools/selftest.py` | 修改 | **175 → 214 项**（ilstrings 合成 fixture + 真实产物 9 项 + capture_ingest 30 项 + 真实捕获产物 9 项） |
+| `packs/il-translatable.jsonl` | **新增** | 1,746 行 / 539,514 B |
+| `packs/capture-candidates.jsonl` | **新增** | 2,008 行 / 695,659 B |
+| `reports/il-reachability.md` | 追加 §12（296–427 行）与 §13–15（431–582 行） | §12 分桶与可翻译子集、§13 三类不可达、§14 八串验收、§15 捕获 vs 静态重叠度 |
+| `packs/il-candidates.jsonl` | **未动** | task-29 历史产物，按契约保留 |
+
+### 12.2 实测数字
+
+**钩子中性回归（先做，确保 task-29 可复现）**：加完所有扩展点后重跑 `python -m i18n_tools.ilstrings`，
+输出与加钩子前**逐字节相同**（525,668 B）。与仓库里 `packs/il-candidates.jsonl` 只差 1 行，原因是
+`GameData\Principia\ksp_plugin_adapter.dll` 的 LastWriteTime = 2026-10-23 13:11:04（在 task-29 扫描之后被更新过），不是代码变化（已写进报告 §12.6）。
+
+**iltranslatable（静态扩展）**：131 个程序集；索引「单 return 字面量」方法 1,333 / 静态字段初值 1,729 / 类型基类关系 19,570；
+阶段 A 1.33s + 阶段 B 23.96s = **25.29s**；命中 66,511 条 → 合并 **2,415 个 distinct 文本** → 产物 **1,746 行 / 539,514 字节 /
+sha256 `9261933E033262DBF762D51B4AFA4543305D00FAAD286FC2BA057C66384CF8FD`**（连跑两次相同 = 幂等）。
+
+四档（2,415）：`translate 1,145` / `short_label 429` / `template 172` / `never 669`。
+reason 明细：sentence 1145、single_word 429、template_format 97、template_progress 75、already_cjk 144、keyref 92、no_letters 91、
+identifier 82、too_short 66、weak_words 62、no_word 50、tags_only 38、format_only 36、path 8。
+
+扩展归因（涉及 / 其中 never / 仅靠它才抓到 / 其中新增）：base 2,090 / 572 / 2,072 / 8；x1 89 / 16 / 88 / 88；x2 41 / 5 / 19 / 19；
+x3 5 / 1 / 1 / 1；x4 231 / 84 / 195 / 195。**x1（补 `ScreenMessages.PostScreenMessage`）与 x4（`DialogGUI*` 构造）是主要增量。**
+
+**八串验收（真机保持英文的串）**：**5/8 命中**（task-29 的 il-candidates 是 1/8）：
+`Vessel mass`（RCSBuildAid.dll / GUILayout.DoToggle，靠 X2）、`All Input Locks Cleared`（ClickThroughBlocker.dll / ScreenMessages.PostScreenMessage，靠 X1）、
+`Basic Options` + `Damage Options`（KSPWheel.dll / KSP.DialogGUIBox..ctor，靠 X2+X4）、`Debug Toolbar`（Assembly-CSharp.dll / GUILayout.DoWindow，base 就有）。
+未命中 3 条属**原理不可达**：`Database` / `Performance`（枚举成员名，只活在 `#Strings` 堆）、`Reload Settings`（运行时拼接，ldstr 形态全 DLL 0 命中）。
+
+**capture_ingest（round 8 真实捕获）**：读入 2,610 行（缺文件 0 / 坏行 0 / 坏记录 0 / h 不一致 0）→ 去重 2,610 → 已被包覆盖 **0** →
+分桶 `never 602 / template 1,930 / candidate 78`（reason：path 578 / already-cjk 24 / progress 253 / counter 1,677 / 无 78）→
+产物 **2,008 行 / 695,659 字节 / sha256 `1E1CA1135939902C40579DEE023AA1FB9E68C7F473913040E3D7F4F100F87672`**（连跑两遍逐字节相同）。
+
+**重叠度（v1.1 净增量）**：捕获 2,610 ∩ pool 0、∩ zh-cn 包 0、∩ il-translatable 18、∩ il-candidates 14
+→ **只有运行时捕获才看得到 2,592 / 2,610 = 99.31%**。产物 2,008 行 ∩ il-translatable 17、∩ il-candidates 13。
+
+**自测**：`python -m i18n_tools.selftest` = **214 项全绿 EXIT=0**；`python -m i18n_tools.capture_ingest --selftest` = 30 项全绿。
+
+### 12.3 已知限制（写下来，别当没有）
+
+1. **`mods` 全 unknown**：round 8 捕获的 `caller` 全是补丁名（2,585 行 `TMP_Text.TMPro.TMP_Text.set_text_Patch1`），按契约不猜。要拿到 mod 归属，需 Runtime 侧在捕获里记 Assembly 名。
+2. **`count` 不代表重要性**：`Zzz control beta` count 16,966 是某轮询 label 每帧刷新所致。
+3. **path 口径差 16**：core 校准 path 562，我 578 —— 16 条带空格路径（`ROCapsules/PartConfigs/Apollo D2/D2Adapter/ROC-D2Adaptor`）。我选「宁可多判 path 少给翻译」；要严格同口径就把段字符集里的空格去掉。
+4. **声明字段只在 10 字段捕获文件里采信**：round 8 的 7 字段文件全部自算。
+5. **静态采集天花板 5/8**：枚举成员名、运行时拼接、特性载荷三类原理不可达（报告 §13），v1.1 主数据源必须是运行时捕获，IL 扫描降级为离线辅助。
+6. **基线漂移**：Principia `ksp_plugin_adapter.dll` 在 2026-10-23 13:11 更新过，今天重跑 ilstrings 得 2,286 行（历史产物 2,285 行保持不动）。
+7. **未 commit、未跑 packindex**：按 Lead 要求等统一跑（新产物 `packs/il-translatable.jsonl` 与 `packs/capture-candidates.jsonl` 一旦入包索引会改变 `packs/index.json` 的 totalRows/totalBytes）。

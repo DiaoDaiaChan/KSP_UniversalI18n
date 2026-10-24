@@ -1,0 +1,11 @@
+[14:00:49] round start: lang=zh-cn tag=zhcn-r8-shadow withProbe=True keepProbe=False closeGame=False preflightOnly=True waitForExit=False waitMinutes=480 processName=KSP_x64 expectEntries=9990
+[14:00:49] report: C:\Users\43701\Documents\github\UniversalI18n\reports\verify-zhcn-r8-shadow-20261023-140049.log
+[14:00:49] A) settings.cfg LANGUAGE = zh-cn
+[14:00:49] B) packs deployed: 41 file(s), 3,504,392 B ; repo: 41 file(s), 3,504,392 B
+[14:00:49] B) packs: WARN _smoke.jsonl 不在部署目录（本轮没有 smoke 证据，但不中止）
+[14:00:49] C) UI18n.Runtime.dll deployed=450FE46449E5DF45 expect(pinned)=450FE46449E5DF45  [build\bin 不参与判定]
+[14:00:49] C) UI18n.Core.dll deployed=89815C4276CD8AE2 expect(pinned)=89815C4276CD8AE2  [build\bin 不参与判定]
+[14:00:49] preflight: A/B/C passed
+[14:00:49] D) probe sha256=04014BF62E89CC91 expect=04014BF62E89CC91
+[14:00:49] D) probe: required (-WithProbe) and sha256 matched
+[14:00:49] preflight: A/B/C/D passed (-PreflightOnly: no launch, settings.cfg untouched)

@@ -1,0 +1,47 @@
+{"h":"09d8ef871fddc2f0","n":"Reason: in space.","s":"Reason: in space.","t":"原因：位于太空中。","mod":"RealChute"}
+{"h":"15721cbb891bafd9","n":"No saved presets","s":"No saved presets","t":"无已保存预设","mod":"RealChute"}
+{"h":"1e6c0615284c1278","n":"Deployment safety: risky","s":"Deployment safety: risky","t":"展开安全性：有风险","mod":"RealChute"}
+{"h":"239c734daadf9949","n":"Automatically arm when staging","s":"Automatically arm when staging","t":"分级时自动就绪","mod":"RealChute"}
+{"h":"28d092794b904142","n":"Deployment safety: dangerous","s":"Deployment safety: dangerous","t":"展开安全性：危险","mod":"RealChute"}
+{"h":"2ed261960dcdc518","n":"Case texture:","s":"Case texture:","t":"外壳贴图：","mod":"RealChute"}
+{"h":"2ee426df9b55b896","n":"wet massdry mass","s":"wet massdry mass","t":"湿质量干质量","mod":"RealChute"}
+{"h":"2f4be30c431f86da","n":"Only engineers can repack in career","s":"Only engineers can repack in career","t":"生涯模式中仅工程师可重新打包降落伞","mod":"RealChute"}
+{"h":"3dd8bc0d3ea20e09","n":"Next size","s":"Next size","t":"下一尺寸","mod":"RealChute"}
+{"h":"44fbb8233210a440","n":"Target planet:","s":"Target planet:","t":"目标天体：","mod":"RealChute"}
+{"h":"4512cd5869761fa9","n":"Previous size","s":"Previous size","t":"上一尺寸","mod":"RealChute"}
+{"h":"4d3e5a2f8d7a96c8","n":"Pressure predeployment","s":"Pressure predeployment","t":"按气压预展开","mod":"RealChute"}
+{"h":"528ef327a6923287","n":"Deployment safety: safe","s":"Deployment safety: safe","t":"展开安全性：安全","mod":"RealChute"}
+{"h":"582247c062cfa585","n":"Main chute:","s":"Main chute:","t":"主伞：","mod":"RealChute"}
+{"h":"58487662ed667c46","n":"Warning: The mass of the craft was too high and the parachutes have been set at their limit. Please review the stats to make sure no problem may occur.","s":"Warning: The mass of the craft was too high and the parachutes have been set at their limit. Please review the stats to make sure no problem may occur.","t":"警告：飞行器质量过大，降落伞已设至极限值。请检查参数以确保不会发生故障。","mod":"RealChute"}
+{"h":"58f8df4954a59a20","n":"Currently using dry mass","s":"Currently using dry mass","t":"当前使用干质量","mod":"RealChute"}
+{"h":"5923fd88cba54b55","n":"Select a preset","s":"Select a preset","t":"选择预设","mod":"RealChute"}
+{"h":"63a54251e7d0bd8d","n":"Delete preset","s":"Delete preset","t":"删除预设","mod":"RealChute"}
+{"h":"68f55256e3479135","n":"Chute texture:","s":"Chute texture:","t":"伞体贴图：","mod":"RealChute"}
+{"h":"72c30400f5c92fe7","n":"Apply to all symmetry counterparts","s":"Apply to all symmetry counterparts","t":"应用至所有对称部件","mod":"RealChute"}
+{"h":"78313b7aaa28a8dd","n":"Switch to dry mass","s":"Switch to dry mass","t":"切换至干质量","mod":"RealChute"}
+{"h":"7a55687dbddc5473","n":"Activate April Fools' joke (DANGER!!)","s":"Activate April Fools' joke (DANGER!!)","t":"启动愚人节玩笑（危险!!）","mod":"RealChute"}
+{"h":"87572b5fe06da0a1","n":"Warning: there is already a preset saved under this name. Are you sure you wish to proceed?","s":"Warning: there is already a preset saved under this name. Are you sure you wish to proceed?","t":"警告：已存在同名预设。确定要继续吗？","mod":"RealChute"}
+{"h":"8e6c2ed53ceb3caa","n":"Parachute deployment failed.","s":"Parachute deployment failed.","t":"降落伞展开失败。","mod":"RealChute"}
+{"h":"97c33b274bf4bf42","n":"dry masswet mass","s":"dry masswet mass","t":"干重/湿重","mod":"RealChute"}
+{"h":"9a6c50f6e54e9cd9","n":"Copy to symmetry counterparts","s":"Copy to symmetry counterparts","t":"复制到对称部件","mod":"RealChute"}
+{"h":"9d0f5575968007a3","n":"Cycle part size","s":"Cycle part size","t":"切换部件尺寸","mod":"RealChute"}
+{"h":"a30f6c90ee5930f7","n":"Chute model:","s":"Chute model: ","t":"伞体模型：","mod":"RealChute"}
+{"h":"b0dbb69d9ec7305e","n":"Change material","s":"Change material","t":"更改材质","mod":"RealChute"}
+{"h":"bab0be4b747e1f7c","n":"Some parameters could not be applied Invalid parameters:","s":"Some parameters could not be applied\nInvalid parameters:","t":"部分参数无法应用\n无效参数：","mod":"RealChute"}
+{"h":"bbaffc9dad728b2d","n":"Are you sure you wish to delete this preset?","s":"Are you sure you wish to delete this preset?","t":"确定要删除此预设吗？","mod":"RealChute"}
+{"h":"bd10cc48bae2410c","n":"Apply settings","s":"Apply settings","t":"应用设置","mod":"RealChute"}
+{"h":"bdd9c475e58b28a2","n":"Switch to wet mass","s":"Switch to wet mass","t":"切换至湿质量","mod":"RealChute"}
+{"h":"c25fdaac9caaaf19","n":"Use current craft mass","s":"Use current craft mass","t":"使用当前载具质量","mod":"RealChute"}
+{"h":"c5cd2544b3f87493","n":"Input craft mass","s":"Input craft mass","t":"输入载具质量","mod":"RealChute"}
+{"h":"ccad8ecd07e83e2e","n":"Activate NyanModeTM","s":"Activate NyanMode™","t":"启动 NyanMode™","mod":"RealChute"}
+{"h":"de712cb7190a0001","n":"Reason: stopped on the ground.","s":"Reason: stopped on the ground.","t":"原因：已在地面停止。","mod":"RealChute"}
+{"h":"eab0c0801510e404","n":"The application of the parameters succeeded!","s":"The application of the parameters succeeded!","t":"参数应用成功！","mod":"RealChute"}
+{"h":"ed6768d68e831213","n":"Save as preset...","s":"Save as preset...","t":"另存为预设...","mod":"RealChute"}
+{"h":"ef34d9b117ccaac7","n":"Currently using wet mass","s":"Currently using wet mass","t":"当前使用湿质量","mod":"RealChute"}
+{"h":"f00d6b69a52d76fd","n":"Reason: too high.","s":"Reason: too high.","t":"原因：高度过高。","mod":"RealChute"}
+{"h":"f12169be0bc23339","n":"Choose material","s":"Choose material","t":"选择材质","mod":"RealChute"}
+{"h":"f2913fc147ecff1c","n":"Preset description","s":"Preset description","t":"预设描述","mod":"RealChute"}
+{"h":"f877f28e5c6b7000","n":"Select preset","s":"Select preset","t":"选择预设","mod":"RealChute"}
+{"h":"f8cef7ff5d83e3d8","n":"Reason: parachute is in fairings","s":"Reason: parachute is in fairings","t":"原因：降落伞位于整流罩内","mod":"RealChute"}
+{"h":"f8e04b2138ce8a6f","n":"Only an engineer can repack a parachute","s":"Only an engineer can repack a parachute","t":"只有工程师才能重新打包降落伞","mod":"RealChute"}
+{"h":"f94b3d3f3e3565fd","n":"Altitude predeployment","s":"Altitude predeployment","t":"按高度预展开","mod":"RealChute"}

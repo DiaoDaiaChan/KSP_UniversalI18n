@@ -1,0 +1,12 @@
+{"h":"1dcc03ac60aa97b2","n":"Preset Saved. You can overwrite it by creating a new preset with the same name.","s":"Preset Saved. You can overwrite it by creating a new preset with the same name.","t":"预设已保存。创建同名预设可直接覆盖。","mod":"ROLib"}
+{"h":"3d56f319e57aa4d0","n":"ROTanks Model Selection","s":"ROTanks Model Selection","t":"ROTanks 模型选择","mod":"ROLib"}
+{"h":"4b6ff2d85c8818bc","n":"Currently applied","s":"Currently applied","t":"当前已应用","mod":"ROLib"}
+{"h":"7a1950dbd1a496ab","n":"Show preset names only","s":"Show preset names only","t":"仅显示预设名称","mod":"ROLib"}
+{"h":"7a522788e8d1db90","n":"ROTanks Diameter Selection","s":"ROTanks Diameter Selection","t":"ROTanks 直径选择","mod":"ROLib"}
+{"h":"7ae16eb7335ae325","n":"RO Mods Options","s":"RO Mods Options","t":"RO 模组选项","mod":"ROLib"}
+{"h":"8b7085dcb7db8e87","n":"The entered diameter is too small, please enter a new value.","s":"The entered diameter is too small, please enter a new value.","t":"输入的直径过小，请重新输入。","mod":"ROLib"}
+{"h":"a320cd59f04807e7","n":"Save preset","s":"Save preset","t":"保存预设","mod":"ROLib"}
+{"h":"b7dd909cc22754c8","n":"Delete presets...","s":"Delete presets...","t":"删除预设...","mod":"ROLib"}
+{"h":"bd14d3d53c39dcf8","n":"Cannot create preset; diameter is too small.","s":"Cannot create preset; diameter is too small.","t":"无法创建预设：直径过小。","mod":"ROLib"}
+{"h":"dc0fcc3f7af0708e","n":"Apply diameter","s":"Apply diameter","t":"应用直径","mod":"ROLib"}
+{"h":"f9c92cbc0f88fe5d","n":"Cannot parse entered diameter.","s":"Cannot parse entered diameter.","t":"无法解析输入的直径数值。","mod":"ROLib"}

@@ -1,0 +1,346 @@
+{
+  "tool": "translate_il",
+  "build": "20261023-144049",
+  "dry_run": false,
+  "offline": false,
+  "source": "il",
+  "inputs": [
+    "packs\\il-translatable.jsonl"
+  ],
+  "ctx_mode": "drop",
+  "runtime_reachable": true,
+  "counts": {
+    "candidates": 1746,
+    "groups": 1746,
+    "merged": 49,
+    "skipped": 646,
+    "skip_reasons": {
+      "no-words": 32,
+      "existing-h": 69,
+      "other-bucket": 545
+    },
+    "to_translate": 1100,
+    "batches": 52,
+    "existing_h_skipped": 69
+  },
+  "stats": {
+    "calls": 0,
+    "batches": 52,
+    "batches_failed": 0,
+    "splits": 0,
+    "retried": 0,
+    "items_total": 1100,
+    "items_ok": 1091,
+    "items_keep": 4,
+    "items_failed": 0,
+    "items_gated_ratio": 1,
+    "gated_ratio_examples": [
+      {
+        "h": "4c34b236aee63b39",
+        "mod": "RP0",
+        "bucket": "translate",
+        "s": " From Now",
+        "zh": "后",
+        "ratio": 0.111,
+        "why": "长度比 0.11"
+      }
+    ],
+    "keeps_no_cjk": 0,
+    "g6_exempt": 0,
+    "gated_ratio_exempt": [],
+    "overrides_applied": 4,
+    "override_rejected": [],
+    "bucket_status": {
+      "translate": {
+        "ok": 1091,
+        "keep": 4,
+        "gated_ratio": 1,
+        "override": 4
+      }
+    },
+    "cache_hits": 1096,
+    "finish_reasons": {},
+    "latency_total": 0.0,
+    "latencies": [],
+    "gates": {
+      "G1": 0,
+      "G2": 0,
+      "G3": 0,
+      "G4": 0,
+      "G5": 0,
+      "G6": 1,
+      "G7": 0,
+      "G8": 4
+    },
+    "gate_examples": {
+      "G1": [],
+      "G2": [],
+      "G3": [],
+      "G4": [],
+      "G5": [],
+      "G6": [
+        {
+          "h": "4c34b236aee63b39",
+          "mod": "RP0",
+          "src": " From Now",
+          "zh": "后",
+          "why": "长度比 0.11"
+        }
+      ],
+      "G7": [],
+      "G8": [
+        {
+          "h": "681182c0999307cf",
+          "mod": "Assembly-CSharp",
+          "src": "Track IR",
+          "zh": "Track IR",
+          "why": "译文等于原文"
+        },
+        {
+          "h": "3618a1eb6d79716f",
+          "mod": "KSPCommunityFixes",
+          "src": "KSP Community Fixes",
+          "zh": "KSP Community Fixes",
+          "why": "译文等于原文"
+        },
+        {
+          "h": "960783aaec2814e8",
+          "mod": "ClickThroughBlocker",
+          "src": "Click-Through-Blocker",
+          "zh": "Click-Through-Blocker",
+          "why": "译文等于原文"
+        },
+        {
+          "h": "9c36a1b17c913812",
+          "mod": "TexturesUnlimited",
+          "src": "Textures Unlimited",
+          "zh": "Textures Unlimited",
+          "why": "译文等于原文"
+        }
+      ]
+    },
+    "terms_injected": 64,
+    "terms_distinct": 28,
+    "locked_triggered": [
+      "Apoapsis",
+      "Gimbal",
+      "Lights On",
+      "Periapsis",
+      "Stop Research",
+      "Throttle"
+    ],
+    "keep_examples": [
+      {
+        "h": "681182c0999307cf",
+        "s": "Track IR",
+        "mod": "Assembly-CSharp",
+        "zh": "Track IR"
+      },
+      {
+        "h": "3618a1eb6d79716f",
+        "s": "KSP Community Fixes",
+        "mod": "KSPCommunityFixes",
+        "zh": "KSP Community Fixes"
+      },
+      {
+        "h": "960783aaec2814e8",
+        "s": "Click-Through-Blocker",
+        "mod": "ClickThroughBlocker",
+        "zh": "Click-Through-Blocker"
+      },
+      {
+        "h": "9c36a1b17c913812",
+        "s": "Textures Unlimited",
+        "mod": "TexturesUnlimited",
+        "zh": "Textures Unlimited"
+      }
+    ],
+    "failed_items": [],
+    "elapsed_s": 1.0,
+    "tokens": {
+      "prompt": 0,
+      "completion": 0,
+      "reasoning": 0,
+      "requests": 0,
+      "failures": 0
+    },
+    "latency_avg_s": 0.0,
+    "latency_max_s": 0.0
+  },
+  "glossary": {
+    "version": "024c4e9a",
+    "terms": 813,
+    "locked": 588
+  },
+  "written": {
+    "files": {
+      "AdvancedPQSTools": 11,
+      "AtmosphereAutopilot": 14,
+      "AtmosphereAutopilot.UI": 2,
+      "B9-PWings-Fork": 1,
+      "BurstPQS": 1,
+      "Assembly-CSharp": 180,
+      "ContractConfigurator": 25,
+      "EditorExtensionsRedux": 6,
+      "FerramAerospaceResearch": 22,
+      "Firespitter": 2,
+      "HangerExtenderExtended": 2,
+      "HarmonyInstallChecker": 1,
+      "KSCSwitcher": 2,
+      "KSPCommunityFixes": 10,
+      "KSPTextureLoader": 3,
+      "KerbalAlarmClock": 5,
+      "KerbalJointReinforcement": 4,
+      "KSPWheel": 15,
+      "LunarTransferPlanner": 10,
+      "MechJeb2": 31,
+      "ModuleManager": 3,
+      "ClickThroughBlocker": 13,
+      "ProceduralFairings": 2,
+      "ProceduralParts": 1,
+      "ParallaxContinued": 18,
+      "ROLib": 12,
+      "RCSBuildAid": 42,
+      "Kopernicus": 18,
+      "RP0": 244,
+      "RealAntennas": 18,
+      "RealFuels": 28,
+      "RealismOverhaul": 1,
+      "Renamer": 1,
+      "SmokeScreen": 10,
+      "SolverEngines": 3,
+      "Scatterer": 73,
+      "TestFlight": 1,
+      "RealChute": 47,
+      "TextureReplacer": 5,
+      "TUFX": 9,
+      "ToolbarControl": 3,
+      "TransferWindowPlanner": 41,
+      "Utils": 1,
+      "Telecom": 12,
+      "ksp_plugin_adapter": 19,
+      "TexturesUnlimited": 20,
+      "TestFlightCore": 18,
+      "Waterfall": 89
+    },
+    "total": 1099,
+    "written": true,
+    "removed": []
+  },
+  "provenance": "C:\\Users\\43701\\Documents\\github\\UniversalI18n\\reports\\il-provenance-20261023-144049.jsonl",
+  "sample_out": "C:\\Users\\43701\\Documents\\github\\UniversalI18n\\reports\\il-sample-full.jsonl",
+  "il_conflict": [],
+  "input_conflicts": [],
+  "gated_ratio": [
+    {
+      "h": "4c34b236aee63b39",
+      "mod": "RP0",
+      "bucket": "translate",
+      "s": " From Now",
+      "zh": "后",
+      "ratio": 0.111,
+      "why": "长度比 0.11"
+    }
+  ],
+  "g6_exempt": 0,
+  "existing_h_skipped": 69,
+  "asm_normalized": [
+    {
+      "asm": "ModuleManager.4.2.3.dll",
+      "base": "ModuleManager.4.2.3",
+      "mod": "ModuleManager"
+    }
+  ],
+  "keeps_no_cjk": 0,
+  "overrides_total": 4,
+  "overrides_applied": 4,
+  "override_rejected": [],
+  "bucket_status": {
+    "translate": {
+      "ok": 1091,
+      "keep": 4,
+      "gated_ratio": 1,
+      "override": 4
+    }
+  },
+  "gated_ratio_exempt": [],
+  "keep_examples": [
+    {
+      "h": "681182c0999307cf",
+      "s": "Track IR",
+      "mod": "Assembly-CSharp",
+      "zh": "Track IR"
+    },
+    {
+      "h": "3618a1eb6d79716f",
+      "s": "KSP Community Fixes",
+      "mod": "KSPCommunityFixes",
+      "zh": "KSP Community Fixes"
+    },
+    {
+      "h": "960783aaec2814e8",
+      "s": "Click-Through-Blocker",
+      "mod": "ClickThroughBlocker",
+      "zh": "Click-Through-Blocker"
+    },
+    {
+      "h": "9c36a1b17c913812",
+      "s": "Textures Unlimited",
+      "mod": "TexturesUnlimited",
+      "zh": "Textures Unlimited"
+    }
+  ],
+  "failed_items": [],
+  "by_mod": {
+    "AdvancedPQSTools": 11,
+    "AtmosphereAutopilot": 14,
+    "AtmosphereAutopilot.UI": 2,
+    "B9-PWings-Fork": 1,
+    "BurstPQS": 1,
+    "Assembly-CSharp": 180,
+    "ContractConfigurator": 25,
+    "EditorExtensionsRedux": 6,
+    "FerramAerospaceResearch": 22,
+    "Firespitter": 2,
+    "HangerExtenderExtended": 2,
+    "HarmonyInstallChecker": 1,
+    "KSCSwitcher": 2,
+    "KSPCommunityFixes": 10,
+    "KSPTextureLoader": 3,
+    "KerbalAlarmClock": 5,
+    "KerbalJointReinforcement": 4,
+    "KSPWheel": 15,
+    "LunarTransferPlanner": 10,
+    "MechJeb2": 31,
+    "ModuleManager": 3,
+    "ClickThroughBlocker": 13,
+    "ProceduralFairings": 2,
+    "ProceduralParts": 1,
+    "ParallaxContinued": 18,
+    "ROLib": 12,
+    "RCSBuildAid": 42,
+    "Kopernicus": 18,
+    "RP0": 244,
+    "RealAntennas": 18,
+    "RealFuels": 28,
+    "RealismOverhaul": 1,
+    "Renamer": 1,
+    "SmokeScreen": 10,
+    "SolverEngines": 3,
+    "Scatterer": 73,
+    "TestFlight": 1,
+    "RealChute": 47,
+    "TextureReplacer": 5,
+    "TUFX": 9,
+    "ToolbarControl": 3,
+    "TransferWindowPlanner": 41,
+    "Utils": 1,
+    "Telecom": 12,
+    "ksp_plugin_adapter": 19,
+    "TexturesUnlimited": 20,
+    "TestFlightCore": 18,
+    "Waterfall": 89
+  },
+  "elapsed_s": 1.2,
+  "model": "gemini-3.8-flash-high"
+}

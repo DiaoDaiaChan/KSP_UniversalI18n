@@ -30,3 +30,7 @@ __pycache__/
 # 大样本（可复现，10 个文件 19.6 MB，不入库）
 reports/sample-*.jsonl
 
+# IL 流水线的机械副产物（可由 translate_il.py 重跑再生，15 个文件 831 KB）
+reports/il-provenance-*.jsonl
+reports/il-sample*.jsonl
+

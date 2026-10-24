@@ -1,0 +1,40 @@
+[il] 候选 1746 行（来自 1 个文件）
+[il] 去重 1746 组；跨 mod 合并 49 组；同 h 原文变体 0 组
+[il] 现有 cfg 包 h 0 个（同 h 不再写 IL 行）
+[il] 跳过 32 组：{'no-words': 32}
+[il] --limit 50 → 取样 50 组
+[il] 待翻 50 组 / 31 批
+    - ('AdvancedPQSTools.dll', 'translate') 1 条 17 字符
+    - ('Assembly-CSharp.dll', 'short_label') 3 条 19 字符
+    - ('Assembly-CSharp.dll', 'template') 2 条 52 字符
+    - ('Assembly-CSharp.dll', 'translate') 1 条 24 字符
+    - ('AtmosphereAutopilot.dll', 'short_label') 2 条 12 字符
+    - ('ClickThroughBlocker.dll', 'translate') 1 条 40 字符
+    - ... 共 31 批
+[il] 术语表：官方译文记忆 2126 条：术语 813（注入）/ 656（短语级锁 G7）/ 键引用 2126 / 整句直用 1868（坏行 0）
+[il] 端点 model=gemini-3.8-flash-high base=http://100.111.24.121:8317/v1 reasoning=none timeout=180s
+[il] 人工覆盖 packs/overrides.jsonl 3 条（冲突 0 / 坏行 0）
+[il] G6 约定术语豁免已启用：packs/conventions.jsonl 12 条
+  [5/31] 批  ok=8 keep=0 failed=0 tokens=1910/78
+  [10/31] 批  ok=16 keep=0 failed=0 tokens=5069/204
+  [15/31] 批  ok=24 keep=0 failed=0 tokens=8186/299
+  [20/31] 批  ok=32 keep=0 failed=0 tokens=11335/461
+  [25/31] 批  ok=41 keep=0 failed=0 tokens=14499/608
+  [30/31] 批  ok=47 keep=2 failed=0 tokens=18856/938
+  [31/31] 批  ok=48 keep=2 failed=0 tokens=19473/956
+
+[il] 候选 1746 行 → 去重 1746 组（合并 49 组跨 mod）
+[il] 跳过 32 组：{'no-words': 32}
+[il] 送翻 50 组 / 31 批（含拆分与单条重发共 33 次请求批）
+[il] 结果 ok 48 / keep 2 / failed 0 / gated_ratio 0
+[il] 八门禁：{'G1': 0, 'G2': 0, 'G3': 0, 'G4': 0, 'G5': 0, 'G6': 0, 'G7': 0, 'G8': 2}
+[il] 调用 31 次 / 拆分 0 / 单条重试 2 / 缓存命中 5 / 22.6s
+[il] tokens: prompt 19473 + completion 956 = 20429
+[il] 写盘 23 个文件 / 50 行（dry-run，未写）
+[il] 分桶统计（每桶独立，不合并成一个总数）：
+    - translate 27 条：ok 26 / keep 1
+    - short_label 18 条：ok 17 / keep 1
+    - template 5 条：ok 5
+[il] 人工覆盖 3 条：应用 0 / 被拒 0
+[il] ctx_mode=drop 运行时可达=True
+[il] 报告 C:\Users\43701\Documents\github\UniversalI18n\reports\translation-20261023-142705.json

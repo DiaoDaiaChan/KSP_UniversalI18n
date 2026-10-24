@@ -105,6 +105,14 @@ namespace UI18n.Runtime
                 // 诊断项（round 2）：首次命中样本上限，0 = 关闭采样；负数按 0 处理（不阻断启动）。
                 int hitSampleLimit = ReadInt(node, "HitSampleLimit", config.HitSampleLimit);
                 config.HitSampleLimit = hitSampleLimit < 0 ? 0 : hitSampleLimit;
+
+                // 缺命中捕获（task-30）：只写本地文件、不上传；上限负数按 0 处理（0 = 不限制）。
+                config.CaptureMisses = ReadBool(node, "CaptureMisses", config.CaptureMisses);
+                int captureMax = ReadInt(node, "CaptureMaxEntries", config.CaptureMaxEntries);
+                config.CaptureMaxEntries = captureMax < 0 ? 0 : captureMax;
+
+                // 实验开关（task-31）：默认 False。关闭时零 patch、零日志、零开销。
+                config.ShadowStyleDraw = ReadBool(node, "ShadowStyleDraw", config.ShadowStyleDraw);
             }
             catch (Exception ex)
             {

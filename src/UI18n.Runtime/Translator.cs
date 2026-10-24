@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UI18n.Core.Capture;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
 using UI18n.Core.Hashing;
@@ -38,7 +39,7 @@ namespace UI18n.Runtime
         /// <summary>样本里 source / translation 的截断长度（超出只留前 N 个字符并加 <c>...</c>）。</summary>
         private const int SampleTextLimit = 80;
 
-        private static readonly Dictionary<string, string> TextCache = new Dictionary<string, string>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, CacheEntry> TextCache = new Dictionary<string, CacheEntry>(StringComparer.Ordinal);
         private static readonly Dictionary<string, GUIContent> ContentCache = new Dictionary<string, GUIContent>(StringComparer.Ordinal);
         private static readonly HashSet<string> ReportedFailures = new HashSet<string>(StringComparer.Ordinal);
 
@@ -50,9 +51,23 @@ namespace UI18n.Runtime
 
         private static UI18nConfig _config;
         private static DictPack _pack;
+        private static CaptureStore _capture;
         private static int _sampleLimit;
         private static bool _sampleCapped;
         private static long _distinctHits;
+
+        /// <summary>
+        /// 缓存项：译文（空串 = 未命中）+ 该原文的 FNV-1a 64。
+        /// <para>
+        /// 为什么连 hash 一起缓存：缺命中捕获（task-30）在<b>重复</b>未命中时只允许做「查表 + 自增」，
+        /// 不允许再归一化/算哈希/分配字符串；hash 存进缓存项后，重复未命中路径只剩一次字典查找。
+        /// </para>
+        /// </summary>
+        private struct CacheEntry
+        {
+            internal string Translation;
+            internal ulong Hash;
+        }
 
         /// <summary>一条首次命中样本（只读快照，dump 时才拼字符串，热路径不分配）。</summary>
         private struct HitSample
@@ -84,6 +99,21 @@ namespace UI18n.Runtime
             get { return TextCache.Count; }
         }
 
+        /// <summary>当前挂着的缺命中捕获器（没挂就是 <c>null</c>，热路径上只多一次字段判空）。</summary>
+        internal static CaptureStore Capture
+        {
+            get { return _capture; }
+        }
+
+        /// <summary>
+        /// 挂上缺命中捕获器（task-30）：<b>必须</b>在 <see cref="Initialize"/> 之后调用（Initialize 会把它清掉）。
+        /// 传 <c>null</c> 等于关掉捕获。
+        /// </summary>
+        internal static void AttachCapture(CaptureStore store)
+        {
+            _capture = store;
+        }
+
         /// <summary>本局翻译成功过的<b>不同原文</b>条数（全量去重，不受采样上限影响）。</summary>
         internal static long DistinctHits
         {
@@ -111,6 +141,7 @@ namespace UI18n.Runtime
             ReportedFailures.Clear();
             Samples.Clear();
             HitSources.Clear();
+            _capture = null;
             _distinctHits = 0;
             _sampleCapped = false;
 
@@ -144,25 +175,44 @@ namespace UI18n.Runtime
                 return null;
             }
 
-            string cached;
+            CacheEntry cached;
             if (TextCache.TryGetValue(source, out cached))
             {
-                return cached.Length == 0 ? null : cached;
+                if (cached.Translation.Length == 0)
+                {
+                    // 重复未命中：只允许「查表 + 自增」（task-30 性能契约），零分配
+                    CaptureStore capture = _capture;
+                    if (capture != null)
+                    {
+                        capture.CountMiss(cached.Hash);
+                    }
+
+                    return null;
+                }
+
+                return cached.Translation;
             }
 
             // 归一化（04 §4.1 五步）+ FNV-1a 64（D11）；已归一时 Normalize 返回原引用，零分配
             string normalized = TextNormalizer.Normalize(source);
             string translation = null;
+            ulong hash = 0;
 
             if (normalized.Length > 0)
             {
-                ulong hash = Fnv1a.Hash(normalized);
+                hash = Fnv1a.Hash(normalized);
                 string hit;
                 KeyLevel level;
+                long keepsBefore = _pack.Keeps;
                 if (_pack.TryGet(hash, normalized, out hit, out level))
                 {
                     translation = hit;
                     RecordHit(patch, source, translation, level);
+                }
+                else if (_capture != null && _pack.Keeps == keepsBefore)
+                {
+                    // 真未命中才捕获：keep（译文 == 原文）说明字典里有它，不算缺命中（04 §6.3 门禁 5）
+                    _capture.Record(hash, source, normalized, patch);
                 }
             }
 
@@ -172,8 +222,48 @@ namespace UI18n.Runtime
                 ContentCache.Clear();
             }
 
-            TextCache[source] = translation ?? string.Empty;
+            CacheEntry entry = new CacheEntry();
+            entry.Translation = translation ?? string.Empty;
+            entry.Hash = hash;
+            TextCache[source] = entry;
             return translation;
+        }
+
+        /// <summary>
+        /// 只读探针（task-31 影子计数用）：问「这句在字典里有译文吗」，<b>不</b>替换任何东西。
+        /// <para>
+        /// 与 <see cref="Translate(string, string)"/> 的三条硬差别，都是为了不污染现有统计：
+        /// <list type="number">
+        /// <item>不写 <c>TextCache</c>（不改变缓存命中率，也不把影子独有的串灌进缓存）。</item>
+        /// <item>不动任何计数：不 <c>RecordHit</c>、不 <c>DistinctHits</c>、不 <c>CountMiss</c>、不 <c>Record</c>。</item>
+        /// <item>不检查 <c>Enabled</c>（影子只在 Enabled 且 ShadowStyleDraw 都成立时才会被调用）。</item>
+        /// </list>
+        /// 成本 = 归一化 + FNV-1a + 一次桶查找（未命中不分配；已归一时 Normalize 返回原引用）。
+        /// </para>
+        /// </summary>
+        internal static bool Peek(string source, out string translation)
+        {
+            translation = null;
+            if (string.IsNullOrEmpty(source) || _pack == null)
+            {
+                return false;
+            }
+
+            string normalized = TextNormalizer.Normalize(source);
+            if (normalized.Length == 0)
+            {
+                return false;
+            }
+
+            string hit;
+            KeyLevel level;
+            if (!_pack.TryGet(Fnv1a.Hash(normalized), normalized, out hit, out level))
+            {
+                return false;
+            }
+
+            translation = hit;
+            return true;
         }
 
         /// <summary>

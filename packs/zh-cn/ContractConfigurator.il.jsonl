@@ -1,0 +1,25 @@
+{"h":"09a174ece6a91a8f","n":"An unexpected exception occurred! Please copy the error message below, and either post it on the Contract Configurator thread on the KSP forums, or raise an issue on our GitHub tracker.","s":"An unexpected exception occurred!  Please copy the error message below, and either post it on the Contract Configurator thread on the KSP forums, or raise an issue on our GitHub tracker.","t":"发生未知异常！请复制下方错误信息，发布至 KSP 论坛的 Contract Configurator 主题帖，或在我们的 GitHub 追踪器上提交 issue。","mod":"ContractConfigurator"}
+{"h":"0b374807ddeae7da","n":"Debug Log","s":"Debug Log","t":"调试日志","mod":"ContractConfigurator"}
+{"h":"3196dc3da1c256e6","n":"PQS City","s":"PQS City","t":"PQS 城市","mod":"ContractConfigurator"}
+{"h":"56cfa6da5069060c","n":"Delete Cut Scene Action","s":"Delete Cut Scene Action","t":"删除过场动画动作","mod":"ContractConfigurator"}
+{"h":"691d54f42c55fc98","n":"Disabled Item","s":"Disabled Item","t":"已禁用项目","mod":"ContractConfigurator"}
+{"h":"6a07b94a1c0568c8","n":"Contract Balancing","s":"Contract Balancing","t":"合同平衡设置","mod":"ContractConfigurator"}
+{"h":"6a7e17470c34b463","n":"Load Passengers?","s":"Load Passengers?","t":"搭载乘客？","mod":"ContractConfigurator"}
+{"h":"7371d66a02005fa9","n":"Loading contract configuration (/)...","s":"Loading contract configuration (/)...","t":"正在加载合同配置(/)...","mod":"ContractConfigurator"}
+{"h":"74e8524541524f96","n":"Met Requirement","s":"Met Requirement","t":"已满足条件","mod":"ContractConfigurator"}
+{"h":"7f3c51593fa39a47","n":"Reloading module manager...","s":"Reloading module manager...","t":"正在重新加载 Module Manager...","mod":"ContractConfigurator"}
+{"h":"9670784d1e34e1b3","n":"Reloading game database...","s":"Reloading game database...","t":"正在重新加载游戏数据库...","mod":"ContractConfigurator"}
+{"h":"973b22575428653c","n":"Jump to Camera Position","s":"Jump to Camera Position","t":"跳转至相机位置","mod":"ContractConfigurator"}
+{"h":"a0d2efa94872a8db","n":"Reloading contracts...","s":"Reloading contracts...","t":"正在重新加载合同...","mod":"ContractConfigurator"}
+{"h":"a8a7d08a68e6b7bf","n":"Reload Contracts","s":"Reload Contracts","t":"重新加载合同","mod":"ContractConfigurator"}
+{"h":"b90bfc63bbc152ce","n":"PQS Offset","s":"PQS Offset","t":"PQS 偏移","mod":"ContractConfigurator"}
+{"h":"bde93cee629a6133","n":"Loaded out of contracts successfully.","s":"Loaded  out of  contracts successfully.","t":"已成功加载 / 个合同。","mod":"ContractConfigurator"}
+{"h":"c06b82b4cf787803","n":"If checked, moves to the next action before waiting for this one to complete.","s":"If checked, moves to the next action before waiting for this one to complete.","t":"若勾选，则无需等待当前动作完成即可进入下一动作。","mod":"ContractConfigurator"}
+{"h":"c534e62affc6a9b4","n":"Force Contract Generation","s":"Force Contract Generation","t":"强制生成合同","mod":"ContractConfigurator"}
+{"h":"ca3be9e1f2582eb7","n":"Unmet Requirement / Warnings","s":"Unmet Requirement / Warnings","t":"未满足的条件 / 警告","mod":"ContractConfigurator"}
+{"h":"d0355481d316f252","n":"Set Position to Current","s":"Set Position to Current","t":"设为当前位置","mod":"ContractConfigurator"}
+{"h":"d52ff5a2bb694067","n":"Clearing previously loaded contract configuration...","s":"Clearing previously loaded contract configuration...","t":"正在清除先前加载的合同配置...","mod":"ContractConfigurator"}
+{"h":"d9ae01c60d9d4b73","n":"Enter the altitude above the terrain.","s":"Enter the altitude above the terrain.","t":"输入相对地形的高度。","mod":"ContractConfigurator"}
+{"h":"dde8083ed4535872","n":"Contract Configurator: Loaded out of contracts successfully.","s":"Contract Configurator: Loaded  out of  contracts successfully.","t":"Contract Configurator：已成功加载 / 个合同。","mod":"ContractConfigurator"}
+{"h":"e35e0470e14dc25a","n":"Ignore Exception","s":"Ignore Exception","t":"忽略异常","mod":"ContractConfigurator"}
+{"h":"e515571c42bd9751","n":"Contract Type","s":"Contract Type","t":"合同类型","mod":"ContractConfigurator"}

@@ -1,0 +1,4 @@
+{"en": "<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>", "zh": "<color=yellow>前向激活（SSSR 模式）</color><color=green>延迟激活（完整 PBR SSR）</color>", "note": "渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
+{"en": "[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>", "zh": "[SSR Pipeline] Status: <color=green>延迟激活（完整 PBR SSR）</color>", "note": "渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
+{"en": "[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>", "zh": "[SSR Pipeline] Status: <color=yellow>前向激活（SSSR 模式）</color>", "note": "渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
+{"en":"Research & Development","zh":"研发","note":"TestFlightCore 分类标签；G6 下界误拒（0.091），人工裁定短译正确，lead m01857 裁定"}

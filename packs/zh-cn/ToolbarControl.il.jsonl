@@ -1,0 +1,3 @@
+{"h":"34f7eaee853b3ec6","n":"If the Blizzy toolbar is not installed, all buttons will be put on the stock toolbar, regardless of the setting","s":"If the Blizzy toolbar is not installed, all buttons will be put on the stock toolbar, regardless of the setting","t":"如果未安装 Blizzy 工具栏，无论设置如何，所有按钮都将放置在原生工具栏上","mod":"ToolbarControl"}
+{"h":"ba3d8f84619fba9b","n":"Hide this window at startup","s":"Hide this window at startup","t":"启动时隐藏此窗口","mod":"ToolbarControl"}
+{"h":"d0e2ee5d7625bd69","n":"For each mod, select which toolbar to put it's button on.","s":"For each mod, select which toolbar to put it's button on.","t":"为每个 mod 选择将其按钮放置在哪个工具栏上。","mod":"ToolbarControl"}

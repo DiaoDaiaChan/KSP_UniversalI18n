@@ -1,0 +1,42 @@
+{"h":"11b09b1eb92cafb9","n":"<b>Vessel stats:</b>","s":"<b>Vessel stats:</b>","t":"<b>载具统计：</b>","mod":"RCSBuildAid"}
+{"h":"1a4fc46e37bf7f3b","n":"Fuel mass","s":"Fuel mass","t":"燃料质量","mod":"RCSBuildAid"}
+{"h":"2217528c658dc636","n":"mouseover a part","s":"mouseover a part","t":"悬停于部件上","mod":"RCSBuildAid"}
+{"h":"25650e77c7c42557","n":"mass info","s":"mass info","t":"质量信息","mod":"RCSBuildAid"}
+{"h":"25cb68d433dc6223","n":"No engines attached","s":"No engines attached","t":"未安装发动机","mod":"RCSBuildAid"}
+{"h":"2d9e1ad300680fe9","n":"Launch in orbit","s":"Launch in orbit","t":"在轨发射","mod":"RCSBuildAid"}
+{"h":"361fda8f18b82db2","n":"<b>Vessel forces</b>","s":"<b>Vessel forces</b>","t":"<b>载具受力</b>","mod":"RCSBuildAid"}
+{"h":"3d03cd0919d49c26","n":"No vessel parts","s":"No vessel parts","t":"无可用的载具部件","mod":"RCSBuildAid"}
+{"h":"431d37fb3f50d3de","n":"RCS TWR readout","s":"RCS TWR readout","t":"RCS TWR 读数","mod":"RCSBuildAid"}
+{"h":"4765e0fff9d31386","n":"No parachutes attached","s":"No parachutes attached","t":"未安装降落伞","mod":"RCSBuildAid"}
+{"h":"51e89fe7d983bac8","n":"No RCS thrusters attached","s":"No RCS thrusters attached","t":"未安装 RCS 推进器","mod":"RCSBuildAid"}
+{"h":"6d3b8c85518f31f5","n":"Toggle vessel tree window","s":"Toggle vessel tree window","t":"开关载具树形窗口","mod":"RCSBuildAid"}
+{"h":"74e6a7197c63c255","n":"Vessel mass","s":"Vessel mass","t":"载具质量","mod":"RCSBuildAid"}
+{"h":"75df572ea20e5722","n":"In flight angular data","s":"In flight angular data","t":"飞行中角速度数据","mod":"RCSBuildAid"}
+{"h":"7e857b38deb68406","n":"Ang Acc","s":"Ang Acc","t":"角加速度","mod":"RCSBuildAid"}
+{"h":"805e8f177a38f6aa","n":"Use application launcher","s":"Use application launcher","t":"使用原生应用栏","mod":"RCSBuildAid"}
+{"h":"84e8b77d0f5fe4b1","n":"Wet mass","s":"Wet mass","t":"满载质量","mod":"RCSBuildAid"}
+{"h":"97394103f84afd8e","n":"Show vector magnitudes","s":"Show vector magnitudes","t":"显示矢量大小","mod":"RCSBuildAid"}
+{"h":"98a72b0afe3a377a","n":"In flight vessel tree","s":"In flight vessel tree","t":"飞行下载具树","mod":"RCSBuildAid"}
+{"h":"a09eef3dadebac42","n":"No atmosphere","s":"No atmosphere","t":"无大气","mod":"RCSBuildAid"}
+{"h":"a8e99eba30c1b8d8","n":"<b>Module forces</b>","s":"<b>Module forces</b>","t":"<b>模块受力</b>","mod":"RCSBuildAid"}
+{"h":"aa429438bc7ec52d","n":"Use blizzy's toolbar","s":"Use blizzy's toolbar","t":"使用 blizzy 工具栏","mod":"RCSBuildAid"}
+{"h":"b196dd69727664c4","n":"Part list","s":"Part list","t":"部件列表","mod":"RCSBuildAid"}
+{"h":"b8febc4a55e02430","n":"Select mode","s":"Select mode","t":"选择模式","mod":"RCSBuildAid"}
+{"h":"be932564b2919f43","n":"DCoM offset","s":"DCoM offset","t":"空重质心偏移","mod":"RCSBuildAid"}
+{"h":"c0b3623aab58c0f4","n":"Debug info","s":"Debug info","t":"调试信息","mod":"RCSBuildAid"}
+{"h":"c57af2c59d6c58ca","n":"Dry mass","s":"Dry mass","t":"空载质量","mod":"RCSBuildAid"}
+{"h":"c80b3b19a5b9a718","n":"Show in Crew Screen","s":"Show in Crew Screen","t":"在乘员界面显示","mod":"RCSBuildAid"}
+{"h":"cfe19fdfd68f891e","n":"No attitude control elements attached","s":"No attitude control elements attached","t":"未安装姿态控制元件","mod":"RCSBuildAid"}
+{"h":"d0d55e8a5b30ddbc","n":"More info","s":"More info","t":"更多信息","mod":"RCSBuildAid"}
+{"h":"d7533d2b9d2db41a","n":"Toggle part list window","s":"Toggle part list window","t":"开关部件列表窗口","mod":"RCSBuildAid"}
+{"h":"d7fcd4c7a0d4de01","n":"Burn time","s":"Burn time","t":"燃烧时间","mod":"RCSBuildAid"}
+{"h":"daf0878891be7353","n":"DCoM offset readout","s":"DCoM offset readout","t":"空重质心偏移读数","mod":"RCSBuildAid"}
+{"h":"e241e54d579bfa03","n":"Include RCS","s":"Include RCS","t":"计入 RCS","mod":"RCSBuildAid"}
+{"h":"e439687937310ff1","n":"Vessel Parts","s":"Vessel Parts","t":"载具部件","mod":"RCSBuildAid"}
+{"h":"e513c14f5fb2ee49","n":"Massless resources","s":"Massless resources","t":"无质量资源","mod":"RCSBuildAid"}
+{"h":"e65bc08276c05fad","n":"p. mass","s":"p. mass","t":"推进剂质量","mod":"RCSBuildAid"}
+{"h":"e8f1a450322a7317","n":"Marker autoscaling","s":"Marker autoscaling","t":"标记自动缩放","mod":"RCSBuildAid"}
+{"h":"ea3b50edf19c35a5","n":"Show in Cargo Screen","s":"Show in Cargo Screen","t":"在载荷界面显示","mod":"RCSBuildAid"}
+{"h":"f3a3ac1190176004","n":"No attitude control elements in place.","s":"No attitude control elements in place.","t":"未安装姿态控制元件。","mod":"RCSBuildAid"}
+{"h":"f8246c709dad6c22","n":"No RCS thrusters in place.","s":"No RCS thrusters in place.","t":"未安装 RCS 推进器。","mod":"RCSBuildAid"}
+{"h":"fb0973c8d9f88374","n":"Show in Actions Screen","s":"Show in Actions Screen","t":"在动作组界面显示","mod":"RCSBuildAid"}

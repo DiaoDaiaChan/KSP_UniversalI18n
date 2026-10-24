@@ -4,6 +4,8 @@
 > 方法：ilspycmd 反编译全量 C#（994 行）+ KSP.log 运行时日志（22:20:16–22:20:32 段）+ 反编译 RP0.dll 中被它改写的成员
 > 结论：**它不能作为我们 L2 层的参考实现**。它的 8 个 IMGUI patch 目标选得对，这部分可以抄；
 > 其余（字典模型、翻译算法、初始化时机、异常策略、玩法侵入）几乎每一处都要反着做。
+>
+> **v0.12（2026-10-23）**：本文是历史审查记录，结论不变。两处与现行实现对齐的指针：① §8 的八条修订仍是全局红线（落地情况见 00 §8.1 对照表）；② 现行 hook 面是 **17 个目标**（本文当时能参照的 IMGUI 漏斗只有 4 个公开方法，后来补了 `GUI.RepeatButton`、两个私有漏斗 `GUI.DoWindow` / `GUI.DoModalWindow`、`ScreenMessages.PostMessage` 与第 17 个 `GUI.DoButtonGrid`，见 05 §3.4.1）。
 
 反编译产物：`UniversalI18n/_audit/dec/RP1GUIZh.decompiled.cs`（下文行号均指此文件）
 

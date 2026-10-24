@@ -4,6 +4,7 @@ using HarmonyLib;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
 using UI18n.Core.Policy;
+using UI18n.Runtime.Diagnostics;
 using UI18n.Runtime.Fonts;
 using UI18n.Runtime.Patches;
 using UnityEngine;
@@ -137,6 +138,11 @@ namespace UI18n.Runtime
             try
             {
                 TryProbe();
+                MissCapture.Tick();
+
+                // task-31 影子计数（默认关闭，所有入口第一行就是 if (!Enabled) return）
+                ShadowTracker.Tick();
+                ShadowTracker.ScanPrefabsIfDue();
 
                 if (_statsActive)
                 {
@@ -156,11 +162,15 @@ namespace UI18n.Runtime
         private void OnApplicationQuit()
         {
             FinalDump("quit");
+            MissCapture.Shutdown();
+            ShadowTracker.Shutdown();
         }
 
         private void OnDestroy()
         {
             FinalDump("destroy");
+            MissCapture.Shutdown();
+            ShadowTracker.Shutdown();
         }
 
         private void Run()
@@ -204,6 +214,11 @@ namespace UI18n.Runtime
                 return;
             }
 
+            // 5b) 缺命中捕获（task-30）：默认开启，只写 PluginData/UI18n/capture-*.jsonl，绝不上传。
+            //     必须在 Translator.Initialize 之后挂（Initialize 会清掉挂载），且必须在装 patch 之前。
+            MissCapture.Configure(config);
+            Translator.AttachCapture(MissCapture.Store);
+
             // 6) 装 patch
             Harmony harmony = GetHarmony();
             if (harmony == null)
@@ -217,6 +232,16 @@ namespace UI18n.Runtime
             PatchRegistry.InstallAll(harmony, pack, out ok, out failed);
             InstalledPatches = ok;
             FailedPatches = failed;
+
+            // 6b) 影子计数（task-31，实验开关）：默认关 = 不装 patch、不打日志。
+            //     必须放在 InstallAll 之后 —— 正式目标的计数与日志都已就位，影子只做加法。
+            ShadowTracker.Configure(config);
+            if (ShadowTracker.Enabled)
+            {
+                int shadowOk;
+                int shadowFailed;
+                PatchRegistry.InstallShadowPatches(harmony, out shadowOk, out shadowFailed);
+            }
 
             // 7) 一行汇总
             Log.Info("ready: patches=" + ok + "/" + (ok + failed) + ", dict entries=" + pack.Entries
@@ -280,6 +305,11 @@ namespace UI18n.Runtime
             Log.Info(PatchStats.Dump());
             Log.Info("distinct hits: " + Translator.DistinctHits);
             Log.Info(FontResolver.Describe());
+
+            if (MissCapture.Store != null)
+            {
+                Log.Info(MissCapture.Describe());
+            }
         }
 
         private void FinalDump(string reason)

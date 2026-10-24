@@ -1,0 +1,14 @@
+{"h":"1971042111617036","n":"director strength","s":"director strength","t":"导引强度","mod":"AtmosphereAutopilot"}
+{"h":"23e01ec4ac532a48","n":"Snap wings to level","s":"Snap wings to level","t":"机翼自动改平","mod":"AtmosphereAutopilot"}
+{"h":"249cc90115e8d059","n":"Advanced options","s":"Advanced options","t":"高级选项","mod":"AtmosphereAutopilot"}
+{"h":"24a7fa6dad92d316","n":"pitch rate limit","s":"pitch rate limit","t":"俯仰角速度限制","mod":"AtmosphereAutopilot"}
+{"h":"326a6c81d9c54add","n":"yaw rate limit","s":"yaw rate limit","t":"偏航角速度限制","mod":"AtmosphereAutopilot"}
+{"h":"38347b0b859d739b","n":"Vertical motion","s":"Vertical motion","t":"垂直运动","mod":"AtmosphereAutopilot"}
+{"h":"3b44969a01ecaccb","n":"roll rate limit","s":"roll rate limit","t":"滚转角速度限制","mod":"AtmosphereAutopilot"}
+{"h":"6b212bb36bbb4acf","n":"Moderate side-G","s":"Moderate side-G","t":"限制侧向过载","mod":"AtmosphereAutopilot"}
+{"h":"84de2a8883fa265d","n":"Moderate Sideslip","s":"Moderate Sideslip","t":"限制侧滑角","mod":"AtmosphereAutopilot"}
+{"h":"9f0c594e5b1a9c7e","n":"Craft settings","s":"Craft settings","t":"载具设置","mod":"AtmosphereAutopilot"}
+{"h":"a2dde318bb1c1c45","n":"Speed control","s":"Speed control","t":"速度控制","mod":"AtmosphereAutopilot"}
+{"h":"be49d587289c492a","n":"desired course","s":"desired course","t":"目标航向","mod":"AtmosphereAutopilot"}
+{"h":"efdfb0253a06334f","n":"Moderate AoA","s":"Moderate AoA","t":"限制迎角","mod":"AtmosphereAutopilot"}
+{"h":"f17b4294081e7f45","n":"Moderate G","s":"Moderate G","t":"限制过载","mod":"AtmosphereAutopilot"}

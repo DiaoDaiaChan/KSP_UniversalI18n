@@ -61,6 +61,30 @@ namespace UI18n.Core.Config
         public TmpMode TmpMode { get; set; } = global::UI18n.Core.Config.TmpMode.Auto;
 
         /// <summary>
+        /// 缺命中捕获（配置键 <c>CaptureMisses</c>，默认 <c>true</c>）：把字典里没有的 UI 文本按 FNV-1a 去重聚合，
+        /// 写到 <c>PluginData/UI18n/capture-*.jsonl</c>，供翻译流水线补齐。
+        /// <b>只写本地文件、绝不上传</b>；上传只受 <c>ReportOptIn</c> 控制，且当前版本没有任何上传代码。
+        /// </summary>
+        public bool CaptureMisses { get; set; } = true;
+
+        /// <summary>
+        /// 单局最多捕获多少条 distinct 缺命中（配置键 <c>CaptureMaxEntries</c>，默认 5000；0 = 不限制）。
+        /// 触顶后只计 overflow，不再新建记录（避免无限增长）。
+        /// </summary>
+        public int CaptureMaxEntries { get; set; } = 5000;
+
+        /// <summary>
+        /// 实验开关（配置键 <c>ShadowStyleDraw</c>，默认 <c>false</c>）：给 IMGUI 的统一出口
+        /// <c>GUIStyle.Internal_Draw</c> / <c>Internal_Draw2</c> 装两个<b>影子前缀</b>，
+        /// 只统计「统一出口看到哪些文本」，用来回答「13 个 IMGUI hook 能不能收敛成 2 个」。
+        /// <para>
+        /// 默认关闭时<b>零 patch、零日志、零开销</b>，与没有这个开关时逐字节等价。
+        /// 影子前缀按值接收 <c>GUIContent</c>（不用 <c>ref</c>），所以结构上不可能改动游戏对象。
+        /// </para>
+        /// </summary>
+        public bool ShadowStyleDraw { get; set; } = false;
+
+        /// <summary>
         /// 一份默认配置。注意<b>每次访问都返回新实例</b>：配置是可变的，共享同一个静态实例
         /// 会让「读取默认值」意外变成「持有全局可变状态」。
         /// </summary>
