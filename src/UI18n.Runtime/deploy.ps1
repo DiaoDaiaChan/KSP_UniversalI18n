@@ -32,7 +32,11 @@ param(
     [switch]$AllowProbe,
     [string]$Lang = 'zh-cn',
     [string]$Configuration = 'Release',
-    [string]$KspRoot = 'D:\Kerbal Space Program_newmod'
+    [string]$KspRoot = 'D:\Kerbal Space Program_newmod',
+    # 发布版本戳。给了就按 -p:Version 构建，使部署的 DLL 与 build-release.ps1 出的包逐字节一致；
+    # 不给则用 Directory.Build.props 的默认版本（联调用）。缺了它，deploy 会静默把 build\bin 里
+    # 带发布版本戳的产物覆盖成默认版本，于是「验的 DLL」与「发的 DLL」不是同一份字节。
+    [string]$Version = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -85,9 +89,22 @@ function Copy-Tree {
 }
 
 # 1) 构建
-& dotnet build $project -c $Configuration
+$buildArgs = @($project, '-c', $Configuration)
+if ($Version) {
+    if ($Version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+$') { throw "[deploy] -Version 必须是 X.Y.Z，实际 '$Version'" }
+    $buildArgs += ('-p:Version={0}' -f $Version)
+    Write-Host "[deploy] version : $Version (DLL 内嵌的发布版本戳)"
+}
+& dotnet build @buildArgs
 if ($LASTEXITCODE -ne 0) {
     throw "dotnet build failed (exit $LASTEXITCODE)"
+}
+if ($Version) {
+    $stamped = (Get-Item (Join-Path $binOut 'UI18n.Runtime.dll')).VersionInfo.ProductVersion
+    Write-Host "[deploy] built    : ProductVersion=$stamped"
+    if ($stamped -and -not $stamped.StartsWith($Version)) {
+        throw "[deploy] 构建产物版本戳不符：期望 $Version，实际 $stamped"
+    }
 }
 
 # 2) staging（build\ 在 .gitignore 里，可以随时删）

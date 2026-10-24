@@ -186,8 +186,12 @@ pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install -Lang en-us
 # 只有显式 -AllowProbe 才放行，并打一行醒目警告（取证轮结束后必须摘掉探针再正式 deploy）
 pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install -AllowProbe
 
+# 发布前验证轮：把部署的 DLL 打上与发布包相同的版本戳（-p:Version），
+# 否则 deploy 会用默认版本重建，验的那份字节 ≠ 发的那份字节
+pwsh -File .\src\UI18n.Runtime\deploy.ps1 -Install -Version 1.1.0
+
 # 打发布包（dist\UI18n-<version>.zip + manifest.json + netkan，见 §10）
-pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.0.0
+pwsh -File .\src\UI18n.Runtime\build-release.ps1 -Version 1.1.0
 ```
 
 ### 5.1 安装目录布局（D34 / D35，06 §6.4）
