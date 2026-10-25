@@ -7,6 +7,7 @@ using UI18n.Core.Policy;
 using UI18n.Runtime.Diagnostics;
 using UI18n.Runtime.Fonts;
 using UI18n.Runtime.Patches;
+using UI18n.Runtime.Update;
 using UnityEngine;
 
 namespace UI18n.Runtime
@@ -140,6 +141,9 @@ namespace UI18n.Runtime
                 TryProbe();
                 MissCapture.Tick();
 
+                // task-40 联网分发：后台线程只做入队，这里把攒下的行吐出去（没有新行时是空操作）
+                UpdateRunner.Tick();
+
                 // task-31 影子计数（默认关闭，所有入口第一行就是 if (!Enabled) return）
                 ShadowTracker.Tick();
                 ShadowTracker.ScanPrefabsIfDue();
@@ -164,6 +168,7 @@ namespace UI18n.Runtime
             FinalDump("quit");
             MissCapture.Shutdown();
             ShadowTracker.Shutdown();
+            UpdateRunner.Shutdown();
         }
 
         private void OnDestroy()
@@ -171,6 +176,7 @@ namespace UI18n.Runtime
             FinalDump("destroy");
             MissCapture.Shutdown();
             ShadowTracker.Shutdown();
+            UpdateRunner.Shutdown();
         }
 
         private void Run()
@@ -243,6 +249,10 @@ namespace UI18n.Runtime
                 PatchRegistry.InstallShadowPatches(harmony, out shadowOk, out shadowFailed);
             }
 
+            // 6c) 联网分发骨架（task-40）：只起后台线程，主线程零等待。
+            //     门禁顺序在 UpdateWorkflow 里：地址空 -> 完全不联网（连 socket 都不开）。
+            StartUpdater(config, language);
+
             // 7) 一行汇总
             Log.Info("ready: patches=" + ok + "/" + (ok + failed) + ", dict entries=" + pack.Entries
                      + ", language=" + Printable(language) + ", version=" + Version);
@@ -250,6 +260,39 @@ namespace UI18n.Runtime
             _statsActive = ok > 0;
             _probePending = true;
             _nextStatsAt = Time.realtimeSinceStartup + StatsIntervalSeconds;
+        }
+
+        /// <summary>
+        /// 起更新线程（task-40）。<b>这里只做三件事</b>：把日志出口接上、算出两个路径、起线程。
+        /// 网络/解压/写盘全在后台线程里，主线程绝不等待 —— 加载时间与主菜单到达时间不受影响。
+        /// </summary>
+        private static void StartUpdater(UI18nConfig config, string language)
+        {
+            try
+            {
+                UpdateRunner.Sink = delegate(string message, bool warning)
+                {
+                    if (warning)
+                    {
+                        Log.Warn(message);
+                    }
+                    else
+                    {
+                        Log.Info(message);
+                    }
+                };
+
+                string modRoot = ConfigLoader.ModPath;
+                string pluginDataRoot = System.IO.Path.Combine(
+                    System.IO.Path.Combine(KSPUtil.ApplicationRootPath, "PluginData"), "UI18n");
+
+                UpdateRunner.ConfigureAndStart(config, modRoot, pluginDataRoot, Version, language);
+            }
+            catch (Exception ex)
+            {
+                // 更新是可选功能：起不来也绝不影响翻译
+                Log.Warn("update: could not start (" + ex.GetType().Name + ": " + ex.Message + ")");
+            }
         }
 
         /// <summary>

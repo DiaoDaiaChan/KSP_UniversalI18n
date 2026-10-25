@@ -113,6 +113,29 @@ namespace UI18n.Runtime
 
                 // 实验开关（task-31）：默认 False。关闭时零 patch、零日志、零开销。
                 config.ShadowStyleDraw = ReadBool(node, "ShadowStyleDraw", config.ShadowStyleDraw);
+
+                // 联网分发（task-40）：UpdateBaseUrl 默认空 = 完全不联网（连 socket 都不开）。
+                config.UpdateBaseUrl = ReadString(node, "UpdateBaseUrl", config.UpdateBaseUrl);
+                if (config.UpdateBaseUrl == null)
+                {
+                    config.UpdateBaseUrl = string.Empty;
+                }
+
+                config.UpdateBaseUrl = config.UpdateBaseUrl.Trim();
+
+                string channel = ReadString(node, "UpdateChannel", null);
+                if (!string.IsNullOrEmpty(channel))
+                {
+                    config.UpdateChannel = channel.Trim();
+                }
+
+                // 超时：负数按默认 10 秒处理（0 或负值都不该让一次检查永远挂着）
+                int timeoutSeconds = ReadInt(node, "UpdateTimeoutSeconds", config.UpdateTimeoutSeconds);
+                config.UpdateTimeoutSeconds = timeoutSeconds > 0 ? timeoutSeconds : 10;
+
+                // 间隔：负数按 0 处理（0 = 每次启动都查，见 UpdateState.IsCheckDue）
+                int checkDays = ReadInt(node, "UpdateCheckDays", config.UpdateCheckDays);
+                config.UpdateCheckDays = checkDays < 0 ? 0 : checkDays;
             }
             catch (Exception ex)
             {

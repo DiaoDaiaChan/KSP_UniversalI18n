@@ -85,6 +85,29 @@ namespace UI18n.Core.Config
         public bool ShadowStyleDraw { get; set; } = false;
 
         /// <summary>
+        /// 更新源根地址（配置键 <c>UpdateBaseUrl</c>，默认<b>空 = 完全不联网</b>）。
+        /// <para>
+        /// 仓库地址尚未公开，所以默认值必须是空串：空串时整个更新子系统连一个 socket 都不会开，
+        /// 日志只打一行 <c>update: disabled (UpdateBaseUrl empty)</c>。
+        /// 只接受 <c>https://</c> 任意主机，或 <c>http://</c> 且主机是回环地址（本地验证用）；
+        /// 其它 scheme / 非回环 http 一律拒绝并 Warn（见 <c>UI18n.Core.Update.UpdateUrlGate</c>）。
+        /// </para>
+        /// </summary>
+        public string UpdateBaseUrl { get; set; } = string.Empty;
+
+        /// <summary>更新通道（配置键 <c>UpdateChannel</c>，默认 <c>stable</c>）；清单地址是 <c>&lt;base&gt;/&lt;channel&gt;/manifest.json</c>。</summary>
+        public string UpdateChannel { get; set; } = "stable";
+
+        /// <summary>单次网络请求的超时秒数（配置键 <c>UpdateTimeoutSeconds</c>，默认 10）。</summary>
+        public int UpdateTimeoutSeconds { get; set; } = 10;
+
+        /// <summary>
+        /// 两次检查之间的最小天数（配置键 <c>UpdateCheckDays</c>，默认 7；<b>0 = 每次启动都查</b>）。
+        /// 上次成功检查时间记在 <c>PluginData/UI18n/update-state.json</c>。
+        /// </summary>
+        public int UpdateCheckDays { get; set; } = 7;
+
+        /// <summary>
         /// 一份默认配置。注意<b>每次访问都返回新实例</b>：配置是可变的，共享同一个静态实例
         /// 会让「读取默认值」意外变成「持有全局可变状态」。
         /// </summary>
