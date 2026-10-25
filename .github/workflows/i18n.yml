@@ -1,0 +1,136 @@
+# UI18n 字典生产流水线（用户构想里「字典上传仓库 → LLM 自动翻译 → 分发」的仓库侧闭环）
+#
+# 分工是刻意的：
+#   * 采集（harvest）需要一份真实 KSP 安装（GameData + Managed 程序集），跑不进 CI —— 在本地做，产物 packs/pool.jsonl 入库。
+#   * 翻译 / 门禁 / 清单 / 覆盖报告全部是纯 python 标准库，跑得进 CI —— 所以 CI 只做这一段。
+#   * 分发：packs/index.json 是发布清单（每包 sha256），游戏内联网更新读它（v1.2，见 src/UI18n.Runtime/Update/）。
+#
+# 三个触发器：
+#   push      → 只跑门禁（不联网、不写仓库）：谁改了字典或工具，立刻知道有没有把包改坏。
+#   schedule  → 每周一次门禁（防依赖或数据静默漂移）。
+#   dispatch  → 手工确认后真调用 LLM 翻译，回写 packs/ 并 commit（translate=true）。
+name: i18n
+
+on:
+  workflow_dispatch:
+    inputs:
+      translate:
+        description: "真调用 LLM 翻译并回写 packs（取消勾选则只跑门禁）"
+        type: boolean
+        default: false
+  push:
+    branches: [master]
+    paths:
+      - "packs/pool.jsonl"
+      - "packs/glossary.jsonl"
+      - "packs/conventions.jsonl"
+      - "packs/overrides.jsonl"
+      - "packs/il-translatable.jsonl"
+      - "packs/zh-cn/**"
+      - "tools/i18n_tools/**"
+      - ".github/workflows/i18n.yml"
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: i18n-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONIOENCODING: utf-8
+  PYTHONUTF8: "1"
+
+jobs:
+  gates:
+    name: 门禁（不联网 / 不写仓库）
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 工具自检（216 项）
+        working-directory: tools
+        run: python -m i18n_tools.selftest
+
+      - name: 审计器自检（1 正例 + 8 负例）
+        working-directory: tools
+        run: python -m i18n_tools.audit --selftest
+
+      - name: 包内容审计（h 契约 / 占位符 / 富文本 / 跨文件一致性）
+        working-directory: tools
+        run: python -m i18n_tools.audit
+
+      - name: 分发清单与磁盘一致（packs/index.json）
+        working-directory: tools
+        run: python -m i18n_tools.packindex --check
+
+      - name: 汇总
+        if: always()
+        run: |
+          {
+            echo "### i18n 门禁"
+            echo ""
+            echo "四道门按顺序执行：selftest（216 项）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）。"
+            echo ""
+            echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  translate:
+    name: 翻译并回写（LLM）
+    needs: gates
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.translate }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      UI18N_LLM_BASE: ${{ secrets.UI18N_LLM_BASE }}
+      UI18N_LLM_KEY: ${{ secrets.UI18N_LLM_KEY }}
+      UI18N_LLM_MODEL: ${{ secrets.UI18N_LLM_MODEL }}
+      UI18N_LLM_REASONING: ${{ vars.UI18N_LLM_REASONING || 'none' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 检查密钥存在
+        run: |
+          if [ -z "$UI18N_LLM_KEY" ]; then
+            echo "::error::缺少 secrets.UI18N_LLM_KEY —— 在 Settings → Secrets and variables → Actions 里配 UI18N_LLM_BASE / UI18N_LLM_KEY / UI18N_LLM_MODEL"
+            exit 1
+          fi
+
+      - name: cfg/字典流水线（translate --keyref-rescue → resolve_keyrefs）
+        working-directory: tools
+        run: |
+          python -m i18n_tools.translate --keyref-rescue
+          python -m i18n_tools.resolve_keyrefs
+
+      - name: IL 流水线（il-translatable → <asm>.il.jsonl）
+        working-directory: tools
+        run: python -m i18n_tools.translate_il
+
+      - name: 清单与覆盖报告
+        working-directory: tools
+        run: python -m i18n_tools.packindex
+
+      - name: 回写后复审（必须仍然 PASS）
+        working-directory: tools
+        run: python -m i18n_tools.audit
+
+      - name: 提交回写
+        run: |
+          git config user.name  "ui18n-bot"
+          git config user.email "ui18n-bot@users.noreply.github.com"
+          git add packs reports
+          if git diff --cached --quiet; then
+            echo "无变更（全部命中翻译缓存）"
+            exit 0
+          fi
+          git commit -m "i18n: 自动翻译回写 $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push

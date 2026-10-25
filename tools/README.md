@@ -212,10 +212,24 @@ title = #autoLOC_500460 //#autoLOC_500460 = S1 SRB-KD25k "Kickback" Solid Fuel B
 
 ```
 cd C:\Users\43701\Documents\github\UniversalI18n\tools
-python -m i18n_tools.selftest                      # 79 项全绿，退出码 0，约 0.1 s
+python -m i18n_tools.selftest                      # 216 项全绿，退出码 0，约 0.3 s
 python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl   # 完全一致，退出码 0，约 3 s
 python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节，退出码 0
 ```
+
+**四道 CI 门禁**（与 `.github/workflows/i18n.yml` 的 `gates` job 逐条对应，本地跑同样四条即可复现 CI 结论）：
+
+```
+cd tools
+python -m i18n_tools.selftest            # 工具链自检 216 项
+python -m i18n_tools.audit --selftest    # 审计器自检 12 项（1 正例 + 8 负例）
+python -m i18n_tools.audit               # 真审计 packs/zh-cn：h 契约 / 占位符 / 富文本 / 格式串 / 跨文件同 h 同 t
+python -m i18n_tools.packindex --check   # packs/index.json 与磁盘逐文件 sha256 一致
+```
+
+四条的期望输出末尾分别是 `[selftest] 全部通过（216 项）`、`[audit] selftest: 12 检查，失败 0 项`、
+`VERDICT: PASS (bad_total=0)`、`[check] mod 数 74（cfg 41 + IL 48），全部 mod 都能从 file 推导`，退出码全 0。
+**任何一条红都表示字典被改坏了，不要当环境问题跳过。**
 
 `selftest` 只在 `tempfile.mkdtemp()` 造出的临时 GameData 里做测试，**不写仓库**；若存在
 `..\_scratch\corpus\pool.jsonl`，还会断言 `packs\pool.jsonl` 与它 **sha256 相同**（真值缺失时打印 `[skip]` 跳过）。
@@ -243,7 +257,8 @@ tools/
     capture_ingest.py       运行时捕获 capture-*.jsonl → packs/capture-candidates.jsonl
     resolve_keyrefs.py      键引用解析 + --prefer-official + --drop-keyrefs（+--ambiguous-guard）
     translate.py            主翻译流水线（缓存/门禁/断点续跑）
-    selftest.py             216 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验）
+    audit.py                产物审计（h 契约 / 占位符 / 富文本 / 格式串 / 跨文件一致性），CI 门禁与本地都用它
+    selftest.py             216 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
 packs/
   pool.jsonl                12,792 行候选池（sha256 FEF515EA…D4C）
   inventory.json            统计清单
