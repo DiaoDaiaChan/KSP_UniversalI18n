@@ -11,8 +11,12 @@ KSP 侧插件（net472）：**只做渲染层拦截**。数据能解决的文本
 | 2 读语言 | `KSP.Localization.Localizer.CurrentLanguage` | 读不到 → 当作非中文，只 warn |
 | 3 **语言门禁** | `LanguageGate.ShouldTranslate(lang, ForceOverride)` | 判假 → **装 0 个 patch** 并 return |
 | 4 读字典 | `GameData/UI18n/Packs/<lang>/*.jsonl`（D35 布局，见 §5.1） | 目录/文件缺失 → 字典为空，不算错误 |
-| 5 字体探测 | `Fonts/FontProbe`（只探测不注入） | 异常 → warn 后继续 |
+| 5 字体解析器 | `FontResolver.Configure`（只配置候选与模式，不扫描场景） | 异常 → warn 后继续 |
+| 5a 缺命中捕获 | `MissCapture.Configure` + `Translator.AttachCapture`（§9.8） | 异常 → warn，捕获关闭 |
 | 6 装 patch | `Patches/PatchRegistry.InstallAll`（17 个，逐个 try/catch） | 单个失败 → 记日志并继续下一个 |
+| 6b 影子计数 | `ShadowTracker.Configure`（`ShadowStyleDraw=False` 时零 patch、零日志，§9.9） | 异常 → warn，影子关闭 |
+| 6c 联网分发 | `StartUpdater` → **后台线程**（§11）；`UpdateBaseUrl` 为空时只打一行 `update: disabled (UpdateBaseUrl empty)` | 任何失败 → warn + 保留旧包，绝不 throw |
+| 6d 字体探测 | 惰性：首次遇到 TMP 文本且已进主菜单之后才扫（§9.2） | 异常 → warn 一次 |
 | 7 汇总 | 一行 ready 日志 | — |
 
 **红线 5**：语言不是 `zh*` 时一个 patch 都不装。
@@ -371,6 +375,10 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `CaptureMisses` | `True` | 缺命中捕获总开关（§9.8）：把「字典里没有、但真的被渲染层看到」的字符串去重后落到 `PluginData/UI18n/capture-*.jsonl`。**只写本地文件，不上传任何东西** |
 | `CaptureMaxEntries` | `5000` | 捕获的去重条数上限，触顶后只计数不再记录（日志 `capture: cap reached`）。负数按 `0` 处理 |
 | `ShadowStyleDraw` | `False` | **实验开关，正常玩家不要开**（§9.9）：额外给 `GUIStyle.Internal_Draw` / `Internal_Draw2` 装两个只读影子 prefix，只统计、绝不改文本。round 8 实测零收益，已归档，代码保留只作取证工具 |
+| `UpdateBaseUrl` | 空 | **空 = 完全不联网**（默认）：一个 socket 都不开（§11）。非空时只接受 `https://` 任意主机或 `http://127.0.0.1` / `http://localhost`，其它写法一律直接拒绝并 warn |
+| `UpdateChannel` | `stable` | 发布通道目录名，manifest 地址 = `<UpdateBaseUrl>/<UpdateChannel>/manifest.json` |
+| `UpdateTimeoutSeconds` | `10` | 单次 HTTP 请求超时秒数（`<=0` 按 `10`）；到点强制 `Abort()`，绝不挂在后台 |
+| `UpdateCheckDays` | `7` | 两次自动检查的最小间隔天数（`0` = 每次启动都查）。上次检查时间记在 `PluginData/UI18n/update-state.json` |
 
 安装新版本时 `deploy.ps1 -Install` 会**保留玩家已改的值**，并把模板里有、玩家配置里缺的键按默认值补到 `UI18N` 节点末尾
 （日志 `merged  : Config.cfg (kept player values, added N new key(s): …)`）；`-ForceConfig` 才整体覆盖。
@@ -391,6 +399,7 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 - `distinct hits` = 本局**不同原文**被翻译成功的条数（全量去重，不受 `HitSampleLimit` 影响）。它紧跟在 `patch stats` 之后打。
 - 每个目标**第一次被调用**时打一行 `[UI18n] first call: <短名>` —— 即使进程后来被杀，也能证明该目标在本局是活的。
 - 退出 / addon 销毁时打 `[UI18n] final dump (quit): calls=N, hits=N` + 完整 `patch stats` + `distinct hits` + `font stats`，
+- 更新通道的日志（`update: ...`）**不属于**这张每 20 s 的统计表：它只在启动后一小段时间和退出时出现，格式与用例见 §11。
   **最后**再追加「首次命中样本」（默认最多 64 条，`HitSampleLimit` 控制）：
 
 ```
@@ -799,8 +808,8 @@ GameData/UI18n/
 | 字段 | 当前值 | 状态 |
 | --- | --- | --- |
 | `license` | `MIT`（`-License` 可覆盖） | **占位，发布前必须确认** |
-| `resources.homepage` / `repository` / `download` | `https://github.com/UniversalI18n/UniversalI18n`（`-RepoSlug` 可覆盖） | **占位，发布前必须确认** |
-| `author` | `UI18n contributors`（`-Author` 可覆盖） | 占位 |
+| `resources.homepage` / `repository` / `download` | `https://github.com/DiaoDaiaChan/KSP_UniversalI18n`（`-RepoSlug` 可覆盖） | 已填（仓库已创建） |
+| `author` | `DiaoDaiaChan`（`-Author` 可覆盖） | 已填 |
 | `ksp_version` | `1.12` | 按 KSP 1.12.5 实测环境填 |
 | `depends` | `Harmony2`、`ModuleManager` | 已按本机 CKAN 元数据（`identifier`）核对，不是猜的 |
 | `release_status` | `testing` | 首发可改 `stable` |
@@ -892,5 +901,105 @@ Select-String -Path build\release\UI18n-1.0.0\GameData\UI18n\UI18n.cfg -Pattern 
 # 畸形行（裸版本号）必须 0 条 —— 命中就是被写坏了
 Select-String -Path build\release\UI18n-1.0.0\GameData\UI18n\UI18n.cfg -Pattern '^\s*[0-9]+\.[0-9]+\.[0-9]+\s*$'
 ```
+
+## 11. 联网分发骨架（task-40，v1.2）
+
+目标：让语言包能远程更新，**但没配地址时完全不联网**。仓库/发布地址尚未确定，所以这一版是「骨架 + 可离线端到端验证」，不是「已经接上公网」。
+
+### 11.1 门禁顺序（每一步都有固定日志，按它排查）
+
+| # | 条件 | 日志原文（省略 `[UI18n]` 前缀） | 行为 |
+| --- | --- | --- | --- |
+| 1 | `UpdateBaseUrl` 空 | `update: disabled (UpdateBaseUrl empty)` | 连 socket 都不开 |
+| 2 | `CheckForUpdates=False` | `update: disabled (CheckForUpdates=False)` | 不联网 |
+| 3 | 非 https 且非本机 http | `update: disabled (http-host-not-loopback), only https:// or http://127.0.0.1/localhost are accepted; nothing was requested` | 不发请求 |
+| 4 | 通道名非法 | `update: disabled (invalid-channel: …)` | 不发请求 |
+| 5 | 语言 tag 不可用 | `update: skipped (language … is not a usable language tag)` | 不联网 |
+| 6 | 未到检查间隔 | `update: skipped (checked 0.3 day(s) ago, UpdateCheckDays=7)` | 不联网 |
+| 7 | 开始请求 | `update: enabled, …` 然后 `update: GET <url> (timeout 10s)` | 后台线程 |
+| 8 | 请求失败 | `update: manifest request failed (HTTP 404) -> keeping existing packs` | 保留旧包 |
+| 9 | 清单非法 | `update: manifest rejected (<原因>) -> keeping existing packs` | 保留旧包 |
+| 10 | 版本不更新 | `update: up to date (local 1.1.0, remote 1.1.0)` | 结束 |
+| 11 | 有新版但 AutoDownload=False | `update: download skipped (AutoDownload=False); set AutoDownload=True to install automatically` | 只记状态 |
+| 12 | zip 大小/哈希不符 | `update: zip verification failed (size-mismatch (expected 331851 B, got 331850 B)) -> keeping existing packs` | 保留旧包 |
+| 13 | 装机成功 | `update: installed 3 file(s), version 1.2.0` | 原子替换 |
+
+任何一步抛异常都被 `UpdateWorkflow.Run` 兜住，只 Warn（`update: failed (…), existing packs were left untouched`），绝不让异常冒到 KSP（红线 6）。
+
+### 11.2 目录与文件
+
+| 路径 | 用途 |
+| --- | --- |
+| `<KSP>/GameData/UI18n/Packs/<lang>/*.jsonl` | **唯一**会被写入的地方（只替换语言包，绝不碰 Plugins/） |
+| `<KSP>/PluginData/UI18n/downloads/<zip>` | 下载缓存 |
+| `<KSP>/PluginData/UI18n/update-state.json` | 上次成功检查时间 / 版本 / 结果（`lastCheckUtc` / `lastVersion` / `lastResult`） |
+| `<KSP>/PluginData/UI18n/capture-*.jsonl` | 缺命中捕获（§9.8，与本功能无关） |
+
+清单就是出包产物 `dist/manifest.json` 的同构子集：`version` + `zip{name,bytes,sha256}` + `files[{path,bytes,sha256}]`，其中 `path` 带 `GameData/UI18n/` 前缀（与 zip 条目名一致）。
+
+### 11.3 五条安全红线
+
+1. 只接受 `https://` 任意主机，或 `http://127.0.0.1` / `http://localhost`（本地测试专用）；其它 scheme 一律拒绝且**不发请求**。
+2. zip 内路径做 zip-slip 校验（拒 `..`、绝对路径、盘符、控制字符、空段），**且只允许 `Packs/<lang>/<file>.jsonl` 三层白名单**；写盘前再核落点必须在语言包目录内。
+3. 只写 `Packs/<lang>/`；绝不写 `Plugins/`、绝不执行 zip 内任何脚本、绝不改 `Config.cfg`。
+4. 先全量校验（zip 的 bytes+sha256、每个条目的 bytes+sha256）再写第一个字节；任一失败 → **一个文件都不写**。
+5. 只装当前语言的包（允许 `zh-cn` → `zh` 的单向回落）。
+
+### 11.4 线程模型（主菜单到达时间不许被拖慢）
+
+- `StartUpdater` 只做三件事：接日志出口、算两个路径、起后台线程；**实测 `ConfigureAndStart returned in 0.9 ms`**。
+- 网络与解压全在后台线程（`UI18n.Update`，`IsBackground = true`，不阻止进程退出）。
+- 后台线程**不直接调 `Debug.Log`**（Unity 只在主线程安全）：日志先入队（上限 4000 行），主线程每帧 `UpdateRunner.Tick()` 排干后再打印。
+- HTTP 用 `HttpWebRequest` 跑在自己的线程里，外层套 `Thread.Join(timeout)` 硬超时，到点 `Abort()`；超时也只 Warn。
+- net472 分支显式打开 TLS 1.2（`ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12`），否则 Mono 的旧默认会让公网 https 握手失败。
+
+### 11.5 原子性：绝不半写
+
+1. 先把 zip 里所有 `Packs/<lang>/*.jsonl` 解到内存，逐个对 manifest 做 bytes + sha256 校验；
+2. 全部通过后逐文件写 `<target>.tmp` 再 `File.Replace`（不支持时退 `Delete + Move`）；
+3. 写盘中途失败 → `update: write failed (<file>: …) -> N of M file(s) were installed`，已写的都是完整文件（不是半个），下次启动会重试；
+4. `update-state.json` 只在成功（或明确判定 up-to-date / update-available）之后写。
+
+### 11.6 为什么自己写 inflate + zip 解析
+
+KSP 1.12 的运行环境里**没有 `System.IO.Compression`**：`KSP_x64_Data/Managed` 的 dll 里没有它，`MonoBleedingEdge` 也没有可加载的 facades；在 Runtime 里 `using System.IO.Compression` 会在类型加载时炸掉整个 mod。
+所以解压放在 Core：`src/UI18n.Core/Update/Zip/Inflater.cs`（RFC1951 stored/fixed/dynamic Huffman）与 `Zip/ZipArchiveReader.cs`（EOCD → 中央目录 → 本地头，逐条 CRC32 + 大小校验，zip64 显式拒绝）。
+正确性用 net10 的 `System.IO.Compression` 当参照物交叉验证：对**真实发布包** `dist/UI18n-1.1.0.zip`（95 条目）逐条逐字节比对、并逐条对 manifest 校验，结果 95/95 全等（`checks=10 failures=0`）。
+
+### 11.7 离线端到端验收矩阵（12 条，实跑）
+
+工具：`_scratch/p1/updatesrv/serve.py`（本地 HTTP，端口 8099，`/slow/` 通道故意 sleep 6 s）+ `_scratch/p1/updcheck`（net10 控制台，**直接编译 `src/UI18n.Runtime/Update/*.cs` 的真实源码**，不是复制逻辑）。日志全文见 `_scratch/p1/update-matrix.log`，结论 `checks=53 failures=0`。
+
+| # | 场景 | 关键日志 | Packs 目录 |
+| --- | --- | --- | --- |
+| 1 | 地址为空 | `update: disabled (UpdateBaseUrl empty)` | 不变 |
+| 2 | CheckForUpdates=False | `update: disabled (CheckForUpdates=False)` | 不变 |
+| 3 | 正常更新 | `update: installed 3 file(s), version 1.2.0` | 2 → 4 文件，新增/替换的 sha256 与清单 3/3 一致 |
+| 4 | 版本相同 | `update: up to date (local 1.1.0, remote 1.1.0)` | 不变 |
+| 5 | sha256 不符 | `update: zip verification failed (sha256-mismatch (…)) -> keeping existing packs` | 不变 |
+| 6 | bytes 不符 | `update: zip verification failed (size-mismatch (expected 331851 B, got 331850 B)) -> keeping existing packs` | 不变 |
+| 7 | 404 | `update: manifest request failed (HTTP 404) -> keeping existing packs` | 不变 |
+| 8 | 超时 3 s（服务端 6 s） | `update: manifest request failed (timeout after 3s) -> keeping existing packs` | 不变（实测 3.0 s 返回） |
+| 9 | 清单塞 ../ 路径 | `update: manifest rejected (unsafe-path:6:…:parent-dir) -> keeping existing packs` | 不变，evil.jsonl 未创建 |
+| 10 | AutoDownload=False 有新版 | `update: download skipped (AutoDownload=False); set AutoDownload=True to install automatically` | 不变 |
+| 11 | 未到检查间隔 | `update: skipped (checked 0.3 day(s) ago, UpdateCheckDays=7)` | 不变 |
+| 12 | 线程语义 | `ConfigureAndStart returned in 0.9 ms`，之后 Tick() 才吐出 12 行日志 | 2 → 4（后台完成） |
+
+第 3 条的「安装前后逐文件 sha256」：`Keep.jsonl` 保持 `9230377D60E18A93…` 不变；`Squad.jsonl` 从 `3DB68CD6D3DB9DE1…` 变成 `50EB9248ECCEE415…`（等于清单里的值）；新增 `NewMod.jsonl 3C00CAC9EB97BB38…` 与 `RealismOverhaul.jsonl DB435D40B8CF964C…`。zip 里的 `Packs/en-us/…`、`Plugins/…`、`Config.cfg` 一个都没被写出来。
+
+### 11.8 还没验过的东西（诚实结论）
+
+> **网络层目前只在本地 HTTP 服务（http://127.0.0.1:8099）上验过；公网 https 首次上线仍需要一轮真机验证。**
+
+具体没验到的：
+
+1. 真实 https 主机（证书链、TLS 协商、重定向、CDN 的 Content-Length / 分块传输）—— 本地服务只覆盖 HTTP 语义；
+2. 真实发布包比测试用的 331 KB 大得多（v1.1.0 是 1.09 MB），大包下的耗时与内存峰值未测；
+3. 「玩家从 v1.1 升到 v1.2」的版本比较只做了单元测试（`ReleaseVersion`），没有真机升过一次；
+4. KSP 里 `PluginData` 的创建权限、`File.Replace` 在 FAT32/ExFAT 上的行为未实机验证（代码里有 `Delete + Move` 兜底）。
+
+---
+
+配置键总数：18（§9.3）。其中 4 个是本功能新增，默认值让 mod 在**不配地址**时行为与 v1.1 完全一致：不发一个请求、不打多余日志（只有第 1 行 `update: disabled (UpdateBaseUrl empty)`）。
 
 

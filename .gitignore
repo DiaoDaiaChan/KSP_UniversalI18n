@@ -1,9 +1,8 @@
-# build outputs
+# ===== 本仓库 =====
+# 构建产物
 build/
 bin/
 obj/
-
-# 发布产物（zip / manifest / netkan 由 build-release.ps1 生成，不入库）
 dist/
 *.user
 .vs/
@@ -18,7 +17,7 @@ _audit/
 *.local.json
 secrets/
 
-# 生成物：字典包由 CI 产出，不手工提交
+# 生成物：二进制字典包由 CI 产出，不手工提交
 packs/*.uip
 packs/**/*.bin
 
@@ -34,3 +33,40 @@ reports/sample-*.jsonl
 reports/il-provenance-*.jsonl
 reports/il-sample*.jsonl
 
+# 真实会话的缺失命中捕获（玩家数据，只留在本机 PluginData/UI18n）
+PluginData/
+
+# ===== .NET 通用（承接上游 GitHub .NET 模板）=====
+# https://github.com/github/gitignore/blob/main/Dotnet.gitignore
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Ll]og/
+[Ll]ogs/
+
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+Artifacts/
+ScaffoldingReadMe.txt
+
+# 测试与覆盖率
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+CodeCoverage/
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+*.binlog
+*.tlog
+
+# 杂项
+~$*
+*~

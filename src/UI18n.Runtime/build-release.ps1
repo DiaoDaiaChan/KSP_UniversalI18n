@@ -37,9 +37,9 @@ param(
     # 输出目录，默认 <repo>\dist
     [string]$OutDir = '',
     # netkan 里的仓库 slug 与许可（默认值是占位，正式提交 CKAN 前请确认）
-    [string]$RepoSlug = 'UniversalI18n/UniversalI18n',
+    [string]$RepoSlug = 'DiaoDaiaChan/KSP_UniversalI18n',
     [string]$License = 'MIT',
-    [string]$Author = 'UI18n contributors',
+    [string]$Author = 'DiaoDaiaChan',
     [switch]$SkipBuild,
     # 默认要求工作树干净（发布物必须来自已提交源码）；确需脏树出包时显式传本开关，会打 WARN
     [switch]$AllowDirty

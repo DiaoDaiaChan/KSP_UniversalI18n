@@ -212,7 +212,7 @@ title = #autoLOC_500460 //#autoLOC_500460 = S1 SRB-KD25k "Kickback" Solid Fuel B
 
 ```
 cd C:\Users\43701\Documents\github\UniversalI18n\tools
-python -m i18n_tools.selftest                      # 216 项全绿，退出码 0，约 0.3 s
+python -m i18n_tools.selftest                      # 240 项全绿，退出码 0，约 0.4 s
 python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl   # 完全一致，退出码 0，约 3 s
 python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节，退出码 0
 ```
@@ -221,13 +221,13 @@ python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节�
 
 ```
 cd tools
-python -m i18n_tools.selftest            # 工具链自检 216 项
+python -m i18n_tools.selftest            # 工具链自检 240 项
 python -m i18n_tools.audit --selftest    # 审计器自检 12 项（1 正例 + 8 负例）
 python -m i18n_tools.audit               # 真审计 packs/zh-cn：h 契约 / 占位符 / 富文本 / 格式串 / 跨文件同 h 同 t
 python -m i18n_tools.packindex --check   # packs/index.json 与磁盘逐文件 sha256 一致
 ```
 
-四条的期望输出末尾分别是 `[selftest] 全部通过（216 项）`、`[audit] selftest: 12 检查，失败 0 项`、
+四条的期望输出末尾分别是 `[selftest] 全部通过（240 项）`、`[audit] selftest: 12 检查，失败 0 项`、
 `VERDICT: PASS (bad_total=0)`、`[check] mod 数 74（cfg 41 + IL 48），全部 mod 都能从 file 推导`，退出码全 0。
 **任何一条红都表示字典被改坏了，不要当环境问题跳过。**
 
@@ -255,10 +255,11 @@ tools/
     iltranslatable.py       il-candidates → packs/il-translatable.jsonl（送译清单）
     translate_il.py         IL 串翻译（八门禁 + conventions/overrides 两条人工通道）→ packs/zh-cn/<mod>.il.jsonl
     capture_ingest.py       运行时捕获 capture-*.jsonl → packs/capture-candidates.jsonl
+                            （--all 跨会话合并；--report 出分诊报告；--buckets 选要进产物的档）
     resolve_keyrefs.py      键引用解析 + --prefer-official + --drop-keyrefs（+--ambiguous-guard）
     translate.py            主翻译流水线（缓存/门禁/断点续跑）
     audit.py                产物审计（h 契约 / 占位符 / 富文本 / 格式串 / 跨文件一致性），CI 门禁与本地都用它
-    selftest.py             216 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
+    selftest.py             240 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
 packs/
   pool.jsonl                12,792 行候选池（sha256 FEF515EA…D4C）
   inventory.json            统计清单
@@ -268,7 +269,9 @@ packs/
   overrides.jsonl           人工覆盖（4 条，模型之前生效、零 token）
   il-candidates.jsonl       DLL IL 字面量候选（2,285 行）
   il-translatable.jsonl     送译清单（1,746 行：translate 1,145 / short_label 429 / template 172）
-  capture-candidates.jsonl  运行时捕获候选（2,008 行，v1.1 不进包）
+  capture-candidates.jsonl  运行时捕获候选 **v2 跨会话合并**（23 个会话 → 49,658 行 / 19.6 MB：
+                            candidate 492 + template 49,166；v1.1 不进包）
+                            生成：python -m i18n_tools.capture_ingest --all <捕获目录> --report reports/capture-triage.md
 reports/
   coverage.md               zh-cn 覆盖报告（三节：pool 覆盖率 70.93% / IL 覆盖率 95.98% / 捕获通道现状）
 ```
@@ -318,7 +321,7 @@ python -m i18n_tools.packindex --packs-dir <dir> --index <file> --coverage <file
 - **分子** = 这 12,792 行里 `h` 能在 `packs/zh-cn/*.jsonl` 精确命中的行数（9,073）
 - **覆盖率 = 9,073 / 12,792 = 70.93%**（按来源：`loc` 2,646/2,948 = 89.76%、`cfg` 6,427/9,844 = 65.29%）
 - 两个**失真**数字列在报告里防止误引：`11,089 / 12,792 = 86.69%`（分子混进 2,016 条池外条目，含全部 IL 包）、`8,985 / 12,792 = 70.24%`（剔除 88 行直通；全库 92 行直通里有 4 行在 IL 包里、不在 pool 交集内）
-- **报告是三节，三节的分母互不相加**：① pool 口径（cfg 包覆盖多少待译串，9,073 / 12,792）；② DLL 字面量口径（`il-translatable.jsonl` 的 `translate` 桶 1,145 条 → IL 包 1,099 条 = 95.98%，与 ① 的 `h` 交集 0，对 ① 贡献 0）；③ 运行时捕获通道现状（`capture-candidates.jsonl` 2,008 行 = candidate 78 + template 1,930，v1.1 不进包）
+- **报告是三节，三节的分母互不相加**：① pool 口径（cfg 包覆盖多少待译串，9,073 / 12,792）；② DLL 字面量口径（`il-translatable.jsonl` 的 `translate` 桶 1,145 条 → IL 包 1,099 条 = 95.98%，与 ① 的 `h` 交集 0，对 ① 贡献 0）；③ 运行时捕获通道现状（`capture-candidates.jsonl` **v2 = 49,658 行 = candidate 492 + template 49,166**，v1.1 不进包；本文件生成时仍是 v1 的 2,008 行口径，等 `packindex` 重生成后同步）
 
 改动 `packs/zh-cn/**` 之后**必须重跑 `python -m i18n_tools.packindex`**：`selftest` 的 [8] 会拿清单与现场扫描逐项比对，
 一旦漂移就会报 `清单条目与现场扫描逐项一致（清单不能与磁盘漂移）` 失败——这是故意的护栏，不是噪声。
