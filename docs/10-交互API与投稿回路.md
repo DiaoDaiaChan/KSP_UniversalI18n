@@ -271,6 +271,16 @@ packs/submission/index.json              # 受管汇总：id → {files, rows, b
 
 被否掉的备选：插件直连 GitHub API（要往客户端塞 token，等于公开泄露）、插件 POST 自建端点（要运维服务器，留作 §11 M4）。
 
+**两端都已落盘**（2026-10-26）：
+
+| 端 | 文件 | 干什么 |
+|---|---|---|
+| 玩家端 | 插件面板「投稿」区块（`src/UI18n.Runtime/UI/PrefsPanel.cs`）+ `SubmissionExporter` | 同意 → 导出 `PluginData/UI18n/submissions/ui18n-submission-<id>.json` → 「打开文件夹」/「打开投稿页面」 |
+| 入口模板 | `.github/ISSUE_TEMPLATE/submit-texts.yml` | 要求拖入 json、填 UI18n 版本与环境、勾两条确认；附件在正文里是 `https://github.com/user-attachments/files/…` 链接 |
+| 仓库端 | `tools/accept-submission-issue.ps1` | `-Issue <号>`：抽附件 URL → 下载 → 预检 schema → `api submit accept`（唯一判定者）→ `-Comment` 回一行「已收入 N 条」；没有 issue 时可 `-Bundle <本地文件>` 直收；`-DryRun` 全程不写盘 |
+
+`accept-submission-issue.ps1` **不重复实现任何判定**：退出码就是 `api` 的退出码（0 收下 / 4 门禁 / 5 schema 非法 / 6 不存在 / 7 内部），因此可以原样塞进 CI。实测（`%TEMP%` 副本、`tools/i18n_tools/fixtures/submission-sample.json`）：`-DryRun` exit 0 且零写盘 → 真收 exit 0（5 文件 + journal `#L97`，candidates 77,265 → 77,268）→ 二次收 exit 0 `already:true`、`changed: []`。
+
 ## 7. 流水线：投稿 → 译文
 
 ```text

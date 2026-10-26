@@ -1,0 +1,74 @@
+name: 投稿翻译文本
+description: 把游戏内导出的 ui18n-submission-*.json 交给我们，收进候选表后排队翻译
+title: "[投稿] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 这是什么
+
+        感谢投稿。这份投稿包由游戏内的 **UI18n** 插件面板导出，内容只有三类：
+        **mod 名称**、**可译原文**、**游戏语言与版本**。
+
+        不会包含：存档名、飞船名、Kerbal 名、目录名、账号、任何硬件信息。
+        导出前插件会在你本机跑三步脱敏（丢非正文、替换/丢弃玩家私有标识、丢只出现一次的超长串），
+        并把丢弃计数写进包里的 `redactions` 字段——你可以自己打开 json 先看一遍。
+
+        > 投稿是**自愿**且**可撤回**的：删掉 `PluginData/UI18n/submissions/` 目录即可，
+        > 已经在仓库里的原文若想撤下，在本 issue 里说一声。
+
+  - type: textarea
+    id: bundle
+    attributes:
+      label: 投稿包
+      description: 把 `ui18n-submission-<id>.json` 文件**直接拖到下面这个框里**（GitHub 会自动上传成附件）。
+      placeholder: 拖动文件到这里……
+      render: json
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: UI18n 版本
+      description: 面板底部那行，形如 `1.6.0+<commit>`；不确定就写 KSP.log 里 `[UI18n] ready:` 那一行。
+      placeholder: 1.6.0+b2a05809ea5f
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 游戏环境
+      description: KSP 版本 + 当前游戏语言（例如 `1.12.5 / zh-cn`）。
+      placeholder: 1.12.5 / zh-cn
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: 确认
+      options:
+        - label: 这份投稿包是我自己的游戏实例里导出的，我已同意把其中的 mod 名称与原文收录进翻译仓库
+          required: true
+        - label: 我理解这些原文会在仓库里以公开文件形式出现（不含任何可追溯到我个人的标识）
+          required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 备注（可选）
+      description: 例如「这几个 mod 的英文串特别多」「某条翻得不对」。
+      render: text
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        收下之后我们会在这个 issue 回一行「已收入 N 条 / 进候选表」，之后由 CI 走翻译与门禁，
+        进包后你在游戏里点更新就能看到。翻译质量有问题请另开 issue 并注明 mod 名与原文。

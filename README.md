@@ -151,10 +151,24 @@ resolve_keyrefs（把 #autoLOC_* 键引用解析成官方中英对照行，带�
         ▼
 drop/packindex/audit（删冗余键行、生成清单与覆盖率、审计 89 个包）
         ▼
-packs/<lang>/<mod>.jsonl  ──►  GitHub Actions 四道门禁 ──►  发行包
+packs/<lang>/<mod>.jsonl  ──►  GitHub Actions 六道门禁 ──►  发行包
 ```
 
-CI 见 `.github/workflows/i18n.yml`（`gates` 四道门禁每次 push 都跑，不联网不写仓库；`translate` 只在手动触发时跑）。
+CI 见 `.github/workflows/i18n.yml`，每次 push 跑三个 job：`gates`（python 侧六道门禁：单测 + golden + journal + packindex + audit + selftest，不联网不写仓库）、`code`（Core 编译 + 811 例单测；Runtime 要真实 KSP 安装，进不了 CI）、`translate`（只在手动触发时跑）。
+
+## 你也可以投稿（把你这台机器上的英文串交回来）
+
+字典不是凭空想的：**玩家机器上真的渲染过的英文串**是最可靠的输入。所以插件允许你把自己那份交回来，全程自愿、可撤回：
+
+1. 游戏里点 AppLauncher 的 **UI18n** 按钮 → 勾「同意把未翻译的原文与 mod 列表投给翻译仓库」；
+2. 点「导出投稿包」→ 生成 `PluginData/UI18n/submissions/ui18n-submission-<id>.json`，你可以自己先打开看（里面只有 mod 名、原文、游戏语言；存档名 / 飞船名 / Kerbal 名 / 路径在导出前三步脱敏就被丢掉了，丢弃条数写在 `redactions` 字段里）；
+3. 点「打开投稿页面」→ 把那个 json **拖进** issue 模板的框里，提交；
+4. 仓库侧跑 `tools/accept-submission-issue.ps1 -Issue <号>` 收下（`api submit accept` 负责校验 / 算 id / 幂等 / 按 mod 拆文件 / 归并候选表 / 写审计 journal），回一行评论；
+5. 之后由 CI 走翻译与门禁 → 进包 → 你下次启动点更新就能看到。
+
+想知道某个 mod 的中文是哪个包给的、想关掉它：面板里按 mod 勾选（`PluginData/UI18n/prefs.json`），关掉的包连解析都不做。
+
+投稿契约（bundle 形态、id 算法、脱敏三步、落盘路径、六种退出码、三条已知边界）冻结在 [docs/10-交互API与投稿回路.md](docs/10-交互API与投稿回路.md) §6 —— 发出去的产物必须永远能收，所以这里的格式不以「下次更新插件」为转移。
 
 ## 为什么还会看到英文
 
@@ -193,7 +207,7 @@ CI 见 `.github/workflows/i18n.yml`（`gates` 四道门禁每次 push 都跑，�
 
 **已知降级**：KSP 1.12 的 TMP 是位图图集版，运行时无法从 .ttf 造字 —— 找不到含汉字的 TMP 字体资产时，`TmpMode=Auto` 会让那部分文本**保留英文**而不是显示方框。uGUI 走系统字体注入（`FontMode=OsFont`），正常出中文。
 
-## 从源码构建## 从源码构建
+## 从源码构建
 
 需要 .NET SDK 10 与 KSP 的托管程序集（路径在 `src/UI18n.Runtime/UI18n.Runtime.csproj` 的 `KspManagedDir`）。
 
