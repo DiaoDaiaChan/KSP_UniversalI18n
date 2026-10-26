@@ -2,18 +2,18 @@
 
 本文件由 `python -m i18n_tools.render_coverage` 生成，**不要手改**。
 
-生成时间：2026-10-26 17:21:24
+生成时间：2026-10-26 17:31:11
 数据来源：`<KSP 根>/PluginData/UI18n/render-*.json`（每份 = 一次游戏会话）
-本次读到 **5** 份会话文件（另有 0 份无法解析、0 份因 stamp 重复被丢弃）。
+本次读到 **6** 份会话文件（另有 0 份无法解析、0 份因 stamp 重复被丢弃）。
 
 ## 结论
 
-**本次会话期间，玩家屏幕上出现的 9,686 条不同英文文本中，有 5,089 条当场变成了中文，render 覆盖率 0.5254（52.54%）。**
+**本次会话期间，玩家屏幕上出现的 13,705 条不同英文文本中，有 7,258 条当场变成了中文，render 覆盖率 0.5296（52.96%）。**
 
-- hit = 5,089（首次见到就有译文）
-- miss = 4,597（首次见到没译文，进未命中捕获通道）
-- distinct = hit + miss = 9,686
-- ratio = hit / distinct = 5,089 / 9,686 = 0.5254
+- hit = 7,258（首次见到就有译文）
+- miss = 6,447（首次见到没译文，进未命中捕获通道）
+- distinct = hit + miss = 13,705
+- ratio = hit / distinct = 7,258 / 13,705 = 0.5296
 
 > 跨会话合并：distinct 是各会话 distinct **之和**（不是去重并集）—— 文件里只有计数没有哈希，跨会话无法去重。所以上面的 ratio 是按 total distinct 加权的平均，不是某一局的读数。
 
@@ -23,7 +23,7 @@
 |---|---|---|---|---|
 | pool 覆盖率 | 12,792 | 9,397 | 73.46% | reports\coverage.md（抽出来的候选池） |
 | 屏幕覆盖率 | 捕获里可译的 distinct | 字典能接住的 | 见报告 | reports/screen-coverage.md（依赖捕获开关） |
-| render 覆盖率 | 9,686 | 5,089 | 52.54% | 本报告（运行时自己数，唯一可对玩家承诺的口径） |
+| render 覆盖率 | 13,705 | 7,258 | 52.96% | 本报告（运行时自己数，唯一可对玩家承诺的口径） |
 
 三个分母**不一样，不能相加也不能互相除**：
 
@@ -40,24 +40,25 @@
 | 20261026-085826 | 1.0.0+093d02a232a535840ddc1e0460bf024863dcd3f6 | 263 | 486 | 749 | 0.3511 | render-20261026-085826.json |
 | 20261026-090049 | 1.0.0+093d02a232a535840ddc1e0460bf024863dcd3f6 | 245 | 4 | 249 | 0.9839 | render-20261026-090049.json |
 | 20261026-091111 | 1.0.0+093d02a232a535840ddc1e0460bf024863dcd3f6 | 539 | 3,653 | 4,192 | 0.1286 | render-20261026-091111.json |
+| 20261026-091928 | 1.5.0+e72f79454592d90935b184696be90f4b86d81a58 | 2,169 | 1,850 | 4,019 | 0.5397 | render-20261026-091928.json |
 
 ## 按渲染出口（bySink）
 
 | sink | hit | miss | distinct | ratio | 覆盖率 |
 |---|---|---|---|---|---|
-| TMPro.TMP_Text.set_text | 4,995 | 1,705 | 6,700 | 0.7455 | 74.55% |
+| TMPro.TMP_Text.set_text | 7,137 | 3,052 | 10,189 | 0.7005 | 70.05% |
 | UnityEngine.UI.Text.set_text | 43 | 1,943 | 1,986 | 0.0217 | 2.17% |
-| GUILayout.DoLabel | 23 | 586 | 609 | 0.0378 | 3.78% |
-| GUILayout.DoToggle | 17 | 102 | 119 | 0.1429 | 14.29% |
-| GUI.Box | 0 | 112 | 112 | 0.0000 | 0.00% |
-| GUILayout.DoButton | 8 | 71 | 79 | 0.1013 | 10.13% |
-| GUI.Label | 0 | 23 | 23 | 0.0000 | 0.00% |
-| GUI.Toggle | 0 | 17 | 17 | 0.0000 | 0.00% |
-| ScreenMessages.PostMessage | 0 | 12 | 12 | 0.0000 | 0.00% |
-| GUI.Button | 0 | 11 | 11 | 0.0000 | 0.00% |
-| GUILayout.DoWindow | 3 | 6 | 9 | 0.3333 | 33.33% |
+| GUILayout.DoLabel | 37 | 665 | 702 | 0.0527 | 5.27% |
+| GUI.Box | 0 | 331 | 331 | 0.0000 | 0.00% |
+| GUILayout.DoToggle | 23 | 203 | 226 | 0.1018 | 10.18% |
+| GUILayout.DoButton | 14 | 142 | 156 | 0.0897 | 8.97% |
+| GUI.Label | 0 | 37 | 37 | 0.0000 | 0.00% |
+| GUI.Toggle | 0 | 23 | 23 | 0.0000 | 0.00% |
+| GUI.Button | 0 | 18 | 18 | 0.0000 | 0.00% |
+| ScreenMessages.PostMessage | 0 | 14 | 14 | 0.0000 | 0.00% |
+| GUILayout.DoWindow | 4 | 8 | 12 | 0.3333 | 33.33% |
+| GUI.DoWindow(title) | 0 | 6 | 6 | 0.0000 | 0.00% |
 | GUI.DoButtonGrid(GUIContent[]) | 0 | 4 | 4 | 0.0000 | 0.00% |
-| GUI.DoWindow(title) | 0 | 4 | 4 | 0.0000 | 0.00% |
 | GUILayout.DoRepeatButton | 0 | 1 | 1 | 0.0000 | 0.00% |
 
 `(none)` = 补丁没带 sink 名的旧路径；`(other)` = byCaller 超出上限后的合并桶。
@@ -66,26 +67,26 @@
 
 | # | 调用点 | miss | 占全部未命中 |
 |---|---|---|---|
-| 1 | `LoadingScreen.UpdateProgressBar` | 1,402 | 30.5% |
-| 2 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.RefreshOverviewTab` | 1,069 | 23.3% |
-| 3 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.RefreshOverlayData` | 478 | 10.4% |
-| 4 | `RealisticLaunchVisuals.RLVDebugGUI.Row` | 381 | 8.3% |
-| 5 | `KERBALISM.KsmGui.KsmGuiText..ctor` | 120 | 2.6% |
-| 6 | `LunarTransferPlanner.LunarTransferPlanner.MakeMainWindow` | 119 | 2.6% |
-| 7 | `ModularFlightPanel.UI.UIFactory.CreateText` | 98 | 2.1% |
-| 8 | `ModularFlightPanel.UI.Workbench.WorkbenchControls.CreateWidgetThumbnailCard` | 92 | 2.0% |
-| 9 | `ModularFlightPanel.UI.BaseFlightWidget.SetTextIfChanged` | 83 | 1.8% |
-| 10 | `TUFX.TUFXWidgets.ParamSlider` | 59 | 1.3% |
-| 11 | `ModularFlightPanel.UI.Framework.SmartUIExtensions.SetTextSafe` | 58 | 1.3% |
-| 12 | `LoadingScreen.SetTip` | 39 | 0.8% |
-| 13 | `TUFX.TUFXHelper.DrawTooltipWindowContent` | 34 | 0.7% |
-| 14 | `MuMech.GuiUtils.SimpleTextBox` | 32 | 0.7% |
-| 15 | `MuMech.MechJebStageStatsHelper.DrawStageStatsColumn` | 31 | 0.7% |
-| 16 | `KSP.UI.Screens.EditorActionGroup.Setup` | 24 | 0.5% |
-| 17 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.CreateCrispText` | 22 | 0.5% |
-| 18 | `TUFX.ConfigurationGUI.renderSelectionWindow` | 20 | 0.4% |
-| 19 | `ModularFlightPanel.UI.Workbench.WorkbenchControls.CreateButton` | 18 | 0.4% |
-| 20 | `TUFX.TUFXWidgets.Toggle` | 16 | 0.3% |
+| 1 | `LoadingScreen.UpdateProgressBar` | 1,975 | 30.6% |
+| 2 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.RefreshOverviewTab` | 1,069 | 16.6% |
+| 3 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.RefreshOverlayData` | 478 | 7.4% |
+| 4 | `RealisticLaunchVisuals.RLVDebugGUI.Row` | 381 | 5.9% |
+| 5 | `LunarTransferPlanner.LunarTransferPlanner.MakeMainWindow` | 345 | 5.4% |
+| 6 | `ContractConfigurator.Util.MissionControlUI.SetContractTitle` | 314 | 4.9% |
+| 7 | `KERBALISM.KsmGui.KsmGuiText..ctor` | 240 | 3.7% |
+| 8 | `TUFX.TUFXWidgets.ParamSlider` | 118 | 1.8% |
+| 9 | `KSP.UI.UIPlanetariumDateTime.SetTime` | 108 | 1.7% |
+| 10 | `ModularFlightPanel.UI.UIFactory.CreateText` | 98 | 1.5% |
+| 11 | `ModularFlightPanel.UI.Workbench.WorkbenchControls.CreateWidgetThumbnailCard` | 92 | 1.4% |
+| 12 | `ModularFlightPanel.UI.BaseFlightWidget.SetTextIfChanged` | 83 | 1.3% |
+| 13 | `ModularFlightPanel.UI.Framework.SmartUIExtensions.SetTextSafe` | 58 | 0.9% |
+| 14 | `LoadingScreen.SetTip` | 54 | 0.8% |
+| 15 | `ContractConfigurator.Util.MissionControlUI.SetupGroupItem` | 40 | 0.6% |
+| 16 | `TUFX.ConfigurationGUI.renderSelectionWindow` | 40 | 0.6% |
+| 17 | `TUFX.TUFXHelper.DrawTooltipWindowContent` | 38 | 0.6% |
+| 18 | `MuMech.GuiUtils.SimpleTextBox` | 32 | 0.5% |
+| 19 | `TUFX.TUFXWidgets.Toggle` | 32 | 0.5% |
+| 20 | `MuMech.MechJebStageStatsHelper.DrawStageStatsColumn` | 31 | 0.5% |
 
 这些调用点就是下一轮最该补的字典条目来源（配合 `reports/screen-coverage.md` 的原文列表一起看）。
 
