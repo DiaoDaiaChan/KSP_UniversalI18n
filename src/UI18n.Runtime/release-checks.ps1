@@ -21,12 +21,27 @@
 #   8. 工作树必须干净（git status --porcelain 为空；-AllowDirty 显式放行并打 WARN）
 #   9. staging 里两个 DLL 内嵌的 1.0.0+<commit> 必须等于 git rev-parse HEAD
 
+# 清单形状契约的唯一真源：UI18n.Core/Update/UpdateManifest.cs 的 ReaderContract 常量。
+# 出包脚本（build-update-package.ps1）把它写进清单，发布包断言（第 12 条）拿它核对包里的读取器认不认识。
+# 各抄一份字符串迟早会漂，而漂了就是整份清单被拒 —— 见 1.6.0 事故（docs/09 §6.6）。
+function Get-ManifestReaderContract {
+    param([Parameter(Mandatory = $true)][string]$RepoRoot)
+
+    $src = Join-Path $RepoRoot 'src\UI18n.Core\Update\UpdateManifest.cs'
+    if (-not (Test-Path -LiteralPath $src)) { throw ('[release] 找不到 ReaderContract 的源头: ' + $src) }
+    $m = [regex]::Match((Get-Content -LiteralPath $src -Raw -Encoding UTF8), 'ReaderContract\s*=\s*"([^"]+)"')
+    if (-not $m.Success) { throw ('[release] 读不到 ReaderContract 常量: ' + $src) }
+    return $m.Groups[1].Value
+}
+
 function Assert-ReleaseTree {
     param(
         [Parameter(Mandatory = $true)][string]$StageRoot,
         [Parameter(Mandatory = $true)][string]$StageMod,
         # 发布版本号：第 10、11 条要拿它比对 staging 里两个版本文件的内容。空串则只做「形状」检查。
-        [string]$Version = ''
+        [string]$Version = '',
+        # 当前清单形状契约（Get-ManifestReaderContract 的返回值）。空串则跳过第 12 条。
+        [string]$ReaderContract = ''
     )
 
     $StageRoot = [System.IO.Path]::GetFullPath($StageRoot)
@@ -99,6 +114,23 @@ function Assert-ReleaseTree {
         }
         catch {
             $violations.Add(("avc parse: UI18n.version 不是合法 JSON：" + $_.Exception.Message))
+        }
+    }
+
+    # 第 12 条：包里的读取器必须认识当前的清单形状契约。
+    # 为什么必须查：1.6.0 的 DLL 是 05593ac 时代的读取器（只认单文件 mods[].file），而出包脚本自 v1.2
+    # 起就写 files[] 聚合形态；两边各自的断言都在自己那一侧，没人比过，结果游戏里每份清单都被
+    # "bad-mod-entry:0: missing-file" 拒掉，联网更新从 v1.2 到 v1.6 一次都没生效。
+    # ReaderContract 常量是编译进读取器的能力标记：包里这条字符串的版本对不上，就说明 DLL 比出包脚本旧。
+    if ($ReaderContract) {
+        $coreDll = Join-Path $pluginsDir 'UI18n.Core.dll'
+        if (Test-Path -LiteralPath $coreDll) {
+            # 元数据里的用户字符串是 UTF-16LE（不是 UTF-8），所以用 Unicode 解码
+            $dllText = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($coreDll))
+            if ($dllText.IndexOf($ReaderContract, [System.StringComparison]::Ordinal) -lt 0) {
+                $violations.Add(("reader contract: 包里的 UI18n.Core.dll 没有 '" + $ReaderContract + "' 标记（这份 DLL 比出包脚本旧，" +
+                                 "它读不懂现在发出去的清单形状 —— 1.6.0 事故）"))
+            }
         }
     }
 

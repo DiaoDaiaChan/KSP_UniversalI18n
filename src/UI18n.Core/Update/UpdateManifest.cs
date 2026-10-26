@@ -285,6 +285,23 @@ namespace UI18n.Core.Update
         }
 
         /// <summary>
+        /// 本读取器认识的清单形状契约标记（清单顶层 <c>readerContract</c>）。
+        /// <para>
+        /// 为什么需要它：2026-10-26 的 1.6.0 事故 —— 出包脚本自 v1.2 起就按 <c>files[]</c> 聚合形态写
+        /// <c>mods[]</c>，而当时的读取器只认单文件 <c>file</c>，于是游戏里每份清单都被
+        /// <c>bad-mod-entry:0: missing-file</c> 整份拒掉，联网更新从 v1.2 到 v1.6 **一次都没生效**。
+        /// 两边的断言全在各自语言里（PowerShell 读回自己写的 JSON、C# 读自己造的 fixture），
+        /// 谁也不校验对方，所以没人发现。有了这个标记：
+        /// 清单声明 <c>readerContract</c>，读取器只接受自己认识的那个值，不认识就报
+        /// <c>unsupported-reader-contract</c>（比 missing-file 直白），
+        /// 而出包脚本的 reader round-trip 门禁（<c>tools/manifest-roundtrip</c>）会用**这个读取器**
+        /// 真解一遍刚产出的清单，两边只要有一边不认就出不了包。
+        /// </para>
+        /// <para>改契约（例如又加一种形状）= 提升这里的版本号，并同步 <c>build-update-package.ps1</c>。</para>
+        /// </summary>
+        public const string ReaderContract = "ui18n-manifest-reader/2";
+
+        /// <summary>
         /// 解析清单。任何非法输入返回 false + 原因串（**永不抛异常**）。
         /// </summary>
         public static bool TryParse(string json, out UpdateManifest manifest, out string error)
@@ -303,6 +320,14 @@ namespace UI18n.Core.Update
             if (root.Kind != JsonKind.Object)
             {
                 error = "root-not-object";
+                return false;
+            }
+
+            // 形状契约协商（见 ReaderContract 的注释）。旧清单没有这个键 → 照旧解析，不因缺键拒绝。
+            string declaredContract = root.GetString("readerContract", null);
+            if (!string.IsNullOrEmpty(declaredContract) && !string.Equals(declaredContract, ReaderContract, StringComparison.Ordinal))
+            {
+                error = "unsupported-reader-contract: " + declaredContract + " (this build reads " + ReaderContract + ")";
                 return false;
             }
 

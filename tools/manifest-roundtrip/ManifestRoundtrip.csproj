@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>ManifestRoundtrip</AssemblyName>
+    <RootNamespace>ManifestRoundtrip</RootNamespace>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <IsPackable>false</IsPackable>
+    <RuntimeFrameworkVersion></RuntimeFrameworkVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/UI18n.Core/UI18n.Core.csproj" />
+  </ItemGroup>
+</Project>

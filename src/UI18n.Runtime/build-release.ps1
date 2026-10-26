@@ -162,7 +162,10 @@ $provenance = Assert-ReleaseProvenance -StageMod $stageMod -RepoRoot $repoRoot -
 Write-Host ("[release] provenance: HEAD={0}, dirty={1} entry(ies), untracked-ignored={2}, Core={3}, Runtime={4}" -f $provenance.HeadSha, $provenance.DirtyCount, $provenance.UntrackedIgnored, $provenance.Embedded['UI18n.Core.dll'], $provenance.Embedded['UI18n.Runtime.dll'])
 
 # 3b) 内容断言（第 1-7 条）
-$stagedFiles = Assert-ReleaseTree -StageRoot $stageRoot -StageMod $stageMod -Version $Version
+# 第 12 条要拿「当前清单形状契约」核对包里的读取器：出包脚本写的是 files[] 聚合形态，
+# 而 DLL 里若还是只认单文件 mods[].file 的旧读取器，清单在游戏里会被整份拒掉（1.6.0 事故）。
+$readerContract = Get-ManifestReaderContract -RepoRoot $repoRoot
+$stagedFiles = Assert-ReleaseTree -StageRoot $stageRoot -StageMod $stageMod -Version $Version -ReaderContract $readerContract
 
 # 4) 打 zip（不加外层目录：解压即得 GameData/UI18n/...）
 Add-Type -AssemblyName System.IO.Compression.FileSystem | Out-Null

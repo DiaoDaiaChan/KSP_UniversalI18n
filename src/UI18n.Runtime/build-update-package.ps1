@@ -40,12 +40,21 @@ param(
     # 语言包源目录，默认 <repo>\packs（只取其下的 <lang>\ 子目录）
     [string]$PacksDir = "",
     # 临时工作目录（每次清空重建），默认 <repo>\build\update-package；并发跑多份时用它错开
-    [string]$WorkDir = ""
+    [string]$WorkDir = "",
+    # 跳过 reader round-trip（用运行时同一个 C# 读取器解这份清单）。只有在机器没有 .NET SDK 时才该用，
+    # 而且这种产物**不该发布**：1.6.0 就是"出包脚本与读取器形状不一致"导致联网更新整整五个版本没生效。
+    [switch]$SkipReaderCheck
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 $LF = [string][char]10
+
+# 清单形状契约的唯一真源是 C#：UI18n.Core/Update/UpdateManifest.cs 的 ReaderContract 常量。
+# 这里从源码里读出来写进清单（helper 与发布包第 12 条断言共用，见 release-checks.ps1）——
+# 两边各抄一份字符串迟早会漂，而漂了就是整份清单被拒（1.6.0 事故）。
+. (Join-Path $PSScriptRoot "release-checks.ps1")
+$ReaderContract = Get-ManifestReaderContract -RepoRoot (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
 
 if ($Version -notmatch "^([0-9]+)\.([0-9]+)\.([0-9]+)$") {
     throw ("[update] -Version 必须匹配 ^(\d+)\.(\d+)\.(\d+)$，收到: " + $Version)
@@ -184,6 +193,9 @@ function New-ManifestJson {
     )
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.Append("{" + $LF)
+    # 形状契约标记：读取器只接受它认识的值（见 UI18n.Core/Update/UpdateManifest.cs 的 ReaderContract）。
+    # 出包脚本自己断言不了这一条 —— 断言在 tools/manifest-roundtrip（用真正的 C# 读取器解这份清单）。
+    [void]$sb.Append("  " + [char]34 + "readerContract" + [char]34 + ": " + [char]34 + $ReaderContract + [char]34 + "," + $LF)
     [void]$sb.Append("  " + [char]34 + "version" + [char]34 + ": " + [char]34 + $Ver + [char]34 + "," + $LF)
     [void]$sb.Append("  " + [char]34 + "channel" + [char]34 + ": " + [char]34 + $ChannelArg + [char]34 + "," + $LF)
     [void]$sb.Append("  " + [char]34 + "language" + [char]34 + ": " + [char]34 + $Language + [char]34 + "," + $LF)
@@ -429,6 +441,35 @@ $secondSha = (Get-FileHash -LiteralPath $secondZip -Algorithm SHA256).Hash
 if ($secondSha -ne $zipSha) { $problems.Add("not-reproducible: 重建 zip 的 sha256 " + $secondSha + " != " + $zipSha) }
 $secondManifest = New-ManifestJson -Ver $Version -ChannelArg $Channel -Language $langNorm -ZipNameArg $zipName -ZipBytesArg ([long](Get-Item -LiteralPath $secondZip).Length) -ZipShaArg $secondSha -Files $fileRecords -Mods $mods -FileCount $fileRecords.Count -Rows $rowsTotal -BytesSum $bytesTotal
 if ($secondManifest -ne $manifestText) { $problems.Add("not-reproducible: 重建的 manifest 文本不同") }
+
+# ===== 断言 6：reader round-trip =====
+# 前面的断言全是"PowerShell 读回自己写的 JSON"，永远发现不了"读取器不认这个形状"。
+# 这里把清单交给运行时同一个 C# 读取器（tools/manifest-roundtrip）真解一遍，并核对 mods[]/files[] 一一对应。
+if ($SkipReaderCheck) {
+    Write-Host "[update] reader    : SKIPPED (-SkipReaderCheck)；这种产物不要发布"
+}
+else {
+    $probeProj = Join-Path $repoRoot "tools\manifest-roundtrip\ManifestRoundtrip.csproj"
+    if (-not (Test-Path -LiteralPath $probeProj)) {
+        $problems.Add("reader-roundtrip-missing: 找不到 " + $probeProj)
+    }
+    else {
+        $probeCode = -1
+        try {
+            $probeOut = @(& dotnet run --project $probeProj -c Release -- $manifestPath 2>&1)
+            $probeCode = $LASTEXITCODE
+            foreach ($ln in $probeOut) { Write-Host ("[update] reader    : " + $ln) }
+        }
+        catch {
+            $probeCode = -1
+            Write-Host ("[update] reader    : 无法运行 dotnet - " + $_.Exception.Message)
+        }
+        if ($probeCode -ne 0) {
+            $problems.Add("reader-roundtrip: 运行时读取器拒绝这份清单（exit " + $probeCode + "）；" +
+                          "出包脚本与 UI18n.Core 的清单形状不一致，发出去玩家一定装不上（见 1.6.0 事故）")
+        }
+    }
+}
 
 if ($problems.Count -gt 0) {
     $lines = @("[update] 硬断言失败 " + $problems.Count + " 条，拒绝出包：")
