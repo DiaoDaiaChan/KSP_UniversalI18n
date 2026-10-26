@@ -130,6 +130,10 @@ namespace UI18n.Runtime
                 int captureMax = ReadInt(node, "CaptureMaxEntries", config.CaptureMaxEntries);
                 config.CaptureMaxEntries = captureMax < 0 ? 0 : captureMax;
 
+                // 模板档单独限额（v1.3）：口径与上面不同，0 = 一条都不录、负数 = 不限制，所以这里不夹负数。
+                config.CaptureMaxTemplateEntries =
+                    ReadInt(node, "CaptureMaxTemplateEntries", config.CaptureMaxTemplateEntries);
+
                 // 实验开关（task-31）：默认 False。关闭时零 patch、零日志、零开销。
                 config.ShadowStyleDraw = ReadBool(node, "ShadowStyleDraw", config.ShadowStyleDraw);
 

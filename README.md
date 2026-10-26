@@ -59,7 +59,7 @@ text.text = "All Input Locks Cleared";
 - **开关**：`Enabled`、`ForceOverride`（非中文环境也翻）
 - **字典**：`MaxEntries`、`CheckForUpdates` / `AutoDownload` / `UpdateBaseUrl` / `UpdateChannel` / `UpdateCheckDays`（联网更新，v1.2）
 - **字体**：`FontMode`（`Off` / `OsFont` 默认 / `Bundled`）、`OsFontName`、`BundledFontPath`、`TmpMode`（`Auto` / `KeepSource` / `Force`）
-- **诊断**：`LogLevel`（`Error` / `Warn` / `Info` 默认 / `Verbose`，v1.3）、`HitSampleLimit`、`CaptureMisses`、`CaptureMaxEntries`、`ShadowStyleDraw`
+- **诊断**：`LogLevel`（`Error` / `Warn` / `Info` 默认 / `Verbose`，v1.3）、`HitSampleLimit`、`CaptureMisses`、`CaptureMaxEntries`、`CaptureMaxTemplateEntries`（模板档单独限额，v1.3）、`ShadowStyleDraw`
 
 `CaptureMisses = True` 会把字典里没有的 UI 文本聚合写到 `<KSP>/PluginData/UI18n/capture-<时间戳>.jsonl`，**只写本地文件、绝不上传**（上传只受 `ReportOptIn` 控制，且当前版本没有任何上传代码）。
 

@@ -40,6 +40,7 @@ namespace UI18n.Core.Capture
 
         private long _filtered;
         private long _overflow;
+        private long _templateSkipped;
         private int _candidates;
         private int _templates;
         private int _never;
@@ -125,6 +126,15 @@ namespace UI18n.Core.Capture
         public int Never
         {
             get { return _never; }
+        }
+
+        /// <summary>
+        /// 因为 <see cref="CaptureOptions.MaxTemplateEntries"/> 额度用尽而被丢弃的<b>模板档</b>条数
+        /// （不含 <c>&lt; 0</c> 不限制的情形，那种情况永远是 0）。用来回答「模板限额是不是真的在起作用」。
+        /// </summary>
+        public long TemplateSkipped
+        {
+            get { return _templateSkipped; }
         }
 
         /// <summary>超过 <see cref="CaptureOptions.MaxEntries"/> 后被丢弃的次数。</summary>
@@ -291,6 +301,11 @@ namespace UI18n.Core.Capture
                 sb.Append(", filtered=").Append(_filtered.ToString(CultureInfo.InvariantCulture));
             }
 
+            if (_templateSkipped > 0)
+            {
+                sb.Append(", tmplSkipped=").Append(_templateSkipped.ToString(CultureInfo.InvariantCulture));
+            }
+
             if (_overflow > 0)
             {
                 sb.Append(", overflow=").Append(_overflow.ToString(CultureInfo.InvariantCulture));
@@ -427,6 +442,23 @@ namespace UI18n.Core.Capture
                 _index[hash] = IndexFiltered;
                 _filtered++;
                 return false;
+            }
+
+            // v1.3：模板档单独限额（round 11 实测：一局 5000 条里 4,323 条是加载屏计数器，
+            // 真正的 UI 文本只抢到 109 条就被挤满）。判据放在 MaxEntries 之前 —— 模板档不许吃总配额。
+            int templateCap = _options.MaxTemplateEntries;
+            if (templateCap >= 0)
+            {
+                bool template;
+                string classifyReason;
+                string bucket;
+                CaptureClassify.Classify(normalized, out template, out classifyReason, out bucket);
+                if (bucket == CaptureClassify.BucketTemplate && (templateCap == 0 || _templates >= templateCap))
+                {
+                    _index[hash] = IndexFiltered;
+                    _templateSkipped++;
+                    return false;
+                }
             }
 
             if (_options.MaxEntries > 0 && _records.Count >= _options.MaxEntries)

@@ -83,6 +83,16 @@ namespace UI18n.Core.Config
         public int CaptureMaxEntries { get; set; } = 5000;
 
         /// <summary>
+        /// 单局最多捕获多少条<b>模板档</b>（含数字的计数器 / 进度串，如 <c>Loading sound asset 0/234</c>）。
+        /// 配置键 <c>CaptureMaxTemplateEntries</c>，默认 <c>200</c>；<c>0</c> = 一条都不录、<c>&lt; 0</c> = 不限制。
+        /// <para>
+        /// 这个额度与 <see cref="CaptureMaxEntries"/> <b>分开算</b>：round 11 实测一局 5,000 条里 4,323 条是
+        /// 加载屏计数器，真正的 UI 文本只抢到 109 条配额就满了（见 <c>reports/capture-triage.md</c>）。
+        /// </para>
+        /// </summary>
+        public int CaptureMaxTemplateEntries { get; set; } = 200;
+
+        /// <summary>
         /// 实验开关（配置键 <c>ShadowStyleDraw</c>，默认 <c>false</c>）：给 IMGUI 的统一出口
         /// <c>GUIStyle.Internal_Draw</c> / <c>Internal_Draw2</c> 装两个<b>影子前缀</b>，
         /// 只统计「统一出口看到哪些文本」，用来回答「13 个 IMGUI hook 能不能收敛成 2 个」。

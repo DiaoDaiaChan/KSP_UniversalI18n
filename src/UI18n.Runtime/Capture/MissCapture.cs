@@ -72,6 +72,7 @@ namespace UI18n.Runtime
                 CaptureOptions options = CaptureOptions.Default;
                 options.Enabled = true;
                 options.MaxEntries = config.CaptureMaxEntries < 0 ? 0 : config.CaptureMaxEntries;
+                options.MaxTemplateEntries = config.CaptureMaxTemplateEntries;
 
                 string dir = CaptureDirectory();
                 _path = Path.Combine(dir, CaptureStore.BuildFileName(DateTime.UtcNow));
@@ -79,8 +80,9 @@ namespace UI18n.Runtime
                 _nextFlushAt = Time.realtimeSinceStartup + FlushIntervalSeconds;
                 _configured = true;
 
-                Log.Info("capture: enabled, max=" + options.MaxEntries + ", flush every " + (int)FlushIntervalSeconds
-                         + " s, file=" + _path);
+                Log.Info("capture: enabled, max=" + options.MaxEntries
+                         + ", maxTemplate=" + (options.MaxTemplateEntries < 0 ? "off" : options.MaxTemplateEntries.ToString())
+                         + ", flush every " + (int)FlushIntervalSeconds + " s, file=" + _path);
             }
             catch (Exception ex)
             {

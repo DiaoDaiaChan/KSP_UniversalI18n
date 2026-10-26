@@ -389,6 +389,7 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `HitSampleLimit` | `64` | 退出时最多打印多少条「首次命中样本」（§9.4）。`0` = 关闭采样；**只影响日志条数**，`distinct hits` 计数永远精确 |
 | `CaptureMisses` | `True` | 缺命中捕获总开关（§9.8）：把「字典里没有、但真的被渲染层看到」的字符串去重后落到 `PluginData/UI18n/capture-*.jsonl`。**只写本地文件，不上传任何东西** |
 | `CaptureMaxEntries` | `5000` | 捕获的去重条数上限，触顶后只计数不再记录（日志 `capture: cap reached`）。负数按 `0` 处理 |
+| `CaptureMaxTemplateEntries` | `200` | 模板档（含数字的计数器 / 进度串）**单独**的条数上限，**0 = 一条都不录、负数 = 不限制**。与上一行分开算（§7.4） |
 | `ShadowStyleDraw` | `False` | **实验开关，正常玩家不要开**（§9.9）：额外给 `GUIStyle.Internal_Draw` / `Internal_Draw2` 装两个只读影子 prefix，只统计、绝不改文本。round 8 实测零收益，已归档，代码保留只作取证工具 |
 | `UpdateBaseUrl` | `https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/update` | 起点地址（§11、§12.2）。**空 = 完全不联网**：一个 socket 都不开，行为与 v1.1 一致。非空时只接受 `https://` 任意主机或 `http://127.0.0.1` / `http://localhost`，其它写法一律直接拒绝并 warn |
 | `UpdateChannel` | `stable` | 发布通道目录名，manifest 地址 = `<UpdateBaseUrl>/<UpdateChannel>/manifest.json` |
@@ -652,6 +653,19 @@ pwsh -File _scratch\p1\probe.ps1 -Action Remove      # 必须移除，否则会�
 
 **上限与落盘节奏**：去重后最多 `CaptureMaxEntries`（默认 5000）条；触顶后新串只累加 `overflow` 计数，
 并**只打一次** `[UI18n] WARN capture: cap reached (CaptureMaxEntries=5000), further distinct misses are counted only (overflow=N)`。
+
+**模板档单独限额（v1.3，`CaptureMaxTemplateEntries`，默认 200）**：round 11 用真实会话量出来的缺陷 ——
+一份 5,000 条的 `capture-*.jsonl` 里 **4,323 条是模板档**（`Loading sound asset 0/234` 这种加载屏计数器，
+`reason=counter` 3,903 / `progress` 420），真正的 UI 文本只抢到 **109 条**就撞上 5,000 的总上限；
+而 `capture_ingest` 本来就只把 `candidate`/`template` 收进候选，噪声占了 86.5% 的配额等于白跑一局。
+所以模板档改走**独立额度**，且判定放在总配额**之前** —— 模板档再也挤不掉候选档。三条口径：
+
+- `> 0` 限额（默认 200）；`0` 一条模板档都不录；`< 0` 不限制（旧行为）。
+  与 `CaptureMaxEntries` 的 `0 = 不限制` **故意不同**：模板档是唯一「用户最可能想彻底关掉」的一档，
+  沿用 `0 = 不限制` 就没法表达「一条都别录」。
+- 被额度挡掉的条数记在 `tmplSkipped`，出现在每次落盘的 `capture: distinct=…, template=…, tmplSkipped=…` 里；
+  **不会**打印 cap reached 告警（限额是设计行为，不是故障）。
+- 挡掉的 hash 记成 `filtered`，所以后续 `CountMiss` 只累加计数、不会凭空造记录。
 落盘是**追加**语义：每 60 s（`MissCapture.Tick`）把新记录追加进同一个文件，退出/销毁时再 flush 一次并打 `Describe()`。
 写失败（目录不可写等）只 `Warn` 一次并记 `LastWriteError`，**不抛**、不影响游戏。
 

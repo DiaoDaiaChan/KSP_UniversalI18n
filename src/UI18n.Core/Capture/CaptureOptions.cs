@@ -16,6 +16,19 @@ namespace UI18n.Core.Capture
         /// <summary>单次会话最多记录多少条<b>不同</b>原文（去重键 = FNV-1a 64）。达到上限后停止捕获。</summary>
         public int MaxEntries { get; set; } = 5000;
 
+        /// <summary>
+        /// 单次会话最多记录多少条<b>模板档</b>（<c>bucket=template</c>：含数字的计数器 / 进度串，如
+        /// <c>Loading sound asset 0/234</c>）。<b>这个额度与 <see cref="MaxEntries"/> 分开算</b>，
+        /// 所以噪声再也不能把整局配额吃光（v1.3 修的缺陷，实测见 <c>reports/capture-triage.md</c>）。
+        /// <para>
+        /// 取值口径<b>与 <see cref="MaxEntries"/> 不同，故意如此</b>：
+        /// <c>&gt; 0</c> 限额、<c>0</c> 完全不录模板档、<c>&lt; 0</c> 不限制。
+        /// 原因：模板档是唯一「用户最可能想彻底关掉」的一档（它是噪声源，翻译价值最低），
+        /// 若沿用 <c>0 = 不限制</c> 就没法表达「一条都别录」。
+        /// </para>
+        /// </summary>
+        public int MaxTemplateEntries { get; set; } = 200;
+
         /// <summary>单条文本上限：超过这个长度的串不录（不是截断）。</summary>
         public int MaxTextLength { get; set; } = 400;
 
@@ -34,6 +47,7 @@ namespace UI18n.Core.Capture
             CaptureOptions copy = new CaptureOptions();
             copy.Enabled = Enabled;
             copy.MaxEntries = MaxEntries;
+            copy.MaxTemplateEntries = MaxTemplateEntries;
             copy.MaxTextLength = MaxTextLength;
             copy.MinTextLength = MinTextLength;
             return copy;
