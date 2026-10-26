@@ -19,7 +19,7 @@ on:
         type: boolean
         default: false
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "packs/pool.jsonl"
       - "packs/glossary.jsonl"
@@ -49,12 +49,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
-      - name: 工具自检（216 项）
+      - name: 工具自检（240 项）
         working-directory: tools
         run: python -m i18n_tools.selftest
 
@@ -76,7 +76,7 @@ jobs:
           {
             echo "### i18n 门禁"
             echo ""
-            echo "四道门按顺序执行：selftest（216 项）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）。"
+            echo "四道门按顺序执行：selftest（240 项）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）。"
             echo ""
             echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -93,8 +93,8 @@ jobs:
       UI18N_LLM_MODEL: ${{ secrets.UI18N_LLM_MODEL }}
       UI18N_LLM_REASONING: ${{ vars.UI18N_LLM_REASONING || 'none' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
