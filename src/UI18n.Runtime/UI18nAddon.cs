@@ -34,6 +34,13 @@ namespace UI18n.Runtime
         private static string _version;
 
         /// <summary>
+        /// 本次启动的会话 id（UTC <c>yyyyMMdd-HHmmss</c>）。<b>只出现在 diag 行里</b>，别处一律不加——
+        /// 现有日志行的文本是文档里 <c>Select-String</c> 的判据，改前缀等于把所有排障手册作废。
+        /// 它的用途：把两条 diag 行、以及同一次启动落盘的 <c>PluginData/UI18n/capture-*.jsonl</c> 对起来。
+        /// </summary>
+        internal static readonly string SessionId = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture);
+
+        /// <summary>
         /// 程序集版本串，形如 <c>1.0.0+9238f1a…</c>：<c>+</c> 前是发布版本（构建时 <c>-p:Version=</c> 写进去的），
         /// <c>+</c> 后是构建时 HEAD 的 commit（.NET SDK 的 <c>SourceRevisionId</c>，见 README §10.8）。
         /// 日志<b>原样打印整串</b> —— 玩家贴一行日志就能定位到确切 commit，比只打 <c>1.0.0</c> 有用。
@@ -194,6 +201,10 @@ namespace UI18n.Runtime
             Language = language;
             Log.Info("language=" + Printable(language) + ", enabled=" + config.Enabled + ", forceOverride=" + config.ForceOverride);
 
+            // 6a) 启动自检行（task-44）：一行 key=value，人工可读、脚本可 grep。
+            //     刻意放在语言门禁**之前** —— 「装了但没翻译」是最常见的报障，而那种情况下 ready 行根本不会出现。
+            Log.Always(DiagLine(config, language));
+
             if (!config.Enabled)
             {
                 Log.Info("disabled in Config.cfg (Enabled=False), patches skipped");
@@ -256,10 +267,62 @@ namespace UI18n.Runtime
             // 7) 一行汇总
             Log.Info("ready: patches=" + ok + "/" + (ok + failed) + ", dict entries=" + pack.Entries
                      + ", language=" + Printable(language) + ", version=" + Version);
+            Log.Always(DiagInstalled(config, pack, ok, failed));
 
             _statsActive = ok > 0;
             _probePending = true;
             _nextStatsAt = Time.realtimeSinceStartup + StatsIntervalSeconds;
+        }
+
+        /// <summary>
+        /// 启动自检行的内容（<c>diag: session=…, version=…, …</c>）。<b>绝不抛</b>：所有取值都过 Safe* 包装，
+        /// 因为这一行存在的意义就是「在环境可疑时也能打出来」。
+        /// </summary>
+        private static string DiagLine(UI18nConfig config, string language)
+        {
+            return "diag: session=" + SessionId
+                     + ", version=" + Version
+                     + ", ksp=" + SafeKspVersion()
+                     + ", unity=" + SafeUnityVersion()
+                     + ", os=" + SafeOs()
+                     + ", lang=" + Printable(language)
+                     + ", logLevel=" + ConfigEnums.ToName(config.LogLevel)
+                     + ", enabled=" + Bool(config.Enabled)
+                     + ", forceOverride=" + Bool(config.ForceOverride)
+                     + ", font=" + ConfigEnums.ToName(config.FontMode)
+                     + ", tmp=" + ConfigEnums.ToName(config.TmpMode)
+                     + ", capture=" + (config.CaptureMisses ? config.CaptureMaxEntries.ToString() : "off")
+                     + ", update=" + (string.IsNullOrEmpty(config.UpdateBaseUrl) ? "off" : config.UpdateChannel);
+        }
+
+        /// <summary>装完之后的自检行：把「实际装上了什么」与启动行的「配置想要什么」配成一对。</summary>
+        private static string DiagInstalled(UI18nConfig config, DictPack pack, int ok, int failed)
+        {
+            return "diag: session=" + SessionId
+                     + ", patches=" + ok + "/" + (ok + failed)
+                     + ", dict=" + pack.Entries
+                     + ", parse=" + pack.ParseErrors
+                     + ", shadow=" + Bool(config.ShadowStyleDraw);
+        }
+
+        private static string Bool(bool value)
+        {
+            return value ? "true" : "false";
+        }
+
+        private static string SafeKspVersion()
+        {
+            try { return Application.version ?? "?"; } catch (Exception) { return "?"; }
+        }
+
+        private static string SafeUnityVersion()
+        {
+            try { return Application.unityVersion ?? "?"; } catch (Exception) { return "?"; }
+        }
+
+        private static string SafeOs()
+        {
+            try { return SystemInfo.operatingSystem ?? "?"; } catch (Exception) { return "?"; }
         }
 
         /// <summary>

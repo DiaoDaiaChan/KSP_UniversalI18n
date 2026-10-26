@@ -9,6 +9,15 @@ namespace UI18n.Core.Config
     /// </summary>
     public sealed class UI18nConfig
     {
+        /// <summary>
+        /// 日志级别（配置键 <c>LogLevel</c>，默认 <see cref="global::UI18n.Core.Config.LogLevel.Info"/>）。
+        /// <para>
+        /// 只影响日志，不影响翻译行为：设成 <c>Error</c> 时连启动摘要都不打，但 UI 照样翻译。
+        /// 放在类的最前面是刻意的——它决定后面每一条日志是否出得来。
+        /// </para>
+        /// </summary>
+        public LogLevel LogLevel { get; set; } = global::UI18n.Core.Config.LogLevel.Info;
+
         /// <summary>总开关（false 时 Runtime 不装任何 patch）。</summary>
         public bool Enabled { get; set; } = true;
 

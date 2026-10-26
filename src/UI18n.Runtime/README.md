@@ -122,6 +122,20 @@ content.text = ...
 > 由 `UI18nAddon.Version` 从程序集读出来，不再硬编码 —— 玩家贴一行日志就能定位到确切 commit（见 10.8）。
 > 本机联调从 `build\bin` 直接构建时，`+` 后就是当时 HEAD；正式发布包由 `build-release.ps1 -Version 1.0.0` 构建。
 
+**v1.3 起多两行 `diag:`（不改任何既有行，见 §9.10）**：一行在`language=`之后、**语言门禁之前**，
+一行在`ready:`之后。前者是唯一在「装了但没翻译」时也会出现的自检行：
+
+```
+[UI18n] diag: session=20261026-022917, version=1.3.0+…, ksp=1.12.5.3190, unity=2019.4.18f1, os=Windows 11  (10.0.26300) 64bit,
+        lang=zh-cn, logLevel=Info, enabled=true, forceOverride=false, font=OsFont, tmp=Auto, capture=5000, update=stable
+[UI18n] diag: session=20261026-022917, patches=17/17, dict=11089, parse=0, shadow=false
+```
+
+> 实际日志是**一行**（上面为了可读换了行）；字段顺序固定，键名固定，脚本可按 `session=` / `patches=` 直接切。
+> `session` 与 `PluginData/UI18n/capture-<UTC>.jsonl` 的时间戳同源，能把「日志里的这一局」和「捕获文件的这一局」对上。
+> 这两行走 `Log.Always`，**任何 `LogLevel` 下都会打** —— 玩家把日志设成 `Error` 恰恰说明他在报障，
+> 此时若连自检行都被自己静音，收上来的日志就只剩错误，无从判断版本与安装状态（§9.10）。
+
 非中文（**预期行为**：0 个 patch）：
 
 ```
@@ -371,6 +385,7 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `OsFontName` | `Microsoft YaHei` | 首选系统字体名，精确匹配；不存在按内置候选回退 |
 | `BundledFontPath` | 空 | `FontMode=Bundled` 的字体包路径，相对路径按 `GameData/UI18n` 解析 |
 | `TmpMode` | `Auto` | `Auto` / `KeepSource` / `Force`（§9.2）。非法值记 Warn 后用默认 |
+| `LogLevel` | `Info` | 日志级别 `Error` / `Warn` / `Info` / `Verbose`（§9.10）。**只影响日志、不影响翻译**；非法值记 Warn 后回落 `Info`（写错一个词绝不等于「把日志全关掉」） |
 | `HitSampleLimit` | `64` | 退出时最多打印多少条「首次命中样本」（§9.4）。`0` = 关闭采样；**只影响日志条数**，`distinct hits` 计数永远精确 |
 | `CaptureMisses` | `True` | 缺命中捕获总开关（§9.8）：把「字典里没有、但真的被渲染层看到」的字符串去重后落到 `PluginData/UI18n/capture-*.jsonl`。**只写本地文件，不上传任何东西** |
 | `CaptureMaxEntries` | `5000` | 捕获的去重条数上限，触顶后只计数不再记录（日志 `capture: cap reached`）。负数按 `0` 处理 |
@@ -725,6 +740,47 @@ shadow-20261023-060127.jsonl -> 0 行
 
 **为什么还留着代码**：这是「统一底层存在吗」这个问题的**可复现证据**。以后有人（包括我自己）再想「能不能少打几个 hook」，
 跑一轮 `ShadowStyleDraw = True` 就能拿到当时的差集，不用重新推导。开启后的日志形态见 §9.4。
+
+### 9.10 日志级别（`LogLevel`）与现场采集（`tools/collect-diagnostics.ps1`）
+
+**为什么加**：v1.2 之前 151 处 `Log.Info` 全部无条件下发，热路径（每次 `set_text`）也可能打行，
+玩家想静音只能等新版本；而另一边，玩家报「没翻译」时我们要的信息散在 KSP.log、`Config.cfg`、
+`PluginData/UI18n/capture-*.jsonl`、`update-state.json` 四处，让玩家逐个找等于不收。
+
+| 级别 | 打什么 | 典型用途 |
+| --- | --- | --- |
+| `Error` | 只有错误 + 两行 `diag:`（`Log.Error`/`Log.Always` 不受级别影响，不存在「连错误都静音」） | 极端静音 |
+| `Warn` | 再加告警 | 日志被 Info 刷屏时 |
+| `Info`（默认） | 再加启动摘要、两行 `diag:`、每 20 s 的 `patch stats`、字典加载耗时 | 默认，与 v1.2 逐行一致 |
+| `Verbose` | 再加被过滤掉的捕获行等细粒度信息 | 排查「为什么这句没被捕获」 |
+
+判据是 **`级别 <= 当前级别`**（`src/UI18n.Core/Config/LogLevel.cs`：`Error=0 < Warn=1 < Info=2 < Verbose=3`）。
+**数值顺序是契约**：重排会让 `LogLevel=Warn` 反而更吵，`tests/UI18n.Core.Tests/LogLevelTests.cs` 直接钉住这四个数。
+
+门控在 `src/UI18n.Runtime/Log.cs`：`Log.IsEnabled(level)` 是热路径用的前置判断（`Log.Info("x=" + expensive())`
+的参数在进方法前就已求值，所以热路径要先判再拼）。`ConfigLoader.Load()` 读到该键后**立刻** `Log.Level = config.LogLevel`，
+连「配置文件缺失 / 节点缺失 / 读到一半炸掉」三条提前返回的路径也各自赋值（否则会沿用上一次的级别）。
+
+**现场采集**（一条命令，只读、不联网、不上传）：
+
+```powershell
+pwsh tools\collect-diagnostics.ps1
+# 可选：-KspRoot D:\Kerbal Space Program_newmod  -OutDir C:\temp  -Tag after-update  -MaxRuntimeFiles 5  -MaxFileMB 32
+```
+
+产物是单个 zip（实跑：30 个 capture 会话的场景下 522 KB），内容：
+
+| 成员 | 内容 | 为什么收 |
+| --- | --- | --- |
+| `log/ksp-log-ui18n.txt` | KSP.log 里含 `[UI18n]` 的全部行（实测 1,576 行 / 162,540 行里） | 整份 KSP.log 有 28 MB |
+| `log/ksp-log-tail.txt` | 最后 400 行原文 | 崩溃/异常栈的行不带前缀，只有整段尾部能看出「最后发生了什么」 |
+| `config/` | `Config.cfg`、`UI18n.cfg`、`UI18n.version`、`buildID.txt` | 配置与安装版本 |
+| `runtime/` | `PluginData/UI18n` 下最新 N 个 `capture-*.jsonl` / `shadow-*.jsonl` + `update-state.json` | 证据本体 |
+| `summary.txt` | 上述一切 + DLL 哈希 + 语言包逐文件 sha256/行数 + `settings.cfg` 的 `LANGUAGE` + 宿主环境，`key=value` | 机读主入口 |
+
+三个口径：① **不收 DLL 本体与语言包本体**，只收文件名/字节/sha256 —— 哈希就足以定位版本，收本体只是把 zip 撑大；
+② `capture-*.jsonl` 默认只收最新 5 个（老玩家目录里能有几十个，每个 0.1–2 MB），其余只留指纹；
+③ 单文件超过 `-MaxFileMB`（默认 32 MB）只记大小与哈希。**全程只读 KSP 目录，只在 `-OutDir` 下写 zip。**
 
 ## 10. 发布打包（build-release.ps1）
 

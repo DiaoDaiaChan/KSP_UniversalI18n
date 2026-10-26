@@ -59,9 +59,17 @@ text.text = "All Input Locks Cleared";
 - **开关**：`Enabled`、`ForceOverride`（非中文环境也翻）
 - **字典**：`MaxEntries`、`CheckForUpdates` / `AutoDownload` / `UpdateBaseUrl` / `UpdateChannel` / `UpdateCheckDays`（联网更新，v1.2）
 - **字体**：`FontMode`（`Off` / `OsFont` 默认 / `Bundled`）、`OsFontName`、`BundledFontPath`、`TmpMode`（`Auto` / `KeepSource` / `Force`）
-- **诊断**：`HitSampleLimit`、`CaptureMisses`、`CaptureMaxEntries`、`ShadowStyleDraw`
+- **诊断**：`LogLevel`（`Error` / `Warn` / `Info` 默认 / `Verbose`，v1.3）、`HitSampleLimit`、`CaptureMisses`、`CaptureMaxEntries`、`ShadowStyleDraw`
 
 `CaptureMisses = True` 会把字典里没有的 UI 文本聚合写到 `<KSP>/PluginData/UI18n/capture-<时间戳>.jsonl`，**只写本地文件、绝不上传**（上传只受 `ReportOptIn` 控制，且当前版本没有任何上传代码）。
+
+日志被刷屏就设 `LogLevel = Warn`（只影响日志，不影响翻译）。要报障时一条命令收齐现场：
+
+```powershell
+pwsh tools\collect-diagnostics.ps1     # → 单个 zip：KSP.log 的 [UI18n] 段 + 配置 + 语言包指纹 + capture/更新状态 + summary.txt
+```
+
+启动日志里有两行 `diag:`（`session=… key=value`），第一条在**语言门禁之前**，所以「装了但没翻译」时也会出现。
 
 ## 工作原理
 
@@ -151,6 +159,7 @@ pwsh src\UI18n.Runtime\build-release.ps1 -Version 1.1.0   # 出包到 dist/（11
 | `src/UI18n.Runtime/` | KSP 插件本体：Harmony patch、字体注入、配置读取、联网更新 |
 | `packs/` | 字典源：`pool.jsonl`（候选池）、`glossary.jsonl`（官方译文记忆）、`zh-cn/*.jsonl`（成品包）、`index.json`（清单） |
 | `tools/i18n_tools/` | 采集 / 翻译 / 解析 / 审计 / 清单的 python 工具链 |
+| `tools/collect-diagnostics.ps1` | 排障一把梭：把一个玩家的现场收成单个 zip（v1.3） |
 | `tests/UI18n.Core.Tests/` | xunit v3 单测 |
 | `docs/` | 设计文档：总体设计、翻译流水线、原生性与性能、工程骨架与构建、进度追踪 |
 

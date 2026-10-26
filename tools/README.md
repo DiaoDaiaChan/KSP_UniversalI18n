@@ -33,6 +33,16 @@ Windows 控制台是 GBK，若直接重定向输出中文可能 `UnicodeEncodeEr
 
 仓库里另有一个 **非 python** 的脚本 `tools/run-tests.ps1`（C# 单测入口，不属数据流水线）：
 `pwsh tools\run-tests.ps1` 先构建再跑 `UI18n.Core.Tests.dll`，退出码原样透传。
+
+排障还有一个 **非 python** 脚本 `tools/collect-diagnostics.ps1`（v1.3）：把一个玩家的现场收成单个 zip ——
+KSP.log 里含 `[UI18n]` 的行 + 末 400 行、`GameData/UI18n` 的配置与版本、DLL 与语言包的逐文件 sha256、
+`PluginData/UI18n` 下最新 5 个 `capture-*.jsonl` 与 `update-state.json`，外加机读的 `summary.txt`。
+**只读 KSP 目录、不联网、不上传**；不收 DLL/语言包本体（哈希足以定位版本）。
+
+```powershell
+pwsh tools\collect-diagnostics.ps1                       # 默认 KSP 根 D:\Kerbal Space Program_newmod，输出到 <KSP>\_diag
+pwsh tools\collect-diagnostics.ps1 -Tag after-update -MaxRuntimeFiles 10
+```
 **本机不要用 `dotnet test`**——VSTest testhost 启动即崩 `Win32Exception (5): 拒绝访问`（parent-exit 监视打不开父进程句柄），
 一条用例都不会执行；详见 `docs/06-工程骨架与构建.md` §4.2。
 

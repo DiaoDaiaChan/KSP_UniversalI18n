@@ -48,6 +48,25 @@ namespace UI18n.Runtime
                     return config;
                 }
 
+                // 日志级别第一件事就读（task-44）：它决定本方法后面每条日志是否出得来。
+                // 无法识别的值只 Warn 并保持 Info —— 绝不因为写错一个词就把日志全关掉。
+                string rawLogLevel = ReadString(node, "LogLevel", null);
+                if (!string.IsNullOrEmpty(rawLogLevel))
+                {
+                    LogLevel logLevel;
+                    if (ConfigEnums.TryParseLogLevel(rawLogLevel, out logLevel))
+                    {
+                        config.LogLevel = logLevel;
+                    }
+                    else
+                    {
+                        Log.Warn("config key LogLevel=\"" + rawLogLevel + "\" is not recognised (Error | Warn | Info | Verbose), using "
+                                 + ConfigEnums.ToName(config.LogLevel));
+                    }
+                }
+
+                Log.Level = config.LogLevel;
+
                 config.Enabled = ReadBool(node, "Enabled", config.Enabled);
                 config.ForceOverride = ReadBool(node, "ForceOverride", config.ForceOverride);
                 config.CheckForUpdates = ReadBool(node, "CheckForUpdates", config.CheckForUpdates);
@@ -142,6 +161,8 @@ namespace UI18n.Runtime
                 Log.Warn("config load failed (" + ex.GetType().Name + ": " + ex.Message + "), using defaults");
             }
 
+            // 文件缺失 / 节点缺失 / 读到一半炸掉，三条路径都必须让默认级别生效（否则 Log.Level 会留上一次的值）。
+            Log.Level = config.LogLevel;
             return config;
         }
 

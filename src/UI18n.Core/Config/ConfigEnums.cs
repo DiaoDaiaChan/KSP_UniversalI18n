@@ -82,6 +82,60 @@ namespace UI18n.Core.Config
             return false;
         }
 
+        /// <summary>
+        /// 解析 <c>LogLevel</c>：<c>Error</c> / <c>Warn</c> / <c>Info</c> / <c>Verbose</c>，另接受
+        /// <c>0|1|2|3</c> 与 <c>warning|warnings</c>（=Warn）、<c>debug|trace|all</c>（=Verbose）、<c>quiet|silent|off</c>（=Error）。
+        /// 无法识别时返回 <c>false</c>，<paramref name="level"/> 回落 <see cref="LogLevel.Info"/>。
+        /// </summary>
+        public static bool TryParseLogLevel(string raw, out LogLevel level)
+        {
+            level = LogLevel.Info;
+
+            string v = Canonical(raw);
+            if (v == null)
+            {
+                return false;
+            }
+
+            if (v == "error" || v == "errors" || v == "quiet" || v == "silent" || v == "off" || v == "0")
+            {
+                level = LogLevel.Error;
+                return true;
+            }
+
+            if (v == "warn" || v == "warning" || v == "warnings" || v == "1")
+            {
+                level = LogLevel.Warn;
+                return true;
+            }
+
+            if (v == "info" || v == "2")
+            {
+                level = LogLevel.Info;
+                return true;
+            }
+
+            if (v == "verbose" || v == "debug" || v == "trace" || v == "all" || v == "3")
+            {
+                level = LogLevel.Verbose;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>枚举 → 写回配置文件 / 打印进 diag 行时用的规范名（<c>Error</c> / <c>Warn</c> / <c>Info</c> / <c>Verbose</c>）。</summary>
+        public static string ToName(LogLevel level)
+        {
+            switch (level)
+            {
+                case LogLevel.Error: return "Error";
+                case LogLevel.Warn: return "Warn";
+                case LogLevel.Verbose: return "Verbose";
+                default: return "Info";
+            }
+        }
+
         /// <summary>枚举 → 写回配置文件时用的规范名（<c>Off</c> / <c>OsFont</c> / <c>Bundled</c>）。</summary>
         public static string ToName(FontMode mode)
         {
