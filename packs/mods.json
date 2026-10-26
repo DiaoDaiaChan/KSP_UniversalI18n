@@ -1,0 +1,661 @@
+{
+  "schema": 1,
+  "mods": [
+    {
+      "modId": "000_TexturesUnlimited",
+      "displayName": "000_TexturesUnlimited",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "001_ToolbarControl",
+      "displayName": "001_ToolbarControl",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "AJE",
+      "displayName": "AJE",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "AdvancedPQSTools",
+      "displayName": "AdvancedPQSTools",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Assembly-CSharp",
+      "displayName": "Assembly-CSharp",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "AtmosphereAutopilot",
+      "displayName": "AtmosphereAutopilot",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "AtmosphereAutopilot.UI",
+      "displayName": "AtmosphereAutopilot.UI",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "B9-PWings-Fork",
+      "displayName": "B9-PWings-Fork",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "B9PartSwitch",
+      "displayName": "B9PartSwitch",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "B9_Aerospace_ProceduralWings",
+      "displayName": "B9_Aerospace_ProceduralWings",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "BurstPQS",
+      "displayName": "BurstPQS",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ClickThroughBlocker",
+      "displayName": "ClickThroughBlocker",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "CommunityResourcePack",
+      "displayName": "CommunityResourcePack",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ConformalDecals",
+      "displayName": "ConformalDecals",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ContractConfigurator",
+      "displayName": "ContractConfigurator",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "EVEManager",
+      "displayName": "EVEManager",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "EditorExtensionsRedux",
+      "displayName": "EditorExtensionsRedux",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "FerramAerospaceResearch",
+      "displayName": "FerramAerospaceResearch",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Firespitter",
+      "displayName": "Firespitter",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "HangerExtenderExtended",
+      "displayName": "HangerExtenderExtended",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "HarmonyInstallChecker",
+      "displayName": "HarmonyInstallChecker",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KSCSwitcher",
+      "displayName": "KSCSwitcher",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KSPCommunityFixes",
+      "displayName": "KSPCommunityFixes",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KSPPerformanceProfiler",
+      "displayName": "KSPPerformanceProfiler",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KSPTextureLoader",
+      "displayName": "KSPTextureLoader",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KSPWheel",
+      "displayName": "KSPWheel",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KerbalAlarmClock",
+      "displayName": "KerbalAlarmClock",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KerbalChangelog",
+      "displayName": "KerbalChangelog",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KerbalFoundries",
+      "displayName": "KerbalFoundries",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KerbalJointReinforcement",
+      "displayName": "KerbalJointReinforcement",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Kerbalism",
+      "displayName": "Kerbalism",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "KerbalismConfig",
+      "displayName": "KerbalismConfig",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Kopernicus",
+      "displayName": "Kopernicus",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "LunarTransferPlanner",
+      "displayName": "LunarTransferPlanner",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "MechJeb2",
+      "displayName": "MechJeb2",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ModularFlightPanel",
+      "displayName": "ModularFlightPanel",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ModularLaunchPads",
+      "displayName": "ModularLaunchPads",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ModuleManager",
+      "displayName": "ModuleManager",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ParallaxContinued",
+      "displayName": "ParallaxContinued",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Parallax_StockPlanetTextures",
+      "displayName": "Parallax_StockPlanetTextures",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Parallax_StockTerrainTextures",
+      "displayName": "Parallax_StockTerrainTextures",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Principia",
+      "displayName": "Principia",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ProceduralFairings",
+      "displayName": "ProceduralFairings",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ProceduralParts",
+      "displayName": "ProceduralParts",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RCSBuildAid",
+      "displayName": "RCSBuildAid",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ROCapsules",
+      "displayName": "ROCapsules",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ROEngines",
+      "displayName": "ROEngines",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ROHeatshields",
+      "displayName": "ROHeatshields",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ROLib",
+      "displayName": "ROLib",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ROSolar",
+      "displayName": "ROSolar",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ROTanks",
+      "displayName": "ROTanks",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RP-1",
+      "displayName": "RP-1",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RP0",
+      "displayName": "RP0",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ReStock",
+      "displayName": "ReStock",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ReStockPlus",
+      "displayName": "ReStockPlus",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RealAntennas",
+      "displayName": "RealAntennas",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RealChute",
+      "displayName": "RealChute",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RealFuels",
+      "displayName": "RealFuels",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RealismOverhaul",
+      "displayName": "RealismOverhaul",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "RealisticLaunchVisuals",
+      "displayName": "RealisticLaunchVisuals",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Renamer",
+      "displayName": "Renamer",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "SXT",
+      "displayName": "SXT",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Scatterer",
+      "displayName": "Scatterer",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "SmokeScreen",
+      "displayName": "SmokeScreen",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Sol-Configs",
+      "displayName": "Sol-Configs",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "SolverEngines",
+      "displayName": "SolverEngines",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Squad",
+      "displayName": "Squad",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "TUFX",
+      "displayName": "TUFX",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Telecom",
+      "displayName": "Telecom",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "TestFlight",
+      "displayName": "TestFlight",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "TestFlightCore",
+      "displayName": "TestFlightCore",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "TextureReplacer",
+      "displayName": "TextureReplacer",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "TexturesUnlimited",
+      "displayName": "TexturesUnlimited",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ToolbarControl",
+      "displayName": "ToolbarControl",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "TransferWindowPlanner",
+      "displayName": "TransferWindowPlanner",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "TriggerTech",
+      "displayName": "TriggerTech",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "UI18n-ConfigCache",
+      "displayName": "UI18n-ConfigCache",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "UI18n-Unattributed",
+      "displayName": "UI18n-Unattributed",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Utils",
+      "displayName": "Utils",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "VenStockRevamp",
+      "displayName": "VenStockRevamp",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "Waterfall",
+      "displayName": "Waterfall",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
+      "modId": "ksp_plugin_adapter",
+      "displayName": "ksp_plugin_adapter",
+      "ckan": null,
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    }
+  ]
+}

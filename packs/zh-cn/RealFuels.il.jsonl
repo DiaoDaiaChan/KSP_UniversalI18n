@@ -1,9 +1,9 @@
-{"h":"06f10da40f886217","n":"<color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color>","s":"<color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color>","t":"<color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color>","mod":"RealFuels","p":1}
+{"h":"06f10da40f886217","n":"<color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color>","s":"<color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color>","t":"<color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color>","mod":"RealFuels","p":true}
 {"h":"087b9cc1f6079f48","n":"Column Settings","s":"Column Settings","t":"列设置","mod":"RealFuels"}
 {"h":"0a8e0af2b4bc209b","n":"Survival Probability %","s":"Survival Probability %","t":"存活概率 %","mod":"RealFuels"}
 {"h":"0b5d5ada205a5f53","n":"Thrust","s":"Thrust","t":"推力","mod":"RealFuels"}
 {"h":"108587a5639f9d7a","n":"Failure Probability Heatmap","s":"Failure Probability Heatmap","t":"故障概率热力图","mod":"RealFuels"}
-{"h":"18d1f1c243c88785","n":"at <color=#90EE90>#m #s</color> # in <color=#FF6666>#</color> burns fail","s":"at <color=#90EE90>#m #s</color> # in <color=#FF6666>#</color> burns fail","t":"在 <color=#90EE90>#分 #秒</color> 时，每 <color=#FF6666>#</color> 次点火中有 # 次失败","mod":"RealFuels","p":1}
+{"h":"18d1f1c243c88785","n":"at <color=#90EE90>#m #s</color> # in <color=#FF6666>#</color> burns fail","s":"at <color=#90EE90>#m #s</color> # in <color=#FF6666>#</color> burns fail","t":"在 <color=#90EE90>#分 #秒</color> 时，每 <color=#FF6666>#</color> 次点火中有 # 次失败","mod":"RealFuels","p":true}
 {"h":"1c9c3d253d9985b0","n":"Mode: Time → %","s":"Mode: Time → %","t":"模式：时间 → %","mod":"RealFuels"}
 {"h":"219e558d9df72d2b","n":"Show Sim","s":"Show Sim","t":"显示模拟","mod":"RealFuels"}
 {"h":"21d6534a474966d4","n":"RCS thrusters do not use burn-cycle reliability data.","s":"RCS thrusters do not use burn-cycle reliability data.","t":"RCS姿控动力不使用工作循环可靠性数据。","mod":"RealFuels"}
@@ -22,15 +22,15 @@
 {"h":"7a809810e6c66776","n":"Hide Sim","s":"Hide Sim","t":"隐藏模拟","mod":"RealFuels"}
 {"h":"7caa58c5a3cbf1a4","n":"Data Units (DU)","s":"Data Units (DU)","t":"数据单位 (DU)","mod":"RealFuels"}
 {"h":"7d1f7ff07c629fdd","n":"Ullg","s":"Ullg","t":"沉底","mod":"RealFuels"}
-{"h":"7dc5421964cc19bc","n":"Set to Current (#du)","s":"Set to Current (#du)","t":"设为当前（#du）","mod":"RealFuels","p":1}
+{"h":"7dc5421964cc19bc","n":"Set to Current (#du)","s":"Set to Current (#du)","t":"设为当前（#du）","mod":"RealFuels","p":true}
 {"h":"7ec7e1aa7e800996","n":"<color=#4DE64D>Max DU</color>","s":"<color=#4DE64D>Max DU</color>","t":"<color=#4DE64D>最大 DU</color>","mod":"RealFuels"}
-{"h":"8577bf9ce19cc431","n":"Surv@#s","s":"Surv@#s","t":"Surv@#s","mod":"RealFuels","p":1}
+{"h":"8577bf9ce19cc431","n":"Surv@#s","s":"Surv@#s","t":"Surv@#s","mod":"RealFuels","p":true}
 {"h":"857e2d5740fb3e7b","n":"<color=#FF8033>Starting DU</color>","s":"<color=#FF8033>Starting DU</color>","t":"<color=#FF8033>初始 DU</color>","mod":"RealFuels"}
 {"h":"87267aadd2ddccf5","n":"Burn Time (s):","s":"Burn Time (s):","t":"工作时间 (秒):","mod":"RealFuels"}
 {"h":"941de76cae3efa81","n":"Hide Chart","s":"Hide Chart","t":"隐藏图表","mod":"RealFuels"}
 {"h":"96b78fe3a7de96a3","n":"<color=#9E9E9E>✗</color>","s":"<color=#9E9E9E>✗</color>","t":"<color=#9E9E9E>✗</color>","mod":"RealFuels"}
 {"h":"96f1e616154bbe84","n":"Set to Current du","s":"Set to Current du","t":"设为当前 DU","mod":"RealFuels"}
-{"h":"a631329b5d5a42d8","n":"Ignition: #%","s":"Ignition: #%","t":"点火：#%","mod":"RealFuels","p":1}
+{"h":"a631329b5d5a42d8","n":"Ignition: #%","s":"Ignition: #%","t":"点火：#%","mod":"RealFuels","p":true}
 {"h":"a81b7227c941a107","n":"Time to Reach Survival %","s":"Time to Reach Survival %","t":"达到存活率所需时间","mod":"RealFuels"}
 {"h":"ad6ed3bb9f646a21","n":"Burn Time","s":"Burn Time","t":"工作时间","mod":"RealFuels"}
 {"h":"af0265b49e1ed4ce","n":"Current Data","s":"Current Data","t":"当前数据","mod":"RealFuels"}
@@ -42,7 +42,7 @@
 {"h":"c237b3420c4a8429","n":"Dual burn time configurations (continuous/cumulative) are not supported for reliability charts","s":"Dual burn time configurations (continuous/cumulative)\nare not supported for reliability charts","t":"可靠性图表不支持双燃烧时间配置\n（连续/累计）","mod":"RealFuels"}
 {"h":"c6c3650b12bfa9b5","n":"Ignition %","s":"Ignition %","t":"点火 %","mod":"RealFuels"}
 {"h":"c9427b53584732ea","n":"Mode: % → Time","s":"Mode: % → Time","t":"模式：% → 时间","mod":"RealFuels"}
-{"h":"d9f90d7c9175652b","n":"# kN","s":"# kN","t":"# kN","mod":"RealFuels","p":1}
+{"h":"d9f90d7c9175652b","n":"# kN","s":"# kN","t":"# kN","mod":"RealFuels","p":true}
 {"h":"e2f596d159233092","n":"Igns","s":"Igns","t":"点火次数","mod":"RealFuels"}
 {"h":"e3dc4380b3f09323","n":"Max Data","s":"Max Data","t":"最大数据","mod":"RealFuels"}
 {"h":"ea827b8d63af7a75","n":"All resources active","s":"All resources active","t":"所有资源已启用","mod":"RealFuels"}

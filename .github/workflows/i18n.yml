@@ -27,6 +27,8 @@ on:
       - "packs/overrides.jsonl"
       - "packs/il-translatable.jsonl"
       - "packs/candidates.jsonl"
+      - "packs/mods.json"
+      - "packs/journal/**"
       - "packs/zh-cn/**"
       - "tests/golden/**"
       - "tools/i18n_tools/**"
@@ -51,7 +53,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # 取完整历史：journal 门禁要拿「上一个提交」对账（浅克隆里 HEAD~1 不存在）
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
@@ -91,13 +96,34 @@ jobs:
           fi
           exit "$code"
 
+      # packs 里每一笔改动都必须在 packs/journal/ 里有背书（docs/10 §4）：
+      #   受管文件当前 sha256 == 某条 journal 事件的 file_sha256_after，且 journal 只许追加。
+      # 手改 JSON 的提交会在这里红，报错文案直接给出应该跑的那条 api 命令。
+      # 没有可比对的父提交（首提交 / 浅克隆）时播报 notice 并跳过——那不是通过。
+      - name: journal 门禁（packs 改动必须有 journal 事件背书）
+        working-directory: tools
+        run: |
+          set +e
+          base="${{ github.event.before }}"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            base="HEAD~1"
+          fi
+          git cat-file -e "$base^{commit}" 2>/dev/null
+          ok=$?
+          set -e
+          if [ "$ok" -ne 0 ]; then
+            echo "::notice::journal_gate SKIP：checkout 里没有可比对的父提交（首提交或浅克隆），跨提交对账无从判定；这不是通过。"
+            exit 0
+          fi
+          python -m i18n_tools.journal_gate --base --base-rev "$base"
+
       - name: 汇总
         if: always()
         run: |
           {
             echo "### i18n 门禁"
             echo ""
-            echo "五道门按顺序执行：selftest（含 golden_gate 自检）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）→ golden（用户报过的原文三步判定；缺 packs/candidates.jsonl 时记 SKIP，不算红）。"
+            echo "六道门按顺序执行：selftest（含 golden_gate / api / journal_gate 自检）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）→ golden（用户报过的原文三步判定；缺 packs/candidates.jsonl 时记 SKIP，不算红）→ journal（packs 改动必须有 journal 事件背书；没有父提交时记 SKIP，不算红）。"
             echo ""
             echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
           } >> "$GITHUB_STEP_SUMMARY"

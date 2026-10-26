@@ -753,13 +753,13 @@ class Runner:
             entry = {"h": group["h"], "n": group["n"], "s": group["text"],
                      "t": restored, "mod": T.safe_mod_name(group["host"])}
             if bucket == PATTERN_BUCKET:
-                entry["p"] = 1
+                entry["p"] = True
         elif not failed:
             status = "ok"
             entry = {"h": group["h"], "n": group["n"], "s": group["text"],
                      "t": restored, "mod": T.safe_mod_name(group["host"])}
             if bucket == PATTERN_BUCKET:
-                entry["p"] = 1
+                entry["p"] = True
         elif set(failed) == {"G8"} and (T.echo_keep(group["text"], restored)
                                         or keep_no_cjk(group["text"], restored)):
             status = "keep"
@@ -1036,7 +1036,9 @@ def build_entries(results, ctx_mode="drop"):
             "mod": T.safe_mod_name(entry["mod"]),
         }
         if entry.get("p"):
-            row["p"] = int(entry["p"])
+            # 落盘写布尔（docs/10 §2.1 的规范形式）；旧的 p:1 由 api validate 报 notice、
+            # api apply --normalize-p 归一，运行期与旧读取器都接受两种表示。
+            row["p"] = True
         if ctx_mode == "keep":
             ctxs = result.get("ctxs") or []
             if ctxs:
@@ -1799,9 +1801,9 @@ def selftest():
          "mod": "TestFlight", "bucket": PATTERN_BUCKET, "status": "override", "gates": [],
          "notes": {}, "entry": {"h": "e0e0e0e0e0e0e0e0", "n": "Thrust Ratio: #",
                                "s": "Thrust Ratio: #", "t": "推力比：#",
-                               "mod": "TestFlight", "p": 1}},
+                               "mod": "TestFlight", "p": True}},
     ], "drop")
-    check("pattern 落库写 p:1", pat_entries[0].get("p") == 1, pat_entries[0])
+    check("pattern 落库写 p:true（布尔）", pat_entries[0].get("p") is True, pat_entries[0])
     check("p 在允许字段里", "p" in ALLOWED_FIELDS, ALLOWED_FIELDS)
     check("非 pattern 行不写 p",
           "p" not in build_entries(dup, "drop")[0][0], build_entries(dup, "drop")[0][0])

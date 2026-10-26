@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "lang": "zh-cn",
-  "generatedAt": "2026-10-26T07:15:06Z",
+  "generatedAt": "2026-10-26T10:26:35Z",
   "totalRows": 14954,
-  "totalBytes": 5170859,
+  "totalBytes": 5172317,
   "packCount": 97,
   "packs": [
     {
@@ -42,8 +42,8 @@
       "mod": "Assembly-CSharp",
       "file": "zh-cn/Assembly-CSharp.il.jsonl",
       "rows": 356,
-      "bytes": 62061,
-      "sha256": "07dc906aa556a2d90cac8feed4104d81c465e29760074580ac32c9ff7fde9bdf",
+      "bytes": 62262,
+      "sha256": "7eeb272cee3e6a233d2f182454ab597e413f460868fde9cb018afd70e0ed43d5",
       "keepRows": 32
     },
     {
@@ -90,8 +90,8 @@
       "mod": "BurstPQS",
       "file": "zh-cn/BurstPQS.il.jsonl",
       "rows": 15,
-      "bytes": 1954,
-      "sha256": "1535f1206e567014e188a179c49a9823262a7c7433ce5a0793e18ae9d19b9947",
+      "bytes": 1957,
+      "sha256": "07e3e1df2825976b97c907f368c5b40a496aaa1cf1adbd3bb4897e3712ce66a4",
       "keepRows": 0
     },
     {
@@ -146,8 +146,8 @@
       "mod": "EVEManager",
       "file": "zh-cn/EVEManager.il.jsonl",
       "rows": 2,
-      "bytes": 217,
-      "sha256": "d9f400fd0c49d4694c48561f0a9f74eaa99943db910ddb4a4281eb1d2421aeda",
+      "bytes": 220,
+      "sha256": "c20f67df2a4b31db4405fb5505bb5d583da5a72acf1cbe70e921ba8ebb83321a",
       "keepRows": 0
     },
     {
@@ -170,8 +170,8 @@
       "mod": "FerramAerospaceResearch",
       "file": "zh-cn/FerramAerospaceResearch.il.jsonl",
       "rows": 58,
-      "bytes": 8278,
-      "sha256": "9b37bbbf4e85706754ba4057314aa3802e553efaeca3d1aee4627553e006abc9",
+      "bytes": 8287,
+      "sha256": "c2b91f72057a9eb0e7c3a8ae3f995eeb31b876cd04d77f43cb5729a3ca139078",
       "keepRows": 0
     },
     {
@@ -234,8 +234,8 @@
       "mod": "KSPPerformanceProfiler",
       "file": "zh-cn/KSPPerformanceProfiler.il.jsonl",
       "rows": 213,
-      "bytes": 44183,
-      "sha256": "c77b616ce5e04134c7f8945de618acf7b2553a05982533d17009d13387b404e6",
+      "bytes": 44321,
+      "sha256": "3dadd0c2b42edc2790caa32f1ccd2b2385bcb1af848e43662eb2228a095e7052",
       "keepRows": 178
     },
     {
@@ -322,16 +322,16 @@
       "mod": "LunarTransferPlanner",
       "file": "zh-cn/LunarTransferPlanner.il.jsonl",
       "rows": 13,
-      "bytes": 1937,
-      "sha256": "7ed1b2a7ea60637b0e5db6f75eddb55b9e1714a663439b50a11d6e67cf9659aa",
+      "bytes": 1940,
+      "sha256": "d297d98f1a546fd283d76bfa8719578d1d59d979790942ff5871b1fca80a6c75",
       "keepRows": 1
     },
     {
       "mod": "MechJeb2",
       "file": "zh-cn/MechJeb2.il.jsonl",
       "rows": 169,
-      "bytes": 56832,
-      "sha256": "0e03ed471071352451d94ab2ec6a6f76d11a7dd39606ae367040b4396b6323ee",
+      "bytes": 56877,
+      "sha256": "fd96ba5f63c250e2976636a43f834f6f7d394e4de7749d2bd0678a6941ba757d",
       "keepRows": 15
     },
     {
@@ -346,8 +346,8 @@
       "mod": "ModularFlightPanel",
       "file": "zh-cn/ModularFlightPanel.il.jsonl",
       "rows": 60,
-      "bytes": 7296,
-      "sha256": "4c9ee7918b9b562da36c18dc9d5c23276c3a109defc0006fed3e99e5880847f1",
+      "bytes": 7380,
+      "sha256": "8f0d2766057be4bf726699369c1b8df1769f14bbbcf2fd5607b7ae3ef8f1cb58",
       "keepRows": 51
     },
     {
@@ -530,8 +530,8 @@
       "mod": "RealAntennas",
       "file": "zh-cn/RealAntennas.il.jsonl",
       "rows": 31,
-      "bytes": 3931,
-      "sha256": "c5989f9b71a17d332c1c2393c97fe5d25e29df26a7107bc03464382328136364",
+      "bytes": 3946,
+      "sha256": "f57d09182ca5a3156ce6dc6d7ce7653d6a4fbb0dc1095f3c926a22fdf9d8c8c6",
       "keepRows": 1
     },
     {
@@ -562,8 +562,8 @@
       "mod": "RealFuels",
       "file": "zh-cn/RealFuels.il.jsonl",
       "rows": 49,
-      "bytes": 6189,
-      "sha256": "7fa69826ae4d8c23db4b38a942aa9f001a90b7b3a1194e7515c56515ecc6f97d",
+      "bytes": 6207,
+      "sha256": "c0509e700eb34ab52abb4e0bb959397cb4c0352e3d83fb2a315a14be0d183362",
       "keepRows": 5
     },
     {
@@ -594,8 +594,8 @@
       "mod": "RealisticLaunchVisuals",
       "file": "zh-cn/RealisticLaunchVisuals.il.jsonl",
       "rows": 34,
-      "bytes": 9738,
-      "sha256": "757ddfb1d82ff1b417a1e8cd4d899ae343cacb27a81e749a109220dbaee6394f",
+      "bytes": 9810,
+      "sha256": "20ee5e1fd958e040ababaeda0bffd9e78acf40b681bbed2b6a4f6b6a16a3ad6c",
       "keepRows": 3
     },
     {
@@ -658,8 +658,8 @@
       "mod": "TUFX",
       "file": "zh-cn/TUFX.il.jsonl",
       "rows": 155,
-      "bytes": 31879,
-      "sha256": "dec23fad7c6f93391f72c3b6570b6d27e24302e0938aa493bf47fd3d0a5093c0",
+      "bytes": 32026,
+      "sha256": "e839fdbb3a049403ff9e7faea8d303cffeec207cad19869da5e32ff0f00ca93b",
       "keepRows": 112
     },
     {
@@ -738,8 +738,8 @@
       "mod": "UI18n-Unattributed",
       "file": "zh-cn/UI18n-Unattributed.il.jsonl",
       "rows": 251,
-      "bytes": 62258,
-      "sha256": "d4ebae28706d13f4c050179ba797cd71c2b01e71c876f7aaa3cded465d1bc227",
+      "bytes": 62915,
+      "sha256": "321ec1ffc95c77e06b2289a1eb4ec472fb0a1f496c02436da6ef5f1e47c242dc",
       "keepRows": 6
     },
     {
@@ -778,8 +778,8 @@
       "mod": "ksp_plugin_adapter",
       "file": "zh-cn/ksp_plugin_adapter.il.jsonl",
       "rows": 48,
-      "bytes": 12839,
-      "sha256": "5b514f50091bca144400d196294c0489530d40ce9e06453fa21136f3a496ea48",
+      "bytes": 12902,
+      "sha256": "9bbe136d323f2409cb9e80337c7e75e23ee889a2191a82c3ecf9a8b64669f0e1",
       "keepRows": 2
     }
   ]

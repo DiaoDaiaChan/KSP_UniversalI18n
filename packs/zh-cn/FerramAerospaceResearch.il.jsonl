@@ -2,14 +2,14 @@
 {"h":"046453858bb744e9","n":"Switch Back To Presets","s":"Switch Back To Presets","t":"切回预设","mod":"FerramAerospaceResearch"}
 {"h":"0bf151341f6ca397","n":"Lateral (X,Z-axis) Max Stress:","s":"Lateral (X,Z-axis) Max Stress:","t":"横向(X,Z轴)最大应力：","mod":"FerramAerospaceResearch"}
 {"h":"11ed1d3d33b9d12c","n":"Req Resources:","s":"Req Resources:","t":"所需资源：","mod":"FerramAerospaceResearch"}
-{"h":"1658bdbc2a9333af","n":"FAR Debug Options, v#.# 'Marangoni'","s":"FAR Debug Options, v#.# 'Marangoni'","t":"FAR 调试选项 v#.# Marangoni","mod":"FerramAerospaceResearch","p":1}
+{"h":"1658bdbc2a9333af","n":"FAR Debug Options, v#.# 'Marangoni'","s":"FAR Debug Options, v#.# 'Marangoni'","t":"FAR 调试选项 v#.# Marangoni","mod":"FerramAerospaceResearch","p":true}
 {"h":"1aa6ec99667f8e35","n":"Cm (r,g,b):","s":"Cm (r,g,b):","t":"Cm 分量（r,g,b）：","mod":"FerramAerospaceResearch"}
-{"h":"1be6b8d6b4706d4c","n":"Mesh: use # bit indices:","s":"Mesh: use # bit indices:","t":"网格：使用 # 位索引：","mod":"FerramAerospaceResearch","p":1}
+{"h":"1be6b8d6b4706d4c","n":"Mesh: use # bit indices:","s":"Mesh: use # bit indices:","t":"网格：使用 # 位索引：","mod":"FerramAerospaceResearch","p":true}
 {"h":"1c9469df575f5cc0","n":"Low Res SubVoxels","s":"Low Res SubVoxels","t":"低分辨率 SubVoxels","mod":"FerramAerospaceResearch"}
 {"h":"22ac7832ab849781","n":"Atm Composition","s":"Atm Composition","t":"大气组成","mod":"FerramAerospaceResearch"}
 {"h":"23e7385e8a5aec26","n":"Jupiter","s":"Jupiter","t":"木星","mod":"FerramAerospaceResearch"}
 {"h":"260067d6a62b3a76","n":"Saturn","s":"Saturn","t":"土星","mod":"FerramAerospaceResearch"}
-{"h":"26408a9af898bcf0","n":"# bit indices","s":"# bit indices","t":"# 位索引","mod":"FerramAerospaceResearch","p":1}
+{"h":"26408a9af898bcf0","n":"# bit indices","s":"# bit indices","t":"# 位索引","mod":"FerramAerospaceResearch","p":true}
 {"h":"265e8e48648b1255","n":"Editor GUI Graph Colors","s":"Editor GUI Graph Colors","t":"编辑器图表颜色","mod":"FerramAerospaceResearch"}
 {"h":"29ec563d56cf6c6b","n":"Other Options","s":"Other Options","t":"其他选项","mod":"FerramAerospaceResearch"}
 {"h":"3693f235340a235c","n":"Show Torque Arrows in Aero Overlay","s":"Show Torque Arrows in Aero Overlay","t":"在气动视图中显示力矩箭头","mod":"FerramAerospaceResearch"}

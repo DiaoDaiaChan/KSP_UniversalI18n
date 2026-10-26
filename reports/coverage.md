@@ -1,9 +1,9 @@
 # zh-cn 翻译包覆盖报告
 
-- 生成时间：`2026-10-26T07:15:06Z`
-- 包目录：`packs/zh-cn/`：97 个文件 / 14,954 行 / 5,170,859 字节
+- 生成时间：`2026-10-26T10:26:35Z`
+- 包目录：`packs/zh-cn/`：97 个文件 / 14,954 行 / 5,172,317 字节
   - cfg 包（`<mod>.jsonl`，GameData/**/*.cfg 抽取）：41 个 / 9,990 行 / 3,504,392 字节
-  - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：56 个 / 4,964 行 / 1,666,467 字节
+  - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：56 个 / 4,964 行 / 1,667,925 字节
   - 合计 82 个 mod（同一 mod 的 cfg 包与 IL 包各占一行清单，按 `mod` 聚合成一行表格）
 - 清单：`packs/index.json`（schema 1，字段口径见 `tools/i18n_tools/packindex.py` 模块 docstring）
 - 三节口径互不相加：① 是 `packs/pool.jsonl` 口径（cfg 包覆盖多少待译串）、② 是 DLL 字面量口径（IL 包）、③ 是运行时捕获通道现状。
@@ -34,7 +34,7 @@
 口径（分母 / 分子 / 与 ① 的关系）：
 
 1. **分母 = `packs/il-translatable.jsonl` 里 bucket 为 `translate` 的 distinct `h`（1,145 条）。**该文件是 `python -m i18n_tools.ilstrings` 从 GameData 下所有 DLL 的 IL 里采出来的字面量，按 bucket 分流：`translate` 1,145 / `short_label` 429 / `template` 172（合计 1,746 行）。只有 `translate` 桶会送去翻译；`short_label`（按钮/短标签）与 `template`（带占位符的模板）不译。
-2. **分子 = 这 1,145 条里 `h` 能在 `packs/zh-cn/*.il.jsonl` 精确命中的 1,099 条。**IL 包现状：56 个文件 / 4,964 行 / 1,666,467 字节，其中 `t == s` 直通行 1,339 行（与 ① 的 `keep` 同一语义）。
+2. **分子 = 这 1,145 条里 `h` 能在 `packs/zh-cn/*.il.jsonl` 精确命中的 1,099 条。**IL 包现状：56 个文件 / 4,964 行 / 1,667,925 字节，其中 `t == s` 直通行 1,339 行（与 ① 的 `keep` 同一语义）。
 3. **与 cfg 包不重复：** IL 包的 4,955 个 `h` 与 cfg 包的 9,990 个 `h` 交集 **0** 条（`translate_il` 写盘前先按 cfg 包的 `h` 去重，同一条串只落一次）。
 4. **对 ① 的覆盖率贡献 324 条：** IL 包的 `h` 与 `packs/pool.jsonl` 的交集是 324，所以 ① 的分母里没有一条是 IL 包填的。**两个分母不可相加**：IL 包覆盖的是另一批串（DLL 里的字面量），不是 pool 的子集。
 
@@ -75,16 +75,16 @@
 | ModularLaunchPads | cfg | 498 | 296237 | 0 | 11 | cfg 509 |
 | TriggerTech | cfg | 496 | 70030 | 10 | 31 | loc 527 |
 | ROCapsules | cfg | 362 | 118038 | 1 | 148 | cfg 351 + loc 159 |
-| Assembly-CSharp | IL | 356 | 62061 | 32 | 0 | unknown |
+| Assembly-CSharp | IL | 356 | 62262 | 32 | 0 | unknown |
 | ROTanks | cfg | 320 | 46801 | 1 | 98 | cfg 418 |
 | RP0 | IL | 298 | 48711 | 0 | 0 | unknown |
 | ROEngines | cfg | 268 | 109891 | 3 | 35 | cfg 303 |
-| UI18n-Unattributed | IL | 251 | 62258 | 6 | 0 | unknown |
+| UI18n-Unattributed | IL | 251 | 62915 | 6 | 0 | unknown |
 | VenStockRevamp | cfg | 229 | 80146 | 1 | 173 | cfg 170 + loc 232 |
-| KSPPerformanceProfiler | IL | 213 | 44183 | 178 | 0 | unknown |
+| KSPPerformanceProfiler | IL | 213 | 44321 | 178 | 0 | unknown |
 | ROSolar | cfg | 181 | 35834 | 3 | 25 | cfg 206 |
-| MechJeb2 | cfg+IL | 175 | 57712 | 15 | 10 | cfg 10 + loc 6 |
-| TUFX | IL | 155 | 31879 | 112 | 0 | unknown |
+| MechJeb2 | cfg+IL | 175 | 57757 | 15 | 10 | cfg 10 + loc 6 |
+| TUFX | IL | 155 | 32026 | 112 | 0 | unknown |
 | EditorExtensionsRedux | cfg+IL | 147 | 20503 | 4 | 18 | loc 159 |
 | ProceduralParts | cfg+IL | 146 | 24750 | 1 | 0 | cfg 145 |
 | Waterfall | cfg+IL | 143 | 19514 | 27 | 0 | cfg 53 |
@@ -93,16 +93,16 @@
 | RealChute | cfg+IL | 91 | 21806 | 0 | 1 | cfg 45 |
 | Scatterer | IL | 73 | 10717 | 0 | 0 | unknown |
 | ProceduralFairings | cfg+IL | 70 | 13208 | 0 | 6 | cfg 74 |
-| RealAntennas | cfg+IL | 68 | 10804 | 1 | 0 | cfg 37 |
-| ModularFlightPanel | IL | 60 | 7296 | 51 | 0 | unknown |
-| FerramAerospaceResearch | IL | 58 | 8278 | 0 | 0 | unknown |
-| RealFuels | cfg+IL | 55 | 7360 | 5 | 0 | cfg 6 |
+| RealAntennas | cfg+IL | 68 | 10819 | 1 | 0 | cfg 37 |
+| ModularFlightPanel | IL | 60 | 7380 | 51 | 0 | unknown |
+| FerramAerospaceResearch | IL | 58 | 8287 | 0 | 0 | unknown |
+| RealFuels | cfg+IL | 55 | 7378 | 5 | 0 | cfg 6 |
 | TransferWindowPlanner | IL | 50 | 9097 | 1 | 0 | unknown |
 | KerbalFoundries | cfg | 49 | 15306 | 0 | 1 | cfg 50 |
-| ksp_plugin_adapter | IL | 48 | 12839 | 2 | 0 | unknown |
+| ksp_plugin_adapter | IL | 48 | 12902 | 2 | 0 | unknown |
 | RCSBuildAid | IL | 45 | 5203 | 0 | 0 | unknown |
 | ROHeatshields | cfg | 39 | 6747 | 1 | 0 | cfg 39 |
-| RealisticLaunchVisuals | IL | 34 | 9738 | 3 | 0 | unknown |
+| RealisticLaunchVisuals | IL | 34 | 9810 | 3 | 0 | unknown |
 | KerbalChangelog | cfg | 32 | 5347 | 0 | 5 | loc 37 |
 | ContractConfigurator | cfg+IL | 29 | 4761 | 0 | 45 | cfg 43 + loc 5 |
 | KSPTextureLoader | IL | 28 | 3202 | 1 | 0 | unknown |
@@ -116,11 +116,11 @@
 | TextureReplacer | IL | 19 | 2172 | 13 | 0 | unknown |
 | ParallaxContinued | IL | 18 | 3426 | 0 | 0 | unknown |
 | TestFlightCore | IL | 18 | 3532 | 0 | 0 | unknown |
-| BurstPQS | cfg+IL | 16 | 3007 | 0 | 1 | loc 2 |
+| BurstPQS | cfg+IL | 16 | 3010 | 0 | 1 | loc 2 |
 | ClickThroughBlocker | IL | 16 | 3487 | 3 | 0 | unknown |
 | KSPWheel | IL | 15 | 1590 | 0 | 0 | unknown |
 | AtmosphereAutopilot | IL | 14 | 1660 | 0 | 0 | unknown |
-| LunarTransferPlanner | IL | 13 | 1937 | 1 | 0 | unknown |
+| LunarTransferPlanner | IL | 13 | 1940 | 1 | 0 | unknown |
 | Parallax_StockTerrainTextures | cfg | 12 | 1452 | 0 | 0 | cfg 12 |
 | Sol-Configs | cfg | 12 | 1311 | 0 | 521 | cfg 533 |
 | Telecom | IL | 12 | 1824 | 0 | 0 | unknown |
@@ -141,7 +141,7 @@
 | AtmosphereAutopilot.UI | IL | 2 | 238 | 0 | 0 | unknown |
 | B9-PWings-Fork | IL | 2 | 196 | 0 | 0 | unknown |
 | CommunityResourcePack | cfg | 2 | 212 | 0 | 173 | cfg 173 + loc 2 |
-| EVEManager | IL | 2 | 217 | 0 | 0 | unknown |
+| EVEManager | IL | 2 | 220 | 0 | 0 | unknown |
 | Firespitter | IL | 2 | 226 | 0 | 0 | unknown |
 | HangerExtenderExtended | IL | 2 | 270 | 0 | 0 | unknown |
 | Kerbalism | IL | 2 | 178 | 0 | 0 | unknown |
@@ -150,7 +150,7 @@
 | Renamer | IL | 1 | 133 | 0 | 0 | unknown |
 | TestFlight | IL | 1 | 118 | 0 | 0 | unknown |
 | SquadExpansion | - | 0 | 0 | 0 | 177 | cfg 177 |
-| **合计** | **97 个包**（cfg 41 + IL 56） | **14954** | **5170859** | **1427** | **3395** | 83 个 mod |
+| **合计** | **97 个包**（cfg 41 + IL 56） | **14954** | **5172317** | **1427** | **3395** | 83 个 mod |
 
 ## 池外条目（packs 有、pool 没有）
 
@@ -230,7 +230,7 @@
 | 包文件数 | 97（cfg 41 + IL 56） |
 | mod 数 | 82（同 mod 的 cfg 包与 IL 包算一个） |
 | 包总行数 | 14954 |
-| 包总字节数 | 5170859 |
+| 包总字节数 | 5172317 |
 | `t == s` 直通行 | 1427 |
 | pool 待译串 | 12792 |
 | 已覆盖 pool 行 | 9397 |

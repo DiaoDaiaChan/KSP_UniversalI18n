@@ -32,9 +32,9 @@ import shutil
 import sys
 import tempfile
 
-from . import (candidates, capture_ingest, cfgparse, check_overrides, ensure_stdout,
+from . import (api, candidates, capture_ingest, cfgparse, check_overrides, ensure_stdout,
                 fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta, ilstrings,
-                merge_overrides, packindex, render_coverage, textnorm)
+                journal_gate, merge_overrides, packindex, render_coverage, textnorm)
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -425,7 +425,9 @@ def test_packindex_real():
     # 每次重跑 translate_il / packindex 之后都要同步这三行 —— 失败时把 got 抄回来，别改断言方向。
     eq("真实 packCount == 97", doc["packCount"], 97)
     eq("真实 totalRows == 14954", doc["totalRows"], 14954)
-    eq("真实 totalBytes == 5170859", doc["totalBytes"], 5170859)
+    # 2026-10-26 p 归一（486 行 "p":1 → "p":true，14 个 .il.jsonl）使 totalBytes +1458 = 486×3：
+    # 5170859 → 5172317，行数与包数不变。这是唯一一次「字节变了但语义没变」的重算。
+    eq("真实 totalBytes == 5172317", doc["totalBytes"], 5172317)
     eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
     entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
     eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)
@@ -682,7 +684,7 @@ def test_capture_real():
 
 
 def test_extra_tools():
-    """把后加的 python 工具的 selftest 并进门禁（check_overrides / harvest_cfgcache / merge_overrides / golden_gate / candidates / render_coverage）。
+    """把后加的 python 工具的 selftest 并进门禁（check_overrides / harvest_cfgcache / merge_overrides / golden_gate / candidates / render_coverage / api / journal_gate）。
 
     为什么放在这里：CI 只跑 `python -m i18n_tools.selftest`。新工具各自的 --selftest 若没人调用，
     逻辑坏了也永远绿着——v1.4 的译文门禁（check_overrides）与 ConfigCache 通道（harvest_cfgcache）
@@ -697,7 +699,9 @@ def test_extra_tools():
                ("merge_overrides", merge_overrides.selftest),
                ("golden_gate", golden_gate.selftest),
                ("candidates", candidates.selftest),
-               ("render_coverage", render_coverage.selftest))
+               ("render_coverage", render_coverage.selftest),
+               ("api", api.selftest),
+               ("journal_gate", journal_gate.selftest))
     for name, runner in runners:
         buffer = io.StringIO()
         try:

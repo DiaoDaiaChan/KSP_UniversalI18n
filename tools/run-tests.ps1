@@ -129,6 +129,33 @@ if (-not $python) {
     }
 }
 
+# ---- 4b. journal 门禁（docs/10 M1）：packs 里每一笔改动都必须能在 packs/journal 里找到背书 ----
+#         为什么要这道门：M1 之后译文的唯一写入口是 api，人（或 agent）直接手改 packs/*.jsonl 会绕过
+#         revision 与八门禁，事后谁都查不出「这行是谁、什么时候、为什么改的」。这里用 sha256 对账：
+#         受管文件当前字节必须等于某条 journal 事件的 file_sha256_after，且 journal 只许追加。
+#         退出码语义：0 通过 / 1 有违规（手改、或 journal 被删被改） / 2 用法错或 git 不可用（不是通过）。
+$journalCode = 0
+if (-not $python) {
+    Write-Host '[run-tests] journal: SKIP（找不到 python，跳过 journal 门禁）' -ForegroundColor Yellow
+} else {
+    Push-Location -LiteralPath (Join-Path $root 'tools')
+    try {
+        & python -m i18n_tools.journal_gate --worktree
+        $journalCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($journalCode -eq 0) {
+        Write-Host '[run-tests] journal: PASS (exit 0)'
+    } elseif ($journalCode -eq 2) {
+        Write-Host '[run-tests] journal: FAIL (exit 2) —— 用法错或 git 不可用，这一道门没判定；这不是通过' -ForegroundColor Red
+        if ($code -eq 0) { $code = $journalCode }
+    } else {
+        Write-Host "[run-tests] journal: FAIL (exit $journalCode) —— packs 里的改动没有 journal 事件背书；用 api 重做，别手改" -ForegroundColor Red
+        if ($code -eq 0) { $code = $journalCode }
+    }
+}
+
 # ---- 5. 退出码原样返回（0=全过；1=有失败/有错，已用故意失败的临时用例验证过） ----
 if ($code -eq 0) {
     Write-Host '[run-tests] PASS (exit 0)'
