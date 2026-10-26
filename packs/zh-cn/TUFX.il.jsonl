@@ -1,9 +1,0 @@
-{"h":"0d8637b776ad2cfd","n":"<color=#FFDD55><b>[Anti-Aliasing Control Center] Next-Gen AA Presets & Tuning</b></color>","s":"<color=#FFDD55><b>[Anti-Aliasing Control Center] Next-Gen AA Presets & Tuning</b></color>","t":"<color=#FFDD55><b>[抗锯齿控制中心] 次世代抗锯齿预设与微调</b></color>","mod":"TUFX"}
-{"h":"159f156fcfc8096b","n":"<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>","s":"<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>","t":"<color=yellow>前向激活（SSSR 模式）</color><color=green>延迟激活（完整 PBR SSR）</color>","mod":"TUFX"}
-{"h":"7d11962ef5edfd06","n":"TAA (Smooth Temporal)","s":"TAA (Smooth Temporal)","t":"TAA（平滑时间性）","mod":"TUFX"}
-{"h":"849e55fbcd136d11","n":"[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>","s":"[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>","t":"[SSR Pipeline] Status: <color=green>延迟激活（完整 PBR SSR）</color>","mod":"TUFX"}
-{"h":"9c5cefe86d2bc432","n":"SMAA Ultra (Zero Smear)","s":"SMAA Ultra (Zero Smear)","t":"SMAA 极致 (无拖影)","mod":"TUFX"}
-{"h":"9ea3b9cbdcfabc40","n":"<b>Enhanced TAA Parameters:</b> <color=grey>(Supports keyboard typing with decimals and slider)</color>","s":"<b>Enhanced TAA Parameters:</b> <color=grey>(Supports keyboard typing with decimals and slider)</color>","t":"<b>增强型 TAA 参数：</b><color=grey>（支持滑块与键盘输入小数）</color>","mod":"TUFX"}
-{"h":"ac5bd7de7e1f8c3e","n":"TUFX Profile Settings","s":"TUFX Profile Settings","t":"TUFX 配置文件设置","mod":"TUFX"}
-{"h":"bd0e760afaedd0b7","n":"[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>","s":"[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>","t":"[SSR Pipeline] Status: <color=yellow>前向激活（SSSR 模式）</color>","mod":"TUFX"}
-{"h":"ff952e5267cf7bfb","n":"Not DetectedDetected, Camera: N/A","s":"Not DetectedDetected, Camera: N/A","t":"非 DetectedDetected，相机：无","mod":"TUFX"}

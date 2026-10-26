@@ -1,9 +1,0 @@
-{
-  "NAME": "UI18n",
-  "URL": "https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/main/GameData/UI18n/UI18n.version",
-  "DOWNLOAD": "https://github.com/DiaoDaiaChan/KSP_UniversalI18n/releases",
-  "VERSION": { "MAJOR": 1, "MINOR": 0, "PATCH": 0 },
-  "KSP_VERSION": { "MAJOR": 1, "MINOR": 12, "PATCH": 5 },
-  "KSP_VERSION_MIN": { "MAJOR": 1, "MINOR": 12, "PATCH": 0 },
-  "KSP_VERSION_MAX": { "MAJOR": 1, "MINOR": 12, "PATCH": 99 }
-}
