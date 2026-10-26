@@ -126,6 +126,31 @@ foreach ($cfg in @('Config.cfg', 'UI18n.cfg', 'UI18n.version')) {
     Write-Host "[deploy] staged  : $cfg"
 }
 
+# 模板里的 Version = 1.0.0 与 "VERSION": 1.0.0 是占位值。指定了 -Version 就必须当场盖章，
+# 否则装出来的 UI18n.cfg / UI18n.version 会和 DLL 内嵌版本、zip 名、更新清单三处不一致
+# （2026-10-26 实测踩到：-Version 1.3.0 装完，两个文件的 VERSION 还是 1.0.0，而 build-release.ps1
+#  出包时是改写过的，于是「装机字节 == 发布资产字节」这条自检在文本文件上永远对不上）。
+if ($Version) {
+    $stampCfgPath = Join-Path $stage 'UI18n.cfg'
+    $stampCfgRaw = Get-Content -LiteralPath $stampCfgPath -Raw -Encoding UTF8
+    $stampCfgPattern = '(?m)^([ \t]*Version[ \t]*=[ \t]*)(\S+)[ \t]*\r?$'
+    $stampCfgMatches = [regex]::Matches($stampCfgRaw, $stampCfgPattern)
+    if ($stampCfgMatches.Count -ne 1) {
+        throw ('[deploy] staging 的 UI18n.cfg 里 Version = x.y.z 应恰好 1 行，实际 ' + $stampCfgMatches.Count + ' 行（模板被改坏了？）')
+    }
+    $stampCfgMatch = $stampCfgMatches[0]
+    $stampCfgRaw = $stampCfgRaw.Substring(0, $stampCfgMatch.Index) + $stampCfgMatch.Groups[1].Value + $Version + $stampCfgRaw.Substring($stampCfgMatch.Index + $stampCfgMatch.Length)
+    Set-Content -LiteralPath $stampCfgPath -Value $stampCfgRaw.TrimEnd([char[]]@(13, 10)) -Encoding UTF8
+    Write-Host ('[deploy] stamped : UI18n.cfg (Version=' + $Version + ')')
+
+    $stampVerPath = Join-Path $stage 'UI18n.version'
+    $stampParts = $Version.Split('.')
+    $stampVerRaw = Get-Content -LiteralPath $stampVerPath -Raw -Encoding UTF8
+    $stampVerRaw = $stampVerRaw -replace '"VERSION":\s*\{[^}]*\}', ('"VERSION": { "MAJOR": ' + $stampParts[0] + ', "MINOR": ' + $stampParts[1] + ', "PATCH": ' + $stampParts[2] + ' }')
+    Set-Content -LiteralPath $stampVerPath -Value $stampVerRaw -Encoding UTF8
+    Write-Host ('[deploy] stamped : UI18n.version (VERSION=' + $Version + ')')
+}
+
 # Fonts：FontMode=Bundled 时玩家放 AssetBundle 的位置；模板里只有一个 README.txt，
 # 但目录必须存在，否则玩家不知道往哪放（见 GameData\UI18n\Fonts\README.txt）
 $fontsTemplate = Join-Path $templates 'Fonts'
