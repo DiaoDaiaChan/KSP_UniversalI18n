@@ -101,6 +101,18 @@ namespace UI18n.Core.Config
         public long CaptureMaxSessionBytes { get; set; } = 64L * 1024 * 1024;
 
         /// <summary>
+        /// 投稿默认同意状态（配置键 <c>SubmissionConsent</c>，默认 <c>None</c> = 不投）。
+        /// <para>
+        /// docs/10 §6.2：默认不投。玩家在游戏内面板点「同意」写的是
+        /// <c>PluginData/UI18n/prefs.json</c> 的 <c>submission.consent.granted</c>；
+        /// 这个安装级键只给「手工编辑 Config.cfg 表达一次总同意」的场景用，且
+        /// <b>面板里的明确决定优先</b>（面板取消勾选后，这里写 Granted 也不投）。
+        /// 只认 <c>None</c> / <c>Granted</c>（不分大小写），其它值按 <c>None</c> 处理。
+        /// </para>
+        /// </summary>
+        public string SubmissionConsent { get; set; } = global::UI18n.Core.Submission.SubmissionPolicy.ConsentNone;
+
+        /// <summary>
         /// 数字骨架（pattern）通道开关（配置键 <c>PatternMatching</c>，默认 <c>true</c>；v1.3）。
         /// <para>
         /// 开启后：精确查表未命中时把原文里的数字换成 <c>#</c> 得到骨架，按骨架查表，命中再把数字填回

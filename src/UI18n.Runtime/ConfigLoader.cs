@@ -5,6 +5,7 @@ using System.IO;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
 using UI18n.Core.Settings;
+using UI18n.Core.Submission;
 
 namespace UI18n.Runtime
 {
@@ -142,6 +143,11 @@ namespace UI18n.Runtime
 
                 long maxSessionBytes = ReadLong(node, "CaptureMaxSessionBytes", config.CaptureMaxSessionBytes);
                 config.CaptureMaxSessionBytes = maxSessionBytes < 0 ? 0 : maxSessionBytes;
+
+                // 投稿同意（M3，docs/10 §6.2）：默认 None = 不投。只认 None / Granted（不分大小写），
+                // 其它值一律按 None（宁可不投，也不能因为一个拼写错误就把玩家的文本发出去）。
+                config.SubmissionConsent = SubmissionPolicy.NormalizeConsent(
+                    ReadString(node, SubmissionPolicy.ConfigKey, config.SubmissionConsent));
 
                 // 数字骨架通道（v1.3）：默认 True。关掉 = 完全回到 v1.2 的精确匹配行为。
                 config.PatternMatching = ReadBool(node, "PatternMatching", config.PatternMatching);

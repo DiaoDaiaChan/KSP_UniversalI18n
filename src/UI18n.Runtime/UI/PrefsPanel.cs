@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using KSP.UI.Screens;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
 using UI18n.Core.Settings;
+using UI18n.Core.Submission;
 using UI18n.Runtime.Settings;
 using UnityEngine;
 
@@ -33,11 +35,18 @@ namespace UI18n.Runtime.UI
     {
         // ---- 版式（px）----
         private const float WindowWidth = 680f;
-        private const float WindowHeight = 540f;
+        private const float WindowHeight = 648f;
         private const float RowHeight = 20f;
         private const float HeaderHeight = 96f;
         private const float FooterHeight = 44f;
         private const float Pad = 8f;
+
+        /// <summary>窗口底部「玩家投稿」区块的高度（4 行：同意 / 长文本 / 按钮 / 明细）。</summary>
+        private const float SubmissionBlockHeight = 92f;
+
+        /// <summary>投稿页面（§6.9：零服务器，玩家把 json 贴进 GitHub Issue）。<b>只在玩家点按钮时才打开</b>。</summary>
+        private const string SubmissionPageUrl =
+            "https://github.com/DiaoDaiaChan/KSP_UniversalI18n/issues/new?template=submit-texts.yml";
 
         private const string OtherLabel = "其他（无法归属）";
         private const string OtherLabelEn = "(unattributed)";
@@ -75,14 +84,26 @@ namespace UI18n.Runtime.UI
 
         private GUIStyle _right;
 
+        // ---- 投稿区块状态（全部只在主线程读写）----
+        private string _submissionConsent = SubmissionPolicy.ConsentNone;
+        private bool _allowLongSingletons;
+        private bool _submissionConfirm;
+        private bool _submissionReady;
+        private string _submissionPath = string.Empty;
+        private string _submissionInfo = string.Empty;
+
         /// <summary>由 <c>UI18nAddon.Run</c> 调用；<b>不装任何 patch</b>，与语言门禁无关。</summary>
         /// <param name="config">
-        /// 安装级配置。<b>目前只作占位</b>（面板行为暂不随 Config.cfg 变），保留参数是为了不改 Addon 侧的调用形状。
+        /// 安装级配置。面板只读两项：<c>SubmissionConsent</c>（投稿默认状态，§6.2）与语言；
+        /// 其余开关仍然只由 <c>Config.cfg</c> 决定（改它们要重启，面板不假装能热改）。
         /// </param>
         internal void Configure(UI18nConfig config, string language)
         {
             _language = language ?? string.Empty;
             _prefs = PrefsRuntime.Current;
+            _submissionConsent = config != null && config.SubmissionConsent != null
+                ? SubmissionPolicy.NormalizeConsent(config.SubmissionConsent)
+                : SubmissionPolicy.ConsentNone;
         }
 
         // ------------------------------------------------------------------
@@ -459,7 +480,7 @@ namespace UI18n.Runtime.UI
             y += 28f;
 
             // 列表：只画可视行，但控件要按顺序全画（跳过控件会让 IMGUI 的控件 id 在两趟之间错位）。
-            Rect listRect = new Rect(Pad, y, width, _windowRect.height - y - FooterHeight);
+            Rect listRect = new Rect(Pad, y, width, _windowRect.height - y - FooterHeight - SubmissionBlockHeight);
             float contentHeight = Mathf.Max(listRect.height, _rows.Count * RowHeight + 4f);
             _scroll = GUI.BeginScrollView(listRect, _scroll, new Rect(0f, 0f, listRect.width - 20f, contentHeight));
 
@@ -477,6 +498,9 @@ namespace UI18n.Runtime.UI
             }
 
             GUI.EndScrollView();
+
+            // 底部「玩家投稿」区块（v1.6 M3，docs/10 §6）：与 mod 开关互不影响，勾选框本身就是同意书。
+            DrawSubmissionBlock(_windowRect.height - FooterHeight - SubmissionBlockHeight + 2f, width);
 
             // 底部：保存 + 状态
             float footerY = _windowRect.height - FooterHeight + 6f;
@@ -550,6 +574,245 @@ namespace UI18n.Runtime.UI
             }
 
             SetStatus(enabled ? T("已全部打开（未保存）", "all enabled (not saved)") : T("已全部关闭（未保存）", "all disabled (not saved)"));
+        }
+
+        // ------------------------------------------------------------------
+        // 玩家投稿（v1.6 M3，docs/10 §6）
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// 四行：①同意勾选框 + 当前状态 ②「允许单次长文本」 ③导出 / 打开文件夹 / 打开投稿页面 ④明细。
+        /// <para>
+        /// <b>绝不联网</b>：导出只是把 json 写进 <c>PluginData/UI18n/submissions/</c>；
+        /// 「打开投稿页面」也只是把 URL 交给浏览器（玩家自己决定贴不贴）。
+        /// </para>
+        /// </summary>
+        private void DrawSubmissionBlock(float y, float width)
+        {
+            SubmissionPrefs submission = _prefs != null ? _prefs.Submission : null;
+            bool granted = submission != null && submission.Granted;
+
+            bool next = GUI.Toggle(new Rect(Pad, y, width - 208f, 20f), granted,
+                                   T("同意投稿：把没翻出来的英文原文打包给作者（不发存档、不联网）",
+                                     "Allow submission: pack untranslated source strings for the author"));
+            if (next != granted)
+            {
+                ApplySubmissionConsent(next);
+            }
+
+            GUI.Label(new Rect(Pad + width - 204f, y, 204f, 20f), SubmissionStatusText(), RightStyle());
+
+            _allowLongSingletons = GUI.Toggle(new Rect(Pad, y + 22f, width, 20f), _allowLongSingletons,
+                                              T("允许包含只出现一次的長文本（>120 字符，默认不含）",
+                                                "Include long text seen only once (>120 chars)"));
+
+            if (_submissionConfirm)
+            {
+                if (GUI.Button(new Rect(Pad, y + 44f, 112f, 22f), T("确认导出", "Confirm")))
+                {
+                    ExportSubmission();
+                }
+
+                if (GUI.Button(new Rect(Pad + 118f, y + 44f, 52f, 22f), T("取消", "No")))
+                {
+                    _submissionConfirm = false;
+                    SetStatus(T("已取消导出", "export cancelled"));
+                }
+            }
+            else if (GUI.Button(new Rect(Pad, y + 44f, 170f, 22f), T("导出投稿包…", "Export bundle...")))
+            {
+                PreviewSubmission();
+            }
+
+            if (GUI.Button(new Rect(Pad + 176f, y + 44f, 110f, 22f), T("打开文件夹", "Open folder")))
+            {
+                OpenSubmissionsFolder();
+            }
+
+            if (GUI.Button(new Rect(Pad + 292f, y + 44f, 150f, 22f), T("打开投稿页面", "Open submit page")))
+            {
+                OpenSubmissionPage();
+            }
+
+            if (_submissionInfo.Length > 0)
+            {
+                GUI.Label(new Rect(Pad, y + 68f, width, 18f), _submissionInfo);
+            }
+        }
+
+        /// <summary>右上角一句话状态（不占明细行）。</summary>
+        private string SubmissionStatusText()
+        {
+            if (_prefs == null || _prefs.Submission == null || !_prefs.Submission.Granted)
+            {
+                return T("未同意 · 默认不投", "off (default)");
+            }
+
+            if (_submissionPath.Length > 0)
+            {
+                return T("已导出", "exported");
+            }
+
+            return _submissionReady ? T("已备好，待确认", "ready, not exported") : T("已同意", "allowed");
+        }
+
+        /// <summary>
+        /// 勾选 / 取消同意。§6.2：撤回 = 把这个值改回 false 并删掉 submissions 目录里的文件（玩家自己删，面板不删）。
+        /// 写 prefs.json 后<b>不需要重启</b>（与 mod 开关不同：投稿不影响本局字典）。
+        /// </summary>
+        private void ApplySubmissionConsent(bool granted)
+        {
+            if (_prefs == null)
+            {
+                return;
+            }
+
+            SubmissionPrefs submission = _prefs.Submission;
+            submission.Granted = granted;
+            submission.PolicyVersion = SubmissionPolicy.PolicyVersion;
+
+            if (granted)
+            {
+                submission.GrantedAt = SubmissionBuilder.FormatNow();
+                submission.InstallId = InstallId.Ensure(submission.InstallId);
+            }
+
+            _submissionConfirm = false;
+            _submissionReady = false;
+
+            string error;
+            if (PrefsRuntime.Save(out error))
+            {
+                SetStatus(granted ? T("已同意投稿（随时可取消）", "submission allowed")
+                                  : T("已撤回投稿同意", "submission revoked"));
+                Log.Info("panel: submission consent=" + (granted ? "granted" : "revoked")
+                         + " -> " + PrefsRuntime.FilePath);
+            }
+            else
+            {
+                SetStatus(T("保存失败：" + error, "save failed: " + error));
+                Log.Warn("panel: submission consent save failed (" + error + ")");
+            }
+        }
+
+        /// <summary>只算不写：先把「N 个 mod / M 条原文」摆给玩家看，点了确认才真的落盘。</summary>
+        private void PreviewSubmission()
+        {
+            SubmissionExportResult result = SubmissionExporter.Preview(_submissionConsent, _language, _allowLongSingletons);
+            if (!result.Ok)
+            {
+                SetSubmissionFailure(result);
+                return;
+            }
+
+            _submissionConfirm = true;
+            _submissionReady = true;
+            _submissionPath = string.Empty;
+            _submissionInfo = T(
+                "将导出 " + result.Mods + " 个 mod / " + result.Entries + " 条原文；丢弃 " + result.Dropped
+                + " 条（路径 " + result.DroppedPath + "、私有 " + result.DroppedPrivate + "、单次长文本 " + result.DroppedSingleton + "）",
+                "Will export " + result.Mods + " mod(s) / " + result.Entries + " string(s); dropped " + result.Dropped);
+            SetStatus(T("请确认导出内容", "confirm export"));
+        }
+
+        /// <summary>确认后落盘（文件永远在 <c>PluginData/UI18n/submissions/</c>，之后由玩家自己贴到 Issue）。</summary>
+        private void ExportSubmission()
+        {
+            SubmissionExportResult result = SubmissionExporter.Export(_submissionConsent, _language, _allowLongSingletons);
+            _submissionConfirm = false;
+
+            if (!result.Ok)
+            {
+                SetSubmissionFailure(result);
+                return;
+            }
+
+            _submissionReady = false;
+            _submissionPath = result.FilePath;
+            _submissionInfo = T(
+                "已导出 " + result.Entries + " 条原文（" + result.Mods + " 个 mod）到 PluginData/UI18n/submissions/，点「打开文件夹」取出后贴到投稿页面",
+                "Exported " + result.Entries + " string(s) (" + result.Mods + " mods) to PluginData/UI18n/submissions/");
+
+            if (_prefs != null && _prefs.Submission != null)
+            {
+                _prefs.Submission.LastSubmittedAt = SubmissionBuilder.FormatNow();
+                _prefs.Submission.InstallId = InstallId.Ensure(_prefs.Submission.InstallId);
+
+                string error;
+                if (!PrefsRuntime.Save(out error))
+                {
+                    Log.Warn("panel: prefs save failed after submission (" + error + ")");
+                }
+            }
+
+            SetStatus(T("已导出投稿包", "bundle exported"));
+            Log.Info("panel: submission exported (id=" + result.Id + ", entries=" + result.Entries
+                     + ", mods=" + result.Mods + ", dropped=" + result.Dropped + ")");
+        }
+
+        /// <summary>把导出器的 outcome 翻成一句人话；失败不弹窗、只写状态行（红线 6）。</summary>
+        private void SetSubmissionFailure(SubmissionExportResult result)
+        {
+            _submissionConfirm = false;
+            _submissionReady = false;
+
+            string message;
+            if (string.Equals(result.Outcome, SubmissionExportResult.OutcomeNotConsented, StringComparison.Ordinal))
+            {
+                message = T("先勾选上面的「同意投稿」", "tick the consent box first");
+            }
+            else if (string.Equals(result.Outcome, SubmissionExportResult.OutcomeNoSource, StringComparison.Ordinal))
+            {
+                message = T("本会话没有捕获文件（需要 CaptureMisses=True，并先在游戏里玩一会儿）",
+                            "no capture file this session (need CaptureMisses=True and some play time)");
+            }
+            else if (string.Equals(result.Outcome, SubmissionExportResult.OutcomeNoEntries, StringComparison.Ordinal))
+            {
+                message = T("没有可投的原文（都被脱敏规则筛掉了）", "nothing to submit (all filtered by redaction)");
+            }
+            else
+            {
+                message = T("导出失败：" + result.Error, "export failed: " + result.Error);
+            }
+
+            _submissionInfo = message;
+            SetStatus(message);
+        }
+
+        /// <summary>打开 <c>PluginData/UI18n/submissions/</c>（没有就建一个，免得浏览器报「找不到」）。</summary>
+        private void OpenSubmissionsFolder()
+        {
+            try
+            {
+                string directory = SubmissionExporter.DirectoryPath;
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                Application.OpenURL("file:///" + directory.Replace('\\', '/'));
+                SetStatus(T("已打开投稿文件夹", "folder opened"));
+            }
+            catch (Exception ex)
+            {
+                SetStatus(T("打不开文件夹：" + ex.Message, "cannot open folder: " + ex.Message));
+                Log.Warn("panel: open submissions folder failed (" + ex.GetType().Name + ": " + ex.Message + ")");
+            }
+        }
+
+        /// <summary>把投稿页面的 URL 交给系统浏览器。<b>不发起任何请求</b>（§6.9 零服务器）。</summary>
+        private void OpenSubmissionPage()
+        {
+            try
+            {
+                Application.OpenURL(SubmissionPageUrl);
+                SetStatus(T("已在浏览器打开投稿页面", "submit page opened in browser"));
+            }
+            catch (Exception ex)
+            {
+                SetStatus(T("打不开浏览器：" + ex.Message, "cannot open browser: " + ex.Message));
+                Log.Warn("panel: open submission page failed (" + ex.GetType().Name + ": " + ex.Message + ")");
+            }
         }
 
         private void SavePrefs()

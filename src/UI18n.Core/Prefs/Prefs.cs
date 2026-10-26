@@ -76,6 +76,21 @@ namespace UI18n.Core.Settings
         /// <summary>最近一次投稿时间（ISO 8601，空串 = 从未投稿）。</summary>
         public string LastSubmittedAt { get; set; } = string.Empty;
 
+        /// <summary>
+        /// 同意时间（ISO 8601，空串 = 未记录）。写进 bundle 的 <c>consent.grantedAt</c>，
+        /// 同时是「玩家在面板里做过明确决定」的证据（见 SubmissionPolicy.HasRecordedDecision）。
+        /// </summary>
+        public string GrantedAt { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 客户端安装标识（32 位小写 hex，见 <c>UI18n.Core.Submission.InstallId</c>）。
+        /// <para>
+        /// 只用于服务端本地去重，<b>不是</b>硬件指纹：不许由 MAC / 用户名 / 路径 / 机器名派生（§6.2）。
+        /// 旧档没有这个键时由运行时生成一次并写回（<c>Ensure</c>）。
+        /// </para>
+        /// </summary>
+        public string InstallId { get; set; } = string.Empty;
+
         /// <summary>本段里未被本版本识别的键（原样 JSON 片段）。</summary>
         public IDictionary<string, string> Unknown
         {
@@ -91,6 +106,8 @@ namespace UI18n.Core.Settings
             copy.Granted = Granted;
             copy.PolicyVersion = PolicyVersion;
             copy.LastSubmittedAt = LastSubmittedAt;
+            copy.GrantedAt = GrantedAt;
+            copy.InstallId = InstallId;
             foreach (KeyValuePair<string, string> pair in _unknown)
             {
                 copy._unknown[pair.Key] = pair.Value;

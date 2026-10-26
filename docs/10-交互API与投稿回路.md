@@ -45,7 +45,7 @@
 | conventions | `packs/conventions.jsonl` | 只有 api | 12 条专有约定 |
 | candidates | `packs/candidates.jsonl` | 只有 api / 采集器 | 待译清单（五通道合并），**只读消费** |
 | mods | `packs/mods.json` | 只有 api | modId ↔ 程序集/文件夹/显示名/CKAN id |
-| submission | `packs/submissions/<id>.json` | 只有 api | 玩家投稿原件（脱敏后） |
+| submission | `packs/submission/<id>/meta.json` + `<modId>.jsonl` + `index.json` | 只有 api | 玩家投稿（脱敏后，按 mod 拆） |
 | journal | `packs/journal/<YYYY-MM-DD>.jsonl` | 只有 api，只追加 | 审计事件流 |
 | index | `packs/index.json` | 只有 `api apply` | 由上面这些算出来的清单 |
 
@@ -165,18 +165,19 @@ api 额外三条**自身**约束（不属于 G 编号，属于 schema）：
  "id":"9f3c1a77b0e54d21",
  "createdAt":"2026-10-26T18:20:00+08:00",
  "language":"zh-cn",
- "actor":{"kind":"player","installId":"<uuid4，客户端随机，不是硬件指纹>","ui18nVersion":"1.6.0","kspVersion":"1.12.5"},
+ "actor":{"kind":"player","installId":"0123456789abcdef0123456789abcdef","ui18nVersion":"1.6.0","kspVersion":"1.12.5"},
  "consent":{"granted":true,"policyVersion":1,"grantedAt":"2026-10-26T18:19:12+08:00"},
  "mods":[{"modId":"FerramAerospaceResearch","fileName":"FerramAerospaceResearch.il.jsonl","version":"1.5.10"}],
  "entries":[{"h":"3ff885233413de88","s":"Aerodynamic Failure","mod":"FerramAerospaceResearch",
              "channel":"capture","sink":"TMPro.TMP_Text.set_text","caller":"…FARDebugAndSettings.debugWindow","count":37}],
- "redactions":{"paths":0,"userNames":0,"absolutePaths":0,"urls":0},
+ "redactions":{"paths":0,"userNames":0,"absolutePaths":0,"urls":0},  // 第五键 userNamesDropped 只在 >0 时出现
  "note":""}
 ```
 
 **必填**：`schema`（必须逐字等于 `ui18n-submission/1`）、`id`、`createdAt`、`language`、`actor.installId`、`consent.granted`（必须为 `true`）、`entries`（≥1 行）。
 **每行 `entries[]` 必填**：`h`（16 位小写 hex）、`s`（非空、≤ 8000 字符）、`mod`；`channel`/`sink`/`caller`/`count` 可选。
 **约束**：`entries[].mod` ⊆ `mods[].modId`（出现未声明的 modId 直接拒收，防止 bundle 里夹带别的 mod 文本）。
+**`actor.installId` 的形态**：uuid4 的 **32 位小写 hex，无横线**（`Guid.NewGuid().ToString` 的 `N` 格式）。首次生成后永不改（换机、换存档都不换），只用于本地「这批是不是我上次投的那批」去重；不进日志、不进 `meta.json`、不进仓库。
 **`id` 的算法是硬的**：把 bundle 去掉 `id` 字段后 `json.dumps(sort_keys=True, separators=(',',':'), ensure_ascii=False)` → sha256 → 取前 16 位小写 hex。accept 时重算，不等就 exit 5 `submission-id-mismatch`（`id` 由内容派生，正常永远不会「同 id 不同内容」）。
 
 只允许这四类数据：**mod 列表**、**可译原文**、**游戏语言与版本**、**（可选）调用点**。玩家的存档名 / 飞行器名 / Kerbal 名 / 目录名一律不出现。
@@ -191,10 +192,10 @@ api 额外三条**自身**约束（不属于 G 编号，属于 schema）：
 ### 6.3 三步脱敏（落盘前必做，顺序固定）
 
 1. 丢掉已判定为非正文的档（`path` / `progress` / `counter` / `identifier` / `too-long`，判据同 `CaptureClassify`）；
-2. 丢掉含玩家私有标识的串（存档名 `HighLogic.SaveFolder`、飞行器名、Kerbal 名、玩家目录名），或把值替换成 `<vessel>` / `<kerbal>`；
+2. 私有标识按**只替换值**做（不是整条丢 —— 正文本身有翻译价值）：命中存档名 `HighLogic.SaveFolder` / 飞行器名 / Kerbal 名 / 玩家目录名 → 值替换成 `<save>` / `<vessel>` / `<kerbal>`；**替换后整串再无可见字母**（只剩占位符、数字、标点）→ 整条丢；
 3. 单次会话只出现 1 次且长度 > 120 的串默认不投（多是调试/日志噪声），同意界面可手动放开。
 
-脱敏计数写进 bundle 的 `redactions`，accept 时原样抄进 meta（可审计：这条串是「因为像路径被丢」还是「本来就没有」）。
+脱敏计数写进 bundle 的 `redactions`，accept 时原样抄进 meta（可审计：这条串是「因为像路径被丢」还是「本来就没有」）。计数分**两类**：`replaced`（值换成占位符、正文留下）与 `dropped`（整条丢）。只记一个总数就分不清「玩家的话被保留了多少」，也分不清脱敏规则是不是太激进。落地形状：`paths` / `userNames` / `absolutePaths` / `urls` 四键恒写，`userNamesDropped` **只在 >0 时写** —— 没有私有值的 bundle 字节完全不变，canonical id 不会因为「多一个 0」而漂移；服务端缺键按 0 读。
 
 ### 6.4 落盘形态：按 mod 拆文件
 
@@ -310,14 +311,28 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 
 ## 9. 分发：按 mod 推送（manifest v2）
 
-现在 `stable/manifest.json` 只有整包 zip。v2 增加每 mod 一条：
+现在 `stable/manifest.json` 只有整包 zip。v2 增加每 mod 一条。
+
+**实际发出去的形状**（`build-update-package.ps1` 逐字节拼出来，97 个包聚合为 82 条 modId；15 个 modId 名下有两个 channel 文件，所以是 `files[]` 而不是单个 `file`）：
 
 ```json
-{"version":"1.6.0","language":"zh-cn","kspVersion":"1.12.5",
- "mods":[{"modId":"TUFX","displayName":"TUFX","file":"Packs/zh-cn/TUFX.il.jsonl",
-          "bytes":31879,"sha256":"…","rows":312,"updatedAt":"2026-10-26T18:30:00+08:00"}],
- "zip":{"name":"UI18n-1.6.0-zh-cn-packs.zip","bytes":1408263,"sha256":"…"}}
+{"readerContract":"ui18n-manifest-reader/2",
+ "version":"1.6.0","channel":"beta","language":"zh-cn","kspVersion":"1.12.5",
+ "zip":{"name":"UI18n-1.6.0-zh-cn-packs.zip","bytes":1408313,"sha256":"…"},
+ "files":[{"path":"GameData/UI18n/Packs/zh-cn/TUFX.il.jsonl","bytes":32026,"sha256":"…","rows":155}],
+ "mods":[{"modId":"TUFX","files":["GameData/UI18n/Packs/zh-cn/TUFX.il.jsonl"],
+          "rows":155,"bytes":32026,"updatedAt":"2026-10-26T10:26:32Z"}]}
 ```
+
+**`readerContract` 是形状协商键，不是装饰**：读取器只接受自己认识的那个值（`UpdateManifest.ReaderContract`），不认识就报 `unsupported-reader-contract`；清单不带这个键 = 旧清单，照旧解析（不因缺键拒绝）。
+
+为什么需要它 —— 1.6.0 事故：出包脚本自 v1.2 起就写 `files[]` 聚合形态，而当时的读取器只认单文件 `file`，游戏里每份清单都被 `bad-mod-entry:0: missing-file` 整份拒掉，**联网更新从 v1.2 到 v1.6 一次都没生效**。两边的断言各在各的语言里（PowerShell 用 `ConvertFrom-Json` 读回自己写的 JSON；C# 用手写 fixture 喂自己），谁也不校验对方。现在三处闭合：
+
+1. 出包脚本把契约写进清单，并在出包前用**运行时同一个 C# 读取器**真解一遍（`tools/manifest-roundtrip`，断言 6；`-SkipReaderCheck` 只能在机器没 SDK 时用，且这种产物不该发布）。
+2. 发布包的 `release-checks.ps1` 第 12 条核对包内 `UI18n.Core.dll` 里有没有当前契约的能力标记 —— 挡住「出包脚本比 DLL 新」这种版本错位。
+3. 读取器自己做协商，错位时给的是 `unsupported-reader-contract: <对方声明> (this build reads <本读取器>)`，不是 `missing-file`。
+
+契约值只有一个真源（C# 的常量），两个 PowerShell 脚本都从源码里读它（`Get-ManifestReaderContract`），不各抄一份。改形状 = 提版本号 + 同步本节。
 
 运行期语义：
 
@@ -332,10 +347,10 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 ```json
 {"schema":"ui18n-prefs/1","language":"zh-cn","defaultMode":"translated",
  "mods":{"FerramAerospaceResearch":{"enabled":true},"TUFX":{"enabled":false}},
- "submission":{"consent":{"granted":false},"policyVersion":1,"lastSubmittedAt":"…"}}
+ "submission":{"consent":{"granted":false,"grantedAt":"…"},"policyVersion":1,"installId":"0123456789abcdef0123456789abcdef","lastSubmittedAt":"…"}}
 ```
 
-**规范形态就是上面这份**（`schema` 是字符串 `"ui18n-prefs/1"`，`submission.consent` 是对象 `{"granted": bool}`）。早期草案里的 `{"schema":1}` + `"consent":"granted"` **只读兼容**：实现会认，但写回一律用规范形态（`PrefsFile.Save` 只产出规范形态）。缺文件 = 全开；坏 JSON = 不抛、用默认值、文件不动；未知字段原样保留（向前兼容由后来者写的新键不会被旧版吞掉）。
+**规范形态就是上面这份**（`schema` 是字符串 `"ui18n-prefs/1"`，`submission.consent` 是对象 `{"granted": bool}`）。早期草案里的 `{"schema":1}` + `"consent":"granted"` **只读兼容**：实现会认，但写回一律用规范形态（`PrefsFile.Save` 只产出规范形态）。`submission.installId` 是客户端首次生成后**永不改**的本地去重键（32 位小写 hex），`grantedAt` 记同意时间；两者都只服务于本地审计，不进 bundle 之外的任何产物、不进日志。缺文件 = 全开；坏 JSON = 不抛、用默认值、文件不动；未知字段原样保留（向前兼容由后来者写的新键不会被旧版吞掉）。
 
 语义（**必须在文档里写清，否则会被当 bug 报**）：
 
@@ -360,7 +375,7 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 | # | 问题 | 默认 |
 |---|---|---|
 | D1 | 投稿通道 | 零服务器：bundle 落盘 + 预填 Issue（M4 再谈中继） |
-| D2 | 隐私边界 | 只投 mod 列表 + 可译原文 + 语言/版本；存档名/飞行器名/Kerbal 名/路径一律脱敏，命中即不投 |
+| D2 | 隐私边界 | 只投 mod 列表 + 可译原文 + 语言/版本；存档名/飞行器名/Kerbal 名/路径一律脱敏 —— 只替换值（保留正文），替换后整串再无可见字母才整条不投 |
 | D3 | 开关粒度 | 按 `modId`（程序集→注册表映射），共享文本按 §10 语义，不承诺「关掉即全英文」 |
 | D4 | 匿名与去重 | 不收集玩家标识；重复投稿只累加 `hits` |
 | D5 | API 形态 | Python CLI + JSON envelope + CI journal 门禁；不上 HTTP（M4 视情况） |

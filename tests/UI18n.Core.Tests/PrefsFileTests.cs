@@ -417,5 +417,46 @@ namespace UI18n.Core.Tests
             Assert.Contains("mods=2", text);
             Assert.Contains("disabled=1", text);
         }
+
+        // ---- v1.6 M3：投稿同意状态（docs/10 §6.2）----
+
+        [Fact]
+        public void Submission_InstallIdAndGrantedAt_RoundTrip()
+        {
+            string path = TempPath("prefs.json");
+            Prefs prefs = Prefs.CreateDefault();
+            prefs.Submission.Granted = true;
+            prefs.Submission.PolicyVersion = 1;
+            prefs.Submission.GrantedAt = "2026-10-26T18:20:00+08:00";
+            prefs.Submission.InstallId = "0123456789abcdef0123456789abcdef";
+            prefs.Submission.LastSubmittedAt = "2026-10-27T09:00:00+08:00";
+
+            PrefsFile.Save(path, prefs);
+
+            string json = File.ReadAllText(path);
+            Assert.Contains("\"installId\": \"0123456789abcdef0123456789abcdef\"", json);
+            Assert.Contains("\"grantedAt\": \"2026-10-26T18:20:00+08:00\"", json);
+
+            Prefs loaded = PrefsFile.Load(path);
+            Assert.True(loaded.Submission.Granted);
+            Assert.Equal(1, loaded.Submission.PolicyVersion);
+            Assert.Equal("2026-10-26T18:20:00+08:00", loaded.Submission.GrantedAt);
+            Assert.Equal("0123456789abcdef0123456789abcdef", loaded.Submission.InstallId);
+            Assert.Equal("2026-10-27T09:00:00+08:00", loaded.Submission.LastSubmittedAt);
+        }
+
+        [Fact]
+        public void Submission_MissingInstallId_DefaultsToEmpty()
+        {
+            string path = TempPath("prefs.json");
+            File.WriteAllText(path,
+                "{\"schema\":\"ui18n-prefs/1\",\"submission\":{\"consent\":{\"granted\":false}}}");
+
+            Prefs loaded = PrefsFile.Load(path);
+            Assert.False(loaded.Submission.Granted);
+            Assert.Equal(string.Empty, loaded.Submission.InstallId);
+            Assert.Equal(string.Empty, loaded.Submission.GrantedAt);
+        }
     }
 }
+

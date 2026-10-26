@@ -323,6 +323,9 @@ namespace UI18n.Core.Settings
             string submittedAt = submission.GetString("lastSubmittedAt", string.Empty);
             state.LastSubmittedAt = submittedAt ?? string.Empty;
 
+            state.GrantedAt = submission.GetString("grantedAt", string.Empty) ?? string.Empty;
+            state.InstallId = submission.GetString("installId", string.Empty) ?? string.Empty;
+
             string[] names = submission.MemberNames();
             Array.Sort(names, StringComparer.Ordinal);
             for (int i = 0; i < names.Length; i++)
@@ -330,7 +333,9 @@ namespace UI18n.Core.Settings
                 string name = names[i];
                 if (string.Equals(name, "consent", StringComparison.Ordinal)
                     || string.Equals(name, "policyVersion", StringComparison.Ordinal)
-                    || string.Equals(name, "lastSubmittedAt", StringComparison.Ordinal))
+                    || string.Equals(name, "lastSubmittedAt", StringComparison.Ordinal)
+                    || string.Equals(name, "grantedAt", StringComparison.Ordinal)
+                    || string.Equals(name, "installId", StringComparison.Ordinal))
                 {
                     continue;
                 }
@@ -503,6 +508,10 @@ namespace UI18n.Core.Settings
             sb.Append(submission.PolicyVersion.ToString(CultureInfo.InvariantCulture));
             sb.Append(",\n    \"lastSubmittedAt\": ");
             WriteString(sb, submission.LastSubmittedAt ?? string.Empty);
+            sb.Append(",\n    \"grantedAt\": ");
+            WriteString(sb, submission.GrantedAt ?? string.Empty);
+            sb.Append(",\n    \"installId\": ");
+            WriteString(sb, submission.InstallId ?? string.Empty);
 
             List<string> submissionKeys = new List<string>(submission.Unknown.Keys);
             submissionKeys.Sort(StringComparer.Ordinal);
