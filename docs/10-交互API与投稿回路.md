@@ -84,7 +84,9 @@ glossary put     必需 --en --zh    可选 --short --dry-run
 mod put          必需 --mod        可选 --display --assembly --folder --alias --ckan --note --dry-run
 apply            必需 —            可选 --lang --normalize-p --dry-run
                                    # 重算 packs/index.json 与报告，跑全量门禁
-submit accept    必需 ——           M3 占位：当前调用即 exit 2
+submit accept    必需 --file <bundle.json>   # 口径见 §6：id 由内容派生、consent 必须为 true、按 mod 拆文件
+submit list      必需 —           可选 --limit N
+submit show      必需 --id        可选 —      # 不存在即 exit 6
 ```
 
 `--p` 只给骨架行（含 `#` 占位符的模板文本）；**落盘写布尔 `true`**，读取容错 `true|1|"1"|"true"`，旧的 `p:1` 由 `validate` 报 notice、由 `apply --normalize-p` 一次性归一（幂等、走 put-batch 同一条 commit 路径、journal `op=apply.normalize-p`）。2026-10-26 真仓库归一 486 行 / 14 个 `.il.jsonl`（Assembly-CSharp 356、UI18n-Unattributed 251、KSPPerformanceProfiler 213、MechJeb2 169、TUFX 155、ModularFlightPanel 60、FAR 58、RealFuels 49、ksp_plugin_adapter 48、RealisticLaunchVisuals 34、RealAntennas 31、BurstPQS 15、LunarTransferPlanner 13、EVEManager 2），归一后 `validate --strict-p` 绿、97 文件 `h→(s,t,mod)` 逐条零差异。
@@ -154,42 +156,111 @@ api 额外三条**自身**约束（不属于 G 编号，属于 schema）：
 
 ## 6. 玩家投稿契约（bundle）
 
-### 6.1 采集什么（白名单制，写死在代码里）
+> **本节 2026-10-26 冻结（M3 前置口径，m07488 四项问题的回答）。** 改这里任何一条都要走新的决策记录：bundle 是玩家端产物，一旦发出去就必须永远能收，不能靠「更新插件」来纠正格式。
+
+### 6.1 bundle 形态 `ui18n-submission/1`（冻结）
 
 ```json
-{"schema":"ui18n-submission/1","createdAt":"2026-10-26T18:20:00+08:00",
- "game":{"ksp":"1.12.5","unity":"2019.4.18f1","language":"zh-cn","ui18n":"1.6.0"},
- "consent":{"grantedAt":"2026-10-26T18:19:12+08:00","scope":"modlist+texts","policyVersion":1},
- "mods":[{"modId":"FerramAerospaceResearch","displayName":"FAR","assembly":"FerramAerospaceResearch.dll","version":"1.5.10","packKnown":true}],
- "texts":[{"h":"…","s":"Aerodynamic Failure","modId":"FerramAerospaceResearch","caller":"…debugWindow","hits":37}]}
+{"schema":"ui18n-submission/1",
+ "id":"9f3c1a77b0e54d21",
+ "createdAt":"2026-10-26T18:20:00+08:00",
+ "language":"zh-cn",
+ "actor":{"kind":"player","installId":"<uuid4，客户端随机，不是硬件指纹>","ui18nVersion":"1.6.0","kspVersion":"1.12.5"},
+ "consent":{"granted":true,"policyVersion":1,"grantedAt":"2026-10-26T18:19:12+08:00"},
+ "mods":[{"modId":"FerramAerospaceResearch","fileName":"FerramAerospaceResearch.il.jsonl","version":"1.5.10"}],
+ "entries":[{"h":"3ff885233413de88","s":"Aerodynamic Failure","mod":"FerramAerospaceResearch",
+             "channel":"capture","sink":"TMPro.TMP_Text.set_text","caller":"…FARDebugAndSettings.debugWindow","count":37}],
+ "redactions":{"paths":0,"userNames":0,"absolutePaths":0,"urls":0},
+ "note":""}
 ```
 
-只允许这四类：**mod 列表**、**可译原文**、**游戏/Unity 语言与版本**、**（可选）调用点**。落盘前做三步脱敏：
+**必填**：`schema`（必须逐字等于 `ui18n-submission/1`）、`id`、`createdAt`、`language`、`actor.installId`、`consent.granted`（必须为 `true`）、`entries`（≥1 行）。
+**每行 `entries[]` 必填**：`h`（16 位小写 hex）、`s`（非空、≤ 8000 字符）、`mod`；`channel`/`sink`/`caller`/`count` 可选。
+**约束**：`entries[].mod` ⊆ `mods[].modId`（出现未声明的 modId 直接拒收，防止 bundle 里夹带别的 mod 文本）。
+**`id` 的算法是硬的**：把 bundle 去掉 `id` 字段后 `json.dumps(sort_keys=True, separators=(',',':'), ensure_ascii=False)` → sha256 → 取前 16 位小写 hex。accept 时重算，不等就 exit 5 `submission-id-mismatch`（`id` 由内容派生，正常永远不会「同 id 不同内容」）。
 
-1. 丢掉已判定为非正文的档（path / progress / counter / identifier / too-long，判据同 `CaptureClassify`）；
-2. 丢掉含玩家私有标识的串：存档名（`HighLogic.SaveFolder`）、飞行器名、Kerbal 名、玩家目录名——按值替换成 `<vessel>` / `<kerbal>`，命中即降级为不投；
-3. 单次会话只出现 1 次且长度 > 120 的串默认不投（这类多是调试/日志文本，噪声大于价值），可在同意界面手动放开。
+只允许这四类数据：**mod 列表**、**可译原文**、**游戏语言与版本**、**（可选）调用点**。玩家的存档名 / 飞行器名 / Kerbal 名 / 目录名一律不出现。
 
-### 6.2 同意怎么拿
+### 6.2 同意怎么拿（客户端配置，不是 CLI flag）
 
-- 默认 **不投稿**（`SubmissionConsent = None`）。第一次触发时弹一次说明（发什么、不发什么、发到哪个仓库、怎么撤回），玩家点「同意」才写 `prefs.json`。
-- 每次实际投稿**还要一次确认**：显示「本次将上传 N 个 mod 的 M 条原文」，并给「打开文件夹」按钮——bundle 永远先落盘到 `PluginData/UI18n/submissions/`，玩家能自己看、自己删。
-- 任何时候 `SubmissionConsent = None` + 删掉目录 = 彻底撤回；仓库侧不保留可追溯到人的标识（§6.3）。
+- 默认 **不投稿**：`Config.cfg` 的 `SubmissionConsent = None`；玩家在游戏内点「同意」才写 `prefs.json` 的 `submission.consent.granted = true`（§10 规范形态）。
+- 每次实际投稿**还要一次确认**：显示「本次将上传 N 个 mod 的 M 条原文」+「打开文件夹」按钮；bundle 永远先落盘到 `PluginData/UI18n/submissions/`，玩家能自己看、自己删。
+- `api submit accept` **不提供任何跳过同意的 flag**：bundle 里 `consent.granted` 不是 `true` 就 exit 5。拒收无同意的数据是连服务端也能复核的硬线，不做「调试用例外」。
+- 撤回：`SubmissionConsent` 改回 `None` + 删目录；仓库侧不保留可追溯到人的标识（`installId` 只用于本地去重，投稿时不进仓库——§6.4 落盘形态里不写 `actor`）。
 
-### 6.3 传输通道（v1：零服务器）
+### 6.3 三步脱敏（落盘前必做，顺序固定）
 
-插件不持有任何凭据，所以 v1 的通道是：**bundle 落盘 + 打开预填 GitHub Issue 页面**（`.github/ISSUE_TEMPLATE/submit-texts.yml`，玩家把 json 拖进去）。仓库侧 CI 用 `api submission accept` 收，收完在 issue 里回一行「已收入 N 条，进入候选表」。
+1. 丢掉已判定为非正文的档（`path` / `progress` / `counter` / `identifier` / `too-long`，判据同 `CaptureClassify`）；
+2. 丢掉含玩家私有标识的串（存档名 `HighLogic.SaveFolder`、飞行器名、Kerbal 名、玩家目录名），或把值替换成 `<vessel>` / `<kerbal>`；
+3. 单次会话只出现 1 次且长度 > 120 的串默认不投（多是调试/日志噪声），同意界面可手动放开。
 
-- 去重键：`(h, modId)`；同一串被多个玩家提交只累加计数（`submissions/hits.json`? → 记进 `packs/candidates.jsonl` 的 `hits` 字段，不新建表）。
-- 匿名：bundle 内**没有**玩家 ID；重复投稿靠客户端随机 `anonSalt` 去重（只影响本地，不上传）。
+脱敏计数写进 bundle 的 `redactions`，accept 时原样抄进 meta（可审计：这条串是「因为像路径被丢」还是「本来就没有」）。
 
-被否掉的备选：让插件直连 GitHub API（要往客户端塞 token，等于公开泄露）、让插件 POST 自建端点（要运维一台服务器）。后者留作 §11 M4。
+### 6.4 落盘形态：按 mod 拆文件
+
+```text
+packs/submission/<id>/meta.json          # 规范化后的 bundle 头（去掉 entries；不含 actor.installId）
+packs/submission/<id>/<modId>.jsonl      # 一行一原文：{h,s,mod,channel?,sink?,caller?,src?,firstSeen?}
+packs/submission/index.json              # 受管汇总：id → {files, rows, bytes, sha256, createdAt, language, policyVersion}
+```
+
+理由（三条，都要记住）：
+- **按 mod 拆**：一个 mod 的稿件坏掉不牵连整批；将来回复投稿人也能按 mod 说话（「TUFX 的 34 条已进包」）。
+- **`meta.json` 不带 `installId`**：`installId` 只为客户端本地去重存在，进仓库就变成伪标识符。
+- **`index.json` 是受管文件**（与 `packs/zh-cn` 同级受 journal_gate 管），否则投稿目录可以手改而不留痕。
+
+投稿目录**不是**语言包：`packs/submission/**` 里没有 `t` 字段，永远不进 `GameData`、不进 `packs/index.json`（后者只扫 `packs/<lang>/`）。
+
+### 6.5 candidates 归并规则（不新建表）
+
+投稿行并入已有的 `packs/candidates.jsonl`（12 列：`bucket/caller/channel/count/covered/firstSeen/h/mod/reason/s/sink/src`），**不新建 `submission-candidates.jsonl`**——五通道已经是一张表，第六条通道没有理由另开账：
+
+| 情形 | 动作 |
+|---|---|
+| `h` 已被 `packs/zh-cn` 覆盖 | 仍写行，`covered: true` / `reason: "covered"`（现有语义不变），不产生翻译工作量 |
+| `h` 已在 candidates 里 | **不重复插行**：`count` 累加、`sink`/`caller` 取首个非空、`src` 保留首次值、`channel` 保留首次发现它的通道 |
+| 新 `h` | 插入，`channel: "submit"`、`src: "submission/<id>"`、`bucket` 按现有分类器给 |
+
+排序口径不动（发现顺序 / 现有排序由工具负责），避免整表洗牌产生巨大假 diff。
+
+### 6.6 退出码、幂等与冲突
+
+`submit accept` 完全复用 §3.4 那一组，不新增码：
+
+| 情形 | 退出码 | 说明 |
+|---|---|---|
+| 首次收下 | 0 | `changed` 列出 `packs/submission/<id>/*` 与 `candidates.jsonl` |
+| 同 `id` 且内容 sha256 相同 | 0 | 幂等：一个文件都不写、**不写 journal 事件**（避免噪声），envelope 里 `"already": true` |
+| 同 `id` 但内容不同 | 4 | `error.code = "submission-id-conflict"`，附双方 sha256 与 mods 差异摘要（理论上只在有人手改 id 时出现） |
+| 缺字段 / 行 schema 坏 / `consent.granted != true` / `id` 与内容不符 | 5 | 一律 schema 非法，报第一条具体问题与字段路径 |
+| `entries` 为空 / `mods` 与 `entries[].mod` 不自洽 | 4 | 门禁式拒绝（不是格式坏，是内容不合格） |
+| 目标不存在（`submit show --id` 查不到） | 6 | |
+| IO / 解析自爆 | 7 | |
+
+**submission 不走 G1–G9**：它没有 `t`（译文），长度比、术语表、echo keep、骨架 `#` 数都无从判定。G 门禁只在 `entry put` 与翻译流水线出现。把 G 门禁套到 submission 上是把两种东西混为一谈。
+
+### 6.7 journal 事件
+
+受管范围扩到 `packs/submission/**`（含 `index.json`）。事件形状：
+
+```json
+{"at":"2026-10-26T18:41:02+08:00","op":"submit.accept","actor":"pipeline:submission",
+ "submission_id":"9f3c1a77b0e54d21","bundle_sha256":"…","rows":37,"mods":["TUFX","FAR"],
+ "files":[{"path":"packs/submission/9f3c…/TUFX.jsonl","rows":34,"file_sha256_after":"…"}],
+ "candidates":{"changed":true,"file_sha256_after":"…"}}
+```
+
+### 6.8 传输通道（v1：零服务器）
+
+插件不持有任何凭据，所以 v1 是：**bundle 落盘 + 打开预填 GitHub Issue 页面**（`.github/ISSUE_TEMPLATE/submit-texts.yml`，玩家把 json 拖进去），仓库侧 CI 跑 `api submit accept`，收完在 issue 回一行「已收入 N 条，进入候选表」。
+
+被否掉的备选：插件直连 GitHub API（要往客户端塞 token，等于公开泄露）、插件 POST 自建端点（要运维服务器，留作 §11 M4）。
 
 ## 7. 流水线：投稿 → 译文
 
 ```text
-submission accept  →  packs/submissions/<id>.json（脱敏后原件，留档）
-                   →  candidates：h+modId 新增/计数 +1，来源标 player
+submit accept      →  packs/submission/<id>/meta.json + <modId>.jsonl + index.json（脱敏后留档）
+                   →  candidates：新 h 插入（channel=submit）/ 已有 h 只累加 count（§6.5）
 translate（LLM）    →  逐条过 §4 门禁 → api entry put --actor llm:<model>
 override（人工）    →  api override put --actor human:<who>（优先于模型结果）
 apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷新
@@ -254,7 +325,7 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 |---|---|---|
 | M1（本轮） | `api.py` 的读 + `entry put/put-batch` + `validate` + journal + `journal_gate` CI + `mods.json` 引导 | `api --selftest` 绿；手改 JSON 的提交在 CI 红；`packs` 零实际译文变化（除 journal） |
 | M2 | manifest v2（每 mod 一条）+ 只装启用 mod + `prefs.json` + 游戏内开关面板 | 装机后关掉一个 mod，该 mod 的串回到英文，其余不变 |
-| M3 | 采集端 bundle + 同意 UI + Issue 模板 + `api submission accept` | 一次真实投稿从 bundle 到 `candidates` 行数对得上 |
+| M3 | 采集端 bundle + 同意 UI + Issue 模板 + `api submit accept`（契约见 §6，已冻结） | 一次真实 bundle → accept → `packs/submission/<id>/` 落盘 + candidates 行数/累加对得上 + `validate` 与 `journal_gate` 仍绿 |
 | M4 | 中继端点（可选）自动开 PR | 端到端无人值守 |
 
 ## 12. 已拍板（2026-10-26，m07292「默认执行」：六条全部按默认值）

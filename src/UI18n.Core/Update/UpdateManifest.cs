@@ -56,8 +56,8 @@ namespace UI18n.Core.Update
         internal ManifestMod(
             string modId,
             string displayName,
-            string file,
-            string modRelativePath,
+            IList<string> files,
+            IList<string> modRelativePaths,
             long bytes,
             string sha256,
             long rows,
@@ -65,10 +65,12 @@ namespace UI18n.Core.Update
         {
             ModId = modId;
             DisplayName = string.IsNullOrEmpty(displayName) ? modId : displayName;
-            File = file;
-            ModRelativePath = modRelativePath;
+            Files = files ?? new List<string>();
+            ModRelativePaths = modRelativePaths ?? new List<string>();
+            File = Files.Count > 0 ? Files[0] : string.Empty;
+            ModRelativePath = ModRelativePaths.Count > 0 ? ModRelativePaths[0] : string.Empty;
             Bytes = bytes;
-            Sha256 = sha256;
+            Sha256 = sha256 ?? string.Empty;
             Rows = rows;
             UpdatedAt = updatedAt ?? string.Empty;
         }
@@ -79,17 +81,43 @@ namespace UI18n.Core.Update
         /// <summary>给玩家看的名字（缺省回退 <see cref="ModId"/>）。</summary>
         public string DisplayName { get; private set; }
 
-        /// <summary>清单里的原始 <c>file</c> 字段（已归一化 <c>/</c> 分隔）。</summary>
+        /// <summary>
+        /// 清单里的第一个原始路径（单文件形态就是那个 <c>file</c>；聚合形态是 <c>files[0]</c>）。
+        /// 多文件请走 <see cref="Files"/> / <see cref="ModRelativePaths"/>。
+        /// </summary>
         public string File { get; private set; }
 
-        /// <summary>相对 mod 根的路径，例如 <c>Packs/zh-cn/TUFX.il.jsonl</c>。</summary>
+        /// <summary>相对 mod 根的第一个路径，例如 <c>Packs/zh-cn/TUFX.il.jsonl</c>（聚合形态是 <c>files[0]</c> 解析出来的）。</summary>
         public string ModRelativePath { get; private set; }
 
-        /// <summary>解压后的字节数。</summary>
+        /// <summary>
+        /// 该 mod 名下的<b>全部</b>原始路径（清单原样，已归一化 <c>/</c> 分隔）。
+        /// <para>
+        /// 为什么会有多条：同一个 mod 可能同时有 <c>Foo.jsonl</c> 与 <c>Foo.il.jsonl</c> 两个 channel
+        /// 的包（仓库里 97 个包只有 82 个 modId）。清单 v2 允许两种写法：
+        /// <c>{"modId":..,"file":"..","bytes":..,"sha256":..}</c>（单文件，老形状）
+        /// 或 <c>{"modId":..,"files":["..",".."],"rows":..,"bytes":..}</c>（按 mod 聚合，packs-only 更新包用这个）。
+        /// </para>
+        /// </summary>
+        public IList<string> Files { get; private set; }
+
+        /// <summary>与 <see cref="Files"/> 一一对应的、相对 mod 根的路径。</summary>
+        public IList<string> ModRelativePaths { get; private set; }
+
+        /// <summary>该 mod 名下的包文件条数（≥1）。</summary>
+        public int FileCount { get { return Files.Count; } }
+
+        /// <summary>解压后的字节数（聚合形态是名下各包之和）。</summary>
         public long Bytes { get; private set; }
 
-        /// <summary>解压后内容的 sha256（大写 64 位 hex）。</summary>
+        /// <summary>
+        /// 解压后内容的 sha256（大写 64 位 hex）。<b>聚合形态允许为空串</b>：多文件没法共用一个哈希，
+        /// 那种清单的逐文件校验走顶层 <c>files[]</c>。
+        /// </summary>
         public string Sha256 { get; private set; }
+
+        /// <summary>是否登记了 sha256（聚合形态通常没有）。</summary>
+        public bool HasSha256 { get { return !string.IsNullOrEmpty(Sha256); } }
 
         /// <summary>行数（0 = 清单没写；仅用于展示与报告，不参与校验）。</summary>
         public long Rows { get; private set; }
@@ -100,7 +128,10 @@ namespace UI18n.Core.Update
         /// <inheritdoc/>
         public override string ToString()
         {
-            return ModId + " -> " + ModRelativePath + " (" + Sha256Hex.DescribeBytes(Bytes) + ", rows="
+            string tail = FileCount > 1
+                ? " (+" + (FileCount - 1).ToString(CultureInfo.InvariantCulture) + " more)"
+                : string.Empty;
+            return ModId + " -> " + ModRelativePath + tail + " (" + Sha256Hex.DescribeBytes(Bytes) + ", rows="
                 + Rows.ToString(CultureInfo.InvariantCulture) + ")";
         }
     }
@@ -157,7 +188,11 @@ namespace UI18n.Core.Update
             {
                 ManifestMod mod = Mods[i];
                 _byModId[mod.ModId] = mod;
-                _modIdByFile[mod.ModRelativePath] = mod.ModId;
+                for (int k = 0; k < mod.ModRelativePaths.Count; k++)
+                {
+                    // 一个 mod 可能有两个 channel 的包：每一条都要能反查到它，否则更新时会按文件名猜错归属。
+                    _modIdByFile[mod.ModRelativePaths[k]] = mod.ModId;
+                }
             }
         }
 
@@ -450,10 +485,13 @@ namespace UI18n.Core.Update
                     return false;
                 }
 
-                if (!seenFiles.Add(mod.ModRelativePath))
+                for (int k = 0; k < mod.ModRelativePaths.Count; k++)
                 {
-                    error = "duplicate-mod-file: " + mod.ModRelativePath;
-                    return false;
+                    if (!seenFiles.Add(mod.ModRelativePaths[k]))
+                    {
+                        error = "duplicate-mod-file: " + mod.ModRelativePaths[k];
+                        return false;
+                    }
                 }
 
                 mods.Add(mod);
@@ -486,28 +524,82 @@ namespace UI18n.Core.Update
                 return null;
             }
 
-            string file = item.GetString("file", null);
-            if (string.IsNullOrEmpty(file))
+            // 两种合法形态：单文件 file（老形状）/ 按 mod 聚合的 files[]（packs-only 更新包）。
+            // 同时给两套字段是歧义（到底信哪个？），一律拒绝，绝不猜。
+            JsonValue singleNode = item.Get("file");
+            JsonValue multiNode = item.Get("files");
+            bool hasSingle = singleNode != null && !singleNode.IsNull;
+            bool hasMulti = multiNode != null && !multiNode.IsNull;
+            if (hasSingle && hasMulti)
             {
-                error = prefix + ": missing-file";
+                error = prefix + ": both-file-and-files";
                 return null;
             }
 
-            string modRelative;
-            string reason;
-            if (!ZipSafety.TryMapToModRelative(file, out modRelative, out reason))
+            List<string> files = new List<string>();
+            List<string> modRelatives = new List<string>();
+            if (hasMulti)
             {
-                error = prefix + ": unsafe-file:" + file + ":" + reason;
-                return null;
-            }
+                if (multiNode.Kind != JsonKind.Array)
+                {
+                    error = prefix + ": bad-files";
+                    return null;
+                }
 
-            string packLanguage;
-            string packFileName;
-            string packReason;
-            if (!ZipSafety.TryGetPackTarget(modRelative, out packLanguage, out packFileName, out packReason))
+                IList<JsonValue> items = multiNode.Items;
+                if (items.Count == 0)
+                {
+                    error = prefix + ": empty-files";
+                    return null;
+                }
+
+                HashSet<string> seenInMod = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int i = 0; i < items.Count; i++)
+                {
+                    string raw = items[i] == null ? null : items[i].AsString();
+                    if (string.IsNullOrEmpty(raw))
+                    {
+                        error = prefix + ": bad-files";
+                        return null;
+                    }
+
+                    string modRelative;
+                    string mapError;
+                    if (!TryMapPackEntry(prefix, raw, out modRelative, out mapError))
+                    {
+                        error = mapError;
+                        return null;
+                    }
+
+                    if (!seenInMod.Add(modRelative))
+                    {
+                        error = prefix + ": duplicate-file:" + modRelative;
+                        return null;
+                    }
+
+                    files.Add(raw);
+                    modRelatives.Add(modRelative);
+                }
+            }
+            else
             {
-                error = prefix + ": not-a-pack-file";
-                return null;
+                string file = singleNode == null ? null : singleNode.AsString();
+                if (string.IsNullOrEmpty(file))
+                {
+                    error = prefix + ": missing-file";
+                    return null;
+                }
+
+                string modRelative;
+                string mapError;
+                if (!TryMapPackEntry(prefix, file, out modRelative, out mapError))
+                {
+                    error = mapError;
+                    return null;
+                }
+
+                files.Add(file);
+                modRelatives.Add(modRelative);
             }
 
             long bytes;
@@ -517,8 +609,18 @@ namespace UI18n.Core.Update
                 return null;
             }
 
+            // 单文件形态必须自带 sha256（安装期要逐文件校验）；聚合形态允许多文件共用一个"合计"条目，
+            // 那种的逐文件哈希在上层 files[] 里，这里不强制。
             string sha256 = item.GetString("sha256", null);
-            if (!Sha256Hex.IsHex64(sha256))
+            if (hasMulti)
+            {
+                if (!string.IsNullOrEmpty(sha256) && !Sha256Hex.IsHex64(sha256))
+                {
+                    error = prefix + ": bad-sha256";
+                    return null;
+                }
+            }
+            else if (!Sha256Hex.IsHex64(sha256))
             {
                 error = prefix + ": bad-sha256";
                 return null;
@@ -538,12 +640,41 @@ namespace UI18n.Core.Update
             return new ManifestMod(
                 modId,
                 item.GetString("displayName", null),
-                file,
-                modRelative,
+                files,
+                modRelatives,
                 bytes,
-                Sha256Hex.Normalize(sha256),
+                string.IsNullOrEmpty(sha256) ? string.Empty : Sha256Hex.Normalize(sha256),
                 rows,
                 item.GetString("updatedAt", string.Empty));
+        }
+
+        /// <summary>
+        /// 把清单里的一条路径映射成 mod 相对路径，并要求它确实是一个语言包（<c>Packs/&lt;lang&gt;/&lt;file&gt;.jsonl</c>）。
+        /// <c>mods[]</c> 只登记包文件：DLL / cfg 不归属任何 mod，混进来要么是构建脚本算错了分组，
+        /// 要么是有人在手改清单——两种都必须整份拒绝。
+        /// </summary>
+        private static bool TryMapPackEntry(string prefix, string path, out string modRelative, out string error)
+        {
+            error = null;
+            modRelative = null;
+
+            string reason;
+            if (!ZipSafety.TryMapToModRelative(path, out modRelative, out reason))
+            {
+                error = prefix + ": unsafe-file:" + path + ":" + reason;
+                return false;
+            }
+
+            string packLanguage;
+            string packFileName;
+            string packReason;
+            if (!ZipSafety.TryGetPackTarget(modRelative, out packLanguage, out packFileName, out packReason))
+            {
+                error = prefix + ": not-a-pack-file";
+                return false;
+            }
+
+            return true;
         }
 
         private static string CheckZipName(string name)

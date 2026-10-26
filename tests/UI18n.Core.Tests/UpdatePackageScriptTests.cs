@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
+using UI18n.Core.Dict;
 using UI18n.Core.Update;
 using Xunit;
 using SysZip = System.IO.Compression.ZipArchive;
@@ -317,6 +318,53 @@ namespace UI18n.Core.Tests
                     UpdateVerify.CheckEntry(pair.Value, file, out reason),
                     "条目内容与清单登记不一致：" + entryName + " / " + reason);
                 Assert.Equal(fileName, Path.GetFileName(entryName));
+            }
+
+            // 安全边界 4：mods[] 必须存在，且与 files[] 严格对齐。
+            // 运行时 PackInstallFilter 把 mods[] 当权威表：表里少一条，那个包就跟着别的 mod 一起被关掉；
+            // 表里 modId 写错，玩家的开关就静默失效——所以这里逐条核对，不信任脚本自己的断言。
+            Assert.True(manifest.HasMods, "packs-only 清单必须带 mods[]，否则运行时只能退回文件名兜底");
+            Assert.Equal(entries.Count, manifest.FileCount);
+
+            Dictionary<string, ManifestFile> byModRelative = new Dictionary<string, ManifestFile>(StringComparer.OrdinalIgnoreCase);
+            foreach (ManifestFile file in manifest.Files)
+            {
+                byModRelative[file.ModRelativePath] = file;
+            }
+
+            Dictionary<string, long> bytesByModId = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> pathsInMods = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (ManifestMod mod in manifest.Mods)
+            {
+                Assert.False(string.IsNullOrEmpty(mod.ModId), "mods[] 里出现空 modId");
+                Assert.True(mod.FileCount > 0, "modId=" + mod.ModId + " 名下没有任何文件");
+                Assert.True(byModRelative.ContainsKey(mod.ModRelativePath), "mods[] 指向 files[] 里没有的路径：" + mod.ModRelativePath);
+
+                long sum = 0;
+                foreach (string modRelative in mod.ModRelativePaths)
+                {
+                    Assert.True(pathsInMods.Add(modRelative), "同一条包被两个 modId 认领：" + modRelative);
+                    ManifestFile file;
+                    Assert.True(byModRelative.TryGetValue(modRelative, out file), "mods[] 指向 files[] 里没有的路径：" + modRelative);
+
+                    // 清单说的 modId 必须与文件名派生的结果一致（不然就是聚合分组算错了）
+                    string derived = PackFilter.ModIdFromPath(modRelative);
+                    Assert.Equal(mod.ModId, derived);
+                    Assert.Equal(mod.ModId, manifest.ModIdOfFile(modRelative));
+                    Assert.Equal(mod.ModId, PackInstallFilter.ResolveModId(manifest, file));
+
+                    sum += file.Bytes;
+                }
+
+                Assert.Equal(mod.Bytes, sum);
+                bytesByModId[mod.ModId] = sum;
+            }
+
+            // 并集必须等于条目集合：不漏（有包没归属）不重（同一包两个 mod）
+            Assert.Equal(byModRelative.Count, pathsInMods.Count);
+            foreach (string modRelative in byModRelative.Keys)
+            {
+                Assert.True(pathsInMods.Contains(modRelative), "files[] 里的包没有归属任何 modId：" + modRelative);
             }
         }
 

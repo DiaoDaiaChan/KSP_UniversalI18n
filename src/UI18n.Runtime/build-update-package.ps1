@@ -18,7 +18,11 @@
          *.cfg、*.version、别的语言目录、下划线开头的开发期产物（_smoke.jsonl）一律拒绝；
       2. 每条 zip 内容的字节数与 sha256 必须与源文件一致，且与 manifest 里登记的完全一致；
       3. manifest 的 version / zip.name / zip.bytes / zip.sha256 / files 必须与实际产物一致；
-      4. 可复现：同一次运行内重建一遍 zip，字节与 sha256 必须完全相同（固定条目顺序 + 固定时间戳）。
+      4. 可复现：同一次运行内重建一遍 zip，字节与 sha256 必须完全相同（固定条目顺序 + 固定时间戳）；
+      5. mods[]（按 mod 聚合，v1.6 M3）必须与 files[] 严格对齐：并集 == 条目集合（不漏不重）、
+         每个包恰好属于一个 modId、modId 必须等于从包文件名重新派生的结果（不一致就报错，绝不静默）。
+         理由：运行时 PackInstallFilter 把 mods[] 当权威表（玩家关掉某个 mod 时靠它跳过安装），
+         表错一条 = 玩家的开关静默失效，而那在游戏里根本看不出来。
 
 .EXAMPLE
     pwsh -File .\src\UI18n.Runtime\build-update-package.ps1 -Version 1.2.0
@@ -117,6 +121,27 @@ if ($included.Count -eq 0) {
     $problems.Add("empty-packs: " + $packSource + " 下没有可发布的 *.jsonl")
 }
 
+# 与 UI18n.Core.Dict.PackFilter.ModIdFromFileName 逐字同口径：
+#   1) 去掉末尾 .jsonl（忽略大小写）
+#   2) 若剩下部分以 .il 或 .cfg 结尾，只去掉这一个后缀（这两个 channel 是已知全集）
+#   3) 其余原样就是 modId —— modId 允许含点号（AtmosphereAutopilot.UI），
+#      所以绝不能"剥掉最后一个点号段"。
+function Get-ModIdFromFileName {
+    param([string]$Name)
+    if ([string]::IsNullOrEmpty($Name)) { return "" }
+    $text = $Name
+    if ($text.EndsWith(".jsonl", [System.StringComparison]::OrdinalIgnoreCase)) {
+        $text = $text.Substring(0, $text.Length - ".jsonl".Length)
+    }
+    foreach ($suffix in @(".il", ".cfg")) {
+        if ($text.Length -gt $suffix.Length -and $text.EndsWith($suffix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            $text = $text.Substring(0, $text.Length - $suffix.Length)
+            break
+        }
+    }
+    return $text
+}
+
 function Get-BytesSha256 {
     param([byte[]]$Data)
     $sha = [System.Security.Cryptography.SHA256]::Create()
@@ -155,7 +180,7 @@ function New-ManifestJson {
     param(
         [string]$Ver, [string]$ChannelArg, [string]$Language,
         [string]$ZipNameArg, [long]$ZipBytesArg, [string]$ZipShaArg,
-        [object[]]$Files, [int]$FileCount, [long]$Rows, [long]$BytesSum
+        [object[]]$Files, [object[]]$Mods, [int]$FileCount, [long]$Rows, [long]$BytesSum
     )
     $sb = New-Object System.Text.StringBuilder
     [void]$sb.Append("{" + $LF)
@@ -169,8 +194,24 @@ function New-ManifestJson {
         $f = $Files[$i]
         $comma = ""
         if ($i -lt $Files.Count - 1) { $comma = "," }
-        $row = "    { " + [char]34 + "path" + [char]34 + ": " + [char]34 + $f.path + [char]34 + ", " + [char]34 + "bytes" + [char]34 + ": " + $f.bytes + ", " + [char]34 + "sha256" + [char]34 + ": " + [char]34 + $f.sha256 + [char]34 + " }" + $comma
+        $row = "    { " + [char]34 + "path" + [char]34 + ": " + [char]34 + $f.path + [char]34 + ", " + [char]34 + "bytes" + [char]34 + ": " + $f.bytes + ", " + [char]34 + "sha256" + [char]34 + ": " + [char]34 + $f.sha256 + [char]34 + ", " + [char]34 + "rows" + [char]34 + ": " + $f.rows + " }" + $comma
         [void]$sb.Append($row + $LF)
+    }
+    [void]$sb.Append("  ]," + $LF)
+    # mods[]：运行时 PackInstallFilter 的权威表（按 mod 聚合）。顺序固定 = modId Ordinal 升序、files 亦为 Ordinal 升序，
+    # 否则同输入两次打包的 manifest 字节会不同，可复现断言就废了。
+    [void]$sb.Append("  " + [char]34 + "mods" + [char]34 + ": [" + $LF)
+    for ($i = 0; $i -lt $Mods.Count; $i++) {
+        $m = $Mods[$i]
+        $commaM = ""
+        if ($i -lt $Mods.Count - 1) { $commaM = "," }
+        $fileList = ""
+        for ($k = 0; $k -lt $m.files.Count; $k++) {
+            if ($k -gt 0) { $fileList += ", " }
+            $fileList += ([char]34 + $m.files[$k] + [char]34)
+        }
+        $rowM = "    { " + [char]34 + "modId" + [char]34 + ": " + [char]34 + $m.modId + [char]34 + ", " + [char]34 + "files" + [char]34 + ": [" + $fileList + "], " + [char]34 + "rows" + [char]34 + ": " + $m.rows + ", " + [char]34 + "bytes" + [char]34 + ": " + $m.bytes + ", " + [char]34 + "updatedAt" + [char]34 + ": " + [char]34 + $m.updatedAt + [char]34 + " }" + $commaM
+        [void]$sb.Append($rowM + $LF)
     }
     [void]$sb.Append("  ]," + $LF)
     [void]$sb.Append("  " + [char]34 + "packFiles" + [char]34 + ": " + $FileCount + "," + $LF)
@@ -241,9 +282,17 @@ try {
             $problems.Add("entry-sha256-mismatch: " + $full + "（zip " + $dataSha + " != 源 " + $srcSha + "）")
         }
 
-        $fileRecords += [ordered]@{ path = $full; bytes = [long]$data.Length; sha256 = $dataSha }
-        $bytesTotal += [long]$data.Length
         $lineCount = @(Get-Content -LiteralPath $srcPath | Where-Object { $_.Trim().Length -gt 0 }).Count
+        # rows / updatedAt 只为 mods[] 聚合与报告用；运行时只认 path / bytes / sha256
+        $fileRecords += [ordered]@{
+            path = $full
+            name = $name
+            bytes = [long]$data.Length
+            sha256 = $dataSha
+            rows = [long]$lineCount
+            updatedAt = [System.IO.File]::GetLastWriteTimeUtc($srcPath).ToString("yyyy-MM-ddTHH:mm:ssZ", [System.Globalization.CultureInfo]::InvariantCulture)
+        }
+        $bytesTotal += [long]$data.Length
         $rowsTotal += [long]$lineCount
     }
 }
@@ -253,7 +302,81 @@ if ($fileRecords.Count -ne $included.Count) {
     $problems.Add("entry-count: zip 有 " + $fileRecords.Count + " 条，源目录有 " + $included.Count + " 个包")
 }
 
-$manifestText = New-ManifestJson -Ver $Version -ChannelArg $Channel -Language $langNorm -ZipNameArg $zipName -ZipBytesArg ([long]$zipItem.Length) -ZipShaArg $zipSha -Files $fileRecords -FileCount $fileRecords.Count -Rows $rowsTotal -BytesSum $bytesTotal
+# ===== 断言 5：按 modId 聚合出 mods[]（v1.6 M3），并与 files[] 严格对齐 =====
+$modBuckets = @{}
+$modIds = New-Object System.Collections.Generic.List[string]
+foreach ($r in $fileRecords) {
+    $modId = Get-ModIdFromFileName -Name $r.name
+    if ([string]::IsNullOrEmpty($modId)) {
+        $problems.Add("mods-empty-mod-id: " + $r.path)
+        continue
+    }
+    if (-not $modBuckets.ContainsKey($modId)) {
+        $modBuckets[$modId] = New-Object System.Collections.Generic.List[object]
+        $modIds.Add($modId)
+    }
+    $modBuckets[$modId].Add($r)
+}
+$modIds.Sort([System.StringComparer]::Ordinal)
+
+$mods = @()
+foreach ($modId in $modIds) {
+    $modFiles = New-Object System.Collections.Generic.List[string]
+    $modRows = [long]0
+    $modBytes = [long]0
+    $modUpdated = ""
+    foreach ($e in $modBuckets[$modId]) {
+        $modFiles.Add($e.path)
+        $modRows += [long]$e.rows
+        $modBytes += [long]$e.bytes
+        # updatedAt 取名下最新的那个包（ISO-8601 定长 UTC 串，按 ordinal 比较即时间序）
+        if ([string]::CompareOrdinal($e.updatedAt, $modUpdated) -gt 0) { $modUpdated = $e.updatedAt }
+    }
+    $mods += [ordered]@{
+        modId = $modId
+        files = $modFiles.ToArray()
+        rows = $modRows
+        bytes = $modBytes
+        updatedAt = $modUpdated
+    }
+}
+if ($fileRecords.Count -gt 0 -and $mods.Count -eq 0) {
+    $problems.Add("mods-empty: " + $fileRecords.Count + " 个包聚合出 0 个 modId")
+}
+
+# 并集必须等于条目集合（不漏不重）；每个包恰好属于一个 modId；
+# modId 必须等于从包文件名重新派生的结果（聚合键算错就报错，绝不静默出包）
+$recordPaths = New-Object 'System.Collections.Generic.HashSet[string]'
+foreach ($r in $fileRecords) { [void]$recordPaths.Add($r.path) }
+$fileToMod = New-Object 'System.Collections.Generic.Dictionary[string,string]'
+foreach ($m in $mods) {
+    if (@($m.files).Count -lt 1) {
+        $problems.Add("mods-no-files: " + $m.modId + "（mods[] 里出现没有任何文件的条目）")
+    }
+    foreach ($path in @($m.files)) {
+        $leaf = $path
+        $cut = $path.LastIndexOf("/")
+        if ($cut -ge 0) { $leaf = $path.Substring($cut + 1) }
+        $derived = Get-ModIdFromFileName -Name $leaf
+        if ($derived -ne $m.modId) {
+            $problems.Add("mods-mod-id-mismatch: " + $path + "（文件名派生 " + $derived + " != 聚合 " + $m.modId + "）")
+        }
+        if ($fileToMod.ContainsKey($path)) {
+            $problems.Add("mods-file-duplicated: " + $path + "（同时属于 " + $fileToMod[$path] + " 与 " + $m.modId + "）")
+        }
+        else { $fileToMod[$path] = $m.modId }
+        if (-not $recordPaths.Contains($path)) {
+            $problems.Add("mods-files-union-extra: " + $path + "（mods[] 里有，files[] 里没有）")
+        }
+    }
+}
+foreach ($r in $fileRecords) {
+    if (-not $fileToMod.ContainsKey($r.path)) {
+        $problems.Add("mods-files-union-missing: " + $r.path + "（files[] 里有，mods[] 里没有）")
+    }
+}
+
+$manifestText = New-ManifestJson -Ver $Version -ChannelArg $Channel -Language $langNorm -ZipNameArg $zipName -ZipBytesArg ([long]$zipItem.Length) -ZipShaArg $zipSha -Files $fileRecords -Mods $mods -FileCount $fileRecords.Count -Rows $rowsTotal -BytesSum $bytesTotal
 $manifestPath = Join-Path $workDir "manifest.json"
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($manifestPath, $manifestText, $utf8NoBom)
@@ -265,13 +388,46 @@ if ($parsed.zip.name -ne $zipName) { $problems.Add("manifest-zip-name: " + $pars
 if ([long]$parsed.zip.bytes -ne [long]$zipItem.Length) { $problems.Add("manifest-zip-bytes: " + $parsed.zip.bytes + " != " + $zipItem.Length) }
 if ($parsed.zip.sha256 -ne $zipSha) { $problems.Add("manifest-zip-sha256: " + $parsed.zip.sha256 + " != " + $zipSha) }
 if (@($parsed.files).Count -ne $fileRecords.Count) { $problems.Add("manifest-file-count: " + @($parsed.files).Count + " != " + $fileRecords.Count) }
+# mods[] 必须真的写进了清单，且逐条的 rows / bytes 等于名下各包之和（读回来核对，不复用内存里的数）
+if (-not $parsed.PSObject.Properties.Name.Contains("mods")) {
+    $problems.Add("manifest-mods-missing: 清单里没有 mods[]（运行时只能退回文件名兜底，玩家开关会受影响）")
+}
+else {
+    if (@($parsed.mods).Count -ne $mods.Count) {
+        $problems.Add("manifest-mods-count: 清单 " + @($parsed.mods).Count + " 条 != 聚合 " + $mods.Count + " 条")
+    }
+    $pathRows = @{}
+    $pathBytes = @{}
+    foreach ($pf in @($parsed.files)) {
+        $pathRows[[string]$pf.path] = [long]$pf.rows
+        $pathBytes[[string]$pf.path] = [long]$pf.bytes
+    }
+    foreach ($pm in @($parsed.mods)) {
+        $sumRows = [long]0
+        $sumBytes = [long]0
+        foreach ($path in @($pm.files)) {
+            if (-not $pathRows.ContainsKey([string]$path)) {
+                $problems.Add("manifest-mods-file-unknown: " + $pm.modId + " -> " + $path + "（files[] 里没有这条）")
+                continue
+            }
+            $sumRows += [long]$pathRows[[string]$path]
+            $sumBytes += [long]$pathBytes[[string]$path]
+        }
+        if ($sumRows -ne [long]$pm.rows) {
+            $problems.Add("manifest-mods-rows: " + $pm.modId + " 登记 " + $pm.rows + " 行，名下各包合计 " + $sumRows)
+        }
+        if ($sumBytes -ne [long]$pm.bytes) {
+            $problems.Add("manifest-mods-bytes: " + $pm.modId + " 登记 " + $pm.bytes + " B，名下各包合计 " + $sumBytes)
+        }
+    }
+}
 
 # ===== 断言 5：可复现（同输入重建一遍，字节与 sha256 必须相同） =====
 $secondZip = Join-Path (Join-Path $workDir "repro") $zipName
 New-PacksZip -Path $secondZip -EntryNames $entryNames -Sources $sources
 $secondSha = (Get-FileHash -LiteralPath $secondZip -Algorithm SHA256).Hash
 if ($secondSha -ne $zipSha) { $problems.Add("not-reproducible: 重建 zip 的 sha256 " + $secondSha + " != " + $zipSha) }
-$secondManifest = New-ManifestJson -Ver $Version -ChannelArg $Channel -Language $langNorm -ZipNameArg $zipName -ZipBytesArg ([long](Get-Item -LiteralPath $secondZip).Length) -ZipShaArg $secondSha -Files $fileRecords -FileCount $fileRecords.Count -Rows $rowsTotal -BytesSum $bytesTotal
+$secondManifest = New-ManifestJson -Ver $Version -ChannelArg $Channel -Language $langNorm -ZipNameArg $zipName -ZipBytesArg ([long](Get-Item -LiteralPath $secondZip).Length) -ZipShaArg $secondSha -Files $fileRecords -Mods $mods -FileCount $fileRecords.Count -Rows $rowsTotal -BytesSum $bytesTotal
 if ($secondManifest -ne $manifestText) { $problems.Add("not-reproducible: 重建的 manifest 文本不同") }
 
 if ($problems.Count -gt 0) {
@@ -294,8 +450,13 @@ Write-Host ("[update] zip       : " + $finalZip)
 Write-Host ("[update] zip bytes : " + ("{0:N0}" -f $zipItem.Length))
 Write-Host ("[update] zip sha256: " + $zipSha)
 Write-Host ("[update] entries   : " + $fileRecords.Count + " (" + ("{0:N0}" -f $rowsTotal) + " row(s), " + ("{0:N0}" -f $bytesTotal) + " B uncompressed)")
+Write-Host ("[update] mods      : " + $mods.Count + " modId(s) over " + $fileRecords.Count + " file(s)")
 Write-Host ("[update] manifest  : " + $finalManifest + " (" + ("{0:N0}" -f $manifestItem.Length) + " B, sha256 " + $manifestSha + ")")
 Write-Host ("[update] reproducible: rebuilt zip sha256 identical (" + $secondSha + ")")
 Write-Host "[update] contents  :"
 foreach ($r in $fileRecords) { Write-Host ("[update]   " + $r.path + "  (" + ("{0:N0}" -f $r.bytes) + " B)") }
+Write-Host "[update] mods      :"
+foreach ($m in $mods) {
+    Write-Host ("[update]   " + $m.modId + "  (" + @($m.files).Count + " file(s), " + ("{0:N0}" -f $m.rows) + " row(s), " + ("{0:N0}" -f $m.bytes) + " B, updatedAt " + $m.updatedAt + ")")
+}
 Write-Host "[update] OK"
