@@ -1,0 +1,84 @@
+{
+  "schema": "ui18n-submission/1",
+  "createdAt": "2026-10-26T18:20:00+08:00",
+  "language": "zh-cn",
+  "actor": {
+    "kind": "player",
+    "installId": "0f7a1c2e-1111-4222-8333-444455556666",
+    "ui18nVersion": "1.6.0",
+    "kspVersion": "1.12.5"
+  },
+  "consent": {
+    "granted": true,
+    "policyVersion": 1,
+    "grantedAt": "2026-10-26T18:19:12+08:00"
+  },
+  "mods": [
+    {
+      "modId": "FerramAerospaceResearch",
+      "fileName": "FerramAerospaceResearch.il.jsonl",
+      "version": "1.5.10"
+    },
+    {
+      "modId": "TUFX",
+      "fileName": "TUFX.il.jsonl",
+      "version": "1.5.10"
+    }
+  ],
+  "entries": [
+    {
+      "h": "158ae4fc8ea4b8b5",
+      "s": "Blue Paint",
+      "mod": "TUFX",
+      "count": 1,
+      "channel": "il",
+      "src": "TUFX.il.jsonl"
+    },
+    {
+      "h": "ea889e0a89efb5cf",
+      "s": "Aerodynamic Failure",
+      "mod": "FerramAerospaceResearch",
+      "count": 37,
+      "channel": "il",
+      "src": "FerramAerospaceResearch.il.jsonl",
+      "sink": "TMPro.TMP_Text.set_text",
+      "caller": "FerramAerospaceResearch.FARDebugAndSettings"
+    },
+    {
+      "h": "ecb74330def70e88",
+      "s": "Loading texture asset 1950/5740 (buffer=45MB)",
+      "mod": "TUFX",
+      "count": 11,
+      "channel": "il",
+      "src": "TUFX.il.jsonl",
+      "sink": "TMPro.TMP_Text.set_text",
+      "caller": "LoadingScreen.UpdateProgressBar"
+    },
+    {
+      "h": "b75fdea0fac25e40",
+      "s": "Vessel Integrity Check",
+      "mod": "TUFX",
+      "count": 2,
+      "channel": "il",
+      "src": "TUFX.il.jsonl",
+      "sink": "GUILayout.DoLabel",
+      "caller": "KERBALISM.KsmGui.KsmGuiText..ctor"
+    },
+    {
+      "h": "303e3f3632040281",
+      "s": "Throttle Valve Assembly For The Engine",
+      "mod": "TUFX",
+      "count": 1,
+      "channel": "il",
+      "src": "TUFX.il.jsonl"
+    }
+  ],
+  "redactions": {
+    "paths": 2,
+    "userNames": 0,
+    "absolutePaths": 1,
+    "urls": 0
+  },
+  "note": "selftest 用样例投稿（不是真实玩家数据）",
+  "id": "d503c37fc9f3a6e4"
+}

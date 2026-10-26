@@ -13,7 +13,15 @@ r"""journal_gate.py -- packs 里的写操作必须留下 journal 事件（docs/1
      都拦得住。
 
 受管范围（WATCHED）就是 docs/10 §5 列的四个位置：packs/zh-cn/**、packs/overrides.jsonl、
-packs/glossary.jsonl、packs/mods.json。除此之外的文件不管（tools/、src/、docs/ 随便改）。
+packs/glossary.jsonl、packs/mods.json，**再加上 packs/submission/**（M3 投稿目录：meta.json、
+index.json、每个 mod 的 .jsonl 都算）** —— 不改这条，投稿目录就是唯一能手改不留痕的地方。
+除此之外的文件不管（tools/、src/、docs/ 随便改）。
+
+M3 的事件形状与别的写操作不同（docs/10 §6.7）：**一笔投稿只写一条事件**，事件顶层没有 file 字段，
+文件清单在 files[] 里、候选表记在 candidates 里。所以认账时这三个位置都要查
+（event.file / event.files[].path / event.candidates.path），否则投稿刚收完就自己红。
+注：packs/candidates.jsonl 本身**不受管**（25 MB 的表由流水线整表重算，套上必然天天红），
+但它若哪天进了受管范围，事件里的 candidates 分支已经能直接当证据用。
 
 拒绝时**不只报错**，还会把「这件事该用哪条 api 命令做」打出来 —— 门禁的意义是让人换条路
 走通，而不是把人堵死。
@@ -47,8 +55,10 @@ EXIT_OK = 0
 EXIT_RED = 1
 EXIT_USAGE = 2
 
-#: 受管目录（相对仓库根，末尾带斜杠表示「整个子树」）
+#: 受管目录（相对仓库根，末尾带斜杠表示「整个子树」），只收 .jsonl
 WATCHED_DIRS = ("packs/zh-cn/",)
+#: 整棵子树都受管（不分后缀）：投稿目录里的 meta.json / index.json 也必须留痕
+WATCHED_ANY = ("packs/submission/",)
 #: 受管单文件
 WATCHED_FILES = ("packs/overrides.jsonl", "packs/glossary.jsonl", "packs/mods.json")
 #: journal 目录（只追加）
@@ -56,6 +66,9 @@ JOURNAL_DIR = "packs/journal/"
 
 #: 拒绝时给出的补救命令（按文件位置猜最贴切的那条，猜不准就给最通用的）
 HINTS = (
+    ("packs/submission/",
+     "python -m i18n_tools.api submit accept --bundle <投稿.json> --actor human:<你>"
+     "（投稿目录是收投稿时写的；要重收先删掉该 id 的目录，别手改）"),
     ("packs/overrides.jsonl",
      'python -m i18n_tools.api override put --en "<英文>" --zh "<中文>" --actor human:<你>'),
     ("packs/glossary.jsonl",
@@ -165,9 +178,11 @@ def changed_paths(root, mode="worktree", base=None):
 
 
 def is_watched(rel):
-    """受管判定：packs/zh-cn/ 整个子树 + 三个单文件。"""
+    """受管判定：packs/zh-cn/ 的 .jsonl + packs/submission/ 整棵子树 + 三个单文件。"""
     rel = str(rel).replace(os.sep, "/")
     if rel in WATCHED_FILES:
+        return True
+    if any(rel.startswith(prefix) for prefix in WATCHED_ANY):
         return True
     return any(rel.startswith(prefix) and rel.endswith(".jsonl") for prefix in WATCHED_DIRS)
 
@@ -257,10 +272,26 @@ def check(root, mode="worktree", base=None, head=None):
 
     events, bad = journal_events(root)
     by_file = {}
+    known_after = {}
+
+    def index_event(event, name, sha):
+        name = str(name or "").replace(os.sep, "/")
+        if not name:
+            return
+        by_file.setdefault(name, []).append(event)
+        if sha:
+            known_after.setdefault(name, set()).add(str(sha))
+
     for event in events:
-        name = str(event.get("file") or "").replace(os.sep, "/")
-        if name:
-            by_file.setdefault(name, []).append(event)
+        index_event(event, event.get("file"), event.get("file_sha256_after"))
+        # M3（docs/10 §6.7）：一笔投稿一条事件，文件清单在 files[] 里
+        for item in event.get("files") or []:
+            if isinstance(item, dict):
+                index_event(event, item.get("path") or item.get("file"),
+                            item.get("file_sha256_after"))
+        cands = event.get("candidates")
+        if isinstance(cands, dict):
+            index_event(event, cands.get("path"), cands.get("file_sha256_after"))
 
     violations = []
     for rel in watched:
@@ -273,7 +304,7 @@ def check(root, mode="worktree", base=None, head=None):
             continue
         current = sha256_hex(data)
         history = by_file.get(rel.replace(os.sep, "/")) or []
-        known = {str(event.get("file_sha256_after") or "") for event in history}
+        known = known_after.get(rel.replace(os.sep, "/")) or set()
         if not history:
             violations.append({
                 "kind": "no-journal", "file": rel, "sha256": current,
@@ -442,6 +473,20 @@ def _journal_line(rel, sha, action="insert"):
     }, ensure_ascii=False)
 
 
+def _submit_event(files, cand_sha, sid="abc123def4567890"):
+    """造一条 M3 形状的事件：顶层没有 file，文件清单在 files[]、候选表在 candidates 里。"""
+    return json.dumps({
+        "ts": "2026-01-01T00:00:00Z", "actor": "pipeline:selftest", "op": "submit.accept",
+        "lang": "zh-cn", "mod": None, "h": None, "action": "insert", "file": None,
+        "revision_before": None, "revision_after": None, "file_sha256_after": None,
+        "bytes_after": None, "gates": [], "note": "",
+        "submission_id": sid, "bundle_sha256": "0" * 64, "rows": 1, "mods": ["TUFX"],
+        "files": files,
+        "candidates": {"changed": True, "path": "packs/candidates.jsonl",
+                       "file_sha256_after": cand_sha, "inserted": 1, "updated": 0},
+    }, ensure_ascii=False)
+
+
 def selftest():
     """返回 (失败列表, 总项数)。全部在临时 git 仓库里跑。"""
     failures = []
@@ -575,6 +620,47 @@ def selftest():
         check_it("\u547d\u4ee4\u884c\u6b63\u5e38\u8dd1\u901a exit 0", code == EXIT_OK, code)
         code = main(["--root", str(root / "nope")])
         check_it("\u6307\u4e0d\u5b58\u5728\u7684 --root \u2192 exit 2", code == EXIT_USAGE, code)
+
+        # 12) M3 投稿目录：一笔事件带 files[] 也要能认账；手改 meta.json 要红
+        sid = "abc123def4567890"
+        sub_dir = "packs/submission/%s" % sid
+        _write(root, sub_dir + "/meta.json", '{"id": "%s"}\n' % sid)
+        _write(root, sub_dir + "/TUFX.jsonl",
+               '{"h": "0123456789abcdef", "s": "Blue Paint", "mod": "TUFX"}\n')
+        _write(root, "packs/submission/index.json", '{"schema": 1, "submissions": {}}\n')
+        _write(root, "packs/candidates.jsonl", '{"h": "0123456789abcdef", "s": "Blue Paint"}\n')
+
+        def _sha(rel):
+            return sha256_hex((root / rel).read_bytes())
+
+        event_files = [{"path": sub_dir + "/meta.json", "rows": 0,
+                        "file_sha256_after": _sha(sub_dir + "/meta.json")},
+                       {"path": sub_dir + "/TUFX.jsonl", "rows": 1,
+                        "file_sha256_after": _sha(sub_dir + "/TUFX.jsonl")},
+                       {"path": "packs/submission/index.json", "rows": 0,
+                        "file_sha256_after": _sha("packs/submission/index.json")}]
+        with journal_path.open("a", encoding="utf-8", newline="") as handle:
+            handle.write(_submit_event(event_files, _sha("packs/candidates.jsonl"), sid) + "\n")
+        result = check(root, mode="worktree")
+        check_it("\u6295\u7a3f\u76ee\u5f55 + \u5019\u9009\u8868\u6709\u4e8b\u4ef6\u80cc\u4e66 \u2192 \u901a\u8fc7",
+                 result["ok"], result["violations"])
+        check_it("\u6295\u7a3f\u76ee\u5f55\u6574\u68f5\u5b50\u6811\u90fd\u53d7\u7ba1\uff08\u542b meta.json / index.json\uff09",
+                 set(result["changed"]) >= {sub_dir + "/meta.json", sub_dir + "/TUFX.jsonl",
+                                            "packs/submission/index.json"},
+                 result["changed"])
+        check_it("\u5019\u9009\u8868\u4e0d\u8fdb\u53d7\u7ba1\u6e05\u5355\uff08\u6574\u8868\u91cd\u7b97\u4e0d\u8be5\u88ab\u95e8\u7981\u5361\uff0c\u4e8b\u4ef6\u91cc\u7684 candidates \u5206\u652f\u53ea\u767b\u8bb0\uff09",
+                 "packs/candidates.jsonl" not in result["changed"], result["changed"])
+
+        _write(root, sub_dir + "/meta.json", '{"id": "%s", "note": "\u624b\u6539"}\n' % sid)
+        result = check(root, mode="worktree")
+        check_it("\u624b\u6539\u6295\u7a3f meta.json \u88ab\u62e6",
+                 not result["ok"]
+                 and [item["file"] for item in result["violations"]] == [sub_dir + "/meta.json"],
+                 result["violations"])
+        check_it("\u6295\u7a3f\u88ab\u62e6\u65f6\u7684\u8865\u6551\u547d\u4ee4\u6307\u5411 api submit accept",
+                 bool(result["violations"])
+                 and "api submit accept" in result["violations"][0]["hint"],
+                 result["violations"][:1])
 
     return failures, total
 

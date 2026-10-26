@@ -90,6 +90,7 @@ from pathlib import Path
 from .fnv import hash_text
 from .textnorm import normalize
 from . import skeleton as SK
+from . import submission as SUB
 
 
 def ensure_stdout():
@@ -163,11 +164,14 @@ class ApiError(Exception):
         "internal": "INTERNAL",
     }
 
-    def __init__(self, kind, message, details=None):
+    def __init__(self, kind, message, details=None, code=None):
         super().__init__(message)
         self.kind = kind if kind in self.EXIT else "internal"
         self.message = message
         self.details = [str(item) for item in (details or [])]
+        # 个别拒绝要报更具体的 code（docs/10 §6.6 的 submission-id-conflict 与
+        # submission-id-mismatch），其余仍走 kind 的默认 code
+        self._code = code
 
     @property
     def exit_code(self):
@@ -175,7 +179,7 @@ class ApiError(Exception):
 
     @property
     def code(self):
-        return self.CODE.get(self.kind, "INTERNAL")
+        return self._code or self.CODE.get(self.kind, "INTERNAL")
 
 
 # ---------------------------------------------------------------------------
@@ -1611,9 +1615,257 @@ def cmd_apply(ctx, args):
     return payload, lines
 
 
+# ---------------------------------------------------------------------------
+# 投稿回路（M3，docs/10 §6，2026-10-26 冻结）
+#
+# 这一组动词的职责只有一件事：**让玩家的投稿能安全落进仓库**。三条硬约束：
+#   1. submission 不走 G1-G9 —— 它没有 t，长度比 / 术语表 / echo keep / 骨架 # 数都无从判定；
+#   2. 幂等优先于报错：同 id 同内容 -> exit 0 + already:true，一个文件都不写、不写 journal
+#      （否则每次重跑 CI 都会在 journal 里留一堆噪声行）；
+#   3. 同 id 不同内容 -> exit 4（id 是内容派生的，同 id 不同内容只能是人改过包里的文件）。
+# ---------------------------------------------------------------------------
+
+SUBMISSION_DIR_REL = "packs/submission"
+SUBMISSION_INDEX_REL = "packs/submission/index.json"
+CANDIDATES_REL = "packs/candidates.jsonl"
+
+
+def read_bytes_or_empty(path):
+    """读文件字节；不存在当空（新仓库里 packs/submission 还不存在是正常状态）。"""
+    try:
+        return Path(path).read_bytes()
+    except FileNotFoundError:
+        return b""
+
+
+def pack_hashes(ctx, lang=None):
+    """packs/<lang>/ 里出现过的全部 h（归并 candidates 时判 covered）。
+
+    为什么不复用 PackFile：那是给写入用的（要保风格、要能改行、要算 revision）；
+    这里只要 1.4 万个 h，逐行 json 解析一遍 0.2 s，也不怕某个包的写法有变化。
+    """
+    hashes = set()
+    for path in iter_pack_files(ctx, lang):
+        for line in path.read_bytes().decode("utf-8", "replace").splitlines():
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            h = row.get("h") if isinstance(row, dict) else None
+            if isinstance(h, str):
+                hashes.add(h)
+    return hashes
+
+
+def commit_submission(ctx, built, actor, dry_run=False):
+    """M3 的提交路径：写全部 tmp -> 追加**一条**事件 -> 逐个 os.replace。
+
+    为什么不复用 commit()：§6.7 的事件形状是「一笔投稿一条事件、事件里带 files[]」，
+    而 commit() 的口径是「每个文件各自一条事件」。原子性照旧 —— journal 写不进去就整笔失败，
+    任何一个 tmp 写失败都不会改名，不会留下半套投稿目录。
+    """
+    steps, files = [], []
+    for step in built["files"]:
+        path = ctx.root / step["path"]
+        before = read_bytes_or_empty(path)
+        if before == step["data"]:
+            continue
+        steps.append(step)
+        files.append({"file": step["path"], "revision_before": revision_of(before),
+                      "revision_after": revision_of(step["data"]),
+                      "bytes": len(step["data"]), "rows": step.get("rows", 0),
+                      "sha256": step["sha256"]})
+    result = {"changed": [step["path"] for step in steps], "files": files, "gates": [],
+              "warnings": list(ctx.warnings), "journal": None, "dry_run": bool(dry_run)}
+    if not steps or dry_run:
+        return result
+    tmps = []
+    try:
+        for step in steps:
+            target = ctx.root / step["path"]
+            tmps.append((write_tmp(target, step["data"]), target))
+    except ApiError:
+        for tmp, _target in tmps:
+            with contextlib.suppress(OSError):
+                tmp.unlink()
+        raise
+    payload = dict(built["event"])
+    payload["ts"] = now_iso()
+    payload["actor"] = actor
+    result["journal"] = journal_append(ctx, payload)
+    for tmp, target in tmps:
+        os.replace(str(tmp), str(target))
+    return result
+
+
+def submission_index(ctx):
+    """读 packs/submission/index.json（不存在 = 空索引，不是错误）。"""
+    raw = read_bytes_or_empty(ctx.root / SUBMISSION_INDEX_REL)
+    if not raw.strip():
+        return {"schema": 1, "submissions": {}}
+    try:
+        doc = json.loads(raw.decode("utf-8"))
+    except ValueError as exc:
+        raise ApiError("schema", "%s 不是合法 JSON：%s" % (SUBMISSION_INDEX_REL, exc))
+    if not isinstance(doc, dict):
+        raise ApiError("schema", "%s 顶层必须是对象" % SUBMISSION_INDEX_REL)
+    if not isinstance(doc.get("submissions"), dict):
+        doc["submissions"] = {}
+    doc.setdefault("schema", 1)
+    return doc
+
+
 def cmd_submit_accept(ctx, args):
-    raise ApiError("usage", "submit accept 属 M3（投稿回路），本轮 M1 只做读 + entry put/put-batch "
-                            "+ validate + journal + CI 门禁")
+    """收一份玩家投稿：校验 -> 算 id -> 幂等/冲突 -> 按 mod 拆 -> 归并 candidates。"""
+    actor = need_actor(args)
+    bundle_arg = getattr(args, "bundle", None)
+    use_stdin = bool(getattr(args, "stdin", False))
+    dry_run = bool(getattr(args, "dry_run", False))
+    if use_stdin and bundle_arg:
+        raise ApiError("usage", "--bundle 与 --stdin 只能给一个（两个都给我不知道该信谁）")
+    if not use_stdin and not bundle_arg:
+        raise ApiError("usage", "submit accept 要 --bundle <投稿.json>，或者 --stdin 从管道读")
+    if use_stdin:
+        stream = getattr(sys.stdin, "buffer", None)
+        raw = stream.read() if stream is not None else sys.stdin.read().encode("utf-8")
+        where = "<stdin>"
+    else:
+        path = Path(bundle_arg)
+        if not path.is_absolute():
+            path = Path.cwd() / path
+        try:
+            raw = path.read_bytes()
+        except OSError as exc:
+            raise ApiError("missing", "读不到投稿文件 %s：%s" % (bundle_arg, exc)) from None
+        where = str(bundle_arg)
+    try:
+        bundle = json.loads(raw.decode("utf-8-sig"))
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise ApiError("schema", "%s 不是合法 JSON：%s" % (where, exc)) from None
+    accepted_at = now_iso()
+    index_raw = read_bytes_or_empty(ctx.root / SUBMISSION_INDEX_REL)
+    try:
+        built = SUB.plan(bundle, pack_hashes(ctx, ctx.lang),
+                         read_bytes_or_empty(ctx.root / CANDIDATES_REL),
+                         index_raw, accepted_at, actor)
+    except SUB.BundleError as exc:
+        raise ApiError(exc.kind, exc.message, exc.details, code=exc.code) from None
+    for message in built["warnings"]:
+        ctx.warn(message)
+    sid = built["id"]
+    already, stored_sha, stored_mods = SUB.existing_state(
+        index_raw, read_bytes_or_empty(ctx.root / SUBMISSION_DIR_REL / sid / SUB.META_NAME), sid)
+    if already:
+        if stored_sha == built["event"]["bundle_sha256"]:
+            payload = {"ok": True, "op": "submit.accept", "lang": built["event"]["lang"],
+                       "submission_id": sid, "already": True, "bundle_sha256": stored_sha,
+                       "changed": [], "files": [], "journal": None, "dry_run": dry_run,
+                       "rows": built["rows"], "mods": built["mods"],
+                       "warnings": list(ctx.warnings)}
+            return payload, ["已收过投稿 %s（内容 sha256 相同）：一个文件都没写、也没有写 journal"
+                             % sid]
+        raise ApiError(
+            "gate",
+            "投稿 id 冲突：%s 已经收过别的内容（存储 %s / 本次 %s）；id 是内容派生的，"
+            "同 id 不同内容说明有人改过投稿里的文件"
+            % (sid, (stored_sha or "?")[:16], built["event"]["bundle_sha256"][:16]),
+            ["已存 bundle sha256：" + str(stored_sha or "-"),
+             "本次 bundle sha256：" + built["event"]["bundle_sha256"],
+             "已存的 mods：" + (", ".join(stored_mods) or "-"),
+             "本次的 mods：" + (", ".join(built["mods"]) or "-")]
+            + (["mods 差异：" + ", ".join(sorted(set(stored_mods) ^ set(built["mods"])))]
+               if set(stored_mods) ^ set(built["mods"]) else []),
+            code="submission-id-conflict")
+    result = commit_submission(ctx, built, actor, dry_run=dry_run)
+    payload = envelope(ctx, "submit.accept", result, lang=built["event"]["lang"], mod=None)
+    payload.update({"submission_id": sid, "already": False,
+                    "bundle_sha256": built["event"]["bundle_sha256"],
+                    "rows": built["rows"], "mods": built["mods"],
+                    "candidates": built["event"]["candidates"],
+                    "submission_files": [step["path"] for step in built["files"][:-1]]})
+    stats = built["stats"]
+    lines = ["投稿 %s：%d 行 / %d 个 mod" % (sid, built["rows"], len(built["mods"]))]
+    for step in built["files"]:
+        lines.append("  %s  %d 字节" % (step["path"], len(step["data"])))
+    lines.append("candidates：新增 %d 行、累加 %d 行（总 %d 行）"
+                 % (stats["inserted"], stats["updated"], stats["rows_after"]))
+    if result.get("journal"):
+        lines.append("journal: " + str(result["journal"]))
+    if dry_run:
+        lines.append("（--dry-run：没有写盘、也没有写 journal）")
+    lines.extend("warning: " + message for message in ctx.warnings)
+    return payload, lines
+
+
+def cmd_submit_list(ctx, args):
+    """列已收下的投稿（读侧；没有 index 就是空列表，不算错）。"""
+    doc = submission_index(ctx)
+    items = []
+    for sid in sorted(doc["submissions"]):
+        entry = doc["submissions"][sid]
+        if not isinstance(entry, dict):
+            continue
+        items.append({"id": sid, "createdAt": entry.get("createdAt"),
+                      "language": entry.get("language"), "rows": entry.get("rows"),
+                      "bytes": entry.get("bytes"), "mods": entry.get("mods") or []})
+    items.sort(key=lambda item: (str(item.get("createdAt") or ""), item["id"]), reverse=True)
+    limit = int(getattr(args, "limit", 0) or 0)
+    if limit > 0:
+        items = items[:limit]
+    payload = {"ok": True, "op": "submit.list", "count": len(items), "submissions": items}
+    lines = ["已收投稿 %d 份" % len(items)]
+    for item in items:
+        lines.append("%s  %s  %s 行  %d 个 mod"
+                     % (item["id"], item.get("createdAt") or "-", item.get("rows"),
+                        len(item["mods"])))
+    return payload, lines
+
+
+def cmd_submit_show(ctx, args):
+    """看一份投稿：index 汇总 + meta.json + 每个 mod 文件（--entries 才把行读出来）。"""
+    sid = need_value(getattr(args, "id", None), "--id")
+    doc = submission_index(ctx)
+    entry = doc["submissions"].get(sid)
+    if not isinstance(entry, dict):
+        raise ApiError("missing", "没有 id=%s 的投稿（%s 里查不到）" % (sid, SUBMISSION_INDEX_REL))
+    base = ctx.root / SUBMISSION_DIR_REL / sid
+    meta_raw = read_bytes_or_empty(base / SUB.META_NAME)
+    meta = {}
+    if meta_raw.strip():
+        try:
+            meta = json.loads(meta_raw.decode("utf-8"))
+        except ValueError as exc:
+            raise ApiError("schema", "%s/%s/meta.json 不是合法 JSON：%s"
+                           % (SUBMISSION_DIR_REL, sid, exc)) from None
+    files = []
+    for item in entry.get("files") or []:
+        if not isinstance(item, dict):
+            continue
+        info = dict(item)
+        if getattr(args, "entries", False):
+            raw = read_bytes_or_empty(base / str(item.get("file") or ""))
+            rows = []
+            for line in raw.decode("utf-8", "replace").splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    rows.append(json.loads(line))
+                except ValueError:
+                    pass
+            info["entries"] = rows
+        files.append(info)
+    payload = {"ok": True, "op": "submit.show", "id": sid, "index": entry,
+               "meta": meta, "files": files}
+    lines = ["投稿 %s  %s  %s 行  %d 个 mod"
+             % (sid, entry.get("createdAt") or "-", entry.get("rows"),
+                len(entry.get("mods") or []))]
+    lines.append("meta: " + (("%d 个字段" % len(meta)) if meta else "缺 meta.json"))
+    for item in files:
+        lines.append("  %s  %s 行  %s 字节"
+                     % (item.get("file"), item.get("rows"), item.get("bytes")))
+    return payload, lines
 
 
 #: 动词表：(一级, 二级) → 实现。v1 冻结，加动词要先改 docs/10。
@@ -1634,6 +1886,8 @@ VERBS = {
     ("validate", None): cmd_validate,
     ("apply", None): cmd_apply,
     ("submit", "accept"): cmd_submit_accept,
+    ("submit", "list"): cmd_submit_list,
+    ("submit", "show"): cmd_submit_show,
 }
 
 
@@ -1778,10 +2032,23 @@ def build_parser():
                       help="只报告会发生什么：不归一、不重算、不写盘、不写 journal")
     item.set_defaults(func=cmd_apply)
 
-    item = sub.add_parser("submit", parents=[parent], help="投稿回路（M3，本轮不可用）")
+    item = sub.add_parser("submit", parents=[parent], help="投稿回路（M3：收 / 列 / 看）")
     submit_sub = item.add_subparsers(dest="action")
-    item = submit_sub.add_parser("accept", parents=[parent], help="M3")
+    item = submit_sub.add_parser("accept", parents=[parent],
+                                 help="收一份投稿 json（校验 + 幂等 + 按 mod 拆 + 归并 candidates）")
+    item.add_argument("--bundle", default=None, help="投稿文件路径（相对路径按当前目录解析）")
+    item.add_argument("--stdin", action="store_true", help="从标准输入读投稿 json")
+    item.add_argument("--dry-run", dest="dry_run", action="store_true",
+                      help="只报告会写哪些文件：不写盘、不写 journal")
     item.set_defaults(func=cmd_submit_accept)
+    item = submit_sub.add_parser("list", parents=[parent], help="列已收下的投稿")
+    item.add_argument("--limit", type=int, default=0, help="只列最近 N 份（0 = 全部）")
+    item.set_defaults(func=cmd_submit_list)
+    item = submit_sub.add_parser("show", parents=[parent], help="看一份投稿")
+    item.add_argument("--id", required=True)
+    item.add_argument("--entries", action="store_true", help="连每行原文一起读出来")
+    item.add_argument("--limit", type=int, default=0)
+    item.set_defaults(func=cmd_submit_show)
     return parser
 
 
@@ -2030,7 +2297,7 @@ def selftest():
         code, _p, _e = _call(root, ["entry", "frobnicate"])
         check("未知二级动词 exit 2", code == 2, code)
         code, _p, _e = _call(root, ["submit", "accept", "--actor", "human:x"])
-        check("submit accept 明确属 M3（exit 2）", code == 2, code)
+        check("submit accept 缺 --bundle 是用法错（exit 2）", code == 2, code)
 
         # ---- 4) entry put：新行、h 现算、风格保持、journal ----
         before_res = revision_of(cfg_path.read_bytes())
@@ -2305,6 +2572,205 @@ def selftest():
             check("apply --dry-run 一个字节都不写",
                   _snapshot(root_p / "packs") == shot,
                   sorted(set(shot) ^ set(_snapshot(root_p / "packs")))[:5])
+
+        # ---- 16) 投稿回路（M3）：收一次 + 二次幂等 + 七类反例 ----
+        sample_path = Path(__file__).with_name("fixtures") / "submission-sample.json"
+        sample = json.loads(sample_path.read_text(encoding="utf-8"))
+        cand_path = packs / "candidates.jsonl"
+        seed_h = _h("Vessel Integrity Check")
+        seed = json.dumps({"h": seed_h, "s": "Vessel Integrity Check",
+                           "src": "Vessel Integrity Check", "bucket": "candidate",
+                           "reason": "sentence", "channel": "capture", "caller": "",
+                           "sink": "", "count": 3, "mod": "TUFX",
+                           "firstSeen": "2026-10-02T12:00:00+08:00", "covered": False},
+                          ensure_ascii=False, separators=(",", ":"))
+        _put_text(cand_path, seed + "\n")
+        covered_now = set()
+        for path in (packs / "zh-cn").glob("*.jsonl"):
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    covered_now.add(json.loads(line)["h"])
+        counter = [0]
+
+        def accept(bundle, dry=False):
+            counter[0] += 1
+            path = root / ("bundle-%d.json" % counter[0])
+            _put_text(path, json.dumps(bundle, ensure_ascii=False, indent=2) + "\n")
+            argv = ["submit", "accept", "--actor", "pipeline:selftest",
+                    "--bundle", str(path)]
+            if dry:
+                argv.append("--dry-run")
+            return _call(root, argv)
+
+        def with_id(bundle):
+            copy = json.loads(json.dumps(bundle))
+            copy["id"] = SUB.bundle_id(copy)
+            return copy
+
+        def cand_rows():
+            rows = {}
+            for line in cand_path.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    row = json.loads(line)
+                    rows[row["h"]] = row
+            return rows
+
+        shot_0 = _snapshot(packs)
+        journal_0 = _journal_lines(root)
+        code, payload, _err = accept(sample, dry=True)
+        check("submit accept --dry-run exit 0", code == 0, (code, payload))
+        check("submit accept --dry-run 一个字节都不写", _snapshot(packs) == shot_0,
+              sorted(set(shot_0) ^ set(_snapshot(packs)))[:5])
+        check("--dry-run 也把要写的 5 个文件报出来",
+              len((payload or {}).get("changed") or []) == 5, (payload or {}).get("changed"))
+
+        code, payload, _err = accept(sample)
+        sid = (payload or {}).get("submission_id")
+        check("submit accept exit 0", code == 0, (code, payload))
+        check("收下的 id 与内容派生的 id 一致", sid == sample["id"], (sid, sample["id"]))
+        check("accept 写了 5 个文件（meta + 2 个 mod + index + candidates）",
+              len((payload or {}).get("changed") or []) == 5, (payload or {}).get("changed"))
+        sub_dir = packs / "submission" / str(sid)
+        check("投稿目录按 id 建", sub_dir.is_dir(), str(sub_dir))
+        meta_text = (sub_dir / "meta.json").read_text(encoding="utf-8")
+        meta = json.loads(meta_text)
+        check("meta.json 不带 actor.installId（客户端本地去重不上报）",
+              "installId" not in meta_text and "installId" not in meta.get("actor", {}),
+              meta.get("actor"))
+        check("meta.json 抄了脱敏计数与同意版本",
+              meta.get("redactions", {}).get("paths") == 2
+              and meta.get("consent", {}).get("policyVersion") == 1, meta.get("redactions"))
+        mod_files = sorted(path.name for path in sub_dir.glob("*.jsonl"))
+        check("按 mod 拆成两个文件", mod_files == ["FerramAerospaceResearch.jsonl", "TUFX.jsonl"],
+              mod_files)
+        sub_rows = []
+        for path in sub_dir.glob("*.jsonl"):
+            for line in path.read_text(encoding="utf-8").splitlines():
+                if line.strip():
+                    sub_rows.append(json.loads(line))
+        check("投稿共 5 行", len(sub_rows) == 5, len(sub_rows))
+        check("投稿行里没有 t 字段（这不是语言包）",
+              all("t" not in row for row in sub_rows), sub_rows[:1])
+        check("投稿行字段都在白名单里",
+              all(set(row) <= set(SUB.ROW_FIELDS) for row in sub_rows),
+              sorted({key for row in sub_rows for key in row} - set(SUB.ROW_FIELDS)))
+        index_doc = json.loads((packs / "submission" / "index.json").read_text(encoding="utf-8"))
+        check("index.json 记了这份投稿", sid in (index_doc.get("submissions") or {}),
+              list(index_doc.get("submissions") or {}))
+        events = [event for event in journal_events(ctx) if event.get("op") == "submit.accept"]
+        check("journal 追加了一条 submit.accept", _journal_lines(root) == journal_0 + 1,
+              _journal_lines(root))
+        check("事件带 submission_id / bundle_sha256 / 4 个 files",
+              len(events) == 1 and events[0].get("submission_id") == sid
+              and len(events[0].get("files") or []) == 4
+              and len(str(events[0].get("bundle_sha256"))) == 64, events and events[-1])
+        check("事件里 candidates 分支带 file_sha256_after（journal_gate 靠它认账）",
+              isinstance(((events[0].get("candidates") or {}).get("file_sha256_after")), str),
+              events[0].get("candidates"))
+
+        rows_now = cand_rows()
+        blue = rows_now.get(_h("Blue Paint")) or {}
+        check("已覆盖的 h 在候选表里 covered:true / reason=covered",
+              blue.get("covered") is True and blue.get("reason") == "covered", blue)
+        fresh = rows_now.get(_h("Aerodynamic Failure")) or {}
+        check("新 h 的 channel=submit 且 src 指向投稿",
+              fresh.get("channel") == "submit"
+              and fresh.get("src") == "submission/" + str(sid), fresh)
+        proc = rows_now.get(_h("Loading texture asset 1950/5740 (buffer=45MB)")) or {}
+        check("进度串按现有分类器落 template 桶", proc.get("bucket") == "template", proc)
+        seen = rows_now.get(seed_h) or {}
+        check("已在表里的 h 不插行、count 累加（3 -> 5）", seen.get("count") == 5, seen)
+        check("已在表里的行保留首次通道（capture 不被改成 submit）",
+              seen.get("channel") == "capture", seen.get("channel"))
+        check("候选表从 1 行变 5 行", len(rows_now) == 5, len(rows_now))
+        check("已覆盖判断与盘上包一致（Blue Paint 在包里）", _h("Blue Paint") in covered_now,
+              sorted(covered_now)[:3])
+
+        shot_1 = _snapshot(packs)
+        code, payload, _err = accept(sample)
+        check("同 id 同内容二次 accept exit 0 且 already:true",
+              code == 0 and (payload or {}).get("already") is True, (code, payload))
+        check("幂等 accept 一个字节都不写", _snapshot(packs) == shot_1,
+              sorted(set(shot_1) ^ set(_snapshot(packs)))[:5])
+        check("幂等 accept 不写 journal", _journal_lines(root) == journal_0 + 1,
+              _journal_lines(root))
+
+        index_path = packs / "submission" / "index.json"
+        index_text = index_path.read_text(encoding="utf-8")
+        tampered = json.loads(index_text)
+        tampered["submissions"][sid]["bundleSha256"] = "0" * 64
+        _put_text(index_path, json.dumps(tampered, ensure_ascii=False, indent=2) + "\n")
+        code, payload, _err = accept(sample)
+        check("同 id 但内容不同 exit 4", code == 4, (code, payload))
+        check("冲突的 error.code 是 submission-id-conflict",
+              ((payload or {}).get("error") or {}).get("code") == "submission-id-conflict",
+              (payload or {}).get("error"))
+        check("冲突把双方完整 sha256 都报出来",
+              any("0" * 64 in str(item) for item in
+                  ((payload or {}).get("error") or {}).get("details") or []),
+              ((payload or {}).get("error") or {}).get("details"))
+        _put_text(index_path, index_text)
+        check("冲突与还原后字节回到原样", _snapshot(packs) == shot_1,
+              sorted(set(shot_1) ^ set(_snapshot(packs)))[:5])
+
+        index_path.unlink()
+        code, payload, _err = accept(sample)
+        check("index.json 被删也能判幂等（退回 meta.json 的 bundleSha256）",
+              code == 0 and (payload or {}).get("already") is True, (code, payload))
+        check("缺 index 的幂等同样不写盘", _snapshot(packs).get("submission/index.json") is None
+              and _journal_lines(root) == journal_0 + 1, _journal_lines(root))
+        _put_text(index_path, index_text)
+
+        no_consent = json.loads(json.dumps(sample))
+        no_consent["consent"]["granted"] = False
+        code, payload, _err = accept(with_id(no_consent), dry=True)
+        check("consent.granted=false exit 5",
+              code == 5 and ((payload or {}).get("error") or {}).get("code")
+              == "submission-consent-missing", (code, payload))
+
+        bad_id = json.loads(json.dumps(sample))
+        bad_id["entries"][0]["s"] = "Blue Paint (edited)"
+        code, payload, _err = accept(bad_id, dry=True)
+        check("id 与内容不符 exit 5",
+              code == 5 and ((payload or {}).get("error") or {}).get("code")
+              == "submission-id-mismatch", (code, payload))
+
+        stray = json.loads(json.dumps(sample))
+        stray["entries"].append({"h": _h("Stray Line"), "s": "Stray Line", "mod": "NotDeclared"})
+        code, payload, _err = accept(with_id(stray), dry=True)
+        check("entries[].mod 不在 mods[] 里 exit 4（内容不合格不是格式坏）", code == 4,
+              (code, payload))
+
+        empty = json.loads(json.dumps(sample))
+        empty["entries"] = []
+        code, payload, _err = accept(with_id(empty), dry=True)
+        check("entries 为空 exit 4", code == 4, (code, payload))
+
+        missing = json.loads(json.dumps(sample))
+        missing.pop("createdAt")
+        code, payload, _err = accept(with_id(missing), dry=True)
+        check("缺 createdAt exit 5", code == 5, (code, payload))
+
+        bad_schema = json.loads(json.dumps(sample))
+        bad_schema["schema"] = "ui18n-submission/2"
+        code, payload, _err = accept(bad_schema, dry=True)
+        check("schema 版本不对 exit 5", code == 5, (code, payload))
+
+        check("六个反例都没写盘", _snapshot(packs) == shot_1,
+              sorted(set(shot_1) ^ set(_snapshot(packs)))[:5])
+
+        code, payload, _err = _call(root, ["submit", "list"])
+        check("submit list exit 0 且只有 1 份",
+              code == 0 and (payload or {}).get("count") == 1, (code, payload))
+        code, payload, _err = _call(root, ["submit", "show", "--id", str(sid), "--entries"])
+        check("submit show --entries 读出 2 个文件 / 5 行",
+              code == 0 and len((payload or {}).get("files") or []) == 2
+              and sum(len(item.get("entries") or [])
+                      for item in (payload or {}).get("files") or []) == 5, (code, payload))
+        check("submit show 的 meta 也不带 installId",
+              "installId" not in json.dumps((payload or {}).get("meta"), ensure_ascii=False))
+        code, payload, _err = _call(root, ["submit", "show", "--id", "0000000000000000"])
+        check("submit show 查不到 exit 6", code == 6, (code, payload))
 
         # ---- 15) --root 隔离：临时根变了，真实仓库没变 ----
         check("临时根确实被写过（隔离测试本身有效）",

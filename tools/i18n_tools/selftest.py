@@ -34,7 +34,7 @@ import tempfile
 
 from . import (api, candidates, capture_ingest, cfgparse, check_overrides, ensure_stdout,
                 fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta, ilstrings,
-                journal_gate, merge_overrides, packindex, render_coverage, textnorm)
+                journal_gate, merge_overrides, packindex, render_coverage, submission, textnorm)
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -701,7 +701,8 @@ def test_extra_tools():
                ("candidates", candidates.selftest),
                ("render_coverage", render_coverage.selftest),
                ("api", api.selftest),
-               ("journal_gate", journal_gate.selftest))
+               ("journal_gate", journal_gate.selftest),
+               ("submission", submission.selftest))
     for name, runner in runners:
         buffer = io.StringIO()
         try:

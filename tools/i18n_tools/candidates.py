@@ -53,9 +53,14 @@ REPORT_REL = ("reports", "candidates.md")
 # 字段顺序固定（D-T3）。加字段要改设计契约，不在这层自己长。
 OUT_FIELDS = ("h", "s", "src", "bucket", "reason", "channel", "caller", "sink",
               "count", "mod", "firstSeen", "covered")
-CHANNELS = ("cfg", "loc", "il", "cfgcache", "capture")
-# 同一个 h 撞车时的取舍顺序：越靠前越优先（捕获端见过渲染出口，信息量最大）
-CHANNEL_PRIORITY = {"capture": 0, "il": 1, "cfgcache": 2, "loc": 3, "cfg": 4}
+CHANNELS = ("cfg", "loc", "il", "cfgcache", "capture", "submit")
+# submit = 玩家投稿行（api submit accept 直接写进本表，见 docs/10 §6）。它不是从
+# 任何输入文件里派生的，只能从上一版本表里回读 —— 见 carry_rows。
+SUBMIT_CHANNEL = "submit"
+# 同一个 h 撞车时的取舍顺序：越靠前越优先（捕获端见过渲染出口，信息量最大）。
+# submit 仅次于 capture：同样来自「游戏里真的渲染过」，但没有 sink/caller/count 细节；
+# 它排在 il 之前，因为 IL 里的字符串是静态猜的，投稿行是玩家实测命中。
+CHANNEL_PRIORITY = {"capture": 0, "submit": 1, "il": 2, "cfgcache": 3, "loc": 4, "cfg": 5}
 TARGET_BUCKETS = ("candidate", "template", "never")
 BUCKET_ORDER = capture_ingest.BUCKET_ORDER      # candidate 0 / pattern 1 / template 2 / never 3
 IL_BUCKETS = {"translate": "candidate", "short_label": "candidate", "template": "template"}
@@ -245,6 +250,37 @@ def dedup(rows):
     return list(keep.values())
 
 
+def carry_rows(path, stats=None):
+    """上一版本表里的投稿行（channel=submit）原样带过来。
+
+    投稿行只住在 packs/candidates.jsonl 里：五条通道的输入（pool / il-translatable /
+    cfgcache-candidates / capture-*）都不含它们。所以只要不回读，重跑一次
+    candidates 就会把玩家投稿整批抹掉 —— 这是 M3 落地前真实存在的静默丢数据事故。
+    其他通道的旧行**故意不**带：它们由输入文件重新派生，带过来只会让删掉的串复活。
+    """
+    rows = []
+    if not path or not os.path.isfile(path):
+        return rows
+    with open(path, encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except ValueError:
+                if stats is not None:
+                    stats["bad_lines"] = stats.get("bad_lines", 0) + 1
+                continue
+            if obj.get("channel") != SUBMIT_CHANNEL:
+                continue
+            rows.append(_mk(obj.get("h"), obj.get("s"), obj.get("src"),
+                            obj.get("bucket"), obj.get("reason"), SUBMIT_CHANNEL,
+                            obj.get("caller"), obj.get("sink"), obj.get("count"),
+                            obj.get("mod"), obj.get("firstSeen")))
+    return rows
+
+
 def sort_rows(rows):
     return sorted(rows, key=lambda r: (BUCKET_ORDER.get(r["bucket"], 9), r["h"]))
 
@@ -257,7 +293,7 @@ def load_pack_h(packs_dir):
 
 def collect(packs_dir=None, pool_path=None, il_path=None, cfgcache_path=None,
             capture_files=None, with_capture=True, gamedata="", managed="",
-            do_attrib=False):
+            do_attrib=False, carry_path=None):
     """五条通道 -> (rows, stats)。rows 已去重、已打 covered、已排序。"""
     packs_dir = packs_dir or capture_ingest.default_packs_dir()
     pool_path = pool_path or os.path.join(packs_dir, "pool.jsonl")
@@ -300,6 +336,13 @@ def collect(packs_dir=None, pool_path=None, il_path=None, cfgcache_path=None,
         flat.extend(got)
     else:
         stats["channels"]["capture"] = 0
+    carried = carry_rows(carry_path, stats)
+    stats["channels"][SUBMIT_CHANNEL] = len(carried)
+    if carried:
+        stats["inputs"].append({"channel": SUBMIT_CHANNEL, "path": carry_path,
+                                "bytes": os.path.getsize(carry_path),
+                                "rows": len(carried)})
+    flat.extend(carried)
     stats["flat"] = len(flat)
     rows = dedup(flat)
     stats["deduped"] = len(rows)
@@ -505,7 +548,7 @@ def render_report(rows, stats, out_path="", report_path="", argv_note="", top=20
     if argv_note:
         add("- 生成命令：" + chr(96) + _cell(argv_note) + chr(96))
     add("")
-    add("## 2. 五通道各自的输入与去重键")
+    add("## 2. 各通道的输入与去重键（五条派生 + 一条回读）")
     add("")
     add("| 通道 | 读入行数 | 自己的 distinct h | 去重键 | 进表行数 | 被更高优先级通道抢走 |")
     add("| --- | ---: | ---: | --- | ---: | ---: |")
@@ -515,6 +558,7 @@ def render_report(rows, stats, out_path="", report_path="", argv_note="", top=20
         "il": "h（il-translatable.jsonl 的 h，基于归一化原文）",
         "cfgcache": "h（cfgcache-candidates.jsonl 的 h）",
         "capture": "h（采集器算的，离线按 normalize(s) 复核，不一致 0 例）",
+        "submit": "h（api submit accept 写进来的；从上一版本表回读，不是派生）",
     }
     for channel in CHANNELS:
         if channel == "capture":
@@ -529,7 +573,7 @@ def render_report(rows, stats, out_path="", report_path="", argv_note="", top=20
     add("去重键统一是 h = fnv1a64(normalize(原文))（tools/i18n_tools/fnv.py + textnorm.py），"
         "静态通道的 h 由抽取侧写好、本表复核，capture 通道的 h 是采集器算好后离线再算一遍对比。")
     add("")
-    add("去重规则：同一个 h 撞多通道时按 capture > il > cfgcache > loc > cfg 取优先级最高的"
+    add("去重规则：同一个 h 撞多通道时按 capture > submit > il > cfgcache > loc > cfg 取优先级最高的"
         "**一整行**，count 不合并 —— 跨通道相加没有意义（一个是运行时渲染次数，一个是文件里"
         "出现次数）。")
     add("")
@@ -879,11 +923,15 @@ def selftest():
                          (by2.get("Shared text") or {}).get("channel")))
 
         text = render_report(rows, stats, out_a, os.path.join(base, "candidates.md"))
-        marks = ("## 1. 一句话", "## 2. 五通道各自的输入与去重键",
+        marks = ("## 1. 一句话", "## 2. 各通道的输入与去重键（五条派生 + 一条回读）",
                  "## 3. 分母构成", "## 4. channel × bucket", "## 5. covered",
                  "## 6. 仍未覆盖的 top", "## 7. 可翻行里仍未覆盖多少",
                  "## 8. candidate 档未覆盖的", "## 9. 最该先翻的 3 个",
                  "## 10. 口径与已知问题")
+        # 投稿行（submit）不是派生通道，报告第 2 节要如实说「一条回读」。
+        a("报告: 第 2 节明确区分派生通道与回读通道",
+          "一条回读" in text and "| submit |" in text,
+          "got=%r" % ([ln for ln in text.splitlines() if ln.startswith("## 2.")],))
         a("报告: 含全部 10 个小节", all(m in text for m in marks),
           "missing=%r" % [m for m in marks if m not in text])
         s = summary(rows)
@@ -942,6 +990,43 @@ def selftest():
                            cfgcache_path=os.path.join(base, "no-cc.jsonl"),
                            with_capture=False, do_attrib=False)
         eq("输入文件全缺时不抛、出 0 行", empty, [])
+
+        # ---- 投稿行回读（M3）----
+        # 投稿行只住在本表里，五条通道的输入都不含它们；不回读 = 重跑一次就整批抹掉。
+        eq("submit 在 CHANNELS 里（否则统计与报告漏一列）",
+           SUBMIT_CHANNEL in CHANNELS, True)
+        order = [CHANNEL_PRIORITY[c] for c in
+                 ("capture", SUBMIT_CHANNEL, "il", "cfgcache", "loc", "cfg")]
+        eq("优先级：capture < submit < il < cfgcache < loc < cfg", order, sorted(order))
+        submit_h = h("Voxels Controllable Vessel: ")
+        prev = os.path.join(base, "prev-candidates.jsonl")
+        _write_jsonl(prev, [
+            {"h": submit_h, "s": "Voxels Controllable Vessel: ",
+             "src": "submission/d503c37fc9f3a6e4", "bucket": "candidate",
+             "reason": "none", "channel": SUBMIT_CHANNEL, "caller": "", "sink": "",
+             "count": 1, "mod": "FerramAerospaceResearch",
+             "firstSeen": "2026-10-26T00:00:00Z", "covered": False},
+            {"h": h("stale cfg row"), "s": "stale cfg row", "src": "cfg",
+             "bucket": "candidate", "reason": "none", "channel": "cfg", "caller": "",
+             "sink": "", "count": 1, "mod": "AJE", "firstSeen": "", "covered": False},
+        ])
+        with open(prev, "a", encoding="utf-8", newline=chr(10)) as fh:
+            fh.write("{bad json" + chr(10))
+        carried = carry_rows(prev)
+        eq("carry_rows 只带 channel=submit 的行、坏行只记账不抛",
+           [(r["channel"], r["s"]) for r in carried],
+           [(SUBMIT_CHANNEL, "Voxels Controllable Vessel: ")])
+        kept, kept_stats = collect(packs_dir=packs, capture_files=[cap_file],
+                                   do_attrib=False, carry_path=prev)
+        eq("重跑 candidates：投稿行被带过来（这就是修复挡住的事故）",
+           any(r["h"] == submit_h for r in kept), True)
+        eq("重跑 candidates：其他通道的旧行不复活",
+           any(r["s"] == "stale cfg row" for r in kept), False)
+        eq("重跑 candidates：submit 记进 stats['channels']",
+           kept_stats["channels"].get(SUBMIT_CHANNEL), 1)
+        gone, _ = collect(packs_dir=packs, capture_files=[cap_file], do_attrib=False)
+        eq("carry_path=None 时投稿行确实会丢（反证本条断言不是恒真）",
+           any(r["h"] == submit_h for r in gone), False)
     finally:
         shutil.rmtree(base, ignore_errors=True)
 
@@ -997,10 +1082,12 @@ def main(argv=None):
             gamedata = ""
     managed = args.managed or (capture_ingest.default_managed(gamedata)
                                if gamedata else "")
-    rows, stats = collect(packs_dir, args.pool, args.il, args.cfgcache, files,
-                          args.with_capture, gamedata, managed, args.attrib)
+    # out_path 必须在 collect 之前定：投稿行是从上一版本表里回读的（carry_rows）。
     out_path = (capture_ingest.resolve_repo_path(args.out)
                 or os.path.join(packs_dir, OUT_NAME))
+    rows, stats = collect(packs_dir, args.pool, args.il, args.cfgcache, files,
+                          args.with_capture, gamedata, managed, args.attrib,
+                          carry_path=out_path)
     report_path = (capture_ingest.resolve_repo_path(args.report)
                    or os.path.join(capture_ingest.repo_root(), *REPORT_REL))
     write_rows(out_path, rows)
@@ -1008,7 +1095,7 @@ def main(argv=None):
                          argv_note="python -m i18n_tools.candidates")
     write_report(report_path, text)
     if not args.quiet:
-        print("[candidates] 五条通道 {} 行 -> 去重 {} 行".format(
+        print("[candidates] 各通道合计 {} 行 -> 去重 {} 行".format(
             stats.get("flat", 0), len(rows)))
         print("[candidates] 分母：行数 {} - keyref {} - 占位符 {} = 可翻 {} 行，"
               "其中 covered {} / 未覆盖 {}（全表 covered {} / 未覆盖 {}）".format(

@@ -223,6 +223,13 @@ packs/submission/index.json              # 受管汇总：id → {files, rows, b
 
 排序口径不动（发现顺序 / 现有排序由工具负责），避免整表洗牌产生巨大假 diff。
 
+**第六条通道是「回读」而不是「派生」——这一点必须在流水线里显式实现。** 前五条通道（cfg / loc / il / cfgcache / capture）每次跑 python -m i18n_tools.candidates 都从输入文件重新派生；而 submit 行只住在 packs/candidates.jsonl 自己里面（输入文件里没有它们）。所以：
+
+- carry_rows()（tools/i18n_tools/candidates.py）在 collect 阶段回读上一版本表，**只带 channel == "submit" 的行**；其他通道的旧行故意不带（它们由输入重新派生，带过来只会让删掉的串复活）。
+- 不回读 = 重跑一次 candidates 就把玩家投稿整批抹掉。这是 M3 落地前真实存在的静默丢数据事故，candidates --selftest 里有五条断言钉住（含一条反证：carry_path=None 时投稿行确实会丢）。
+- SUBMIT_CHANNEL 已进 CHANNELS 与 CHANNEL_PRIORITY = {capture:0, submit:1, il:2, cfgcache:3, loc:4, cfg:5}：投稿行证据强度仅次于捕获端（同样来自「游戏里真的渲染过」，但只有 h/s，没有 sink/caller/count 细节），排在 IL 静态猜测之前。撞车时整行取优先级最高的那条，与原有语义一致。
+- 报告第 2 节的表头如实写成「五条派生 + 一条回读」，submit 列给出实际回读行数。
+
 ### 6.6 退出码、幂等与冲突
 
 `submit accept` 完全复用 §3.4 那一组，不新增码：
@@ -250,7 +257,15 @@ packs/submission/index.json              # 受管汇总：id → {files, rows, b
  "candidates":{"changed":true,"file_sha256_after":"…"}}
 ```
 
-### 6.8 传输通道（v1：零服务器）
+### 6.8 三条已知边界（M3 的取舍，不是缺陷）
+
+| 边界 | 现状 | 为什么这样定 |
+|---|---|---|
+| h 与 fnv1a64(normalize(s)) 重算不一致 | **只 warning，不拒收**（meta.json 的 warnings 里留一句「按投稿给的值收录」） | 客户端归一化是 C# 实现的，与 python textnorm.normalize 可能有细微差异（全角 / 零宽 / 组合符）。拒收的代价是「玩家真的看到的串被丢掉」，而收录一份可能对不上的行只是白占一行候选——两害取轻。若将来契约出现成批不一致，应在 screen_coverage 的 mismatch 计数上报警，而不是在这里拒收 |
+| 同 id 并行 accept 无锁 | 单写者假设（本地或 CI 单进程） | 投稿的并发度天然是 1：一台玩家机器一次一份 bundle，CI 一次一个 issue。真并发由 git 冲突兜住（packs/submission/index.json 是同一个文件），不需要文件锁 |
+| 同一条原文被多个 mod 声明 | 候选表按 h 去重只留一行，meta.json 记一条 warning | h 是内容哈希，同文同译；per-mod 归属留在 packs/submission/<id>/<modId>.jsonl 里，不丢信息 |
+
+### 6.9 传输通道（v1：零服务器）
 
 插件不持有任何凭据，所以 v1 是：**bundle 落盘 + 打开预填 GitHub Issue 页面**（`.github/ISSUE_TEMPLATE/submit-texts.yml`，玩家把 json 拖进去），仓库侧 CI 跑 `api submit accept`，收完在 issue 回一行「已收入 N 条，进入候选表」。
 
