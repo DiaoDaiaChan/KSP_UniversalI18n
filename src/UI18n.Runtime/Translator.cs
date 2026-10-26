@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UI18n.Core.Capture;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
@@ -144,6 +145,7 @@ namespace UI18n.Runtime
             _capture = null;
             _distinctHits = 0;
             _sampleCapped = false;
+            RenderCoverage.Reset();
 
             int limit = _config.HitSampleLimit;
             _sampleLimit = limit < 0 ? 0 : limit;
@@ -223,6 +225,11 @@ namespace UI18n.Runtime
                     _capture.Record(hash, source, normalized, patch);
                 }
             }
+
+            // task-62 render 覆盖率（docs/08 D-T4）：只在「这个原文第一次进来」这一条路径上记一次。
+            // 上面两条缓存命中分支（含每帧热路径）一个字节都不动 —— 命中路径零查询、零分配。
+            // hit = 首次就拿到译文，miss = 首次没拿到；hash 是查表前算好的，直接复用。
+            RenderCoverage.Record(hash, patch, translation != null);
 
             if (TextCache.Count >= CacheLimit)
             {
@@ -466,6 +473,259 @@ namespace UI18n.Runtime
                 default:
                     return "miss";
             }
+        }
+    }
+
+    /// <summary>
+    /// render 覆盖率（task-62 / docs/08 D-T4）：本会话「渲染出口出现过多少条不同的原文，其中多少条
+    /// 被字典接住了」。这是对玩家承诺的覆盖率口径；pool 覆盖率（packs/pool.jsonl）只是预热指标。
+    /// <para>
+    /// 口径：每个不同的原文只在首次走进 <see cref="Translator.Translate(string, string)"/> 的首次路径时记一次，
+    /// 重复渲染（命中 TextCache）不计数。于是 hit = 首次就变成中文的不同串数，miss = 首次没变的不同串数，
+    /// ratio = hit / distinct，且恒有 hit + miss == distinct。
+    /// </para>
+    /// <para>
+    /// 为什么计数点放在首次路径：缓存命中分支（return cached.Translation 那一行）是每帧热路径，这里一个字都不改，
+    /// 命中路径新增 0 次字典查询、0 字节分配。计数量级从「每帧」降到「每个不同串一次」（一局几千次），
+    /// 所以一次 HashSet&lt;long&gt;.Add、以及 miss 时取一次调用栈（约 2 微秒）都可以接受。
+    /// </para>
+    /// <para>
+    /// 为什么要自己去重：TextCache 满 20000 条会整体清空，清空后同一原文会再次走首次路径；这里用
+    /// HashSet&lt;long&gt; 挡住重复，hash 是查表前已经算好的，直接复用，不重算、不分配字符串。
+    /// </para>
+    /// <para>
+    /// 上限：distinct 与 byCaller 都有硬上限，防长会话内存无界增长；到顶时 log 一次（红线 6：说明原因，不抛）。
+    /// </para>
+    /// </summary>
+    internal static class RenderCoverage
+    {
+        /// <summary>周期落盘间隔（秒）。默认 300 = 5 分钟；配置接线由集成时补。</summary>
+        internal const int DefaultIntervalSeconds = 300;
+
+        /// <summary>distinct 去重集合上限（65536 条约 1.5 MB 封顶）。</summary>
+        private const int DistinctLimit = 65536;
+
+        /// <summary>byCaller 上限：超出的未命中统一归入 CallerOther。</summary>
+        private const int CallerLimit = 200;
+
+        private const string CallerOther = "(other)";
+        private const string SinkNone = "(none)";
+        private const string RatioZero = "0.0000";
+
+        private struct SinkCounter
+        {
+            internal long Hit;
+            internal long Miss;
+        }
+
+        private static readonly HashSet<long> Distinct = new HashSet<long>();
+        private static readonly Dictionary<string, SinkCounter> Sinks = new Dictionary<string, SinkCounter>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, long> CallerMiss = new Dictionary<string, long>(StringComparer.Ordinal);
+        private static long _hit;
+        private static long _miss;
+        private static bool _capped;
+        private static bool _callerCapped;
+
+        internal static long Hit
+        {
+            get { return _hit; }
+        }
+
+        internal static long Miss
+        {
+            get { return _miss; }
+        }
+
+        /// <summary>本会话见过的不同原文条数 = hit + miss。</summary>
+        internal static long DistinctCount
+        {
+            get { return _hit + _miss; }
+        }
+
+        /// <summary>hit / distinct，固定 4 位小数（写进 json 的 ratio 与日志行，格式固定便于 grep）。</summary>
+        internal static string Ratio
+        {
+            get
+            {
+                long distinct = _hit + _miss;
+                if (distinct <= 0)
+                {
+                    return RatioZero;
+                }
+
+                return ((double)_hit / distinct).ToString("0.0000", System.Globalization.CultureInfo.InvariantCulture);
+            }
+        }
+
+        /// <summary>由 Translator.Initialize 调用：换包/换语言 = 新的一局统计。</summary>
+        internal static void Reset()
+        {
+            Distinct.Clear();
+            Sinks.Clear();
+            CallerMiss.Clear();
+            _hit = 0;
+            _miss = 0;
+            _capped = false;
+            _callerCapped = false;
+        }
+
+        /// <summary>
+        /// 记一条首次见到的原文。只允许从 Translator.Translate 的首次路径调用（每个不同串一辈子只走到这里一次，
+        /// 缓存被清空导致的重现由内部分去重挡住）。
+        /// </summary>
+        internal static void Record(ulong hash, string sink, bool hit)
+        {
+            if (hash == 0UL)
+            {
+                return;
+            }
+
+            if (Distinct.Count >= DistinctLimit)
+            {
+                if (!_capped)
+                {
+                    _capped = true;
+                    Log.Warn("render coverage: distinct 已达上限 " + DistinctLimit + " 条，之后新出现的串不再计入（已计入的读数仍然有效）");
+                }
+
+                return;
+            }
+
+            if (!Distinct.Add(unchecked((long)hash)))
+            {
+                return;
+            }
+
+            string key = string.IsNullOrEmpty(sink) ? SinkNone : sink;
+            SinkCounter counter;
+            if (!Sinks.TryGetValue(key, out counter))
+            {
+                counter = new SinkCounter();
+            }
+
+            if (hit)
+            {
+                counter.Hit++;
+                _hit++;
+            }
+            else
+            {
+                counter.Miss++;
+                _miss++;
+            }
+
+            Sinks[key] = counter;
+
+            if (!hit)
+            {
+                CountCaller();
+            }
+        }
+
+        /// <summary>
+        /// byCaller：只在「miss 且该原文首次出现」时取一次调用栈（约 2 微秒，每个不同串一辈子一次）。
+        /// 之后的重复未命中只走 CaptureStore.CountMiss，绝不进这里。
+        /// </summary>
+        private static void CountCaller()
+        {
+            string caller = CaptureCaller.FromStack(1);
+
+            long count;
+            if (CallerMiss.TryGetValue(caller, out count))
+            {
+                CallerMiss[caller] = count + 1;
+                return;
+            }
+
+            if (CallerMiss.Count >= CallerLimit)
+            {
+                if (!_callerCapped)
+                {
+                    _callerCapped = true;
+                    Log.Warn("render coverage: byCaller 已达上限 " + CallerLimit + " 个，其余未命中归入 " + CallerOther);
+                }
+
+                if (CallerMiss.TryGetValue(CallerOther, out count))
+                {
+                    CallerMiss[CallerOther] = count + 1;
+                }
+                else
+                {
+                    CallerMiss[CallerOther] = 1;
+                }
+
+                return;
+            }
+
+            CallerMiss[caller] = 1;
+        }
+
+        /// <summary>一行摘要（不带 [UI18n] 前缀，前缀由 Log 加）。</summary>
+        internal static string BuildLogLine()
+        {
+            long distinct = _hit + _miss;
+            return "render coverage: hit=" + _hit + " miss=" + _miss
+                   + " distinct=" + distinct + " ratio=" + Ratio;
+        }
+
+        /// <summary>
+        /// 落盘用的 JSON（schema 见 docs/08）：stamp / version / hit / miss / distinct / ratio / bySink / byCaller。
+        /// 键一律排好序，同一会话重复写盘逐字节相同（幂等，方便 diff 与工具去重）。
+        /// </summary>
+        internal static string BuildJson(string stamp, string version)
+        {
+            System.Globalization.CultureInfo invariant = System.Globalization.CultureInfo.InvariantCulture;
+            StringBuilder sb = new StringBuilder(512);
+            sb.Append("{\"stamp\":\"").Append(CaptureJson.Escape(stamp ?? string.Empty));
+            sb.Append("\",\"version\":\"").Append(CaptureJson.Escape(version ?? string.Empty));
+            sb.Append("\",\"hit\":").Append(_hit.ToString(invariant));
+            sb.Append(",\"miss\":").Append(_miss.ToString(invariant));
+            sb.Append(",\"distinct\":").Append((_hit + _miss).ToString(invariant));
+            sb.Append(",\"ratio\":").Append(Ratio);
+
+            sb.Append(",\"bySink\":{");
+            List<string> sinks = new List<string>(Sinks.Keys);
+            sinks.Sort(StringComparer.Ordinal);
+            for (int i = 0; i < sinks.Count; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(',');
+                }
+
+                string sink = sinks[i];
+                SinkCounter counter = Sinks[sink];
+                sb.Append('"').Append(CaptureJson.Escape(sink)).Append("\":{\"hit\":").Append(counter.Hit.ToString(invariant));
+                sb.Append(",\"miss\":").Append(counter.Miss.ToString(invariant)).Append('}');
+            }
+
+            sb.Append("},\"byCaller\":{");
+            List<string> callers = new List<string>(CallerMiss.Keys);
+            callers.Sort(delegate(string left, string right)
+            {
+                long a = CallerMiss[left];
+                long b = CallerMiss[right];
+                if (a != b)
+                {
+                    return a > b ? -1 : 1;
+                }
+
+                return string.CompareOrdinal(left, right);
+            });
+
+            for (int i = 0; i < callers.Count; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(',');
+                }
+
+                string caller = callers[i];
+                sb.Append('"').Append(CaptureJson.Escape(caller)).Append("\":{\"miss\":").Append(CallerMiss[caller].ToString(invariant)).Append('}');
+            }
+
+            sb.Append("}}");
+            return sb.ToString();
         }
     }
 }

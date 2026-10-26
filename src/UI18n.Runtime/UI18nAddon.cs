@@ -109,6 +109,12 @@ namespace UI18n.Runtime
         private bool _finalDumped;
         private bool _updateErrorLogged;
 
+        // task-62 render 覆盖率：周期落盘节拍 + 退出幂等 + 失败只记一次
+        private float _nextRenderFlushAt;
+        private int _lastRenderScene = int.MinValue;
+        private bool _renderFlushErrorLogged;
+        private bool _renderFinalDumped;
+
         private void Start()
         {
             if (_started)
@@ -148,6 +154,9 @@ namespace UI18n.Runtime
                 TryProbe();
                 MissCapture.Tick();
 
+                // task-62 render 覆盖率：场景切换（=读档完成）与每 5 分钟各落盘一次；没有变化时只做两次比较
+                RenderCoverageTick();
+
                 // task-40 联网分发：后台线程只做入队，这里把攒下的行吐出去（没有新行时是空操作）
                 UpdateRunner.Tick();
 
@@ -172,6 +181,7 @@ namespace UI18n.Runtime
 
         private void OnApplicationQuit()
         {
+            FlushRenderCoverageOnExit("quit");
             FinalDump("quit");
             MissCapture.Shutdown();
             ShadowTracker.Shutdown();
@@ -180,6 +190,7 @@ namespace UI18n.Runtime
 
         private void OnDestroy()
         {
+            FlushRenderCoverageOnExit("destroy");
             FinalDump("destroy");
             MissCapture.Shutdown();
             ShadowTracker.Shutdown();
@@ -275,6 +286,13 @@ namespace UI18n.Runtime
             }
 
             Log.Always(DiagInstalled(config, pack, ok, failed));
+
+            // 7c) render 覆盖率（task-62 / docs/08 D-T4）：这里先打一行空读数（hit=0 miss=0），
+            //     之后每 5 分钟、每次场景切换（= 读档完成）与退出时各落盘一次。
+            //     只写 <KSP 根>/PluginData/UI18n/render-<session>.json，不联网、不上报。
+            Log.Info(RenderCoverage.BuildLogLine());
+            _nextRenderFlushAt = Time.realtimeSinceStartup + RenderCoverage.DefaultIntervalSeconds;
+            _lastRenderScene = (int)SafeScene();
 
             _statsActive = ok > 0;
             _probePending = true;
@@ -463,6 +481,106 @@ namespace UI18n.Runtime
             catch (Exception)
             {
                 return "<unknown>";
+            }
+        }
+
+        /// <summary>
+        /// render 覆盖率落盘节拍（task-62）：场景切换（=「读档完成」）立刻落一次，否则每
+        /// RenderCoverage.DefaultIntervalSeconds 秒落一次。每帧开销只有一次场景号比较 + 一次 float 比较。
+        /// </summary>
+        private void RenderCoverageTick()
+        {
+            GameScenes scene = SafeScene();
+            bool sceneChanged = (int)scene != _lastRenderScene;
+            if (sceneChanged)
+            {
+                _lastRenderScene = (int)scene;
+            }
+
+            float now = Time.realtimeSinceStartup;
+            if (!sceneChanged && now < _nextRenderFlushAt)
+            {
+                return;
+            }
+
+            _nextRenderFlushAt = now + RenderCoverage.DefaultIntervalSeconds;
+            FlushRenderCoverage(sceneChanged ? "scene" : "timer");
+        }
+
+        /// <summary>
+        /// 退出时的两行：一行读数（hit/miss/distinct/ratio）+ 一行落盘路径。幂等，且整体 try/catch（红线 6：只 log 不抛）。
+        /// </summary>
+        private void FlushRenderCoverageOnExit(string reason)
+        {
+            if (_renderFinalDumped)
+            {
+                return;
+            }
+
+            _renderFinalDumped = true;
+
+            try
+            {
+                Log.Info(RenderCoverage.BuildLogLine());
+                string path = FlushRenderCoverage(reason);
+                if (path != null)
+                {
+                    Log.Info("render coverage: wrote " + path);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("render coverage: exit flush failed: " + ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 落盘到 &lt;KSP 根&gt;/PluginData/UI18n/render-&lt;SessionId&gt;.json（与 capture-&lt;SessionId&gt;.jsonl 同一个会话号，
+        /// 方便对账）。先写 .tmp 再替换，避免工具读到半截文件。成功返回路径，失败返回 null 且本局只记一次原因。
+        /// </summary>
+        private string FlushRenderCoverage(string reason)
+        {
+            try
+            {
+                string dir = System.IO.Path.Combine(
+                    System.IO.Path.Combine(KSPUtil.ApplicationRootPath, "PluginData"), "UI18n");
+                System.IO.Directory.CreateDirectory(dir);
+
+                string path = System.IO.Path.Combine(dir, "render-" + SessionId + ".json");
+                string temp = path + ".tmp";
+                byte[] bytes = new System.Text.UTF8Encoding(false).GetBytes(RenderCoverage.BuildJson(SessionId, Version));
+
+                System.IO.File.WriteAllBytes(temp, bytes);
+                if (System.IO.File.Exists(path))
+                {
+                    System.IO.File.Delete(path);
+                }
+
+                System.IO.File.Move(temp, path);
+                return path;
+            }
+            catch (Exception ex)
+            {
+                if (!_renderFlushErrorLogged)
+                {
+                    _renderFlushErrorLogged = true;
+                    Log.Warn("render coverage: write failed (" + reason + "), dir=<KSP>/PluginData/UI18n: "
+                             + ex.GetType().Name + ": " + ex.Message + "（本局不再重复记录）");
+                }
+
+                return null;
+            }
+        }
+
+        private static GameScenes SafeScene()
+        {
+            try
+            {
+                return HighLogic.LoadedScene;
+            }
+            catch (Exception)
+            {
+                return GameScenes.LOADING;
             }
         }
 
