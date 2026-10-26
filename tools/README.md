@@ -19,7 +19,7 @@
 
 | 目的 | 命令 | 期望 |
 | --- | --- | --- |
-| 自测（280 项断言） | `python -m i18n_tools.selftest` | 退出码 0，末行 `[selftest] 全部通过（280 项）` |
+| 自测（279 项断言） | `python -m i18n_tools.selftest` | 退出码 0，末行 `[selftest] 全部通过（279 项）`（干净工作树；本地若有 `_scratch/corpus/pool.jsonl` 真值则多一条逐字节比对，成 280 项） |
 | 抽候选池 | `python -m i18n_tools.harvest` | 写 `..\packs\pool.jsonl` + `..\packs\inventory.json`，退出码 0 |
 | 抽池并逐行校验既有真值 | `python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl` | 末行 `[verify] 我的 12792 行 / 对照 12792 行 → 完全一致`，退出码 0 |
 | 双语术语表 | `python -m i18n_tools.glossary` | 写 `..\packs\glossary.jsonl`，2,126 行，退出码 0 |
@@ -222,7 +222,7 @@ title = #autoLOC_500460 //#autoLOC_500460 = S1 SRB-KD25k "Kickback" Solid Fuel B
 
 ```
 cd C:\Users\43701\Documents\github\UniversalI18n\tools
-python -m i18n_tools.selftest                      # 280 项全绿，退出码 0，约 0.4 s
+python -m i18n_tools.selftest                      # 279 项全绿，退出码 0，约 0.4 s
 python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl   # 完全一致，退出码 0，约 3 s
 python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节，退出码 0
 ```
@@ -231,13 +231,13 @@ python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节�
 
 ```
 cd tools
-python -m i18n_tools.selftest            # 工具链自检 280 项
+python -m i18n_tools.selftest            # 工具链自检 279 项
 python -m i18n_tools.audit --selftest    # 审计器自检 12 项（1 正例 + 8 负例）
 python -m i18n_tools.audit               # 真审计 packs/zh-cn：h 契约 / 占位符 / 富文本 / 格式串 / 跨文件同 h 同 t
 python -m i18n_tools.packindex --check   # packs/index.json 与磁盘逐文件 sha256 一致
 ```
 
-四条的期望输出末尾分别是 `[selftest] 全部通过（280 项）`、`[audit] selftest: 12 检查，失败 0 项`、
+四条的期望输出末尾分别是 `[selftest] 全部通过（279 项）`、`[audit] selftest: 12 检查，失败 0 项`、
 `VERDICT: PASS (bad_total=0)`、`[check] mod 数 74（cfg 41 + IL 48），全部 mod 都能从 file 推导`，退出码全 0。
 **任何一条红都表示字典被改坏了，不要当环境问题跳过。**
 
@@ -269,7 +269,7 @@ tools/
     resolve_keyrefs.py      键引用解析 + --prefer-official + --drop-keyrefs（+--ambiguous-guard）
     translate.py            主翻译流水线（缓存/门禁/断点续跑）
     audit.py                产物审计（h 契约 / 占位符 / 富文本 / 格式串 / 跨文件一致性），CI 门禁与本地都用它
-    selftest.py             280 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
+    selftest.py             279 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
 packs/
   pool.jsonl                12,792 行候选池（sha256 FEF515EA…D4C）
   inventory.json            统计清单
