@@ -43,8 +43,15 @@ namespace UI18n.Core.Capture
         /// </summary>
         public int MaxPerCaller { get; set; } = 60;
 
-        /// <summary>单条文本上限：超过这个长度的串不录（不是截断）。</summary>
-        public int MaxTextLength { get; set; } = 400;
+        /// <summary>
+        /// 单条文本上限：超过这个长度的串不录（不是截断）。
+        /// <para>
+        /// v1.4 由 <c>400</c> 提到 <c>2000</c>：零件 description 的长度 p99=577 / max=1577，
+        /// 400 会把「零件悬浮提示的整段描述」直接丢掉（实测 ROTanks 电池罐那条 300 字符描述
+        /// 一个会话只被悬停到 1 次，丢了就再也不会出现）。
+        /// </para>
+        /// </summary>
+        public int MaxTextLength { get; set; } = 2000;
 
         /// <summary>单条文本下限：比它短的串不录（单个字符的串没有翻译价值）。</summary>
         public int MinTextLength { get; set; } = 2;

@@ -2,9 +2,12 @@
 {"h":"2b5f802f56fede46","n":"Save as global default for all new saves","s":"Save as global default for all new saves","t":"保存为所有新存档的全局默认设置","mod":"ClickThroughBlocker"}
 {"h":"35645274cfe6bfe9","n":"over. This release provides a new model of Focus-Follows-Click, which means that","s":"over.  This release provides a new model of Focus-Follows-Click, which means that","t":"悬停。此版本提供了一种新的“点击跟随焦点”模式，即","mod":"ClickThroughBlocker"}
 {"h":"40306e980e272739","n":"Up until this release, the Click Through Blocker (CTB) has used a model of","s":"Up until this release, the Click Through Blocker (CTB) has used a model of","t":"在此版本之前，Click Through Blocker (CTB) 采用的是","mod":"ClickThroughBlocker"}
+{"h":"474f597847893d1d","n":"TUFX: Beyond ★ [Modern Suite]","s":"TUFX: Beyond ★ [Modern Suite]","t":"TUFX: Beyond ★ [Modern Suite]","mod":"ClickThroughBlocker"}
 {"h":"4bda1fff901b8e16","n":"be changed in the stock settings window, under the Click-Through-Blocker tab","s":"be changed in the stock settings window, under the Click-Through-Blocker tab","t":"原生设置窗口的“Click-Through-Blocker”标签页下修改","mod":"ClickThroughBlocker"}
 {"h":"6597c9629725f608","n":"won't leave the window without clicking outside the window","s":"won't leave the window without clicking outside the window","t":"窗口外部，焦点就不会离开该窗口","mod":"ClickThroughBlocker"}
+{"h":"7315dc4390463fe1","n":"RealAntennas","s":"RealAntennas","t":"RealAntennas","mod":"ClickThroughBlocker"}
 {"h":"8a3a6124a7d0f92a","n":"Focus-Follows-Mouse, meaning that the focus was on whatever window the mouse was","s":"Focus-Follows-Mouse, meaning that the focus was on whatever window the mouse was","t":"“鼠标跟随焦点”，即鼠标悬停在哪个窗口，焦点就在哪个窗口","mod":"ClickThroughBlocker"}
+{"h":"953046f0038886c2","n":"Antenna Control Center","s":"Antenna Control Center","t":"天线控制中心","mod":"ClickThroughBlocker"}
 {"h":"960783aaec2814e8","n":"Click-Through-Blocker","s":"Click-Through-Blocker","t":"Click-Through-Blocker","mod":"ClickThroughBlocker"}
 {"h":"c7e29235e4756391","n":"Universal IMGUI click-through blocking (covers mods that don't use CTB)","s":"Universal IMGUI click-through blocking (covers mods that don't use CTB)","t":"通用 IMGUI 点击穿透阻断（覆盖未使用 CTB 的 mod）","mod":"ClickThroughBlocker"}
 {"h":"cb6decdec321c696","n":"Focus-Follows-Mouse","s":"Focus-Follows-Mouse","t":"鼠标跟随焦点","mod":"ClickThroughBlocker"}

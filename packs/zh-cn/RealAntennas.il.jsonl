@@ -1,6 +1,7 @@
 {"h":"05ee8a37c4e9968f","n":"Cone Circles","s":"Cone Circles","t":"锥头截面圆","mod":"RealAntennas"}
 {"h":"0688537944400ccf","n":"Avg Time (ms)","s":"Avg Time (ms)","t":"平均时间 (ms)","mod":"RealAntennas"}
 {"h":"21db7d1a61ce638a","n":"Show Config Window","s":"Show Config Window","t":"显示配置窗口","mod":"RealAntennas"}
+{"h":"22e77d8817611c03","n":"Vessels: #","s":"Vessels: #","t":"飞行器：#","mod":"RealAntennas","p":1}
 {"h":"3082c9e9fd08366d","n":"Iterations","s":"Iterations","t":"迭代次数","mod":"RealAntennas"}
 {"h":"313ae578f2887013","n":"Net: # nodes. # links. # occluders.","s":"Net: # nodes. # links. # occluders.","t":"网络：# 节点，# 链路，# 遮挡体。","mod":"RealAntennas","p":1}
 {"h":"4071869bbcdaf3cf","n":"Hide Config Window","s":"Hide Config Window","t":"隐藏配置窗口","mod":"RealAntennas"}
@@ -11,16 +12,20 @@
 {"h":"53c8ac8d3e94e9f0","n":"Precompute LateRebuild","s":"Precompute LateRebuild","t":"预计算延迟重建","mod":"RealAntennas"}
 {"h":"61672cb539d9bf87","n":"Cone Opacity","s":"Cone Opacity","t":"锥头不透明度","mod":"RealAntennas"}
 {"h":"6868f12c8546f9bb","n":"Antennas/vessel: #","s":"Antennas/vessel: #","t":"天线/载具：#","mod":"RealAntennas","p":1}
+{"h":"786c081ab27be1e6","n":"GroundStations: #","s":"GroundStations: #","t":"地面站：#","mod":"RealAntennas","p":1}
 {"h":"7c53c67231a9fddf","n":"Full LateRebuild","s":"Full LateRebuild","t":"完整延迟重建","mod":"RealAntennas"}
 {"h":"8227af5fe70fb18a","n":"Launch Control Console","s":"Launch Control Console","t":"发射控制台","mod":"RealAntennas"}
 {"h":"824434f203856a21","n":"Lat/Lon Format: Hemisphere","s":"Lat/Lon Format: Hemisphere","t":"经纬度格式：半球标识","mod":"RealAntennas"}
 {"h":"99163bdd3135a1a6","n":"Distance Max:","s":"Distance Max:","t":"最大距离：","mod":"RealAntennas"}
 {"h":"9bb2434002e398d9","n":"Lat/Lon Format: Signed","s":"Lat/Lon Format: Signed","t":"经纬度格式：正负符号","mod":"RealAntennas"}
+{"h":"9ccbc7dc8563ef6b","n":"Antennas/vessel: NaN","s":"Antennas/vessel: NaN","t":"天线数/飞船：NaN","mod":"RealAntennas"}
 {"h":"b745fdeb6c8425c2","n":"Show Details","s":"Show Details","t":"显示详情","mod":"RealAntennas"}
 {"h":"b7909ec708969dde","n":"RealAntennas Settings","s":"RealAntennas Settings","t":"RealAntennas设置","mod":"RealAntennas"}
 {"h":"bbff2625239d320f","n":"Close Control Console","s":"Close Control Console","t":"关闭控制台","mod":"RealAntennas"}
 {"h":"bda2794250c7f2ab","n":"EarlyRebuild","s":"EarlyRebuild","t":"提前重建","mod":"RealAntennas"}
+{"h":"be65f59558e50ef0","n":"Sort Mode: Alphabetical","s":"Sort Mode: Alphabetical","t":"排序方式：字母顺序","mod":"RealAntennas"}
 {"h":"d07ec1fa3953a691","n":"Runs/sec","s":"Runs/sec","t":"次/秒","mod":"RealAntennas"}
 {"h":"d8060ea1b627432f","n":"Vessel: None","s":"Vessel: None","t":"载具：无","mod":"RealAntennas"}
 {"h":"dd9d03dd57ce3418","n":"Distance Min:","s":"Distance Min:","t":"最小距离：","mod":"RealAntennas"}
 {"h":"ef49aec68fd1dc66","n":"Name","s":"Name","t":"名称","mod":"RealAntennas"}
+{"h":"efd019c114bea6b7","n":"RealAntennas v#.#","s":"RealAntennas v#.#","t":"RealAntennas v#.#","mod":"RealAntennas","p":1}

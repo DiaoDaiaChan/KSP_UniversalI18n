@@ -5,6 +5,8 @@
 {"h":"0277701cd0ccec94","n":"All facilities in the space center have been fully upgraded.","s":"All facilities in the space center have been fully upgraded.","t":"航天中心的所有设施均已升至满级。","mod":"Assembly-CSharp"}
 {"h":"02a25c4b86344dec","n":"This third page is also only here to test the state progression system. It's very much like the previous one, but it has a button to restart the tutorial.","s":"This third page is also only here to test the state progression system. It's very much like the previous one, but it has a button to restart the tutorial.","t":"这第三页同样仅用于测试状态推进系统。它与上一页非常相似，但包含一个重新开始教程的按钮。","mod":"Assembly-CSharp"}
 {"h":"02d01e259a3ac043","n":"Duna, the red dot, the bringer of contrast. Let's demystify this CB, shall we? Open Map view, change focus to Duna ([Tab] to iterate). Access the Knowledge Base when Duna is highlighted via th planete icon on the right of the screen. As you can see one of the reasons why we chose Duna for this particular mission is because of its conditions, it has a quite thin atmosphere and it has a pretty low gravity compared to Kerbin, so it should be a simple enough mission for even a newcomer.","s":"Duna, the red dot, the bringer of contrast. Let's demystify this CB, shall we?\n\nOpen Map view, change focus to Duna ([Tab] to iterate). Access the Knowledge Base when Duna is highlighted via th planete icon on the right of the screen. \n\nAs you can see one of the reasons why we chose Duna for this particular mission is because of its conditions, it has a quite thin atmosphere and it has a pretty low gravity compared to Kerbin, so it should be a simple enough mission for even a newcomer.","t":"杜纳，那颗红色的斑点，反差的代名词。让我们揭开这个天体的神秘面纱吧？\n\n打开地图视图，将视角切换至杜纳（按 [Tab] 键轮换）。当杜纳被选定时，通过屏幕右侧的行星图标进入信息库。\n\n如你所见，我们为这次任务选择杜纳的原因之一在于它的环境条件：它拥有相对稀薄的大气层，引力也比坎巴拉小得多，因此即使对于新手来说，这应该也是一个足够简单的任务。","mod":"Assembly-CSharp"}
+{"h":"030b5bfed23134a5","n":"<color=#b4d455>#t</color>","s":"<color=#b4d455>#t</color>","t":"<color=#b4d455>#t</color>","mod":"Assembly-CSharp","p":1}
+{"h":"03a7b35ce73cf4b3","n":"Part name: ROT-ProbeCore Tech Required: Starting Parts","s":"Part name: ROT-ProbeCore\nTech Required: Starting Parts","t":"部件名称：ROT-ProbeCore\n所需科技：基础部件","mod":"Assembly-CSharp"}
 {"h":"041b6c963bc3f5a8","n":"Total Run Time: #s/#s","s":"Total Run Time: #s/#s","t":"总运行时间：#s/#s","mod":"Assembly-CSharp","p":1}
 {"h":"049b994b49f2055f","n":"SSC - Santiago VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi #° S, #° W","s":"SSC - Santiago VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi #° S, #° W","t":"SSC - 圣地亚哥 VHF频段: # dBi UHF频段: # dBi S频段: # dBi 南纬 #°, 西经 #°","mod":"Assembly-CSharp","p":1}
 {"h":"04c59ff6f106c584","n":"Max Ignition Chance: # %","s":"Max Ignition Chance: # %","t":"最大点火概率：# %","mod":"Assembly-CSharp","p":1}
@@ -13,6 +15,7 @@
 {"h":"08da6110fc290c32","n":"V Sync:","s":"V Sync:","t":"垂直同步：","mod":"Assembly-CSharp"}
 {"h":"0a3d0cba4b970b00","n":"Infinite Electricity","s":"Infinite Electricity","t":"无限电量","mod":"Assembly-CSharp"}
 {"h":"0ad9e82edecafa56","n":"Tech Level: #","s":"Tech Level: #","t":"科技等级：#","mod":"Assembly-CSharp","p":1}
+{"h":"0b332e7269295501","n":"Kopernicus: Loading TUFX\\Native\\TUFXGpuProfiler.bin","s":"Kopernicus: Loading TUFX\\Native\\TUFXGpuProfiler.bin","t":"Kopernicus: Loading TUFX\\Native\\TUFXGpuProfiler.bin","mod":"Assembly-CSharp"}
 {"h":"0c2d05246c692343","n":"Zero Funds","s":"Zero Funds","t":"资金清零","mod":"Assembly-CSharp"}
 {"h":"0d4cd0f7ec295e04","n":"Don't ask again","s":"Don't ask again","t":"不再提示","mod":"Assembly-CSharp"}
 {"h":"0dd35cc83c8cc67f","n":"Allow Quicksaving","s":"Allow Quicksaving","t":"允许快速保存","mod":"Assembly-CSharp"}
@@ -24,17 +27,21 @@
 {"h":"12657e55889482b6","n":"All game progression has been fully completed.","s":"All game progression has been fully completed.","t":"所有游戏进度均已全部完成。","mod":"Assembly-CSharp"}
 {"h":"127a81321cac1cfd","n":"cost: Dry: # Wet: #","s":"cost: Dry: # Wet: #","t":"成本：干重 # 湿重 #","mod":"Assembly-CSharp","p":1}
 {"h":"13859cdbbda542e7","n":"Docking (Rotation)","s":"Docking (Rotation)","t":"对接（旋转）","mod":"Assembly-CSharp"}
+{"h":"14a81d71bc1afe18","n":"T + #d, #h, #m, #s","s":"T + #d, #h, #m, #s","t":"T + #d, #h, #m, #s","mod":"Assembly-CSharp","p":1}
 {"h":"15a84926e867b24e","n":"Full Screen:","s":"Full Screen:","t":"全屏：","mod":"Assembly-CSharp"}
 {"h":"15c14833b37daa63","n":"Non-Strict Part Attachment Orientation Checks","s":"Non-Strict Part Attachment Orientation Checks","t":"非严格部件吸附朝向检查","mod":"Assembly-CSharp"}
 {"h":"15c48ab8c4efa081","n":"Avionics: Unlocking Controls","s":"Avionics: Unlocking Controls","t":"航电：解锁操控","mod":"Assembly-CSharp"}
 {"h":"17865175e4ccba78","n":"DSA # - Malargüe VHF-Band: # dBi UHF-Band: # dBi #° S, #° W","s":"DSA # - Malargüe VHF-Band: # dBi UHF-Band: # dBi #° S, #° W","t":"DSA # - 马拉圭 VHF频段: # dBi UHF频段: # dBi 南纬 #°, 西经 #°","mod":"Assembly-CSharp","p":1}
 {"h":"17e43db1a01ebdc9","n":"Extra radius","s":"Extra radius","t":"额外半径","mod":"Assembly-CSharp"}
 {"h":"191fb81ea0271fa6","n":"Max Facility","s":"Max Facility","t":"设施升至满级","mod":"Assembly-CSharp"}
+{"h":"19b19de734dc4b2c","n":"This is a procedural avionics unit. It can be customized for your specific needs. It contains an avionics control unit and a short range antenna. <b><color=green>From Procedural Parts mod</color></b>","s":"This is a procedural avionics unit.  It can be customized for your specific needs. It contains an avionics control unit and a short range antenna. <b><color=green>From Procedural Parts mod</color></b>","t":"这是一个程序化航电单元。  可按需定制。它包含一个航电控制单元和一根短程天线。<b><color=green>来自 Procedural Parts 模组</color></b>","mod":"Assembly-CSharp"}
 {"h":"1c14263ce10239fc","n":"Raptor (Surface Variant)","s":"Raptor (Surface Variant)","t":"猛禽（表面变体）","mod":"Assembly-CSharp"}
 {"h":"1e72d05b3bf252e0","n":"Save Tree","s":"Save Tree","t":"保存科技树","mod":"Assembly-CSharp"}
 {"h":"1f7698c061c208c9","n":"Open","s":"Open","t":"打开","mod":"Assembly-CSharp"}
+{"h":"20020faaa68a14b0","n":"<color=#FF0000>","s":"<color=#FF0000>","t":"<color=#FF0000>","mod":"Assembly-CSharp"}
 {"h":"202fffd5a2e1c595","n":"Length","s":"Length","t":"长度","mod":"Assembly-CSharp"}
 {"h":"2033694f66e24377","n":"Hide Set Orbit Dialog","s":"Hide Set Orbit Dialog","t":"隐藏轨道设定窗口","mod":"Assembly-CSharp"}
+{"h":"203b418862ab2dc3","n":"<color=#c8d782>#</color>","s":"<color=#c8d782>#</color>","t":"<color=#c8d782>#</color>","mod":"Assembly-CSharp","p":1}
 {"h":"2168a1d439f41ece","n":"Texture Selector GUI","s":"Texture Selector GUI","t":"纹理选择器界面","mod":"Assembly-CSharp"}
 {"h":"21900f027f2d7cfa","n":"Diameter","s":"Diameter","t":"直径","mod":"Assembly-CSharp"}
 {"h":"22c186fac8ce5ff1","n":"Display Thermal Data in Action Menus","s":"Display Thermal Data in Action Menus","t":"在动作菜单中显示热量数据","mod":"Assembly-CSharp"}
@@ -47,15 +54,18 @@
 {"h":"28d0bad09c01a451","n":"<color=#fefefe>Propellant GSE OK:</color>","s":"<color=#fefefe>Propellant GSE OK:</color>","t":"<color=#fefefe>推进剂地面保障设备正常：</color>","mod":"Assembly-CSharp"}
 {"h":"2919b135ea37515e","n":"Planet Resources","s":"Planet Resources","t":"星球资源","mod":"Assembly-CSharp"}
 {"h":"2b9903930020ed71","n":"Planet Info","s":"Planet Info","t":"星球信息","mod":"Assembly-CSharp"}
+{"h":"2bc7a6bb536a6c29","n":"Loading sound assets...","s":"Loading sound assets...","t":"正在加载声音资源…","mod":"Assembly-CSharp"}
 {"h":"2d419f48d3626230","n":"Render Quality Level:","s":"Render Quality Level: ","t":"渲染质量级别：","mod":"Assembly-CSharp"}
 {"h":"2d99435c6ab66d61","n":"Open Tree Cfg","s":"Open Tree Cfg","t":"打开科技树配置","mod":"Assembly-CSharp"}
 {"h":"2de969afacdaa7a6","n":"Shape","s":"Shape","t":"外形","mod":"Assembly-CSharp"}
 {"h":"2e3c1eee793b4fad","n":"Load DB","s":"Load DB","t":"加载数据库","mod":"Assembly-CSharp"}
+{"h":"2e69ff1a8fa19d11","n":"Kerbals","s":"Kerbals","t":"克曼人","mod":"Assembly-CSharp"}
 {"h":"2e927c0dd92cc90d","n":"Apply Drag As Acceleration Instead of Force","s":"Apply Drag As Acceleration Instead of Force","t":"将阻力作为加速度而非力施加","mod":"Assembly-CSharp"}
 {"h":"2eb8fcb229e9ae32","n":"Mass Flow: # kg/s","s":"Mass Flow: # kg/s","t":"质量流量：# kg/s","mod":"Assembly-CSharp","p":1}
 {"h":"2ec988f6b91d745c","n":"NaN °","s":"NaN °","t":"NaN °","mod":"Assembly-CSharp"}
 {"h":"2fe7796d6c8e2938","n":"Fairing Auto-struts","s":"Fairing Auto-struts","t":"整流罩自动支撑","mod":"Assembly-CSharp"}
 {"h":"306d04f647c6aef9","n":"Part Assignment Summary","s":"Part Assignment Summary","t":"部件分配摘要","mod":"Assembly-CSharp"}
+{"h":"308646326bdc092f","n":"Loading sound asset #/#","s":"Loading sound asset #/#","t":"正在加载音频资源 #/#","mod":"Assembly-CSharp","p":1}
 {"h":"31599ff53eea275a","n":"Attempt to Load Anyway","s":"Attempt to Load Anyway","t":"尝试强制加载","mod":"Assembly-CSharp"}
 {"h":"3168dae0352b59b9","n":"Eng. Internal Temp: NaN K / # K","s":"Eng. Internal Temp: NaN K / # K","t":"发动机内部温度：NaN K / # K","mod":"Assembly-CSharp","p":1}
 {"h":"324f062b0d44413d","n":"Research All Parts","s":"Research All Parts","t":"研究所有部件","mod":"Assembly-CSharp"}
@@ -68,8 +78,11 @@
 {"h":"375f23c0cf6b3e0b","n":"Allow Quickloading","s":"Allow Quickloading","t":"允许快速加载","mod":"Assembly-CSharp"}
 {"h":"38011f12f7b68c8e","n":"Wipe Tree","s":"Wipe Tree","t":"清除科技树","mod":"Assembly-CSharp"}
 {"h":"38d1f3647b16bdb5","n":"Display Aero Forces In Flight","s":"Display Aero Forces In Flight","t":"飞行中显示气动力","mod":"Assembly-CSharp"}
+{"h":"393f61e080c40aa6","n":"Tooled","s":"Tooled","t":"Tooled","mod":"Assembly-CSharp"}
 {"h":"3a2674ba917e0384","n":"Range Safety","s":"Range Safety","t":"射程安全","mod":"Assembly-CSharp"}
 {"h":"3d6092c59fb4478e","n":"Not Now","s":"Not Now","t":"暂不","mod":"Assembly-CSharp"}
+{"h":"3d60e710fa43575d","n":"Systems","s":"Systems","t":"系统","mod":"Assembly-CSharp"}
+{"h":"3db68bafade94a75","n":"MechJeb","s":"MechJeb","t":"MechJeb","mod":"Assembly-CSharp"}
 {"h":"3fd2ee034314ca65","n":"Save Settings","s":"Save Settings","t":"保存设置","mod":"Assembly-CSharp"}
 {"h":"41535df871067d46","n":"Engine Module: SOLVERENGINE","s":"Engine Module: SOLVERENGINE","t":"发动机模块：SOLVERENGINE","mod":"Assembly-CSharp"}
 {"h":"4247aa083031815a","n":"HumanRated:","s":"HumanRated:","t":"载人认证：","mod":"Assembly-CSharp"}
@@ -86,6 +99,7 @@
 {"h":"4a77e1ca645f81f1","n":"Progress modifications are not available at this time.","s":"Progress modifications are not available at this time.","t":"当前无法修改进度。","mod":"Assembly-CSharp"}
 {"h":"4ab00161231c2c91","n":"Thermal Debug Colors","s":"Thermal Debug Colors","t":"热力调试着色","mod":"Assembly-CSharp"}
 {"h":"4aeba720e2f2d947","n":"R&D Tree Not Spawned. Please go to the Tech Tree screen before using this tool.","s":"R&D Tree Not Spawned. Please go to the Tech Tree screen before using this tool.","t":"科技树未生成。使用此工具前请先进入科技树界面。","mod":"Assembly-CSharp"}
+{"h":"4d927a8b630d78b1","n":"Dynasoar Cockpit (Alt)","s":"Dynasoar Cockpit (Alt)","t":"Dynasoar 驾驶舱（备用）","mod":"Assembly-CSharp"}
 {"h":"4da5e46d7dddc281","n":"Antenna Planning","s":"Antenna Planning","t":"天线规划","mod":"Assembly-CSharp"}
 {"h":"4ec26b2958d572fd","n":"Clear Input Lock Stack","s":"Clear Input Lock Stack","t":"清除输入锁定栈","mod":"Assembly-CSharp"}
 {"h":"4f1cfbf8f2bf8e78","n":"Convection Enabled","s":"Convection Enabled","t":"启用对流","mod":"Assembly-CSharp"}
@@ -104,18 +118,26 @@
 {"h":"531cd6fd3d195fed","n":"No Hardware Support","s":"No Hardware Support","t":"无硬件支持","mod":"Assembly-CSharp"}
 {"h":"536846d212ec0bd0","n":"<b>XYZ Translation</b>","s":"<b>XYZ Translation</b>","t":"<b>XYZ 平移</b>","mod":"Assembly-CSharp"}
 {"h":"536c39c9a64633b3","n":"Clear Assignment","s":"Clear Assignment","t":"清除分配","mod":"Assembly-CSharp"}
+{"h":"54ecd6126624a668","n":"RealAntenna","s":"RealAntenna","t":"RealAntenna","mod":"Assembly-CSharp"}
 {"h":"57b73220dca32be9","n":"Mono Heap Used","s":"Mono Heap Used","t":"Mono 堆已用","mod":"Assembly-CSharp"}
 {"h":"58763cdfcc83b820","n":"Procedural Tank (Conventional Structure)","s":"Procedural Tank (Conventional Structure)","t":"程序化贮箱（常规结构）","mod":"Assembly-CSharp"}
+{"h":"587ba5bfca181d8a","n":"ModuleManager: Reloading things","s":"ModuleManager: Reloading things","t":"ModuleManager：正在重新加载","mod":"Assembly-CSharp"}
 {"h":"589fb543ac889790","n":"Surface FX:","s":"Surface FX:","t":"地表特效：","mod":"Assembly-CSharp"}
 {"h":"58b536cdb641fe05","n":"#.# (WindowsPlayer x#) zh-cn #.# Breaking Ground","s":"#.# (WindowsPlayer x#) zh-cn #.# Breaking Ground","t":"#.# (WindowsPlayer x#) zh-cn #.# 破土而出","mod":"Assembly-CSharp","p":1}
 {"h":"58c9754fa50c071f","n":"Apply Drag","s":"Apply Drag","t":"应用阻力","mod":"Assembly-CSharp"}
+{"h":"59190ec08f2bdade","n":"Kopernicus: Loading ParallaxContinued\\Models\\ScaledMesh.bin","s":"Kopernicus: Loading ParallaxContinued\\Models\\ScaledMesh.bin","t":"Kopernicus: Loading ParallaxContinued\\Models\\ScaledMesh.bin","mod":"Assembly-CSharp"}
+{"h":"593bce83bfe6d511","n":"Loading texture asset #/# (buffer=#MB)","s":"Loading texture asset #/# (buffer=#MB)","t":"正在加载纹理资源 #/#（缓冲=#MB）","mod":"Assembly-CSharp","p":1}
+{"h":"59a61c6e8960f856","n":"#y, #d, #:#:#​","s":"#y, #d, #:#:#​","t":"#y, #d, #:#:#​","mod":"Assembly-CSharp","p":1}
 {"h":"5a40f3516e5ffbbb","n":"Allow Stock Vessels","s":"Allow Stock Vessels","t":"允许默认载具","mod":"Assembly-CSharp"}
 {"h":"5abcdbbfe9728d29","n":"Radiation Enabled","s":"Radiation Enabled","t":"启用辐射","mod":"Assembly-CSharp"}
 {"h":"5afb3ea631c03d10","n":"Frames Per Second","s":"Frames Per Second","t":"每秒帧数","mod":"Assembly-CSharp"}
 {"h":"5afb86896883c4e9","n":"Allow Part Clipping in Editors [Bug Hazard!]","s":"Allow Part Clipping in Editors [Bug Hazard!]","t":"在编辑器中允许部件穿插 [可能引发错误！]","mod":"Assembly-CSharp"}
+{"h":"5b9ebb71b4aa8b57","n":"Loading model asset #/# (buffer=#MB)","s":"Loading model asset #/# (buffer=#MB)","t":"正在加载模型资源 #/#（缓冲=#MB）","mod":"Assembly-CSharp","p":1}
 {"h":"5ba83f59b341ecf3","n":"Select a mission to load","s":"Select a mission to load","t":"选择要加载的任务","mod":"Assembly-CSharp"}
 {"h":"5c72d3a91729b222","n":"Unbreakable Joints","s":"Unbreakable Joints","t":"关节不可破坏","mod":"Assembly-CSharp"}
 {"h":"5de9c6d06dc562df","n":"<b>Pitch, Yaw and Roll</b>","s":"<b>Pitch, Yaw and Roll</b>","t":"<b>俯仰、偏航与滚转</b>","mod":"Assembly-CSharp"}
+{"h":"5f38a02bd5ff38a9","n":"Loading texture assets...","s":"Loading texture assets...","t":"正在加载贴图资源…","mod":"Assembly-CSharp"}
+{"h":"5ffb3871c383b83b","n":"DebugAntenna","s":"DebugAntenna","t":"DebugAntenna","mod":"Assembly-CSharp"}
 {"h":"612729e322dc7f61","n":"Mass Flow: # ton/s","s":"Mass Flow: # ton/s","t":"质量流量：# ton/s","mod":"Assembly-CSharp","p":1}
 {"h":"6152a966145eb5bc","n":"Show Set Orbit Dialog","s":"Show Set Orbit Dialog","t":"显示轨道设定窗口","mod":"Assembly-CSharp"}
 {"h":"62b8bf6d7c7da6f3","n":"Terrain Detail:","s":"Terrain Detail: ","t":"地形细节：","mod":"Assembly-CSharp"}
@@ -130,20 +152,26 @@
 {"h":"666c46c1e5c4373b","n":"Physics Filename:","s":"Physics Filename: ","t":"物理文件名：","mod":"Assembly-CSharp"}
 {"h":"66722bc2ea775e05","n":"Disabled","s":"Disabled","t":"已禁用","mod":"Assembly-CSharp"}
 {"h":"6675fcc6d2ba7d8a","n":"Nose","s":"Nose","t":"头部","mod":"Assembly-CSharp"}
+{"h":"67bd986419d6bbd4","n":"#h, #m, #s","s":"#h, #m, #s","t":"#h, #m, #s","mod":"Assembly-CSharp","p":1}
 {"h":"681182c0999307cf","n":"Track IR","s":"Track IR","t":"Track IR","mod":"Assembly-CSharp"}
+{"h":"6a9f38123190b780","n":"Power: # W","s":"Power: # W","t":"功率：# W","mod":"Assembly-CSharp","p":1}
 {"h":"6abee63590795c4f","n":"Hide Experimental parts","s":"Hide Experimental parts","t":"隐藏实验性部件","mod":"Assembly-CSharp"}
+{"h":"6becf0a2ccc46379","n":"Ejection seat","s":"Ejection seat","t":"弹射座椅","mod":"Assembly-CSharp"}
 {"h":"6ef2855efb33ba1a","n":"Ignition Chance: # %","s":"Ignition Chance: # %","t":"点火概率：# %","mod":"Assembly-CSharp","p":1}
 {"h":"6f20cf615530a23b","n":"Power (Active): # Watts","s":"Power (Active): # Watts","t":"功率（激活）：# 瓦","mod":"Assembly-CSharp","p":1}
 {"h":"6f571f56fe9ae914","n":"Show debug info on resource parts","s":"Show debug info on resource parts","t":"在资源部件上显示调试信息","mod":"Assembly-CSharp"}
 {"h":"715690f46b334501","n":"Zero Science","s":"Zero Science","t":"零科学","mod":"Assembly-CSharp"}
 {"h":"716a6024e3fe999c","n":"Show","s":"Show","t":"显示","mod":"Assembly-CSharp"}
 {"h":"7261a85b1c6cd6db","n":"What would you like to do?","s":"\nWhat would you like to do?","t":"你想做什么？","mod":"Assembly-CSharp"}
+{"h":"73034d7e09982a6f","n":"#m/s","s":"#m/s","t":"#m/s","mod":"Assembly-CSharp","p":1}
 {"h":"737159e81da7aeb7","n":"Toggle Flag Visibility","s":"Toggle Flag Visibility","t":"切换旗帜可见性","mod":"Assembly-CSharp"}
+{"h":"73eb7e369a79e7e1","n":"<color=#98EE00>","s":"<color=#98EE00>","t":"<color=#98EE00>","mod":"Assembly-CSharp"}
 {"h":"741bf3ad53551ca6","n":"Discard All","s":"Discard All","t":"全部放弃","mod":"Assembly-CSharp"}
 {"h":"746d53e612eda67e","n":"Utility Settings:","s":"Utility Settings:","t":"通用设置：","mod":"Assembly-CSharp"}
 {"h":"74961024ca6c96e6","n":"Show Flight Debug Stats","s":"Show Flight Debug Stats","t":"显示飞行调试统计","mod":"Assembly-CSharp"}
 {"h":"7536a7c090050da7","n":"Show Camera FX Stack","s":"Show Camera FX Stack","t":"显示相机特效堆栈","mod":"Assembly-CSharp"}
 {"h":"7551a617ae7d8a42","n":"Control Point:","s":"Control Point:","t":"控制点：","mod":"Assembly-CSharp"}
+{"h":"755fd4c7311de2fb","n":"Unlock Requirements","s":"Unlock Requirements","t":"解锁要求","mod":"Assembly-CSharp"}
 {"h":"75667e1bc697f7ed","n":"Display Aero Data in Action Menus","s":"Display Aero Data in Action Menus","t":"在动作菜单中显示气动数据","mod":"Assembly-CSharp"}
 {"h":"7630f51424f1b9c2","n":"Max Research","s":"Max Research","t":"最大化研究","mod":"Assembly-CSharp"}
 {"h":"76967c02f5bad3d1","n":"Check for Unassigned Parts","s":"Check for Unassigned Parts","t":"检查未分配部件","mod":"Assembly-CSharp"}
@@ -157,6 +185,7 @@
 {"h":"7a5a31f2e824d2eb","n":"Unlock All Nodes","s":"Unlock All Nodes","t":"解锁所有节点","mod":"Assembly-CSharp"}
 {"h":"7b852ba81f292a4d","n":"Eng. Internal Temp: # K / # K","s":"Eng. Internal Temp: # K / # K","t":"发动机内部温度：# K / # K","mod":"Assembly-CSharp","p":1}
 {"h":"7bc09f428f0ea22c","n":"Current Throttle: #%","s":"Current Throttle: #%","t":"当前节流阀：#%","mod":"Assembly-CSharp","p":1}
+{"h":"7bc26dc8c111b4d7","n":"ModuleManager: Running post patch callbacks","s":"ModuleManager: Running post patch callbacks","t":"ModuleManager：正在执行补丁后回调","mod":"Assembly-CSharp"}
 {"h":"7bcf79066f56d125","n":"Shutdown Avionics","s":"Shutdown Avionics","t":"关闭航电","mod":"Assembly-CSharp"}
 {"h":"7bdb70a25aac4909","n":"Screen Resolution:","s":"Screen Resolution:","t":"屏幕分辨率：","mod":"Assembly-CSharp"}
 {"h":"7c58580689e69725","n":"Display Thermal Data GUI","s":"Display Thermal Data GUI","t":"显示热量数据界面","mod":"Assembly-CSharp"}
@@ -165,8 +194,10 @@
 {"h":"80dfa334cf3a85f3","n":"Ignore Max Temperature","s":"Ignore Max Temperature","t":"忽略最高温度","mod":"Assembly-CSharp"}
 {"h":"812b30a6166ff13b","n":"Density","s":"Density","t":"密度","mod":"Assembly-CSharp"}
 {"h":"815eb58362333a36","n":"Clear Group ID","s":"Clear Group ID","t":"清除组 ID","mod":"Assembly-CSharp"}
+{"h":"81f8bf5bfe233c3c","n":"Mass: #t","s":"Mass: #t","t":"质量：#t","mod":"Assembly-CSharp","p":1}
 {"h":"82785ffb76605b31","n":"Frame Limit:","s":"Frame Limit:","t":"帧率限制：","mod":"Assembly-CSharp"}
 {"h":"827d7b66fe72d01a","n":"Pause on vessel unpack","s":"Pause on vessel unpack","t":"载具解包时暂停","mod":"Assembly-CSharp"}
+{"h":"8295b9ce2ced6511","n":"CooledLCH#","s":"CooledLCH#","t":"CooledLCH#","mod":"Assembly-CSharp","p":1}
 {"h":"84027996df62a751","n":"Please open the Tech Tree Screen at the R&D Facility to use these tools","s":"Please open the Tech Tree Screen at the R&D Facility to use these tools","t":"请在研发中心打开科技树界面以使用这些工具","mod":"Assembly-CSharp"}
 {"h":"84a3a9303c35b2d0","n":"Other Control Settings and Device Options","s":"Other Control Settings and Device Options","t":"其他控制设置与设备选项","mod":"Assembly-CSharp"}
 {"h":"84d29f34665a870b","n":"Total Hops:","s":"Total Hops:","t":"总跳跃数：","mod":"Assembly-CSharp"}
@@ -180,6 +211,7 @@
 {"h":"885ee3d5dabd5b36","n":"Reliability at Max Data: # %, MTBF: #h","s":"Reliability at Max Data: # %, MTBF: #h","t":"满数据可靠性：# %，MTBF：#h","mod":"Assembly-CSharp","p":1}
 {"h":"89321afb4bd6e29e","n":"STDN - Quito VHF-Band: # dBi UHF-Band: # dBi #° S, #° W","s":"STDN - Quito VHF-Band: # dBi UHF-Band: # dBi #° S, #° W","t":"STDN - 基多 VHF频段: # dBi UHF频段: # dBi 南纬 #°, 西经 #°","mod":"Assembly-CSharp","p":1}
 {"h":"899a70978c1aee0e","n":"Object Type","s":"Object Type","t":"物体类型","mod":"Assembly-CSharp"}
+{"h":"8aafebe23b61c843","n":"Cost: #","s":"Cost: #","t":"成本：#","mod":"Assembly-CSharp","p":1}
 {"h":"8b194919b9e7f9c8","n":"Docking (Translation)","s":"Docking (Translation)","t":"对接（平移）","mod":"Assembly-CSharp"}
 {"h":"8b225bd49c790f6a","n":"Language dictionary reloaded successfully.","s":"Language dictionary reloaded successfully.","t":"语言字典重新加载成功。","mod":"Assembly-CSharp"}
 {"h":"8c236fe62dfaee5e","n":"Infinite Propellant","s":"Infinite Propellant","t":"无限推进剂","mod":"Assembly-CSharp"}
@@ -195,8 +227,10 @@
 {"h":"970e54ffd9f75f74","n":"Underwater FX:","s":"Underwater FX:","t":"水下特效：","mod":"Assembly-CSharp"}
 {"h":"972586a01fdf365e","n":"Shadow Cascades:","s":"Shadow Cascades:","t":"级联阴影：","mod":"Assembly-CSharp"}
 {"h":"973e25859f180a67","n":"This update requires a full download. Press Update to open the KSP Store.","s":"This update requires a full download. Press Update to open the KSP Store.","t":"本次更新需要全量下载。点击“更新”打开 KSP 商店。","mod":"Assembly-CSharp"}
+{"h":"98ad554f50350d20","n":"Telemetry","s":"Telemetry","t":"遥测","mod":"Assembly-CSharp"}
 {"h":"9a4b5285dd7fc8b8","n":"Resources:","s":"Resources:","t":"资源：","mod":"Assembly-CSharp"}
 {"h":"9a54d50c3a4bc452","n":"Character Controls","s":"Character Controls","t":"角色控制","mod":"Assembly-CSharp"}
+{"h":"9bb613283975c157","n":"Loading model assets...","s":"Loading model assets...","t":"正在加载模型资源…","mod":"Assembly-CSharp"}
 {"h":"9c24c88835c80672","n":"Hide Camera FX Stack","s":"Hide Camera FX Stack","t":"隐藏相机特效栈","mod":"Assembly-CSharp"}
 {"h":"9c56517a7a01be41","n":"This Page shows that it's possible to use external events to send the tutorial to any arbitrary state, even ones not in the default sequence. Use this to handle cases where the player strays off the plan. Note that this page is added with AddState instead of AddPage, because we don't want this page to be part of the normal tutorial sequence.","s":"This Page shows that it's possible to use external events to send the tutorial to any arbitrary state, even ones not in the default sequence. Use this to handle cases where the player strays off the plan.\n\nNote that this page is added with AddState instead of AddPage, because we don't want this page to be part of the normal tutorial sequence.","t":"本页面演示了如何利用外部事件将教程跳转至任意状态，包括非默认流程中的状态。可用于处理玩家偏离既定路线的情况。\n\n请注意，本页面是通过 AddState 而非 AddPage 添加的，因为我们不希望它出现在正常的教程流程中。","mod":"Assembly-CSharp"}
 {"h":"9d2657e60b0ab2e5","n":"Fairing","s":"Fairing","t":"整流罩","mod":"Assembly-CSharp"}
@@ -210,17 +244,24 @@
 {"h":"a51195ba60513f61","n":"Unowned Info","s":"Unowned Info","t":"未归属信息","mod":"Assembly-CSharp"}
 {"h":"a5332d1924468565","n":"No R&D Module Present. This screen is only available if the R&D Module is loaded.","s":"No R&D Module Present. This screen is only available if the R&D Module is loaded.","t":"未检测到研发模块。此界面仅在研发模块加载后可用。","mod":"Assembly-CSharp"}
 {"h":"a646bfa8226da95a","n":"Flight Map View","s":"Flight Map View","t":"飞行地图视图","mod":"Assembly-CSharp"}
+{"h":"aad1fc250c006477","n":"#autoLoc_#","s":"#autoLoc_#","t":"#autoLoc_#","mod":"Assembly-CSharp","p":1}
 {"h":"ab5d7848e76939a7","n":"Facility upgrades are not available at this time.","s":"Facility upgrades are not available at this time.","t":"设施升级当前不可用。","mod":"Assembly-CSharp"}
 {"h":"ab7652644cb3c73f","n":"Reload all","s":"Reload all","t":"全部重载","mod":"Assembly-CSharp"}
 {"h":"ac68274074c2ea56","n":"Aerodynamic FX Quality:","s":"Aerodynamic FX Quality:","t":"气动特效质量：","mod":"Assembly-CSharp"}
 {"h":"b091ab27825bbff1","n":"* Game requires restart for changes to take effect *","s":"* Game requires restart for changes to take effect *","t":"* 游戏需要重启以使更改生效 *","mod":"Assembly-CSharp"}
+{"h":"b12d7039e06c2c78","n":"ModuleManager: Waiting for patching to finish","s":"ModuleManager: Waiting for patching to finish","t":"ModuleManager：等待打补丁完成","mod":"Assembly-CSharp"}
+{"h":"b283af345cc6d501","n":"Lithium Hydroxide","s":"Lithium Hydroxide","t":"氢氧化锂","mod":"Assembly-CSharp"}
 {"h":"b31b6ea56671002f","n":"No description available.","s":"No description available.","t":"无可用描述。","mod":"Assembly-CSharp"}
 {"h":"b3307f1ea90e229b","n":"Max Experience","s":"Max Experience","t":"经验最大化","mod":"Assembly-CSharp"}
+{"h":"b37de75ed11fa4ba","n":"ModuleManager: Applying patched game database","s":"ModuleManager: Applying patched game database","t":"ModuleManager：正在应用打完补丁的游戏数据库","mod":"Assembly-CSharp"}
 {"h":"b622fbfff9b8f6d4","n":"Add up all the Science in the Universe","s":"Add up all the Science in the Universe","t":"累加全宇宙的所有科学点数","mod":"Assembly-CSharp"}
 {"h":"b64d94fdf31a4959","n":"Antenna Target:","s":"Antenna Target: ","t":"天线目标：","mod":"Assembly-CSharp"}
 {"h":"b6de9f59680984c4","n":"Max Progress","s":"Max Progress","t":"进度最大化","mod":"Assembly-CSharp"}
 {"h":"b89c4e14a8c94ea2","n":"Axis Bindings","s":"Axis Bindings","t":"轴绑定","mod":"Assembly-CSharp"}
+{"h":"b8f6b8e0cac1166a","n":"<color=#b8f4d1>#h, #m, #s</color>","s":"<color=#b8f4d1>#h, #m, #s</color>","t":"<color=#b8f4d1>#h, #m, #s</color>","mod":"Assembly-CSharp","p":1}
+{"h":"b9553240d85055d4","n":"T + #d, #h, #s","s":"T + #d, #h, #s","t":"T + #d, #h, #s","mod":"Assembly-CSharp","p":1}
 {"h":"ba15cae4d2b047f5","n":"Size Height: Width: Length:","s":"Size\nHeight:\nWidth:\nLength:","t":"尺寸 高度： 宽度： 长度：","mod":"Assembly-CSharp"}
+{"h":"ba4b9b327f5a2544","n":"CooledLOX","s":"CooledLOX","t":"CooledLOX","mod":"Assembly-CSharp"}
 {"h":"ba530cb6d383b4ba","n":"Conduction Enabled","s":"Conduction Enabled","t":"启用导热","mod":"Assembly-CSharp"}
 {"h":"ba98817ec0f9027f","n":"Core Tex","s":"Core Tex","t":"核心纹理","mod":"Assembly-CSharp"}
 {"h":"bad3c19ccbb2b27c","n":"Allow Revert To Launch","s":"Allow Revert To Launch","t":"允许重新发射","mod":"Assembly-CSharp"}
@@ -233,37 +274,52 @@
 {"h":"be35adb6301cd2c4","n":"Decoupler","s":"Decoupler","t":"分离器","mod":"Assembly-CSharp"}
 {"h":"becb62068bff1558","n":"Unable to reload the language dictionary. Check the log for errors.","s":"Unable to reload the language dictionary. Check the log for errors.","t":"无法重新加载语言字典。请查看日志以了解错误信息。","mod":"Assembly-CSharp"}
 {"h":"bef3095beea955ca","n":"All technology in Research and Development has been researched.","s":"All technology in Research and Development has been researched.","t":"研发中心的所有科技均已研究完毕。","mod":"Assembly-CSharp"}
+{"h":"bf56dd306fb7cbf7","n":"#autoLOC_#","s":"#autoLOC_#","t":"#autoLOC_#","mod":"Assembly-CSharp","p":1}
 {"h":"bf952886085685d8","n":"So you've gotten to the Mun already, right? That's good, but it's easy, we're going to go over a more complex procedure today, getting to another planet directly from a low Kerbin orbit. The difficulty of the task depends a lot on the planet you intend to visit. One obvious reason is that farther Celestial Bodies need more dV to be reached, but you also have to take the CB's characteristics into account, such as atmosphere, gravity and the like. So when choosing a planet to visit your first stop should be the Tracking Station's Knowledge Base. Here you can learn more about each CB and see if you're up to the task, but for today there's no need because I know where we're going: Duna.","s":"So you've gotten to the Mun already, right? That's good, but it's easy, we're going to go over a more complex procedure today, getting to another planet directly from a low Kerbin orbit. The difficulty of the task depends a lot on the planet you intend to visit. One obvious reason is that farther Celestial Bodies need more dV to be reached, but you also have to take the CB's characteristics into account, such as atmosphere, gravity and the like. \n\nSo when choosing a planet to visit your first stop should be the Tracking Station's Knowledge Base. Here you can learn more about each CB and see if you're up to the task, but for today there's no need because I know where we're going: Duna.","t":"你已经去过穆恩了，对吧？干得漂亮，但那还算简单。今天我们要学习一个更复杂的过程：直接从坎巴拉低轨道出发前往另一颗行星。任务的难度很大程度上取决于你打算访问的行星。显而易见的一个原因是前往更遥远的天体需要更多Δv，但你还必须考虑天体的物理特性，比如大气层、重力等。\n\n因此，在选择要访问的行星时，你的第一站应该是深空追踪站的信息库。在这里你可以了解每个天体的详细信息，评估自己是否能胜任这项任务。不过今天没必要看，因为我已经选好目标了：杜纳。","mod":"Assembly-CSharp"}
 {"h":"c0def501da1d0b0b","n":"Set Ship Orbit","s":"Set Ship Orbit","t":"设定飞船轨道","mod":"Assembly-CSharp"}
 {"h":"c395ff09c8988b76","n":"Stock Vessels","s":"Stock Vessels","t":"默认载具","mod":"Assembly-CSharp"}
+{"h":"c4bae000a1af6ac3","n":"ModuleManager: Dumping log to KSP log","s":"ModuleManager: Dumping log to KSP log","t":"ModuleManager：正在把日志写入 KSP 日志","mod":"Assembly-CSharp"}
 {"h":"c673b5dadb8eb7fb","n":"DSS # - Goldstone VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi X-Band: # dBi Ka-Band: # dBi #° N, #° W","s":"DSS # - Goldstone VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi X-Band: # dBi Ka-Band: # dBi #° N, #° W","t":"DSS # - 戈德斯通 VHF频段: # dBi UHF频段: # dBi S频段: # dBi X频段: # dBi Ka频段: # dBi 北纬 #°, 西经 #°","mod":"Assembly-CSharp","p":1}
+{"h":"c79a3cf8861455af","n":"Searching assets to load...","s":"Searching assets to load...","t":"正在查找需要加载的资源…","mod":"Assembly-CSharp"}
 {"h":"c86dd076aefba886","n":"This second page is only here to test the state progression system. Tutorial pages can be stepped forward, and also stepped back.","s":"This second page is only here to test the state progression system. Tutorial pages can be stepped forward, and also stepped back.","t":"这第二页仅用于测试状态推进系统。教程页面可以向前翻页，也可以向后翻页。","mod":"Assembly-CSharp"}
+{"h":"c8704c692e34af83","n":"Kopernicus: Loading RealisticLaunchVisuals\\Native\\Win#\\RLVGpuTiming.bin","s":"Kopernicus: Loading RealisticLaunchVisuals\\Native\\Win#\\RLVGpuTiming.bin","t":"Kopernicus：正在加载 RealisticLaunchVisuals\\Native\\Win#\\RLVGpuTiming.bin","mod":"Assembly-CSharp","p":1}
+{"h":"c897ccd7f26eda77","n":"#m, #s","s":"#m, #s","t":"#m, #s","mod":"Assembly-CSharp","p":1}
 {"h":"c980855a000b76ea","n":"Bottom","s":"Bottom","t":"底部","mod":"Assembly-CSharp"}
 {"h":"c9af69f95c8205da","n":"Mount","s":"Mount","t":"安装座","mod":"Assembly-CSharp"}
 {"h":"c9d19c8d0846de63","n":"Use Preset","s":"Use Preset","t":"使用预设","mod":"Assembly-CSharp"}
 {"h":"ca32db1a6cd9a382","n":"Open Diameter Selection","s":"Open Diameter Selection","t":"打开直径选择","mod":"Assembly-CSharp"}
 {"h":"cb9d7d82dc6a4d27","n":"Option A","s":"Option A","t":"选项 A","mod":"Assembly-CSharp"}
+{"h":"cc5ab117d39b676e","n":"# L","s":"# L","t":"# L","mod":"Assembly-CSharp","p":1}
+{"h":"cc5ad217d39b9f81","n":"# m","s":"# m","t":"# m","mod":"Assembly-CSharp","p":1}
 {"h":"cd3e0e3765a5429a","n":"No Crash Damage","s":"No Crash Damage","t":"无撞击损伤","mod":"Assembly-CSharp"}
 {"h":"cd77eb33a779ed48","n":"Select Nose","s":"Select Nose","t":"选择头部","mod":"Assembly-CSharp"}
+{"h":"cd7d6c9b027b341b","n":"Steam (#)","s":"Steam (#)","t":"Steam (#)","mod":"Assembly-CSharp","p":1}
+{"h":"cf8ade2c699d71a3","n":"Kopernicus: Loading ScaledSpace Meshes","s":"Kopernicus: Loading ScaledSpace Meshes","t":"Kopernicus：正在加载缩放空间网格","mod":"Assembly-CSharp"}
+{"h":"cf9deaddae5d6457","n":"Controllable: #T","s":"Controllable: #T","t":"可控：#T","mod":"Assembly-CSharp","p":1}
 {"h":"d07b6cd25fb0c004","n":"Vessel Crew","s":"Vessel Crew","t":"载具乘员","mod":"Assembly-CSharp"}
 {"h":"d1330d5fee6582fe","n":"All crew members are now fully experienced.","s":"All crew members are now fully experienced.","t":"所有乘员现已达到满级经验。","mod":"Assembly-CSharp"}
 {"h":"d18cd575d5520304","n":"Select a contract","s":"Select a contract","t":"选择一个合同","mod":"Assembly-CSharp"}
-{"h":"d44dc052ee7c9c57","n":"#.# (WindowsPlayer x#) zh-cn","s":"#.# (WindowsPlayer x#) zh-cn","t":"#.# (WindowsPlayer x#) zh-cn","mod":"Assembly-CSharp"}
+{"h":"d1c81a13cc3f1433","n":"Steam","s":"Steam","t":"Steam","mod":"Assembly-CSharp"}
+{"h":"d44dc052ee7c9c57","n":"#.# (WindowsPlayer x#) zh-cn","s":"#.# (WindowsPlayer x#) zh-cn","t":"#.# (WindowsPlayer x#) zh-cn","mod":"Assembly-CSharp","p":1}
 {"h":"d4b417620b185ff9","n":"Current Ignition Chance: # %","s":"Current Ignition Chance: # %","t":"当前点火概率：# %","mod":"Assembly-CSharp","p":1}
 {"h":"d6bcaca62d2af9fc","n":"IconRefs in total: Nodes:","s":"IconRefs in total:   Nodes: ","t":"总计 IconRefs：节点：","mod":"Assembly-CSharp"}
 {"h":"d77fc2df79c4b37c","n":"PQSCache null","s":"PQSCache null","t":"PQSCache 为空","mod":"Assembly-CSharp"}
 {"h":"d83fe7b22957e5ea","n":"Modified Part Configs:","s":"Modified Part Configs:","t":"已修改部件配置：","mod":"Assembly-CSharp"}
 {"h":"d8e058815cbdb58c","n":"mountinterstage: Disabled","s":"mountinterstage: Disabled","t":"mountinterstage：已禁用","mod":"Assembly-CSharp"}
 {"h":"d8f21fe518d5cf6c","n":"Open Recoloring GUI","s":"Open Recoloring GUI","t":"打开改色界面","mod":"Assembly-CSharp"}
+{"h":"d986097c911420d1","n":"# MJ","s":"# MJ","t":"# MJ","mod":"Assembly-CSharp","p":1}
+{"h":"d9f90f7c91756891","n":"# kL","s":"# kL","t":"# kL","mod":"Assembly-CSharp","p":1}
 {"h":"da0dd3b827f07cc3","n":"Cost: # (both)","s":"Cost: # (both)","t":"成本：#（两者）","mod":"Assembly-CSharp","p":1}
 {"h":"da9c8902dbc945b9","n":"Vessel Info","s":"Vessel Info","t":"载具信息","mod":"Assembly-CSharp"}
 {"h":"dc60f25e49f7ee28","n":"Clear Current Contracts","s":"Clear Current Contracts","t":"清除当前合同","mod":"Assembly-CSharp"}
 {"h":"dd48253d16b54203","n":"Weight Data","s":"Weight Data","t":"权重数据","mod":"Assembly-CSharp"}
 {"h":"dec0fc65f7da6ad6","n":"Fairing Decoupler","s":"Fairing Decoupler","t":"整流罩分离器","mod":"Assembly-CSharp"}
 {"h":"e1cf1a2365bd63b8","n":"Adding more fuel and upgrading engines...","s":"Adding more fuel and upgrading engines...","t":"再添点燃料、升级下发动机……","mod":"Assembly-CSharp"}
+{"h":"e2ea030bf6cf5669","n":"This part has configurable colors.","s":"This part has configurable colors.","t":"此部件可自定义颜色。","mod":"Assembly-CSharp"}
 {"h":"e2eda663a55ce276","n":"Rated Burn Time: #s (#m #s)","s":"Rated Burn Time: #s (#m #s)","t":"额定燃烧时间：#s（#m #s）","mod":"Assembly-CSharp","p":1}
 {"h":"e31ab0334211db7c","n":"First Hop:","s":"First Hop:","t":"首次跳跃：","mod":"Assembly-CSharp"}
 {"h":"e3fcbf67594dd4fc","n":"Difficulty Options:","s":"Difficulty Options:","t":"难度选项：","mod":"Assembly-CSharp"}
+{"h":"e44699011a455b3a","n":"Kerbchem Industries","s":"Kerbchem Industries","t":"Kerbchem Industries","mod":"Assembly-CSharp"}
 {"h":"e57b410ca6a23d4d","n":"Total Length: #m","s":"Total Length: #m","t":"总长度：#m","mod":"Assembly-CSharp","p":1}
 {"h":"e5a84d5528841ba5","n":"Regenerate Current Contracts","s":"Regenerate Current Contracts","t":"重新生成当前合同","mod":"Assembly-CSharp"}
 {"h":"e5c9479dd3cf72b3","n":"Database Totals","s":"Database Totals","t":"数据库总计","mod":"Assembly-CSharp"}
@@ -277,19 +333,24 @@
 {"h":"e8dfc216e9705421","n":"Ejection power","s":"Ejection power","t":"弹射力度","mod":"Assembly-CSharp"}
 {"h":"ea422e25594c2136","n":"Allow Revert to Editor","s":"Allow Revert to Editor","t":"允许返回编辑器","mod":"Assembly-CSharp"}
 {"h":"ed39875205978419","n":"Base Size","s":"Base Size","t":"基础尺寸","mod":"Assembly-CSharp"}
+{"h":"ee66f72ad33d528e","n":"Avionics [Procedural]","s":"Avionics [Procedural]","t":"航电 [程序化]","mod":"Assembly-CSharp"}
 {"h":"ee93dba17935a46e","n":"RP-# Initialization & Setup","s":"RP-# Initialization & Setup","t":"RP-# 初始化与设置","mod":"Assembly-CSharp","p":1}
 {"h":"f147246829612305","n":"Flight EVA","s":"Flight EVA","t":"飞行中 EVA","mod":"Assembly-CSharp"}
 {"h":"f3c8754fe554159b","n":"Clear Finished Contracts","s":"Clear Finished Contracts","t":"清除已完成合同","mod":"Assembly-CSharp"}
 {"h":"f40796890172bb24","n":"Fairing Nodes","s":"Fairing Nodes","t":"整流罩节点","mod":"Assembly-CSharp"}
 {"h":"f4b32fe8d96a9987","n":"Current Run Time: #s/#s","s":"Current Run Time: #s/#s","t":"当前运行时间：#s/#s","mod":"Assembly-CSharp","p":1}
+{"h":"f4d19119825ea1c7","n":"Structure [Procedural]","s":"Structure [Procedural]","t":"结构 [程序化]","mod":"Assembly-CSharp"}
+{"h":"f5dc38efd6456ef0","n":"Specialized tanks for batteries. There are different levels of batteries that you can unlock. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. <b><color=green>From ROTanks mod</color></b>","s":"Specialized tanks for batteries. There are different levels of batteries that you can unlock. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. <b><color=green>From ROTanks mod</color></b>","t":"用于电池的专用贮箱。你可以解锁不同等级的电池。每种贮箱的基础质量、成本以及可提供的利用率各不相同。<b><color=green>来自 ROTanks 模组</color></b>","mod":"Assembly-CSharp"}
 {"h":"f6a89b3f8f8ed64b","n":"Last Restart: Roll: # %, Chance: # %","s":"Last Restart: Roll: # %, Chance: # %","t":"上次重启：抽检 # %，概率 # %","mod":"Assembly-CSharp","p":1}
 {"h":"f6c7ca8d460aae5b","n":"Hide Whack A Kerbal","s":"Hide Whack A Kerbal","t":"隐藏打坎巴拉人","mod":"Assembly-CSharp"}
 {"h":"f7bc93b73b10ca9a","n":"Legacy Textures","s":"Legacy Textures","t":"旧版纹理","mod":"Assembly-CSharp"}
 {"h":"f96668513b0813e7","n":"Dead Zone","s":"Dead Zone ","t":"死区","mod":"Assembly-CSharp"}
 {"h":"fb3f9adfd06d4bd8","n":"Stock vessel availability has been disabled.","s":"Stock vessel availability has been disabled.","t":"已禁用内置载具可用性。","mod":"Assembly-CSharp"}
 {"h":"fba4bffc46708e43","n":"Debug Toolbar","s":"Debug Toolbar","t":"调试工具栏","mod":"Assembly-CSharp"}
+{"h":"fbf0848ea8ef35fd","n":"#x-Kerolox","s":"#x-Kerolox","t":"#x-Kerolox","mod":"Assembly-CSharp","p":1}
 {"h":"fca9dc5904632c9e","n":"It's time for a little lecture, in order to make our transfer to Duna, or any other CB for that matter, we're going to use something called the Oberth effect. The Periapsis is the lowest point in an orbit, and the Apoapsis the highest one, remember? Well, think about your orbit as a hill for a moment, if you're going uphill it's harder than going downhill, right? This is because your kinetic energy is lower when you're traveling to a higher point, so going back to orbits the point of highest kinetic energy of the orbit is the Periapsis, because it's where you're about to change from downhill to uphill. You may ask yourself what all this has to do with getting to Duna, well back to the hill analogy, you get tired less if you run downhill, you use less energy, it's the same here, you burn less fuel if your kinetic energy is at its highest.","s":"It's time for a little lecture, in order to make our transfer to Duna, or any other CB for that matter, we're going to use something called the Oberth effect.\n\nThe Periapsis is the lowest point in an orbit, and the Apoapsis the highest one, remember? Well, think about your orbit as a hill for a moment, if you're going uphill it's harder than going downhill, right? This is because your kinetic energy is lower when you're traveling to a higher point, so going back to orbits the point of highest kinetic energy of the orbit is the Periapsis, because it's where you're about to change from downhill to uphill.\n\nYou may ask yourself what all this has to do with getting to Duna, well back to the hill analogy, you get tired less if you run downhill, you use less energy, it's the same here, you burn less fuel if your kinetic energy is at its highest.","t":"现在来进行一段简短讲解。为了向杜纳（或任何其他天体）进行转移，我们将利用所谓的奥伯特效应。\n\n近地点是轨道上的最低点，而远地点是最高点，还记得吗？不妨把你的轨道想象成一座小山，上坡总比下坡费力，对吧？这是因为当你向更高处运动时动能会降低。回到轨道力学中，轨道上动能最高的点就是近地点，因为这里正是由下坡转为上坡的临界点。\n\n你可能会问，这和前往杜纳有什么关系？回到爬山的类比，下坡跑时你消耗的体力更少、消耗的能量更低；轨道也是同理，在动能最高时进行点火，消耗的燃料最少。","mod":"Assembly-CSharp"}
 {"h":"fcca7450d5c4c2e2","n":"Mass: #kg","s":"Mass: #kg","t":"质量：#kg","mod":"Assembly-CSharp","p":1}
 {"h":"fd04ea60f718c369","n":"Shape Preset","s":"Shape Preset","t":"外形预设","mod":"Assembly-CSharp"}
 {"h":"fd4272765b87e2b5","n":"You are now on Duna's close proximity, but you're not done yet, a few things could have gone a little wrong. One thing that happens often is that Ike, Duna's satellite, is in the way, your trajectory leads to an Ike encounter. This is common because Ike's SOI is actually bigger than Duna's. If this happens create a maneuver node as close as possible to your current position and move the Radial vector a little away from Duna, burn and wait until you are close to Ike's orbit, then create another maneuver to get back closer to Duna. In any case create a node and pull the retrograde vector to create a stable low orbit around Duna, this will give us a better chance of success. This is not mandatory, if you're full of daring and/or can't spare the fuel you could set a collision course and proceed to land.","s":"You are now on Duna's close proximity, but you're not done yet, a few things could have gone a little wrong.\n\nOne thing that happens often is that Ike, Duna's satellite, is in the way, your trajectory leads to an Ike encounter. This is common because Ike's SOI is actually bigger than Duna's. If this happens create a maneuver node as close as possible to your current position and move the Radial vector a little away from Duna, burn and wait until you are close to Ike's orbit, then create another maneuver to get back closer to Duna.\n\nIn any case create a node and pull the retrograde vector to create a stable low orbit around Duna, this will give us a better chance of success. This is not mandatory, if you're full of daring and/or can't spare the fuel you could set a collision course and proceed to land.","t":"你现在已经非常接近杜纳了，但任务还没有结束，仍有一些情况可能会出差错。\n\n最常见的问题之一就是杜纳的卫星艾克挡在了路上，你的轨迹可能会遭遇艾克。这种情况很常见，因为艾克的引力范围实际上比杜纳还要大。如果发生这种情况，在尽可能靠近当前位置的地方创建一个机动节点，并将径向矢量向远离杜纳的方向微调，点火并等待接近艾克轨道，然后创建另一个机动以重新靠近杜纳。\n\n无论如何，请创建一个节点并向后拉动逆行矢量，建立一个稳定的杜纳低轨道，这将提高我们的成功率。这并非强制要求，如果你胆识过人并且/或者燃料不足，也可以直接设定撞击航向并进行着陆。","mod":"Assembly-CSharp"}
+{"h":"fd46b5e415dd75f0","n":"Two-person inline spaceplane cockpit. Rated for LEO reentries. <b><color=green>From Realism Overhaul mod</color></b>","s":"Two-person inline spaceplane cockpit. Rated for LEO reentries. <b><color=green>From Realism Overhaul mod</color></b>","t":"双人串联式航天飞机驾驶舱。额定可用于近地轨道再入。<b><color=green>来自 Realism Overhaul 模组</color></b>","mod":"Assembly-CSharp"}
 {"h":"fe9ed9213166fee5","n":"Condition: Enabled","s":"Condition: Enabled","t":"状态：启用","mod":"Assembly-CSharp"}

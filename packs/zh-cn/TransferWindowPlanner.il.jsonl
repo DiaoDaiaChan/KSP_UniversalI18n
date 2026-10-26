@@ -12,6 +12,7 @@
 {"h":"3ceb6fa1d85ec767","n":"Escape direction","s":"Escape direction","t":"逃逸方向","mod":"TransferWindowPlanner"}
 {"h":"3f920f14c1116ebf","n":"Final Orbit:","s":"Final Orbit:","t":"目标轨道：","mod":"TransferWindowPlanner"}
 {"h":"45f1ce0acc61ff38","n":"KAC is not loaded in this scene, so we can't configure","s":"KAC is not loaded in this scene, so we can't configure","t":"KAC 未在当前场景加载，无法进行配置","mod":"TransferWindowPlanner"}
+{"h":"483f4f129195954e","n":"Transfer Window Planner","s":"Transfer Window Planner","t":"Transfer Window Planner","mod":"TransferWindowPlanner"}
 {"h":"4ea14cb8cc4503ef","n":"Settings Section","s":"Settings Section","t":"设置部分","mod":"TransferWindowPlanner"}
 {"h":"514720e9372e083f","n":"Enter Parameters","s":"Enter Parameters","t":"输入参数","mod":"TransferWindowPlanner"}
 {"h":"534f5c3db3e9a878","n":"Travel Time:","s":"Travel Time:","t":"转移时间：","mod":"TransferWindowPlanner"}
@@ -22,10 +23,15 @@
 {"h":"7e2ab56c15c0c7e5","n":"GitHub Page:","s":"GitHub Page:","t":"GitHub 页：","mod":"TransferWindowPlanner"}
 {"h":"80666f9979ad513a","n":"Ejection Inclination:","s":"Ejection Inclination:","t":"逃逸轨道倾角：","mod":"TransferWindowPlanner"}
 {"h":"82d36f68c27230b1","n":"Departure Date","s":"Departure Date","t":"出发日期","mod":"TransferWindowPlanner"}
+{"h":"8587736730c8b7ea","n":"days","s":"days","t":"天","mod":"TransferWindowPlanner"}
 {"h":"9c1ee7580e2ea9e8","n":"Latest Departure:","s":"Latest Departure:","t":"最晚出发时间：","mod":"TransferWindowPlanner"}
+{"h":"9ef7c821c2c20188","n":"Select the celestial body you wish to travel to.","s":"Select the celestial body you wish to travel to.","t":"选择你希望前往的天体。","mod":"TransferWindowPlanner"}
+{"h":"ac7b640aa130fe0f","n":"Enter the altitude and inclination of your parking orbit around that body. This is assumed to be a circular orbit. Depending on the selected transfer, the actual inclination of the parking orbit may have to be higher than this; make sure to check this in the full details.","s":"Enter the altitude and inclination of your parking orbit around that body. This is assumed to be a circular orbit. Depending on the selected transfer, the actual inclination of the parking orbit may have to be higher than this; make sure to check this in the full details.","t":"输入你绕该天体停泊轨道的高度与倾角。这里假定为圆轨道。视所选转移窗口而定，停泊轨道的实际倾角可能要比此值更高；请在完整详情中确认这一点。","mod":"TransferWindowPlanner"}
 {"h":"ad8404b18f104675","n":"Click Through Protection","s":"Click Through Protection","t":"防穿透点击保护","mod":"TransferWindowPlanner"}
 {"h":"ae5ec91977c05ef5","n":"Time of Flight:","s":"Time of Flight:","t":"飞行时间：","mod":"TransferWindowPlanner"}
 {"h":"b2cd1d8f57b1efd3","n":"Initial Orbit:","s":"Initial Orbit:","t":"初始轨道：","mod":"TransferWindowPlanner"}
+{"h":"b3875714b2b65347","n":"Enter the earliest departure date to include in the plot. Generally this should be your current game time, which you can find in the tracking station in the game.","s":"Enter the earliest departure date to include in the plot. Generally this should be your current game time, which you can find in the tracking station in the game.","t":"输入要纳入绘图的最早出发日期。通常这应该是你的当前游戏时间，你可以在游戏中的跟踪站查看。","mod":"TransferWindowPlanner"}
+{"h":"b643adfb49d3f8e6","n":"Select the celestial body you will be departing from.","s":"Select the celestial body you will be departing from.","t":"请选择你将要出发的天体。","mod":"TransferWindowPlanner"}
 {"h":"b8ad96445764878c","n":"Insertion Inclination:","s":"Insertion Inclination:","t":"捕获轨道倾角：","mod":"TransferWindowPlanner"}
 {"h":"b912f1860f76985b","n":"Burn position","s":"Burn position","t":"机动位置","mod":"TransferWindowPlanner"}
 {"h":"b9db3bdb3899d9aa","n":"Copy Details","s":"  Copy Details","t":"复制详情","mod":"TransferWindowPlanner"}
@@ -34,8 +40,11 @@
 {"h":"c55329b30d952bb9","n":"Go on... Move along... Nothing to see...","s":"Go on... Move along... Nothing to see...","t":"继续走……往前走……这里没什么好看的……","mod":"TransferWindowPlanner"}
 {"h":"c5657541dff07cac","n":"the integration options","s":"the integration options","t":"集成选项","mod":"TransferWindowPlanner"}
 {"h":"cb12d0df3ec0b3e6","n":"Earliest Departure:","s":"Earliest Departure:","t":"最早出发时间：","mod":"TransferWindowPlanner"}
+{"h":"d2997fb46afb74eb","n":"Click the \"Plot it!\" button. After a few seconds a plot will appear showing how much Δv is required to reach your destination for different departure dates and times of flight. Click on any point on this plot to see full details of the selected transfer.","s":"Click the \"Plot it!\" button. After a few seconds a plot will appear showing how much Δv is required to reach your destination for different departure dates and times of flight. Click on any point on this plot to see full details of the selected transfer.","t":"点击「绘图！」按钮。稍等几秒就会出现一张图，显示不同出发日期与飞行时间下抵达目的地所需的 Δv。点击图上任意一点即可查看该转移的完整详情。","mod":"TransferWindowPlanner"}
 {"h":"d4e577e6eab12dbe","n":"Plot It!","s":"Plot It!","t":"绘制！","mod":"TransferWindowPlanner"}
 {"h":"ddd228662005ab23","n":"Ejection Angle:","s":"Ejection Angle:","t":"逃逸角：","mod":"TransferWindowPlanner"}
+{"h":"df1c27a0e862acdf","n":"Destination:","s":"Destination:","t":"目的地：","mod":"TransferWindowPlanner"}
 {"h":"e6ffc4d7a0c84bb3","n":"Ejection LAN:","s":"Ejection LAN:","t":"逃逸升交点经度：","mod":"TransferWindowPlanner"}
 {"h":"e8efff4d2b9171e0","n":"Insertion Δv:","s":"Insertion Δv:","t":"捕获 Δv：","mod":"TransferWindowPlanner"}
+{"h":"f77119361c715a7a","n":"Instructions:","s":"Instructions:","t":"使用说明：","mod":"TransferWindowPlanner"}
 {"h":"fa72efc7e8de6ec1","n":"Total Δv:","s":"Total Δv:","t":"总 Δv：","mod":"TransferWindowPlanner"}

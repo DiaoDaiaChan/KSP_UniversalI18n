@@ -21,7 +21,7 @@ r"""capture_ingest.py -- 运行时捕获摄入：capture-*.jsonl -> packs/captur
 
 四档 vocabulary（前三档是输入侧判定，pattern 是产物侧派生档）
 --------------------------------------------------------------
-    never     -- 不该翻（路径 / 已含中文 / 纯标点 / 标识符 / 空 / 过短 / 过长）
+    never     -- 不该翻（路径 / 已含中文 / 纯标点 / 标识符 / 空 / 过短 / 过长 / 日志行）
     template  -- 含数字或占位符的进度、计数、格式串（**不原样进产物**，见下）
     candidate -- 其余，即真正可翻的
     pattern   -- （派生）一条**数字骨架**一行，如 `ModuleManager: # patches applied`；
@@ -109,16 +109,19 @@ OUTPUT_BUCKETS = ("candidate", "pattern")
 UNATTRIBUTED = "UI18n-Unattributed"
 
 # 原因码：顺序即短路优先级（与运行时分类器的口径一致，见模块 docstring）
-REASONS = ("empty", "too-short", "too-long", "blank", "path", "already-cjk",
-           "progress", "counter", "punct", "identifier", "")
-REASON_ORDER = ("path", "already-cjk", "progress", "counter", "punct",
+REASONS = ("empty", "too-short", "too-long", "blank", "logline", "path",
+           "already-cjk", "progress", "counter", "punct", "identifier", "")
+REASON_ORDER = ("logline", "path", "already-cjk", "progress", "counter", "punct",
                 "identifier", "too-short", "too-long", "blank", "empty", "")
 
 # 运行时允许出现在捕获文件里的 reason 取值；declared 字段只在这个集合里采信
 DECLARED_REASONS = ("path", "progress", "counter", "")
 
 MIN_LEN = 2          # 短于 2 个字符一律 never/too-short（与 harvest 的 too-short 同阈值）
-MAX_LEN = 300        # 超长多半是整段日志/序列化数据，判 never/too-long
+MAX_LEN = 2000       # 超长多半是整段日志/序列化数据，判 never/too-long。
+                     # v1.4 由 300 提到 2000：零件 description 的 p99=577 / max=1577，
+                     # 300 会把整段零件描述当噪声丢掉（ROTanks 那条 300 字符的电池罐描述就是这么
+                     # 丢的）。2000 仍能挡住序列化数据块（实测捕获里最长非文本串 4 万字符）。
 
 # 路径：整串必须是 a/b/c 形态（>=3 段）。段内允许空格/加号/逗号（mod 目录名里真的会有：
 # "ROCapsules/PartConfigs/Apollo D2/D2Adapter/ROC-D2Adaptor"），但段首尾不许有空格
@@ -136,6 +139,12 @@ _DOTTED_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+$")
 _CAMEL_RE = re.compile(r"^[a-z]+[A-Z][A-Za-z0-9]*$")
 _CAPS_RE = re.compile(r"^[A-Z][A-Z0-9]{1,7}$")
 _PATCH_SUFFIX_RE = re.compile(r"_Patch[0-9]+$")
+# 日志行：mod 自己打的 Debug 输出（"[20:00:15][Debug] [AeroState] provider=Stock, M=0.000 ..."）
+# 永远不上 UI，翻它没有意义，还白占骨架位。两种形态都要认：原始捕获里是真实 [HH:MM:SS]，
+# 而骨架塌缩把数字段换成 # 之后同一行会变成 [#:#:#] —— 判据放在塌缩**之前**，但塌缩后的
+# 形态也必须能被同一条规则判掉（回放骨架、以及重新摄入已塌缩过的产物时都会遇到）。
+# 只认「第一个 ] 内是时钟」：[Not a clock] Something 不算，避免误伤方括号开头的正常串。
+_LOGLINE_RE = re.compile(r"^\[(?:\d{1,2}:\d{2}:\d{2}|#:#:#)\]")
 # 这些是 Unity / KSP 自己的类型名，从 caller 首段取到的它们不是 mod
 _API_ROOTS = frozenset(("gui", "guilayout", "guistyle", "tmpro", "tmp_text", "tmp_inputfield",
                         "screenmessages", "unityengine", "unity", "ksp", "ksp.ui", "system"))
@@ -156,13 +165,20 @@ def _looks_identifier(n):
     return False
 
 
+def _looks_logline(n):
+    """日志行形态：归一化后整串以 [HH:MM:SS]（或塌缩后的 [#:#:#]）开头。"""
+    return bool(_LOGLINE_RE.match(n))
+
+
 def classify_capture(text):
     """运行时捕获文本 -> (bucket, reason)。短路顺序见 REASONS。
 
-    顺序上有两处刻意的安排：
-      1. path 排在 already-cjk 之前、也排在数字之前 —— 否则 ReStockPlus/Parts/... 这种
+    顺序上有三处刻意的安排：
+      1. logline 排在所有语义判定之前 —— 日志行几乎都含数字，排在 counter 后面会被判成
+         template，塌缩成骨架后就再也认不出来了；
+      2. path 排在 already-cjk 之前、也排在数字之前 —— 否则 ReStockPlus/Parts/... 这种
          含数字的路径会被判成 template/counter；
-      2. progress（数字/数字）排在 counter（含数字）之前 —— 前者信息更具体。
+      3. progress（数字/数字）排在 counter（含数字）之前 —— 前者信息更具体。
     """
     n = textnorm.normalize(text)
     if not n:
@@ -173,6 +189,8 @@ def classify_capture(text):
         return ("never", "too-long")
     if not n.strip():
         return ("never", "blank")
+    if _looks_logline(n):
+        return ("never", "logline")
     if _PATH_RE.match(n):
         return ("never", "path")
     if _CJK_RE.search(n):
@@ -1187,6 +1205,15 @@ def render_triage(stats, rows, tri, argv_note=""):
       % (stats["multi_session"], per_bucket["candidate"]["multi"],
          per_bucket["template"]["multi"], per_bucket["never"]["multi"]))
     w("- reason 分布：%s" % (_reason_text(stats) or "-"))
+    n_log = stats["reasons"].get("logline", 0)
+    if n_log:
+        w("- **日志行（`logline`）单独一行记账：%d 条**（占去重后 %.1f%%）：归一化后整串以 "
+          "`[HH:MM:SS]` 或塌缩后的 `[#:#:#]` 开头，是 mod 自己打的 Debug 输出"
+          "（`[20:00:15][Debug] [AeroState] provider=Stock, M=0.000 ...`）。判在模板塌缩"
+          "**之前**，所以它们既不进产物、也不占骨架位 —— 这些串不会显示给玩家，翻它没有观感"
+          "收益，还会把骨架预算花光。判据是 `_LOGLINE_RE`（只认第一个 `]` 内是时钟，"
+          "`[Not a clock] Something` 这类正常串不受影响）。"
+          % (n_log, 100.0 * n_log / max(1, stats["distinct"])))
     w("- 声明字段采信 %d 条 h / 全靠离线自算 %d 条；**离线重算判 never 而采集器声明不是 "
       "never 的有 %d 条（占 %.1f%%）**（按保守口径一律剔除，见模块 docstring）。"
       % (stats["declared_used"], stats["computed"], stats["offline_veto"],
@@ -1312,8 +1339,8 @@ def render_triage(stats, rows, tri, argv_note=""):
       "数字由游戏填，翻了只会错位 | - |" % progress)
     w("| `template` + `counter` | %d | **已塌缩进 pattern**：数字位置由骨架固定，"
       "翻骨架即可，不再逐条翻 | 计入上行 |" % counter)
-    w("| `bucket=never` | %d | **永远不进**：路径 / 已含中文 / 标识符 / 纯标点 / 过长 | - |"
-      % never["items"])
+    w("| `bucket=never` | %d | **永远不进**：路径 / 已含中文 / 标识符 / 纯标点 / 过长 / "
+      "日志行 | - |" % never["items"])
     w("")
     w("- 全量 v3 产物 = candidate + pattern 共 %d 行 / %s（v2 的 template 行不再原样落盘）。"
       "**只给打包用时请加 `--buckets candidate`**，产物缩到 %d 行 / %s。"
@@ -1745,7 +1772,16 @@ def selftest_cases(base):
     def a(name, ok, detail=""):
         out.append((name, bool(ok), detail))
 
-    # --- 分类：路径 / 中文 / 进度 / 计数 / 普通句子 / 标点 / 标识符 ---
+    # --- 分类：日志行 / 路径 / 中文 / 进度 / 计数 / 普通句子 / 标点 / 标识符 ---
+    a("classify: 真实时间戳日志行 -> never/logline",
+      classify_capture("[20:00:15][Debug] [AeroState] provider=Stock, M=0.000, q=1.000")
+      == ("never", "logline"))
+    a("classify: 方括号但不是时钟 -> 不判 logline",
+      classify_capture("[Not a clock] Something") == ("candidate", ""))
+    a("classify: 塌缩后的 [#:#:#] 日志行也认 -> never/logline",
+      classify_capture("[#:#:#][Debug] [Aero] x") == ("never", "logline"))
+    a("classify: 正常句子不受 logline 影响 -> candidate",
+      classify_capture("Loading texture assets...") == ("candidate", ""))
     a("classify: 资源路径 -> never/path",
       classify_capture("ReStockPlus/Parts/FuelTank/x") == ("never", "path"))
     a("classify: 含中文 -> never/already-cjk",

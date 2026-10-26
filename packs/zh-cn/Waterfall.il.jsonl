@@ -52,6 +52,7 @@
 {"h":"8bc7b13ff946098e","n":"Float Curve","s":"Float Curve","t":"浮点曲线","mod":"Waterfall"}
 {"h":"903d074f92965316","n":"Random type","s":"Random type","t":"随机类型","mod":"Waterfall"}
 {"h":"9547c507c15842eb","n":"Particle Parameter Name","s":"Particle Parameter Name","t":"粒子参数名称","mod":"Waterfall"}
+{"h":"965c503c3e42fdfe","n":"Enabled","s":"Enabled","t":"已启用","mod":"Waterfall"}
 {"h":"9706cbe4d4073559","n":"EngineID Field Name","s":"EngineID Field Name","t":"EngineID 字段名称","mod":"Waterfall"}
 {"h":"975af33d433616c7","n":"This toggles the worldspace/floating origin compensation system. Notes - Many particle system position functions will no longer work correctly - It is computationally expensive - It is buggy sometimes","s":"This toggles the worldspace/floating origin compensation system. Notes\n- Many particle system position functions will no longer work correctly\n- It is computationally expensive \n- It is buggy sometimes","t":"用于切换世界空间/浮动原点补偿系统。注意：\n- 许多粒子系统位置函数将不再正常工作\n- 计算开销较大\n- 有时会出现故障","mod":"Waterfall"}
 {"h":"979e10a6294a0834","n":"X Curve","s":"X Curve","t":"X 轴曲线","mod":"Waterfall"}

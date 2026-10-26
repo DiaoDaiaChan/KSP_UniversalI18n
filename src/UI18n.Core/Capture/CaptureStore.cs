@@ -67,7 +67,7 @@ namespace UI18n.Core.Capture
 
             if (_options.MaxTextLength <= 0)
             {
-                _options.MaxTextLength = 400;
+                _options.MaxTextLength = 2000;
             }
 
             if (_options.MinTextLength < 0)

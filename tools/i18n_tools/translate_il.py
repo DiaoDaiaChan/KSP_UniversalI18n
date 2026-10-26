@@ -613,6 +613,7 @@ class Runner:
             "calls": 0,
             "batches": 0,
             "batches_failed": 0,
+            "failed_batches_partial": 0,
             "splits": 0,
             "retried": 0,
             "items_total": 0,
@@ -870,7 +871,22 @@ class Runner:
         if not pending:
             return results
 
-        response = self._call(pending, soft_pairs)
+        # 批内可能混着「人工覆盖命中」与「需要模型」的条目。模型调用一旦抛异常，
+        # 早先已算出的覆盖/缓存结果若跟着整批丢掉，就会出现「人工表里有译文、包里没有行」
+        # 的静默缺口（实测 v1.4 首跑：'Instructions:' / 'Destination:' 等 12 条单 token
+        # 真 UI 文案就这样丢了，用户界面上直接看到英文）。所以这里必须就地兜住，
+        # 只把真正没译的 pending 记 failed，已得结果原样返回。
+        try:
+            response = self._call(pending, soft_pairs)
+        except Exception:
+            self.stats["batches_failed"] += 1
+            self.stats["failed_batches_partial"] += 1
+            self.log("  !! 批异常（未译 {} 条，已保留覆盖/缓存 {} 条）：\n{}".format(
+                len(pending), len(results), traceback.format_exc()))
+            for item in pending:
+                results.append(self._finish(item, None, ["G1"], {"G1": "批异常"},
+                                            failed_item=True))
+            return results
         parsed = T.extract_items(response.content) or []
         by_id = {}
         for row in parsed:
@@ -1723,8 +1739,10 @@ def selftest():
     check("override 的 h/n 与模型路径同源",
           ov_res["entry"]["h"] == hash_text(normalize("Toggle <<1>>")), ov_res["entry"]["h"])
     real_ov, real_meta = load_overrides()
-    check("packs/overrides.jsonl 283 条 / 冲突 0 / 坏行 0",
-          len(real_ov) == 283 and real_meta == {"conflicts": 0, "bad": 0},
+    # 条数不写死：人工表会随翻译批次增长（v1.3 的 283 条 -> v1.4 的 3,736 条）。
+    # 这条断言要守的是「表能读、无冲突、无坏行」，不是某个具体规模。
+    check("packs/overrides.jsonl 可读 / >=283 条 / 冲突 0 / 坏行 0",
+          len(real_ov) >= 283 and real_meta == {"conflicts": 0, "bad": 0},
           (len(real_ov), real_meta))
     # lead m01857 裁定一：Research & Development 走人工覆盖，短译「研发」是正确译法（不靠括号补英文骗 G6）
     check("R&D 覆盖成最短正确译法「研发」",
@@ -1856,7 +1874,9 @@ def _build_parser():
         prog="translate_il",
         description="IL 采集 / 运行时捕获候选 -> packs/zh-cn/<mod>.il.jsonl")
     parser.add_argument("--il", default=str(IL_INPUT), help="il-translatable.jsonl 路径")
-    parser.add_argument("--capture", default=str(CAPTURE_INPUT), help="capture-candidates.jsonl 路径")
+    parser.add_argument("--capture", default=str(CAPTURE_INPUT),
+                        help="capture 候选 jsonl 路径，多个用 ; 分隔"
+                             "（例如 capture-candidates.jsonl;cfgcache-candidates.jsonl）")
     parser.add_argument("--source", choices=("auto", "il", "capture"), default="auto")
     parser.add_argument("--out", default=str(OUT_DIR), help="输出目录（默认 packs/zh-cn）")
     parser.add_argument("--glossary", default=str(GLOSSARY_PATH))
@@ -1915,7 +1935,11 @@ def main(argv=None):
     if args.source in ("auto", "il"):
         paths.append(Path(args.il))
     if args.source in ("auto", "capture"):
-        paths.append(Path(args.capture))
+        # 多个候选文件用 ';' 分隔：采集通道（运行时缺命中）+ cfgcache 通道
+        # （ModuleManager 补丁后的最终配置文本）是两条独立的候选来源，缺一不可。
+        for part in str(args.capture).split(";"):
+            if part.strip():
+                paths.append(Path(part.strip()))
     paths = [p for p in paths if str(p).strip() not in ("", ".")]
     existing_paths = [p for p in paths if p.is_file()]
     missing = [str(p) for p in paths if not p.is_file()]

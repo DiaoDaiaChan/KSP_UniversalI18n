@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "lang": "zh-cn",
-  "generatedAt": "2026-10-26T04:35:38Z",
-  "totalRows": 11561,
-  "totalBytes": 3794336,
-  "packCount": 96,
+  "generatedAt": "2026-10-26T07:15:06Z",
+  "totalRows": 14954,
+  "totalBytes": 5170859,
+  "packCount": 97,
   "packs": [
     {
       "mod": "000_TexturesUnlimited",
@@ -41,10 +41,10 @@
     {
       "mod": "Assembly-CSharp",
       "file": "zh-cn/Assembly-CSharp.il.jsonl",
-      "rows": 295,
-      "bytes": 52349,
-      "sha256": "c9fe2ee401d8af5bb349cef455f15f4f91fe7d24f89a8b4f9cedf322c2c92419",
-      "keepRows": 3
+      "rows": 356,
+      "bytes": 62061,
+      "sha256": "07dc906aa556a2d90cac8feed4104d81c465e29760074580ac32c9ff7fde9bdf",
+      "keepRows": 32
     },
     {
       "mod": "AtmosphereAutopilot",
@@ -65,9 +65,9 @@
     {
       "mod": "B9-PWings-Fork",
       "file": "zh-cn/B9-PWings-Fork.il.jsonl",
-      "rows": 1,
-      "bytes": 105,
-      "sha256": "932cdced794818f4cbe085ce272c95429a3baa555077374f2b54fc77aa44ef0b",
+      "rows": 2,
+      "bytes": 196,
+      "sha256": "de5aae7ef6df67fbff917bd069d47ab921804c69129983bd899762af7ba2d7e7",
       "keepRows": 0
     },
     {
@@ -105,10 +105,10 @@
     {
       "mod": "ClickThroughBlocker",
       "file": "zh-cn/ClickThroughBlocker.il.jsonl",
-      "rows": 13,
-      "bytes": 3074,
-      "sha256": "c652e5e0d941c8792851f52e4bcc0cc8ef1c37c8b275202f82a42e35edeb3a5a",
-      "keepRows": 1
+      "rows": 16,
+      "bytes": 3487,
+      "sha256": "52d922196c06d40c007dfe5f77a41f25f8851c0293879e4824ced98fb7104332",
+      "keepRows": 3
     },
     {
       "mod": "CommunityResourcePack",
@@ -129,9 +129,9 @@
     {
       "mod": "ContractConfigurator",
       "file": "zh-cn/ContractConfigurator.il.jsonl",
-      "rows": 25,
-      "bytes": 4273,
-      "sha256": "81adeafb688c96b3b10ed3cecadeae118506e663536dcf3ecebb8b27d3322907",
+      "rows": 26,
+      "bytes": 4362,
+      "sha256": "7ba5a4183338be00ff12e5ad26767c76557fb39103d9f3ef9a86bf42284970c9",
       "keepRows": 0
     },
     {
@@ -145,9 +145,9 @@
     {
       "mod": "EVEManager",
       "file": "zh-cn/EVEManager.il.jsonl",
-      "rows": 1,
-      "bytes": 136,
-      "sha256": "4dd78718fad8a4c46c0707cbc8445af8eb1f970b56ed77ae1723d1af0a67896b",
+      "rows": 2,
+      "bytes": 217,
+      "sha256": "d9f400fd0c49d4694c48561f0a9f74eaa99943db910ddb4a4281eb1d2421aeda",
       "keepRows": 0
     },
     {
@@ -169,9 +169,9 @@
     {
       "mod": "FerramAerospaceResearch",
       "file": "zh-cn/FerramAerospaceResearch.il.jsonl",
-      "rows": 43,
-      "bytes": 6771,
-      "sha256": "b26eea38dbe296c8daef9a3dc6b9c7e68ec5c7d1f2e0e8ff22d84da8b6b8a198",
+      "rows": 58,
+      "bytes": 8278,
+      "sha256": "9b37bbbf4e85706754ba4057314aa3802e553efaeca3d1aee4627553e006abc9",
       "keepRows": 0
     },
     {
@@ -217,10 +217,10 @@
     {
       "mod": "KSPCommunityFixes",
       "file": "zh-cn/KSPCommunityFixes.il.jsonl",
-      "rows": 12,
-      "bytes": 1787,
-      "sha256": "0c0be49dc556c79b00ec7deaa369ee6fc0272927640ef967276a13f287c693e9",
-      "keepRows": 1
+      "rows": 18,
+      "bytes": 2474,
+      "sha256": "cafd0c6118cf9c1ba4627c40e95016e1cae990eecf7b5753c0741f21a514f9c8",
+      "keepRows": 7
     },
     {
       "mod": "KSPCommunityFixes",
@@ -233,18 +233,18 @@
     {
       "mod": "KSPPerformanceProfiler",
       "file": "zh-cn/KSPPerformanceProfiler.il.jsonl",
-      "rows": 28,
-      "bytes": 8413,
-      "sha256": "8f5178aabbab21e7aadc8ee9e0b49b3d478fd47dcf984acc4879e9dbc3c9744c",
-      "keepRows": 1
+      "rows": 213,
+      "bytes": 44183,
+      "sha256": "c77b616ce5e04134c7f8945de618acf7b2553a05982533d17009d13387b404e6",
+      "keepRows": 178
     },
     {
       "mod": "KSPTextureLoader",
       "file": "zh-cn/KSPTextureLoader.il.jsonl",
-      "rows": 27,
-      "bytes": 3080,
-      "sha256": "aa8460de31318f1c35bbb907611ce5f8ac9320afbe28e9f2e4040f2c1ed07c61",
-      "keepRows": 0
+      "rows": 28,
+      "bytes": 3202,
+      "sha256": "abaff674b9bdd653cf3e53036116f890bad3c2bd734280515ff7f8653a10bb56",
+      "keepRows": 1
     },
     {
       "mod": "KSPWheel",
@@ -289,9 +289,9 @@
     {
       "mod": "Kerbalism",
       "file": "zh-cn/Kerbalism.il.jsonl",
-      "rows": 1,
-      "bytes": 102,
-      "sha256": "218767788a9952ac28c397f9f2716ca8c394101196d1be610849971a64d06e11",
+      "rows": 2,
+      "bytes": 178,
+      "sha256": "a7748d306c5fc47b4da34d34b40500941978df113c58585bc57a34b0ad19b6a4",
       "keepRows": 0
     },
     {
@@ -321,18 +321,18 @@
     {
       "mod": "LunarTransferPlanner",
       "file": "zh-cn/LunarTransferPlanner.il.jsonl",
-      "rows": 12,
-      "bytes": 1832,
-      "sha256": "60e381ee7b36b0c4f070e54e51f494b4620857ddb7261b1e319baef056c187c1",
-      "keepRows": 0
+      "rows": 13,
+      "bytes": 1937,
+      "sha256": "7ed1b2a7ea60637b0e5db6f75eddb55b9e1714a663439b50a11d6e67cf9659aa",
+      "keepRows": 1
     },
     {
       "mod": "MechJeb2",
       "file": "zh-cn/MechJeb2.il.jsonl",
-      "rows": 147,
-      "bytes": 54829,
-      "sha256": "698636d04f3cfc772606a6fabae0e509cddfc35c53d3d0b8cd3aa428668fd325",
-      "keepRows": 0
+      "rows": 169,
+      "bytes": 56832,
+      "sha256": "0e03ed471071352451d94ab2ec6a6f76d11a7dd39606ae367040b4396b6323ee",
+      "keepRows": 15
     },
     {
       "mod": "MechJeb2",
@@ -345,10 +345,10 @@
     {
       "mod": "ModularFlightPanel",
       "file": "zh-cn/ModularFlightPanel.il.jsonl",
-      "rows": 7,
-      "bytes": 841,
-      "sha256": "2677560a646d6512f4bf4af05b5a8c87f12d7d3100be1f1399a6b641169235d5",
-      "keepRows": 0
+      "rows": 60,
+      "bytes": 7296,
+      "sha256": "4c9ee7918b9b562da36c18dc9d5c23276c3a109defc0006fed3e99e5880847f1",
+      "keepRows": 51
     },
     {
       "mod": "ModularLaunchPads",
@@ -433,9 +433,9 @@
     {
       "mod": "RCSBuildAid",
       "file": "zh-cn/RCSBuildAid.il.jsonl",
-      "rows": 42,
-      "bytes": 4943,
-      "sha256": "4e99d1c15adc0153e6e91ec79fe65a6289518299d4953e4914cd97098a39f113",
+      "rows": 45,
+      "bytes": 5203,
+      "sha256": "63d28fd6c68d0eb173f90e3132524dbd24175ab563015c173e215410a0a1108a",
       "keepRows": 0
     },
     {
@@ -505,9 +505,9 @@
     {
       "mod": "RP0",
       "file": "zh-cn/RP0.il.jsonl",
-      "rows": 246,
-      "bytes": 41836,
-      "sha256": "683aa57d78009163d30ce8dd1d7387ad80b0745901f6f2899af2bb60d5375b7b",
+      "rows": 298,
+      "bytes": 48711,
+      "sha256": "76f087e08aa2c0a4c642fc606e7ac75c961e300ed02be6f365e07799fdf0e697",
       "keepRows": 0
     },
     {
@@ -529,10 +529,10 @@
     {
       "mod": "RealAntennas",
       "file": "zh-cn/RealAntennas.il.jsonl",
-      "rows": 26,
-      "bytes": 3312,
-      "sha256": "6192a65e231bcd0aacae38de6ade9fa437c9bb4fd0d104cd6b5a9ebb268bbebe",
-      "keepRows": 0
+      "rows": 31,
+      "bytes": 3931,
+      "sha256": "c5989f9b71a17d332c1c2393c97fe5d25e29df26a7107bc03464382328136364",
+      "keepRows": 1
     },
     {
       "mod": "RealAntennas",
@@ -561,10 +561,10 @@
     {
       "mod": "RealFuels",
       "file": "zh-cn/RealFuels.il.jsonl",
-      "rows": 43,
-      "bytes": 5383,
-      "sha256": "9152ce5b97bf4dc0b6bf8b1c9e4d3d2ad56da0a5e315f4c7dfb2fdd539805414",
-      "keepRows": 0
+      "rows": 49,
+      "bytes": 6189,
+      "sha256": "7fa69826ae4d8c23db4b38a942aa9f001a90b7b3a1194e7515c56515ecc6f97d",
+      "keepRows": 5
     },
     {
       "mod": "RealFuels",
@@ -593,10 +593,10 @@
     {
       "mod": "RealisticLaunchVisuals",
       "file": "zh-cn/RealisticLaunchVisuals.il.jsonl",
-      "rows": 27,
-      "bytes": 8361,
-      "sha256": "a944f6a6a4a594332a0cc7e3645b8af30a33a4f867a4c37baaf91714f7901f75",
-      "keepRows": 0
+      "rows": 34,
+      "bytes": 9738,
+      "sha256": "757ddfb1d82ff1b417a1e8cd4d899ae343cacb27a81e749a109220dbaee6394f",
+      "keepRows": 3
     },
     {
       "mod": "Renamer",
@@ -657,10 +657,10 @@
     {
       "mod": "TUFX",
       "file": "zh-cn/TUFX.il.jsonl",
-      "rows": 51,
-      "bytes": 10184,
-      "sha256": "8f88396915a153b0b0cbdfc0323ee2594e133d66a1102e73c5158242243d0819",
-      "keepRows": 21
+      "rows": 155,
+      "bytes": 31879,
+      "sha256": "dec23fad7c6f93391f72c3b6570b6d27e24302e0938aa493bf47fd3d0a5093c0",
+      "keepRows": 112
     },
     {
       "mod": "Telecom",
@@ -689,10 +689,10 @@
     {
       "mod": "TextureReplacer",
       "file": "zh-cn/TextureReplacer.il.jsonl",
-      "rows": 6,
-      "bytes": 752,
-      "sha256": "b92a6572febe7c141e91f3d58c71ea242fc3b88039d70579346e3424ae2c6275",
-      "keepRows": 0
+      "rows": 19,
+      "bytes": 2172,
+      "sha256": "4df0a639078114fbdd26053b448333f0fbba3e6fbeab74ab02949a7febb64699",
+      "keepRows": 13
     },
     {
       "mod": "TexturesUnlimited",
@@ -713,10 +713,10 @@
     {
       "mod": "TransferWindowPlanner",
       "file": "zh-cn/TransferWindowPlanner.il.jsonl",
-      "rows": 41,
-      "bytes": 6065,
-      "sha256": "a5b06ba9384b69eaadfa30956f22c0343094904cf47af19e0c1d30518bcd6ac9",
-      "keepRows": 0
+      "rows": 50,
+      "bytes": 9097,
+      "sha256": "8db720a2815e650bd973dbb297ae3a6ecf40b70569ec8d234cbf89b669975151",
+      "keepRows": 1
     },
     {
       "mod": "TriggerTech",
@@ -727,20 +727,28 @@
       "keepRows": 10
     },
     {
+      "mod": "UI18n-ConfigCache",
+      "file": "zh-cn/UI18n-ConfigCache.il.jsonl",
+      "rows": 2598,
+      "bytes": 1216178,
+      "sha256": "333004459c5003e45c00ca53717270e5033fc4a0ef7d3e40e40f498b32e6d92e",
+      "keepRows": 905
+    },
+    {
       "mod": "UI18n-Unattributed",
       "file": "zh-cn/UI18n-Unattributed.il.jsonl",
-      "rows": 31,
-      "bytes": 3582,
-      "sha256": "d15d99a5877e9dcd5c8067edf9cf9542a5dcc4d9ae498c21b8460e0ff94f05c3",
-      "keepRows": 1
+      "rows": 251,
+      "bytes": 62258,
+      "sha256": "d4ebae28706d13f4c050179ba797cd71c2b01e71c876f7aaa3cded465d1bc227",
+      "keepRows": 6
     },
     {
       "mod": "Utils",
       "file": "zh-cn/Utils.il.jsonl",
-      "rows": 5,
-      "bytes": 489,
-      "sha256": "c7c521c5fde7831f188b654c1f6ce53f9cce47d7409f1aecd72b5f557ba9cc2d",
-      "keepRows": 0
+      "rows": 7,
+      "bytes": 696,
+      "sha256": "4df5492b6a50042edf87aa6c15151076a92fcdc0533a4fc09ab8d011a34a2f73",
+      "keepRows": 2
     },
     {
       "mod": "VenStockRevamp",
@@ -753,9 +761,9 @@
     {
       "mod": "Waterfall",
       "file": "zh-cn/Waterfall.il.jsonl",
-      "rows": 89,
-      "bytes": 11474,
-      "sha256": "b8b56373000bfc180b48ae92d6d872d8c29ccb9a2b3d01ad2b180142dbbe80ec",
+      "rows": 90,
+      "bytes": 11561,
+      "sha256": "f445cbf156b919b2c35618b5cdec3992a1233913bb82f2dc263db8682ba21821",
       "keepRows": 0
     },
     {
@@ -769,10 +777,10 @@
     {
       "mod": "ksp_plugin_adapter",
       "file": "zh-cn/ksp_plugin_adapter.il.jsonl",
-      "rows": 26,
-      "bytes": 4659,
-      "sha256": "4f160e272be46932d50f966df98c8f32a95f10be3fde968eaed95f2f2a30e2ba",
-      "keepRows": 1
+      "rows": 48,
+      "bytes": 12839,
+      "sha256": "5b514f50091bca144400d196294c0489530d40ce9e06453fa21136f3a496ea48",
+      "keepRows": 2
     }
   ]
 }

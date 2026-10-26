@@ -1,7 +1,60 @@
+{"h":"007ba6062b98ccc1","n":"<color=#FFE000><b># ms</b></color>","s":"<color=#FFE000><b># ms</b></color>","t":"<color=#FFE000><b># ms</b></color>","mod":"ModularFlightPanel","p":1}
+{"h":"0769299d211b20a1","n":"RDR RDR # m","s":"RDR RDR # m","t":"RDR RDR # m","mod":"ModularFlightPanel","p":1}
 {"h":"07e6118e838b2e23","n":"Navigation","s":"Navigation","t":"导航","mod":"ModularFlightPanel"}
+{"h":"0807e09db0c78bd3","n":"FPS: #","s":"FPS: #","t":"帧率：#","mod":"ModularFlightPanel","p":1}
+{"h":"088a27285188fd23","n":"SSC - SANTIAGO","s":"SSC - SANTIAGO","t":"SSC - SANTIAGO","mod":"ModularFlightPanel"}
+{"h":"08e24e1918209ff2","n":"m/s","s":"m/s","t":"m/s","mod":"ModularFlightPanel"}
+{"h":"127bf417fb901a80","n":"+#k","s":"+#k","t":"+#k","mod":"ModularFlightPanel","p":1}
+{"h":"14cfc18b21c48757","n":"ActionGroupsAppIcon","s":"ActionGroupsAppIcon","t":"ActionGroupsAppIcon","mod":"ModularFlightPanel"}
+{"h":"172ecfb4791e5d68","n":"# FPS | #ms","s":"# FPS | #ms","t":"# 帧率 | #ms","mod":"ModularFlightPanel","p":1}
+{"h":"19a386d16667796a","n":"# Kbps","s":"# Kbps","t":"# Kbps","mod":"ModularFlightPanel","p":1}
+{"h":"1b1679b3a8508b80","n":"Ap #M","s":"Ap #M","t":"Ap #M","mod":"ModularFlightPanel","p":1}
+{"h":"1d3ba619b46aacd1","n":"M #","s":"M #","t":"M #","mod":"ModularFlightPanel","p":1}
+{"h":"21313f0a82310dd3","n":"X: # Y: # | #x","s":"X: # Y: # | #x","t":"X: # Y: # | #x","mod":"ModularFlightPanel","p":1}
+{"h":"2234b4836b1c69f7","n":"ConstructionModeAppIcon","s":"ConstructionModeAppIcon","t":"ConstructionModeAppIcon","mod":"ModularFlightPanel"}
+{"h":"27dc8d2df6fbc89a","n":"STDN - TANANARIVE","s":"STDN - TANANARIVE","t":"STDN - TANANARIVE","mod":"ModularFlightPanel"}
+{"h":"306b922714e7097f","n":"STDN - QUITO","s":"STDN - QUITO","t":"STDN - QUITO","mod":"ModularFlightPanel"}
+{"h":"308025b3a9352350","n":"SSC - SOUTH POINT","s":"SSC - SOUTH POINT","t":"SSC - SOUTH POINT","mod":"ModularFlightPanel"}
 {"h":"39e0a9b1e3fb6f59","n":"Gauges","s":"Gauges","t":"仪表","mod":"ModularFlightPanel"}
+{"h":"39ff96dd722928d6","n":"US - CAPE CANAVERAL","s":"US - CAPE CANAVERAL","t":"US - CAPE CANAVERAL","mod":"ModularFlightPanel"}
 {"h":"3d60e710fa43575d","n":"Systems","s":"Systems","t":"系统","mod":"ModularFlightPanel"}
+{"h":"422d4cab7cf2a8b2","n":"RealAntennas/RealAntennas","s":"RealAntennas/RealAntennas","t":"RealAntennas/RealAntennas","mod":"ModularFlightPanel"}
+{"h":"4b429b3f1acf1fcf","n":"SSC - DONGARA","s":"SSC - DONGARA","t":"SSC - DONGARA","mod":"ModularFlightPanel"}
+{"h":"4d9d57e169cb949b","n":"KSAT - SINGAPORE","s":"KSAT - SINGAPORE","t":"KSAT - SINGAPORE","mod":"ModularFlightPanel"}
+{"h":"4eff7188c767f6fb","n":"ApplicationButton(Clone)","s":"ApplicationButton(Clone)","t":"ApplicationButton(Clone)","mod":"ModularFlightPanel"}
+{"h":"554abfcb48b18c11","n":"{ALT:MODE}","s":"{ALT:MODE}","t":"{ALT:MODE}","mod":"ModularFlightPanel"}
+{"h":"5b6adcf1886cfe6d","n":"DeltaVAppIcon","s":"DeltaVAppIcon","t":"DeltaVAppIcon","mod":"ModularFlightPanel"}
+{"h":"67d6d268efbddf89","n":"# MB (#/#/#)","s":"# MB (#/#/#)","t":"# MB (#/#/#)","mod":"ModularFlightPanel","p":1}
+{"h":"6b2330e3ecae870b","n":"<color=#34C759><b># ms</b></color>","s":"<color=#34C759><b># ms</b></color>","t":"<color=#34C759><b># ms</b></color>","mod":"ModularFlightPanel","p":1}
 {"h":"6debfe1d9fde6b46","n":"MODULAR FLIGHT PANEL #","s":"MODULAR FLIGHT PANEL #","t":"模块化飞行面板 #","mod":"ModularFlightPanel","p":1}
-{"h":"941ef6f03ec9de4b","n":"RP-#/maintecost","s":"RP-#/maintecost","t":"RP-#/维护成本","mod":"ModularFlightPanel","p":1}
+{"h":"6fa03676d07120ce","n":"RDR {ALT:AGL:DIST}","s":"RDR {ALT:AGL:DIST}","t":"RDR {ALT:AGL:DIST}","mod":"ModularFlightPanel"}
+{"h":"793b79db55e94418","n":"DSS # - GOLDSTONE","s":"DSS # - GOLDSTONE","t":"DSS # - GOLDSTONE","mod":"ModularFlightPanel","p":1}
+{"h":"7b04291224c07474","n":"UT #y, #d, #:#:#","s":"UT #y, #d, #:#:#","t":"UT #y, #d, #:#:#","mod":"ModularFlightPanel","p":1}
+{"h":"7c794919ea592f93","n":"V/S","s":"V/S","t":"垂直速度","mod":"ModularFlightPanel"}
+{"h":"7d14989c6089af75","n":"<color=#00E5FF><b># / # (#%)</b></color>","s":"<color=#00E5FF><b># / # (#%)</b></color>","t":"<color=#00E5FF><b># / # (#%)</b></color>","mod":"ModularFlightPanel","p":1}
+{"h":"7fb8ecc8359ca71c","n":"AtmosphereAutopilot/icon","s":"AtmosphereAutopilot/icon","t":"AtmosphereAutopilot/icon","mod":"ModularFlightPanel"}
+{"h":"88a1a57d525e3376","n":"Δv #","s":"Δv #","t":"Δv #","mod":"ModularFlightPanel","p":1}
+{"h":"8ab9dff67c2c8c07","n":"MSFN - KAUAI","s":"MSFN - KAUAI","t":"MSFN - KAUAI","mod":"ModularFlightPanel"}
+{"h":"8b84c9aaffedb835","n":"# bps","s":"# bps","t":"# bps","mod":"ModularFlightPanel","p":1}
+{"h":"8f4ca22aabf01e67","n":"R-IN","s":"R-IN","t":"R-IN","mod":"ModularFlightPanel"}
+{"h":"928dc0e5c2b167e7","n":"MSFN - BDA BERMUDA","s":"MSFN - BDA BERMUDA","t":"MSFN - BDA BERMUDA","mod":"ModularFlightPanel"}
+{"h":"941ef6f03ec9de4b","n":"RP-#/maintecost","s":"RP-#/maintecost","t":"RP-#/maintecost","mod":"ModularFlightPanel","p":1}
+{"h":"95bcc462be88168f","n":"DSS # - CANBERRA","s":"DSS # - CANBERRA","t":"DSS # - CANBERRA","mod":"ModularFlightPanel","p":1}
+{"h":"9d24077f7f7fb0c6","n":"{MACH}","s":"{MACH}","t":"{MACH}","mod":"ModularFlightPanel"}
+{"h":"9ffd8b1f89667e70","n":"NIP # - USSURIYSK","s":"NIP # - USSURIYSK","t":"NIP # - USSURIYSK","mod":"ModularFlightPanel","p":1}
+{"h":"a03c16c256b1b87f","n":"{SPD:MODE}","s":"{SPD:MODE}","t":"{SPD:MODE}","mod":"ModularFlightPanel"}
+{"h":"a19f71824505480c","n":"R-OUT","s":"R-OUT","t":"R-OUT","mod":"ModularFlightPanel"}
+{"h":"a28378a1b40d6606","n":"US - WALLOPS","s":"US - WALLOPS","t":"US - WALLOPS","mod":"ModularFlightPanel"}
+{"h":"a4995aab0de0097a","n":"# atm","s":"# atm","t":"# atm","mod":"ModularFlightPanel","p":1}
+{"h":"a6bad8ffbeecd79a","n":"CargoModeAppIcon","s":"CargoModeAppIcon","t":"CargoModeAppIcon","mod":"ModularFlightPanel"}
+{"h":"a87c04fb53652ab6","n":"-- MB","s":"-- MB","t":"-- MB","mod":"ModularFlightPanel"}
+{"h":"ad5eae1245263c21","n":"« DOCK","s":"« DOCK","t":"« 对接","mod":"ModularFlightPanel"}
 {"h":"b0912cdf42d95669","n":"SAS: OFF","s":"SAS: OFF","t":"SAS：关闭","mod":"ModularFlightPanel"}
-{"h":"f3b5be33d9657aa0","n":"EngineGroupController/ToolbarIcon#","s":"EngineGroupController/ToolbarIcon#","t":"发动机组控制器/工具栏图标#","mod":"ModularFlightPanel","p":1}
+{"h":"b2d985ff411ee01e","n":"RDR RDR # km","s":"RDR RDR # km","t":"RDR RDR # km","mod":"ModularFlightPanel","p":1}
+{"h":"b33f81ff41758c84","n":"RDR RDR # Mm","s":"RDR RDR # Mm","t":"RDR RDR # Mm","mod":"ModularFlightPanel","p":1}
+{"h":"c5cf2178f4192a33","n":"<color=#888888><b># / # (#%)</b></color>","s":"<color=#888888><b># / # (#%)</b></color>","t":"<color=#888888><b># / # (#%)</b></color>","mod":"ModularFlightPanel","p":1}
+{"h":"e14c6e06f0691bc5","n":"LunarTransferPlanner/launcherbutton","s":"LunarTransferPlanner/launcherbutton","t":"LunarTransferPlanner/launcherbutton","mod":"ModularFlightPanel"}
+{"h":"e1e2883cd8f7b46c","n":"<color=#FF5555><b># ms</b></color>","s":"<color=#FF5555><b># ms</b></color>","t":"<color=#FF5555><b># ms</b></color>","mod":"ModularFlightPanel","p":1}
+{"h":"ec51d5429d215a78","n":"T+ #y, #d, #:#:#","s":"T+ #y, #d, #:#:#","t":"T+ #y, #d, #:#:#","mod":"ModularFlightPanel","p":1}
+{"h":"f3b5be33d9657aa0","n":"EngineGroupController/ToolbarIcon#","s":"EngineGroupController/ToolbarIcon#","t":"EngineGroupController/ToolbarIcon#","mod":"ModularFlightPanel","p":1}
+{"h":"fd91de7cc4e4d26e","n":"<color=#00E5FF><b># ms</b></color>","s":"<color=#00E5FF><b># ms</b></color>","t":"<color=#00E5FF><b># ms</b></color>","mod":"ModularFlightPanel","p":1}

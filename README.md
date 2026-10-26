@@ -28,14 +28,16 @@ text.text = "All Input Locks Cleared";
 | 需要作者配合 | 是（要作者把文本抽成键） | 否 |
 | 出问题时的形态 | 词条错位、错翻译被写进存档 | 未命中即原文，永不产生「翻错但改不回来」的状态 |
 
-## 当前状态（v1.3.0 出包）
+## 当前状态（v1.4.0 出包）
 
 | 项目 | 数字 |
 |---|---|
 | 拦截点（hook 目标） | **17** 个：`UI.Text.set_text`、`TMP_Text.set_text`、`GUILayout.DoLabel/DoButton/DoRepeatButton/DoToggle/DoWindow`、`GUI.Label/Box/Button/RepeatButton/Toggle(4 参)/Toggle(5 参)/DoWindow(title)/DoModalWindow/DoButtonGrid`、`ScreenMessages.PostMessage` |
-| 字典 | **96** 个包 / **11,561** 条（cfg 级 41 包 9,990 条 + DLL 字面量级 55 包 1,571 条；其中 **102** 行是数字骨架） |
-| 屏幕覆盖率（29 局实测） | 该翻的 3,129 条里 **265** 条已中文 = **8.47%**（v1.2 出包那一代是 14 条 / 0.45%）；全量口径 2.53% |
-| 单测 | C# **637** 例全绿；python 工具链 selftest **280** 项全绿 |
+| 字典 | **97** 个包 / **14,954** 条（cfg 级 41 包 9,990 条 + DLL/配置缓存级 56 包 4,964 条；其中 **486** 行是数字骨架） |
+| 配置文本覆盖率（`packs/pool.jsonl` 口径） | 待译 12,792 条里 **9,397** 条已覆盖 = **73.46%**（v1.3.0 是 70.93%） |
+| 屏幕覆盖率（29 局实测） | 该翻的 3,129 条里 **265** 条已中文 = **8.47%**（v1.2 出包那一代是 14 条 / 0.45%）；全量口径 2.53%——这一指标要等下一轮游戏内实测才会更新 |
+| 人工译文表 | `packs/overrides.jsonl` **3,736** 条（v1.4 一夜之间从 283 条涨上来，覆盖零件标题 / 零件描述 / 制造商 / 捕获到的屏幕标签） |
+| 单测 | C# **637** 例全绿；python 工具链 selftest **286** 项全绿 |
 | 游戏内验证 | round 10（2026-10-24，v1.1.0 那对 DLL）：`installed 17/17 patches`、`parseErrors=0`、`entries=11089`、`error lines: 0` |
 
 ## 安装
@@ -122,11 +124,22 @@ harvest（本地，需要真实 KSP 安装）
   └─ 官方 Localization/*.cfg 提取为「官方译文记忆」（2,126 条，优先于模型）
         │
         ▼
+harvest_cfgcache（本地，读 ModuleManager.ConfigCache，v1.4）
+        │  运行时看到的是「打完 MM 补丁后的合成文本」，正文常在 @description 里；
+        │  所以这条通道按字段（title/description/displayName/manufacturer）直读补丁结果，
+        │  与上面的原定义口径互为补充，不重复（已覆盖的 h 直接剔除）
+        ▼
 capture_ingest（把玩家会话的缺命中 capture 归并：去重 → 分档 never/template/candidate → 抽骨架）
         │  纯数字模板进 pattern 档，塌缩成骨架后和静态串一起进包（v1.3）
+        │  时间戳开头的日志行判 never（v1.4：屏幕上的 KSP.log 转储不是 UI 文案）
+        ▼
+packs/overrides.jsonl（人工译文表，v1.4 扩到 3,736 条）
+        │  命中即直出、永不联网：术语一致的短标签（Instructions: / Destination:）、
+        │  零件标题与描述、制造商名都从这里走；模型只在没命中时才被调用
         ▼
 translate（CI，LLM 批量翻译 + 断点续跑缓存）
-        │  八道硬门禁：占位符/富文本/格式串多重集、长度比、术语锁、keep 判定、非法字符、空译文
+        │  九道硬门禁：占位符/富文本/格式串多重集、长度比、术语锁、keep 判定、非法字符、
+        │  空译文、骨架 # 个数一致；批异常时已命中的覆盖项不丢（v1.4）
         ▼
 resolve_keyrefs（把 #autoLOC_* 键引用解析成官方中英对照行，带歧义守卫与长度比门禁）
         ▼

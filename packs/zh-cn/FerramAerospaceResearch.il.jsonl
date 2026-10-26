@@ -1,3 +1,4 @@
+{"h":"0064146213a7cf9a","n":"Log Period","s":"Log Period","t":"日志周期","mod":"FerramAerospaceResearch"}
 {"h":"046453858bb744e9","n":"Switch Back To Presets","s":"Switch Back To Presets","t":"切回预设","mod":"FerramAerospaceResearch"}
 {"h":"0bf151341f6ca397","n":"Lateral (X,Z-axis) Max Stress:","s":"Lateral (X,Z-axis) Max Stress:","t":"横向(X,Z轴)最大应力：","mod":"FerramAerospaceResearch"}
 {"h":"11ed1d3d33b9d12c","n":"Req Resources:","s":"Req Resources:","t":"所需资源：","mod":"FerramAerospaceResearch"}
@@ -6,30 +7,42 @@
 {"h":"1be6b8d6b4706d4c","n":"Mesh: use # bit indices:","s":"Mesh: use # bit indices:","t":"网格：使用 # 位索引：","mod":"FerramAerospaceResearch","p":1}
 {"h":"1c9469df575f5cc0","n":"Low Res SubVoxels","s":"Low Res SubVoxels","t":"低分辨率 SubVoxels","mod":"FerramAerospaceResearch"}
 {"h":"22ac7832ab849781","n":"Atm Composition","s":"Atm Composition","t":"大气组成","mod":"FerramAerospaceResearch"}
+{"h":"23e7385e8a5aec26","n":"Jupiter","s":"Jupiter","t":"木星","mod":"FerramAerospaceResearch"}
+{"h":"260067d6a62b3a76","n":"Saturn","s":"Saturn","t":"土星","mod":"FerramAerospaceResearch"}
 {"h":"26408a9af898bcf0","n":"# bit indices","s":"# bit indices","t":"# 位索引","mod":"FerramAerospaceResearch","p":1}
 {"h":"265e8e48648b1255","n":"Editor GUI Graph Colors","s":"Editor GUI Graph Colors","t":"编辑器图表颜色","mod":"FerramAerospaceResearch"}
 {"h":"29ec563d56cf6c6b","n":"Other Options","s":"Other Options","t":"其他选项","mod":"FerramAerospaceResearch"}
 {"h":"3693f235340a235c","n":"Show Torque Arrows in Aero Overlay","s":"Show Torque Arrows in Aero Overlay","t":"在气动视图中显示力矩箭头","mod":"FerramAerospaceResearch"}
+{"h":"381ecaea723113b9","n":"crewed","s":"crewed","t":"载人","mod":"FerramAerospaceResearch"}
 {"h":"3eb5f2b540b72668","n":"Use Higher Res SubVoxels:","s":"Use Higher Res SubVoxels: ","t":"使用更高分辨率 SubVoxels：","mod":"FerramAerospaceResearch"}
 {"h":"464bc1c1dfe47f2c","n":"High Res SubVoxels","s":"High Res SubVoxels","t":"高分辨率 SubVoxels","mod":"FerramAerospaceResearch"}
 {"h":"47aa0bb4af8d21ea","n":"L_D (r,g,b):","s":"L_D (r,g,b):","t":"L_D 分量（r,g,b）：","mod":"FerramAerospaceResearch"}
+{"h":"49c958aecfef6768","n":"Mars","s":"Mars","t":"火星","mod":"FerramAerospaceResearch"}
 {"h":"4cc8f8ab40947696","n":"Requires Crew Compartment","s":"Requires Crew Compartment","t":"需要乘员舱","mod":"FerramAerospaceResearch"}
 {"h":"4cdd729c2834633f","n":"Transonic Drag Settings","s":"Transonic Drag Settings","t":"跨音速阻力设置","mod":"FerramAerospaceResearch"}
 {"h":"5290254e50891107","n":"Voxel Detail Settings; increasing these will improve accuracy at the cost of performance","s":"Voxel Detail Settings; increasing these will improve accuracy at the cost of performance","t":"体素细节设置；提高这些数值将提升精度，但会牺牲性能","mod":"FerramAerospaceResearch"}
 {"h":"5971546c40679e49","n":"Flap Time Constant:","s":"Flap Time Constant:","t":"襟翼时间常数：","mod":"FerramAerospaceResearch"}
 {"h":"5c0384a2e78ee117","n":"Ctrl Surf Time Constant:","s":"Ctrl Surf Time Constant:","t":"控制面时间常数：","mod":"FerramAerospaceResearch"}
 {"h":"66ced309065be74c","n":"Choose Custom Settings","s":"Choose Custom Settings","t":"选择自定义设置","mod":"FerramAerospaceResearch"}
+{"h":"6c10576661997054","n":"Name:","s":"Name:","t":"名称：","mod":"FerramAerospaceResearch"}
+{"h":"700c658588edea52","n":"Neptune","s":"Neptune","t":"海王星","mod":"FerramAerospaceResearch"}
+{"h":"77f42d29ab55fbd3","n":"Flt Log","s":"Flt Log","t":"飞行日志","mod":"FerramAerospaceResearch"}
 {"h":"7acf95dd87348c9f","n":"The below are used in controlling leniency of design. Higher values for all will result in more leniency","s":"The below are used in controlling leniency of design.  Higher values for all will result in more leniency","t":"以下选项用于控制设计宽容度。数值越高，宽容度越大","mod":"FerramAerospaceResearch"}
 {"h":"840cf55a427597e7","n":"Aero Failures Create Explosions","s":"Aero Failures Create Explosions","t":"气动失效产生爆炸","mod":"FerramAerospaceResearch"}
 {"h":"8768998353b16868","n":"Cd (r,g,b):","s":"Cd (r,g,b):","t":"Cd 分量（r,g,b）：","mod":"FerramAerospaceResearch"}
 {"h":"8dc7d2ebe00f3bae","n":"Ref Temp for Viscosity:","s":"Ref Temp for Viscosity:","t":"粘度参考温度：","mod":"FerramAerospaceResearch"}
+{"h":"96d908c246fd5c26","n":"Venus","s":"Venus","t":"金星","mod":"FerramAerospaceResearch"}
 {"h":"9ae498085eaf6a5f","n":"Special Hardcoded Usage","s":"Special Hardcoded Usage","t":"特殊硬编码用途","mod":"FerramAerospaceResearch"}
 {"h":"a64deb16ba0bda6c","n":"Debug / Cheat Options","s":"Debug / Cheat Options","t":"调试/作弊选项","mod":"FerramAerospaceResearch"}
 {"h":"a7e9a2b3417561e8","n":"Axial (Y-axis) Max Stress:","s":"Axial (Y-axis) Max Stress:","t":"轴向(Y轴)最大应力：","mod":"FerramAerospaceResearch"}
+{"h":"aa270cf1b46f731d","n":"FAR Debug","s":"FAR Debug","t":"FAR 调试","mod":"FerramAerospaceResearch"}
+{"h":"ab0713af650716ed","n":"Pluto","s":"Pluto","t":"冥王星","mod":"FerramAerospaceResearch"}
 {"h":"ab63453128024b80","n":"Cl (r,g,b):","s":"Cl (r,g,b):","t":"Cl 分量（r,g,b）：","mod":"FerramAerospaceResearch"}
 {"h":"b1264f52f462cbc0","n":"Allow Aero-structural Failures","s":"Allow Aero-structural Failures","t":"允许气动结构失效","mod":"FerramAerospaceResearch"}
 {"h":"b85cb4b427c867f7","n":"Voxels Controllable Vessel:","s":"Voxels Controllable Vessel: ","t":"体素·可控载具：","mod":"FerramAerospaceResearch"}
+{"h":"b8f68fb6caf2d437","n":"Triton","s":"Triton","t":"海卫一","mod":"FerramAerospaceResearch"}
 {"h":"c223f39ca3dbf77b","n":"Celestial Body Atmospheric Properties","s":"Celestial Body Atmospheric Properties","t":"天体大气属性","mod":"FerramAerospaceResearch"}
+{"h":"c5a1929cf1f4deb6","n":"Flush Period","s":"Flush Period","t":"刷新周期","mod":"FerramAerospaceResearch"}
 {"h":"cf359fe023189cbc","n":"Spoiler Time Constant:","s":"Spoiler Time Constant:","t":"扰流板时间常数：","mod":"FerramAerospaceResearch"}
 {"h":"cfbe203619f97362","n":"Difficulty and Debug","s":"Difficulty and Debug","t":"难度与调试","mod":"FerramAerospaceResearch"}
 {"h":"d28d500d3a167561","n":"Min Phys Ticks per Voxel Update:","s":"Min Phys Ticks per Voxel Update: ","t":"每体素更新最小物理步：","mod":"FerramAerospaceResearch"}
@@ -37,7 +50,9 @@
 {"h":"d5e5d0af2b63ea94","n":"Requires Specific Flow Mode","s":"Requires Specific Flow Mode","t":"需要特定流动模式","mod":"FerramAerospaceResearch"}
 {"h":"d961ae25a0e4d92b","n":"Voxels Debris:","s":"Voxels Debris: ","t":"体素·碎片：","mod":"FerramAerospaceResearch"}
 {"h":"ea889e0a89efb5cf","n":"Aerodynamic Failure","s":"Aerodynamic Failure","t":"气动失效","mod":"FerramAerospaceResearch"}
+{"h":"f10ff8406c0ad6ad","n":"Uranus","s":"Uranus","t":"天王星","mod":"FerramAerospaceResearch"}
 {"h":"f431b6188484cdf2","n":"Exclude Resources:","s":"Exclude Resources:","t":"排除资源：","mod":"FerramAerospaceResearch"}
 {"h":"f58ba9ed8348859c","n":"Absolute magnitude of drag can be scaled, as can how lenient FAR is about enforcing proper area ruling.","s":"Absolute magnitude of drag can be scaled, as can how lenient FAR is about enforcing proper area ruling.","t":"可缩放阻力绝对值，以及 FAR 对严格执行面积律的宽容度。","mod":"FerramAerospaceResearch"}
 {"h":"f86f312c0add129c","n":"Min Num Resources:","s":"Min Num Resources:","t":"最小资源数：","mod":"FerramAerospaceResearch"}
+{"h":"f88cffedabc37f9a","n":"structural","s":"structural","t":"结构","mod":"FerramAerospaceResearch"}
 {"h":"fdf5954c45608875","n":"Gas Viscosity:","s":"Gas Viscosity:","t":"气体粘度：","mod":"FerramAerospaceResearch"}

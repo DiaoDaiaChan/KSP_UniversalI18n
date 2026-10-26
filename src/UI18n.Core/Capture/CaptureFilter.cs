@@ -68,12 +68,12 @@ namespace UI18n.Core.Capture
         }
 
         /// <summary>
-        /// 返回不录的原因常量；<c>null</c> 表示应该录。参数为 null 时用默认上下限（2 / 400）。
+        /// 返回不录的原因常量；<c>null</c> 表示应该录。参数为 null 时用默认上下限（2 / 2000）。
         /// </summary>
         public static string RejectReason(string normalized, string source, CaptureOptions options)
         {
             int min = options != null ? options.MinTextLength : 2;
-            int max = options != null ? options.MaxTextLength : 400;
+            int max = options != null ? options.MaxTextLength : 2000;
 
             string text = normalized;
             if (string.IsNullOrEmpty(text))

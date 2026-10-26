@@ -638,7 +638,7 @@ pwsh -File _scratch\p1\probe.ps1 -Action Remove      # 必须移除，否则会�
 | --- | --- |
 | `empty` | 空串 |
 | `too-short` | 归一化后短于 `MinTextLength`（默认 2） |
-| `too-long` | 归一化文本或原文超过 `MaxTextLength`（默认 400 字符） |
+| `too-long` | 归一化文本或原文超过 `MaxTextLength`（默认 2,000 字符；零件 description 的 p99=577、max=1,577，早先的 400 会把整段零件描述当噪声丢掉） |
 | `whitespace` | 只有空白 |
 | `already-cjk` | 归一化文本（或原文）里已经含 CJK 字符 —— 别人已经汉化过了，我们的字典只有英文键、永远命不中，记下来只是噪声。判据复用 `TextNormalizer.ContainsCjk`，与 `tools/i18n_tools/harvest.py` 的「含 CJK 即跳」一致 |
 | `digits` | 数字串：纯数字，或只由数字 + 数字分隔符（`. , : / - + % ° × ~ ±` 与空白）组成且至少有一个数字 —— `3.14159`、`1,234`、`-12`、`45%` 都归这里 |

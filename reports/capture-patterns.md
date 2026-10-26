@@ -4,21 +4,21 @@
 
 | 项 | 值 |
 |---|---|
-| 输入会话 | 29 个 `capture-*.jsonl` |
-| 去重后 distinct 原文 | 60379 |
-| 模板档（合并口径实例数） | 58376 |
-| **塌缩成的骨架** | **492 个**（一条骨架覆盖多条实例） |
-| 骨架覆盖的实例行 | 55609 |
-| 判不出骨架、降级 candidate | 57 |
+| 输入会话 | 30 个 `capture-*.jsonl` |
+| 去重后 distinct 原文 | 60540 |
+| 模板档（合并口径实例数） | 58301 |
+| **塌缩成的骨架** | **474 个**（一条骨架覆盖多条实例） |
+| 骨架覆盖的实例行 | 55573 |
+| 判不出骨架、降级 candidate | 18 |
 | 纯符号骨架丢弃（不含 ASCII 字母） | 3 个骨架 / 2710 条实例 |
-| **可译骨架**（≥2 英文词且非噪声） | **150 个**（占骨架 30.5%） |
+| **可译骨架**（≥2 英文词且非噪声） | **132 个**（占骨架 27.8%） |
 | 噪声骨架 | 262 个 |
 | └ ModuleManager | 212 个 |
 | └ Profiler HUD | 43 个 |
 | └ LoadingScreen | 4 个 |
 | └ RDR | 3 个 |
-| 落盘体积 | 235.0 KB |
-| 复现命令 | `python -m i18n_tools.capture_ingest --all D:/Kerbal Space Program_newmod/PluginData/UI18n --out packs/capture-candidates.jsonl --report reports/capture-triage.md --patterns reports/capture-patterns.md` |
+| 落盘体积 | 224.0 KB |
+| 复现命令 | `python -m i18n_tools.capture_ingest --all D:\Kerbal Space Program_newmod\PluginData\UI18n --out C:\Users\43701\Documents\github\UniversalI18n\packs\capture-candidates.jsonl --report C:\Users\43701\Do…` |
 
 ## 1. 可译骨架（建议送翻，按 count 降序）
 
@@ -85,99 +85,81 @@
 | 55 | 2932 | 1 | 1 | `RLVDebugGUI.DrawPerfo…` | D:/Kerbal Space Program_newmod/KSP_x#_Data/../GameData/RealisticLaunchVisuals/L… | D:/Kerbal Space Program_newmod/KSP_x64_Data/../GameData/Rea… |
 | 56 | 2494 | 1 | 29 | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | RP-# Initialization & Setup | RP-1 Initialization & Setup |
 | 57 | 1455 | 3 | 1 | `EngineConfigInfoPanel…` | at <color=#90EE90>#m #s</color> # in <color=#FF6666>#</color> burns fail | at <color=#90EE90>1m 40s</color> 1 in <color=#FF6666>105.3<… |
-| 58 | 1104 | 15 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Vapor] Continuous volumes=#, particle emitters=#, steps=# | [17:00:35][Info] [Vapor] Continuous volumes=2, particle emi… |
-| 59 | 949 | 1 | 1 | `EVEManager.GlobalEVEM…` | EVE #.# Config Editor | EVE 1.11.7.2 Config Editor |
-| 60 | 890 | 1 | 1 | `ConfigurationGUI.rend…` | Applied rule: # matching materials / # surfaces. Save to retain it across resta… | Applied rule: 946 matching materials / 2173 surfaces. Save … |
-| 61 | 826 | 94 | 6 | `UIPartActionLabel.Upd…` | Flight Data: # du / # du | Flight Data: 862 du / 10000 du |
-| 62 | 643 | 4 | 1 | `UIPartActionLabel.Upd…` | cost: Dry: # Wet: # | cost: Dry: 0 Wet: 0 |
-| 63 | 596 | 39 | 5 | `UIPartActionLabel.Upd…` | Total Run Time: #s/#s | Total Run Time: 0s/135s |
-| 64 | 596 | 46 | 5 | `UIPartActionLabel.Upd…` | Thrust Ratio: # | Thrust Ratio: 1 |
-| 65 | 596 | 39 | 5 | `UIPartActionLabel.Upd…` | Current Run Time: #s/#s | Current Run Time: 0s/135s |
-| 66 | 572 | 8 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=ScattererReflectionProbeScaledSpaceCamera, ma… | [17:00:36][Debug] [VaporCamera] name=ScattererReflectionPro… |
-| 67 | 572 | 8 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=GalaxyCamera, mask=#, depth=None, path=Forwar… | [17:00:36][Debug] [VaporCamera] name=GalaxyCamera, mask=262… |
-| 68 | 572 | 8 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Camera #, mask=#, depth=Depth, DepthNormals, … | [17:00:36][Debug] [VaporCamera] name=Camera 00, mask=277520… |
-| 69 | 572 | 8 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=markerCam, mask=#, depth=None, path=Forward, … | [17:00:36][Debug] [VaporCamera] name=markerCam, mask=2052, … |
-| 70 | 572 | 8 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Reflection Probes Camera, mask=#, depth=None,… | [17:00:36][Debug] [VaporCamera] name=Reflection Probes Came… |
-| 71 | 572 | 8 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=UIMainCamera, mask=#, depth=None, path=Forwar… | [17:00:36][Debug] [VaporCamera] name=UIMainCamera, mask=335… |
-| 72 | 572 | 8 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=UIVectorCamera, mask=#, depth=None, path=Forw… | [17:00:36][Debug] [VaporCamera] name=UIVectorCamera, mask=4… |
-| 73 | 500 | 3 | 1 | `UIPartActionLabel.Upd…` | Largest Diameter: #m | Largest Diameter: 7.0000m |
-| 74 | 500 | 1 | 1 | `UIPartActionLabel.Upd…` | Total Length: #m | Total Length: 21.0000m |
-| 75 | 485 | 1 | 1 | `EngineConfigInfoPanel…` | Set to Current (#du) | Set to Current (862du) |
-| 76 | 476 | 434 | 4 | `UIPartActionLabel.Upd…` | Mass Flow: # ton/s | Mass Flow: 1.78795 ton/s |
-| 77 | 468 | 1 | 1 | `RealAntennas.RealAnte…` | Antennas/vessel: # | Antennas/vessel: 1.5 |
-| 78 | 397 | 2 | 5 | `UIPartActionLabel.Upd…` | Current Throttle: #% | Current Throttle: 100.00% |
-| 79 | 378 | 1 | 1 | `RLVDebugGUI.DrawPerfo…` | D:/Kerbal Space Program_newmod/KSP_x#_Data/../GameData/RealisticLaunchVisuals/L… | D:/Kerbal Space Program_newmod/KSP_x64_Data/../GameData/Rea… |
-| 80 | 342 | 8 | 5 | `UIPartActionLabel.Upd…` | Time Since Shutdown: #s | Time Since Shutdown: 0.00s |
-| 81 | 342 | 1 | 5 | `UIPartActionLabel.Upd…` | Ignition Penalty for Q: # % | Ignition Penalty for Q: 0.00 % |
-| 82 | 342 | 3 | 5 | `UIPartActionLabel.Upd…` | Ignition Chance: # % | Ignition Chance: 99.90 % |
-| 83 | 342 | 1 | 5 | `UIPartActionLabel.Upd…` | Thrust Modifier: # % | Thrust Modifier: 100.00 % |
-| 84 | 342 | 1 | 5 | `UIPartActionLabel.Upd…` | Restart Ignition Penalty: # % | Restart Ignition Penalty: 0.00 % |
-| 85 | 334 | 3 | 5 | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #h | Mean Time Between Failures: 2.60h |
-| 86 | 318 | 1 | 4 | `UIPartActionLabel.Upd…` | Eng. Internal Temp: NaN K / # K | Eng. Internal Temp: NaN K / 2,430 K |
-| 87 | 301 | 6 | 5 | `UIPartActionLabel.Upd…` | Last Restart: Roll: # %, Chance: # % | Last Restart: Roll: 83.08 %, Chance: 99.90 % |
-| 88 | 288 | 4 | 1 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporState] situation=ORBITING, eligible=False, source=#, fill=… | [19:59:50][Debug] [VaporState] situation=ORBITING, eligible… |
-| 89 | 288 | 4 | 1 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Camera ScaledSpace, mask=-#, depth=Depth, Mot… | [19:59:50][Debug] [VaporCamera] name=Camera ScaledSpace, ma… |
-| 90 | 284 | 4 | 2 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Camera ScaledSpace, mask=#, depth=Depth, Moti… | [17:00:36][Debug] [VaporCamera] name=Camera ScaledSpace, ma… |
-| 91 | 254 | 2 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> -> <color=#88bbdd>Fi… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> … |
-| 92 | 254 | 4 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> … |
-| 93 | 254 | 4 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightIntegrator</b> -> <co… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightI… |
-| 94 | 250 | 5 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Timing#</b> -> <color=#88bbdd>Fixe… | <b>#5</b> <color=#a29bfe>[Plugin]</color> <b>Timing1</b> ->… |
-| 95 | 248 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>Angled RCS Block [ #/# N Class]</color> | <color=#FFFFFF>Angled RCS Block [ 28/45 N Class]</color> |
-| 96 | 232 | 4 | 3 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLayer</b> -> <color=#88… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLay… |
-| 97 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Max Ignition Chance: # % | Max Ignition Chance: 100.00 % |
-| 98 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Current Reliability: # %, MTBF: #h | Current Reliability: 98.73 %, MTBF: 2.93h |
-| 99 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Reliability at Max Data: # %, MTBF: #h | Reliability at Max Data: 99.71 %, MTBF: 13.02h |
-| 100 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Current Ignition Chance: # % | Current Ignition Chance: 99.91 % |
-| 101 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Rated Burn Time: #s (#m #s) | Rated Burn Time: 135s (2m 15s) |
-| 102 | 220 | 3 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Aero] Attached, enabled=True | [17:00:35][Info] [Aero] Attached, enabled=True |
-| 103 | 220 | 3 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Aero] FAR optional API bound: telemetry=True, atmosphere=True, w… | [17:00:35][Info] [Aero] FAR optional API bound: telemetry=T… |
-| 104 | 220 | 3 | 3 | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Transients] staging-transients-# enabled: accumulated #D mist, s… | [17:00:23][Info] [Transients] staging-transients-2 enabled:… |
-| 105 | 196 | 3 | 3 | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FF3333>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FF3333>3469MB</color> GC: <color=#3… |
-| 106 | 175 | 73 | 5 | `UIPartActionLabel.Upd…` | Mass Flow: # kg/s | Mass Flow: 0.00000 kg/s |
-| 107 | 158 | 4 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProbeFixer</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProb… |
-| 108 | 156 | 3 | 1 | `UIPartActionLabel.Upd…` | Mass: #kg | Mass: 496.4kg |
-| 109 | 148 | 2 | 2 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporPad] anchor=(#, -#, #), supports=#, radius=# | [17:00:36][Debug] [VaporPad] anchor=(32.2, -18.9, 12.0), su… |
-| 110 | 148 | 2 | 2 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporState] situation=PRELAUNCH, eligible=False, source=#, fill… | [17:00:36][Debug] [VaporState] situation=PRELAUNCH, eligibl… |
-| 111 | 136 | 2 | 1 | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporState] situation=PRELAUNCH, eligible=True, source=#, fill=… | [17:00:49][Debug] [VaporState] situation=PRELAUNCH, eligibl… |
-| 112 | 124 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>UA# Nosecone & Separation Motor</color> | <color=#FFFFFF>UA1205 Nosecone & Separation Motor</color> |
-| 113 | 88 | 1 | 1 | `UIPartActionLabel.Upd…` | Mass: #t (both) | Mass: 0.608t (both) |
-| 114 | 88 | 1 | 1 | `UIPartActionLabel.Upd…` | Cost: # (both) | Cost: 547 (both) |
-| 115 | 82 | 1 | 1 | `ProfilerUI.DrawPlugin…` | UI#n.Runtime | UI18n.Runtime |
-| 116 | 82 | 1 | 1 | `ProfilerUI.DrawPlugin…` | ▶ <color=#FFFFFF>UI#nAddon</color> | ▶ <color=#FFFFFF>UI18nAddon</color> |
-| 117 | 79 | 16 | 2 | `UIPartActionLabel.Upd…` | Eng. Internal Temp: # K / # K | Eng. Internal Temp: 317 K / 3,600 K |
-| 118 | 78 | 2 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <color=#88bbdd>FixedUp… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <c… |
-| 119 | 78 | 1 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> … |
-| 120 | 62 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>#/#kN Thruster</color> | <color=#FFFFFF>1.1/1.78kN Thruster</color> |
-| 121 | 62 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>RL-# Series (Non-Extendable Nozzle)</color> | <color=#FFFFFF>RL-10 Series (Non-Extendable Nozzle)</color> |
-| 122 | 56 | 1 | 1 | `RLVDebugGUI.DrawLogs` | [#:#:#][Warning] [Vapor] Nearby solar caster broadphase reached its finite capa… | [01:06:47][Warning] [Vapor] Nearby solar caster broadphase … |
-| 123 | 50 | 1 | 1 | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#3… |
-| 124 | 48 | 2 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipelineManager</b> -> <co… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipeli… |
-| 125 | 42 | 1 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -> <color=#88bbdd>Upd… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -… |
-| 126 | 32 | 1 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPluginAdapter</b> -> <col… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPlugi… |
-| 127 | 28 | 1 | 28 | `BurstPQS.UI.DebugUI.D…`, `DebugUIManager.Create…` | #-bit Height (R# DDS) | 16-bit Height (R16 DDS) |
-| 128 | 28 | 1 | 28 | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn #.# Breaking Ground | 1.12.5.3190 (WindowsPlayer x64) zh-cn 1.7.1 Breaking Ground |
-| 129 | 28 | 1 | 28 | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn | 1.12.5.3190 (WindowsPlayer x64) zh-cn |
-| 130 | 26 | 1 | 20 | `UIFactory.CreateText` | RP-#/maintecost | RP-1/maintecost |
-| 131 | 26 | 1 | 20 | `UIFactory.CreateText` | EngineGroupController/ToolbarIcon# | EngineGroupController/ToolbarIcon4 |
-| 132 | 20 | 1 | 20 | `WorkbenchCanvasView.B…` | MODULAR FLIGHT PANEL # | MODULAR FLIGHT PANEL 3.0 |
-| 133 | 20 | 1 | 1 | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#ff8800>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#f… |
-| 134 | 20 | 1 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHandler</b> -> <color=#… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHan… |
-| 135 | 16 | 1 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinWatcher</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinW… |
-| 136 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Tech Level: # | Tech Level: 10 |
-| 137 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Power (Idle): # Watts | Power (Idle): 9.50 Watts |
-| 138 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Transmit Power (dBm): # dBm | Transmit Power (dBm): 30.0 dBm |
-| 139 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Power (Active): # Watts | Power (Active): 11.54 Watts |
-| 140 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Gain: # dBi | Gain: 1.5 dBi |
-| 141 | 8 | 3 | 1 | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #m | Mean Time Between Failures: 17.19m |
-| 142 | 4 | 1 | 1 | `MapNode.UpdateCaption…` | SSC - Santiago VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi #° S, #° W | SSC - Santiago VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi S-Band: … |
-| 143 | 4 | 1 | 1 | `MainWindow.RenderWind…` | #-Lévy-#-g#caad#abcbc#b#fe#aa-x#_AVX_FMA | 2026091103-Lévy-157-g2caad1abcbc5b0fe52aa-x64_AVX_FMA |
-| 144 | 3 | 1 | 1 | `ScreenMessages.PostMe…` | Insufficient Avionics, Locking Controls (supports #t, vessel #t) | Insufficient Avionics, Locking Controls (supports 0.000t, v… |
-| 145 | 2 | 1 | 1 | `MapNode.UpdateCaption…` | DSA # - Malargüe VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | DSA 3 - Malargüe VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 35.78°… |
-| 146 | 2 | 1 | 1 | `BaseFlightWidget.SetT…` | DSS # - GOLDSTONE | DSS 14 - GOLDSTONE |
-| 147 | 2 | 1 | 1 | `MapNode.UpdateCaption…` | STDN - Quito VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | STDN - Quito VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 0.62° S, 7… |
-| 148 | 2 | 1 | 1 | `BaseFlightWidget.SetT…` | DSS # - CANBERRA | DSS 43 - CANBERRA |
-| 149 | 2 | 1 | 1 | `BaseFlightWidget.SetT…` | NIP # - USSURIYSK | NIP 15 - USSURIYSK |
-| 150 | 2 | 1 | 1 | `MapNode.UpdateCaption…` | DSS # - Goldstone VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi X-Band: # dBi K… | DSS 14 - Goldstone VHF-Band: 20.0 dBi UHF-Band: 34.0 dBi S-… |
+| 58 | 949 | 1 | 1 | `EVEManager.GlobalEVEM…` | EVE #.# Config Editor | EVE 1.11.7.2 Config Editor |
+| 59 | 890 | 1 | 1 | `ConfigurationGUI.rend…` | Applied rule: # matching materials / # surfaces. Save to retain it across resta… | Applied rule: 946 matching materials / 2173 surfaces. Save … |
+| 60 | 826 | 94 | 6 | `UIPartActionLabel.Upd…` | Flight Data: # du / # du | Flight Data: 862 du / 10000 du |
+| 61 | 643 | 4 | 1 | `UIPartActionLabel.Upd…` | cost: Dry: # Wet: # | cost: Dry: 0 Wet: 0 |
+| 62 | 596 | 39 | 5 | `UIPartActionLabel.Upd…` | Total Run Time: #s/#s | Total Run Time: 0s/135s |
+| 63 | 596 | 46 | 5 | `UIPartActionLabel.Upd…` | Thrust Ratio: # | Thrust Ratio: 1 |
+| 64 | 596 | 39 | 5 | `UIPartActionLabel.Upd…` | Current Run Time: #s/#s | Current Run Time: 0s/135s |
+| 65 | 500 | 3 | 1 | `UIPartActionLabel.Upd…` | Largest Diameter: #m | Largest Diameter: 7.0000m |
+| 66 | 500 | 1 | 1 | `UIPartActionLabel.Upd…` | Total Length: #m | Total Length: 21.0000m |
+| 67 | 485 | 1 | 1 | `EngineConfigInfoPanel…` | Set to Current (#du) | Set to Current (862du) |
+| 68 | 476 | 434 | 4 | `UIPartActionLabel.Upd…` | Mass Flow: # ton/s | Mass Flow: 1.78795 ton/s |
+| 69 | 468 | 1 | 1 | `RealAntennas.RealAnte…` | Antennas/vessel: # | Antennas/vessel: 1.5 |
+| 70 | 397 | 2 | 5 | `UIPartActionLabel.Upd…` | Current Throttle: #% | Current Throttle: 100.00% |
+| 71 | 378 | 1 | 1 | `RLVDebugGUI.DrawPerfo…` | D:/Kerbal Space Program_newmod/KSP_x#_Data/../GameData/RealisticLaunchVisuals/L… | D:/Kerbal Space Program_newmod/KSP_x64_Data/../GameData/Rea… |
+| 72 | 342 | 8 | 5 | `UIPartActionLabel.Upd…` | Time Since Shutdown: #s | Time Since Shutdown: 0.00s |
+| 73 | 342 | 1 | 5 | `UIPartActionLabel.Upd…` | Ignition Penalty for Q: # % | Ignition Penalty for Q: 0.00 % |
+| 74 | 342 | 3 | 5 | `UIPartActionLabel.Upd…` | Ignition Chance: # % | Ignition Chance: 99.90 % |
+| 75 | 342 | 1 | 5 | `UIPartActionLabel.Upd…` | Thrust Modifier: # % | Thrust Modifier: 100.00 % |
+| 76 | 342 | 1 | 5 | `UIPartActionLabel.Upd…` | Restart Ignition Penalty: # % | Restart Ignition Penalty: 0.00 % |
+| 77 | 334 | 3 | 5 | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #h | Mean Time Between Failures: 2.60h |
+| 78 | 318 | 1 | 4 | `UIPartActionLabel.Upd…` | Eng. Internal Temp: NaN K / # K | Eng. Internal Temp: NaN K / 2,430 K |
+| 79 | 301 | 6 | 5 | `UIPartActionLabel.Upd…` | Last Restart: Roll: # %, Chance: # % | Last Restart: Roll: 83.08 %, Chance: 99.90 % |
+| 80 | 254 | 2 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> -> <color=#88bbdd>Fi… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> … |
+| 81 | 254 | 4 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> … |
+| 82 | 254 | 4 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightIntegrator</b> -> <co… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightI… |
+| 83 | 250 | 5 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Timing#</b> -> <color=#88bbdd>Fixe… | <b>#5</b> <color=#a29bfe>[Plugin]</color> <b>Timing1</b> ->… |
+| 84 | 248 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>Angled RCS Block [ #/# N Class]</color> | <color=#FFFFFF>Angled RCS Block [ 28/45 N Class]</color> |
+| 85 | 232 | 4 | 3 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLayer</b> -> <color=#88… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLay… |
+| 86 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Max Ignition Chance: # % | Max Ignition Chance: 100.00 % |
+| 87 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Current Reliability: # %, MTBF: #h | Current Reliability: 98.73 %, MTBF: 2.93h |
+| 88 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Reliability at Max Data: # %, MTBF: #h | Reliability at Max Data: 99.71 %, MTBF: 13.02h |
+| 89 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Current Ignition Chance: # % | Current Ignition Chance: 99.91 % |
+| 90 | 230 | 1 | 1 | `UIPartActionLabel.Upd…` | Rated Burn Time: #s (#m #s) | Rated Burn Time: 135s (2m 15s) |
+| 91 | 196 | 3 | 3 | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FF3333>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FF3333>3469MB</color> GC: <color=#3… |
+| 92 | 175 | 73 | 5 | `UIPartActionLabel.Upd…` | Mass Flow: # kg/s | Mass Flow: 0.00000 kg/s |
+| 93 | 158 | 4 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProbeFixer</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProb… |
+| 94 | 156 | 3 | 1 | `UIPartActionLabel.Upd…` | Mass: #kg | Mass: 496.4kg |
+| 95 | 124 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>UA# Nosecone & Separation Motor</color> | <color=#FFFFFF>UA1205 Nosecone & Separation Motor</color> |
+| 96 | 88 | 1 | 1 | `UIPartActionLabel.Upd…` | Mass: #t (both) | Mass: 0.608t (both) |
+| 97 | 88 | 1 | 1 | `UIPartActionLabel.Upd…` | Cost: # (both) | Cost: 547 (both) |
+| 98 | 82 | 1 | 1 | `ProfilerUI.DrawPlugin…` | UI#n.Runtime | UI18n.Runtime |
+| 99 | 82 | 1 | 1 | `ProfilerUI.DrawPlugin…` | ▶ <color=#FFFFFF>UI#nAddon</color> | ▶ <color=#FFFFFF>UI18nAddon</color> |
+| 100 | 79 | 16 | 2 | `UIPartActionLabel.Upd…` | Eng. Internal Temp: # K / # K | Eng. Internal Temp: 317 K / 3,600 K |
+| 101 | 78 | 2 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <color=#88bbdd>FixedUp… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <c… |
+| 102 | 78 | 1 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> … |
+| 103 | 62 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>#/#kN Thruster</color> | <color=#FFFFFF>1.1/1.78kN Thruster</color> |
+| 104 | 62 | 1 | 1 | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>RL-# Series (Non-Extendable Nozzle)</color> | <color=#FFFFFF>RL-10 Series (Non-Extendable Nozzle)</color> |
+| 105 | 50 | 1 | 1 | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#3… |
+| 106 | 48 | 2 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipelineManager</b> -> <co… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipeli… |
+| 107 | 42 | 1 | 2 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -> <color=#88bbdd>Upd… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -… |
+| 108 | 32 | 1 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPluginAdapter</b> -> <col… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPlugi… |
+| 109 | 28 | 1 | 28 | `BurstPQS.UI.DebugUI.D…`, `DebugUIManager.Create…` | #-bit Height (R# DDS) | 16-bit Height (R16 DDS) |
+| 110 | 28 | 1 | 28 | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn #.# Breaking Ground | 1.12.5.3190 (WindowsPlayer x64) zh-cn 1.7.1 Breaking Ground |
+| 111 | 28 | 1 | 28 | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn | 1.12.5.3190 (WindowsPlayer x64) zh-cn |
+| 112 | 26 | 1 | 20 | `UIFactory.CreateText` | RP-#/maintecost | RP-1/maintecost |
+| 113 | 26 | 1 | 20 | `UIFactory.CreateText` | EngineGroupController/ToolbarIcon# | EngineGroupController/ToolbarIcon4 |
+| 114 | 20 | 1 | 20 | `WorkbenchCanvasView.B…` | MODULAR FLIGHT PANEL # | MODULAR FLIGHT PANEL 3.0 |
+| 115 | 20 | 1 | 1 | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#ff8800>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#f… |
+| 116 | 20 | 1 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHandler</b> -> <color=#… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHan… |
+| 117 | 16 | 1 | 1 | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinWatcher</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinW… |
+| 118 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Tech Level: # | Tech Level: 10 |
+| 119 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Power (Idle): # Watts | Power (Idle): 9.50 Watts |
+| 120 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Transmit Power (dBm): # dBm | Transmit Power (dBm): 30.0 dBm |
+| 121 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Power (Active): # Watts | Power (Active): 11.54 Watts |
+| 122 | 11 | 1 | 1 | `UIPartActionLabel.Upd…` | Gain: # dBi | Gain: 1.5 dBi |
+| 123 | 8 | 3 | 1 | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #m | Mean Time Between Failures: 17.19m |
+| 124 | 4 | 1 | 1 | `MapNode.UpdateCaption…` | SSC - Santiago VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi #° S, #° W | SSC - Santiago VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi S-Band: … |
+| 125 | 4 | 1 | 1 | `MainWindow.RenderWind…` | #-Lévy-#-g#caad#abcbc#b#fe#aa-x#_AVX_FMA | 2026091103-Lévy-157-g2caad1abcbc5b0fe52aa-x64_AVX_FMA |
+| 126 | 3 | 1 | 1 | `ScreenMessages.PostMe…` | Insufficient Avionics, Locking Controls (supports #t, vessel #t) | Insufficient Avionics, Locking Controls (supports 0.000t, v… |
+| 127 | 2 | 1 | 1 | `MapNode.UpdateCaption…` | DSA # - Malargüe VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | DSA 3 - Malargüe VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 35.78°… |
+| 128 | 2 | 1 | 1 | `BaseFlightWidget.SetT…` | DSS # - GOLDSTONE | DSS 14 - GOLDSTONE |
+| 129 | 2 | 1 | 1 | `MapNode.UpdateCaption…` | STDN - Quito VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | STDN - Quito VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 0.62° S, 7… |
+| 130 | 2 | 1 | 1 | `BaseFlightWidget.SetT…` | DSS # - CANBERRA | DSS 43 - CANBERRA |
+| 131 | 2 | 1 | 1 | `BaseFlightWidget.SetT…` | NIP # - USSURIYSK | NIP 15 - USSURIYSK |
+| 132 | 2 | 1 | 1 | `MapNode.UpdateCaption…` | DSS # - Goldstone VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi X-Band: # dBi K… | DSS 14 - Goldstone VHF-Band: 20.0 dBi UHF-Band: 34.0 dBi S-… |
 
 ## 2. 噪声骨架（不建议翻）
 
@@ -221,7 +203,7 @@
 | 32 | 23850 | 79 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | • <b>Native call scopes:</b> <b># ms</b> [Physics: #ms \| Plotting: #ms; include… | • <b>Native call scopes:</b> <b>0.21 ms</b> [Physics: 0.19m… |
 | 33 | 23490 | 3 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Celestial Trajectory (Celestial Subtree): <b><color=#55ff55># ms</color></b>… | 7. Celestial Trajectory (Celestial Subtree): <b><color=#55f… |
 | 34 | 23490 | 3 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Vessel Trajectory (Vessel Trajectory): <b><color=#55ff55># ms</color></b> (P… | 6. Vessel Trajectory (Vessel Trajectory): <b><color=#55ff55… |
-| 35 | 21645 | 242 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied | ModuleManager: 81181 patches applied |
+| 35 | 21646 | 243 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied | ModuleManager: 81181 patches applied |
 | 36 | 17230 | 112 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAUL] | ModuleManager: 11548 patches applied (18 %) :BEFORE[REALISM… |
 | 37 | 17224 | 73 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALFUELS] | ModuleManager: 8770 patches applied (15 %) :FOR[REALFUELS] |
 | 38 | 15680 | 11 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[KOP_MULTI_STAR] | ModuleManager: 77073 patches applied (99 %) :LAST[KOP_MULTI… |
@@ -234,7 +216,7 @@
 | 45 | 11970 | 38 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RP-#] | ModuleManager: 47810 patches applied (71 %) :AFTER[RP-1] |
 | 46 | 11722 | 39 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_AUDIO] | ModuleManager: 54842 patches applied (96 %) :FOR[ZROWATERFA… |
 | 47 | 9422 | 10 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAULENGINESPOST] | ModuleManager: 28405 patches applied (60 %) :AFTER[REALISMO… |
-| 48 | 8940 | 3028 | 29 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading texture asset #/# (buffer=#MB) | Loading texture asset 2223/5736 (buffer=34MB) |
+| 48 | 9032 | 3059 | 30 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading texture asset #/# (buffer=#MB) | Loading texture asset 2223/5736 (buffer=34MB) |
 | 49 | 8591 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZELECTRICITYUNITS] | ModuleManager: 62159 patches applied (97 %) :FOR[ZZZELECTRI… |
 | 50 | 8422 | 37 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_MATERIALS] | ModuleManager: 20913 patches applied (49 %) :FOR[REALISMOVE… |
 | 51 | 8413 | 39 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[SOLSYSTEM] | ModuleManager: 48376 patches applied (73 %) :AFTER[SOLSYSTE… |
@@ -247,8 +229,8 @@
 | 58 | 6481 | 63 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[SOLSYSTEM] | ModuleManager: 48069 patches applied (71 %) :FOR[SOLSYSTEM] |
 | 59 | 6311 | 35 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAULENGINES] | ModuleManager: 23542 patches applied (50 %) :BEFORE[REALISM… |
 | 60 | 6016 | 1 | 5 | Profiler HUD | `RLVDebugGUI.PerfCell`, `RLVDebugGUI.PerfHeade…` | P# ms | P95 ms |
-| 61 | 5964 | 9 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_CONTROLLERS] | ModuleManager: 56036 patches applied (96 %) :FOR[ZROWATERFA… |
-| 62 | 5807 | 938 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LEGACY (default) | ModuleManager: 2968 patches applied (9 %) :LEGACY (default) |
+| 61 | 5974 | 962 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LEGACY (default) | ModuleManager: 2968 patches applied (9 %) :LEGACY (default) |
+| 62 | 5964 | 9 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_CONTROLLERS] | ModuleManager: 56036 patches applied (96 %) :FOR[ZROWATERFA… |
 | 63 | 5773 | 151 | 20 | Profiler HUD | `HUDProfilerOverlay.Re…` | <color=#34C759><b># ms</b></color> | <color=#34C759><b>0.054 ms</b></color> |
 | 64 | 5742 | 36 | 3 | Profiler HUD | `RLVDebugGUI.DrawMetri…` | # FPS | 20 FPS |
 | 65 | 5431 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_MAINPLUMEVARIANTS] | ModuleManager: 55671 patches applied (96 %) :FOR[ZROWATERFA… |
@@ -326,8 +308,8 @@
 | 137 | 711 | 423 | 20 | RDR | `BaseFlightWidget.SetT…` | RDR RDR # m | RDR RDR 0 m |
 | 138 | 669 | 8 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALFUELS] | ModuleManager: 8918 patches applied (17 %) :AFTER[REALFUELS] |
 | 139 | 664 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_EXTRATEMPLATES] | ModuleManager: 55519 patches applied (96 %) :FOR[ZROWATERFA… |
-| 140 | 649 | 4 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KERBALISMDEFAULT] | ModuleManager: 8576 patches applied (14 %) :FOR[KERBALISMDE… |
-| 141 | 632 | 58 | 29 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading sound asset #/# | Loading sound asset 0/234 |
+| 140 | 654 | 64 | 30 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading sound asset #/# | Loading sound asset 0/234 |
+| 141 | 649 | 4 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KERBALISMDEFAULT] | ModuleManager: 8576 patches applied (14 %) :FOR[KERBALISMDE… |
 | 142 | 582 | 6 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_LIFESUPPORT] | ModuleManager: 19658 patches applied (49 %) :FOR[REALISMOVE… |
 | 143 | 568 | 14 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Post-physics callback (after yield): <b><color=#ff5555># ms</color></b> (Pea… | 3. Post-physics callback (after yield): <b><color=#ff5555>2… |
 | 144 | 558 | 18 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Precalculation (Precalc / Bodies): <b><color=#ffaa55># ms</color></b> (Peak:… | 1. Precalculation (Precalc / Bodies): <b><color=#ffaa55>1.5… |
@@ -358,9 +340,9 @@
 | 169 | 278 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZZZ-RP#TREE] | ModuleManager: 74840 patches applied (99 %) :FOR[ZZZZZ-RP0T… |
 | 170 | 266 | 4 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <b><color=#00e5ff>TUFX:</color></b> # ms | <b><color=#00e5ff>TUFX:</color></b> 0.01 ms |
 | 171 | 261 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_SOLARPANELS] | ModuleManager: 23493 patches applied (49 %) :AFTER[REALISMO… |
-| 172 | 249 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAULRC] | ModuleManager: 28413 patches applied (60 %) :FOR[REALISMOVE… |
-| 173 | 248 | 7 | 11 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[AAA_AJE] | ModuleManager: 3435 patches applied (11 %) :FOR[AAA_AJE] |
-| 174 | 244 | 36 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FIRST | ModuleManager: 134 patches applied (0 %) :FIRST |
+| 172 | 260 | 37 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FIRST | ModuleManager: 134 patches applied (0 %) :FIRST |
+| 173 | 249 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAULRC] | ModuleManager: 28413 patches applied (60 %) :FOR[REALISMOVE… |
+| 174 | 248 | 7 | 11 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[AAA_AJE] | ModuleManager: 3435 patches applied (11 %) :FOR[AAA_AJE] |
 | 175 | 242 | 6 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Markers & Geometry (LateUpdate / Markers): <b><color=#ff5555># ms</color></b… | 5. Markers & Geometry (LateUpdate / Markers): <b><color=#ff… |
 | 176 | 240 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[KOP_SCATTER_MASK] | ModuleManager: 77150 patches applied (100 %) :LAST[KOP_SCAT… |
 | 177 | 225 | 5 | 10 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[A_ROTANKS] | ModuleManager: 3426 patches applied (11 %) :AFTER[A_ROTANKS] |
@@ -390,9 +372,9 @@
 | 201 | 94 | 3 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PROCEDURALPARTS] | ModuleManager: 8684 patches applied (14 %) :FOR[PROCEDURALP… |
 | 202 | 91 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RP-#-KERBALISMHARDDRIVES] | ModuleManager: 47796 patches applied (71 %) :FOR[RP-0-KERBA… |
 | 203 | 88 | 2 | 9 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[A_ROTANKS] | ModuleManager: 3424 patches applied (11 %) :FOR[A_ROTANKS] |
-| 204 | 86 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VABORGANIZER] | ModuleManager: 48404 patches applied (74 %) :FOR[VABORGANIZ… |
-| 205 | 82 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VENSTOCKREVAMP] | ModuleManager: 48412 patches applied (74 %) :FOR[VENSTOCKRE… |
-| 206 | 80 | 1 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :INSERT (initial) | ModuleManager: 0 patches applied (0 %) :INSERT (initial) |
+| 204 | 87 | 1 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :INSERT (initial) | ModuleManager: 0 patches applied (0 %) :INSERT (initial) |
+| 205 | 86 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VABORGANIZER] | ModuleManager: 48404 patches applied (74 %) :FOR[VABORGANIZ… |
+| 206 | 82 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VENSTOCKREVAMP] | ModuleManager: 48412 patches applied (74 %) :FOR[VENSTOCKRE… |
 | 207 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#33ff55>#ms (#F)</color> | <color=#33ff55>16.7ms (60F)</color> |
 | 208 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#ff5555>#ms (#F)</color> | <color=#ff5555>50.0ms (20F)</color> |
 | 209 | 79 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROENGINES] | ModuleManager: 29190 patches applied (64 %) :FOR[ROENGINES] |
@@ -420,7 +402,7 @@
 | 231 | 22 | 1 | 11 | LoadingScreen | `LoadingScreen.UpdateP…` | Kopernicus: Loading RealisticLaunchVisuals\Native\Win#\RLVGpuTiming.bin | Kopernicus: Loading RealisticLaunchVisuals\Native\Win64\RLV… |
 | 232 | 20 | 1 | 20 | Profiler HUD | `WorkbenchCanvasView.C…` | # FPS \| #ms | 60 FPS \| 0.1ms |
 | 233 | 18 | 1 | 13 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZZZZZZZZZZZZZZZZZZZZZZRP#] | ModuleManager: 76551 patches applied (99 %) :AFTER[ZZZZZZZZ… |
-| 234 | 15 | 1 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patch applied (# %) :FIRST | ModuleManager: 1 patch applied (0 %) :FIRST |
+| 234 | 16 | 1 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patch applied (# %) :FIRST | ModuleManager: 1 patch applied (0 %) :FIRST |
 | 235 | 14 | 2 | 7 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KOPERNICUS] | ModuleManager: 8614 patches applied (14 %) :AFTER[KOPERNICU… |
 | 236 | 13 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_POST] | ModuleManager: 57200 patches applied (96 %) :FOR[ZROWATERFA… |
 | 237 | 13 | 2 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RP#] | ModuleManager: 31507 patches applied (68 %) :FOR[RP0] |
@@ -450,7 +432,7 @@
 | 261 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[#_MULTIPLEMODULEINPARTAPI] | ModuleManager: 3161 patches applied (10 %) :FOR[0_MULTIPLEM… |
 | 262 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[AAA_AJE] | ModuleManager: 3443 patches applied (12 %) :AFTER[AAA_AJE] |
 
-## 3. 全部骨架（按 count 降序，共 492 个）
+## 3. 全部骨架（按 count 降序，共 474 个）
 
 其余（既不到 2 个英文词、也不姓噪声类的 80 个）多为 `#` 加单位/符号的碎片，按需人工扫一眼即可。
 
@@ -527,7 +509,7 @@
 | 67 | 23490 | 3 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Vessel Trajectory (Vessel Trajectory): <b><color=#55ff55># ms</color></b> (P… | 6. Vessel Trajectory (Vessel Trajectory): <b><color=#55ff55… |
 | 68 | 21992 | 1 | 14 | - | `ConfigurationGUI.rend…`, `TUFX.ConfigurationGUI…` | Cinematic-NextGen-CMAA# | Cinematic-NextGen-CMAA2 |
 | 69 | 21986 | 1 | 14 | - | `ConfigurationGUI.rend…`, `TUFX.ConfigurationGUI…` | Vant-# | Vant-1960 |
-| 70 | 21645 | 242 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied | ModuleManager: 81181 patches applied |
+| 70 | 21646 | 243 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied | ModuleManager: 81181 patches applied |
 | 71 | 21520 | 130 | 10 | - | `MechJebModuleAscentMe…` | znorm: #E-# | znorm: 5.0638E-10 |
 | 72 | 21490 | 1 | 1 | - | `ConfigurationGUI.rend…` | model_vab_exterior_lines_#_decal (Instance) (Instance) [KSP/Scenery/Diffuse] | model_vab_exterior_lines_01_decal (Instance) (Instance) [KS… |
 | 73 | 18420 | 1 | 1 | - | `ConfigurationGUI.rend…` | ksc_exterior_terrain_tile_#_diffuse (Instance) (Instance) [KSP/Scenery/Diffuse] | ksc_exterior_terrain_tile_01_diffuse (Instance) (Instance) … |
@@ -553,7 +535,7 @@
 | 93 | 9422 | 10 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAULENGINESPOST] | ModuleManager: 28405 patches applied (60 %) :AFTER[REALISMO… |
 | 94 | 9210 | 1 | 1 | - | `ConfigurationGUI.rend…` | phong# (Instance) [Legacy Shaders/Diffuse] | phong1 (Instance) [Legacy Shaders/Diffuse] |
 | 95 | 9210 | 1 | 1 | - | `ConfigurationGUI.rend…` | ksc_exterior_terrain_grass_# (Instance) [KSP/Scenery/Diffuse Ground KSC] | ksc_exterior_terrain_grass_02 (Instance) [KSP/Scenery/Diffu… |
-| 96 | 8940 | 3028 | 29 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading texture asset #/# (buffer=#MB) | Loading texture asset 2223/5736 (buffer=34MB) |
+| 96 | 9032 | 3059 | 30 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading texture asset #/# (buffer=#MB) | Loading texture asset 2223/5736 (buffer=34MB) |
 | 97 | 8591 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZELECTRICITYUNITS] | ModuleManager: 62159 patches applied (97 %) :FOR[ZZZELECTRI… |
 | 98 | 8422 | 37 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_MATERIALS] | ModuleManager: 20913 patches applied (49 %) :FOR[REALISMOVE… |
 | 99 | 8413 | 39 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[SOLSYSTEM] | ModuleManager: 48376 patches applied (73 %) :AFTER[SOLSYSTE… |
@@ -577,8 +559,8 @@
 | 117 | 6020 | 1 | 1 | - | `FerramAerospaceResear…` | Mesh: use # bit indices: | Mesh: use 32 bit indices: |
 | 118 | 6020 | 1 | 1 | - | `FerramAerospaceResear…` | # bit indices | 16 bit indices |
 | 119 | 6016 | 1 | 5 | Profiler HUD | `RLVDebugGUI.PerfCell`, `RLVDebugGUI.PerfHeade…` | P# ms | P95 ms |
-| 120 | 5964 | 9 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_CONTROLLERS] | ModuleManager: 56036 patches applied (96 %) :FOR[ZROWATERFA… |
-| 121 | 5807 | 938 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LEGACY (default) | ModuleManager: 2968 patches applied (9 %) :LEGACY (default) |
+| 120 | 5974 | 962 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LEGACY (default) | ModuleManager: 2968 patches applied (9 %) :LEGACY (default) |
+| 121 | 5964 | 9 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_CONTROLLERS] | ModuleManager: 56036 patches applied (96 %) :FOR[ZROWATERFA… |
 | 122 | 5773 | 151 | 20 | Profiler HUD | `HUDProfilerOverlay.Re…` | <color=#34C759><b># ms</b></color> | <color=#34C759><b>0.054 ms</b></color> |
 | 123 | 5742 | 36 | 3 | Profiler HUD | `RLVDebugGUI.DrawMetri…` | # FPS | 20 FPS |
 | 124 | 5716 | 1 | 1 | - | `FerramAerospaceResear…` | FAR Debug Options, v#.# 'Marangoni' | FAR Debug Options, v0.16.1.2 'Marangoni' |
@@ -670,286 +652,268 @@
 | 210 | 1176 | 139 | 3 | - | `ProfilerUI.DrawHeader…` | <b>PTR:</b> <color=#FF3333><b>#%</b></color> | <b>PTR:</b> <color=#FF3333><b>44.5%</b></color> |
 | 211 | 1144 | 4 | 3 | - | `ProfilerUI.DrawHeader…` | <color=#aaaaaa>GC: #</color> | <color=#aaaaaa>GC: 366</color> |
 | 212 | 1124 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[REALANTENNAS] | ModuleManager: 77153 patches applied (100 %) :LAST[REALANTE… |
-| 213 | 1104 | 15 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Vapor] Continuous volumes=#, particle emitters=#, steps=# | [17:00:35][Info] [Vapor] Continuous volumes=2, particle emi… |
-| 214 | 1099 | 17 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ROCAPSULES] | ModuleManager: 29171 patches applied (64 %) :AFTER[ROCAPSUL… |
-| 215 | 1000 | 30 | 3 | Profiler HUD | `ProfilerUI.DrawHeader…` | <b>FPS:</b> <color=#FF3333><b>#</b></color> (#) | <b>FPS:</b> <color=#FF3333><b>22</b></color> (17) |
-| 216 | 959 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[#_KSP-RECALL] | ModuleManager: 76551 patches applied (99 %) :LAST[999_KSP-R… |
-| 217 | 949 | 1 | 1 | - | `EVEManager.GlobalEVEM…` | EVE #.# Config Editor | EVE 1.11.7.2 Config Editor |
-| 218 | 890 | 1 | 1 | - | `ConfigurationGUI.rend…` | Applied rule: # matching materials / # surfaces. Save to retain it across resta… | Applied rule: 946 matching materials / 2173 surfaces. Save … |
-| 219 | 890 | 38 | 3 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>RLVAddon</b> (<color=#55FF88>#ms, #%</color>) | <b>#2</b> [Plugin] <b>RLVAddon</b> (<color=#55FF88>2.2ms, 4… |
-| 220 | 888 | 12 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KERBALISM] | ModuleManager: 8576 patches applied (14 %) :AFTER[KERBALISM] |
-| 221 | 867 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_HYBRIDPLUMES] | ModuleManager: 55998 patches applied (96 %) :AFTER[ZROWATER… |
-| 222 | 843 | 14 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[SXT] | ModuleManager: 48376 patches applied (74 %) :AFTER[SXT] |
-| 223 | 826 | 94 | 6 | - | `UIPartActionLabel.Upd…` | Flight Data: # du / # du | Flight Data: 862 du / 10000 du |
-| 224 | 796 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RO-KERBALISMHARDDRIVES] | ModuleManager: 29538 patches applied (65 %) :AFTER[RO-KERBA… |
-| 225 | 780 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_SOLARPANELS_LATE] | ModuleManager: 23493 patches applied (49 %) :FOR[REALISMOVE… |
-| 226 | 777 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZREALISMOVERHAUL_RAPATCH] | ModuleManager: 70667 patches applied (98 %) :FOR[ZZZREALISM… |
-| 227 | 750 | 7 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_HEATSHIELD] | ModuleManager: 19608 patches applied (49 %) :AFTER[REALISMO… |
-| 228 | 741 | 11 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RP-#-KERBALISMHARDDRIVES] | ModuleManager: 47798 patches applied (71 %) :AFTER[RP-0-KER… |
-| 229 | 719 | 2 | 20 | - | `HUDProfilerOverlay.Re…` | <color=#888888><b># / # (#%)</b></color> | <color=#888888><b>0 / 12 (0%)</b></color> |
-| 230 | 713 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROSOLAR] | ModuleManager: 29661 patches applied (65 %) :FOR[ROSOLAR] |
-| 231 | 711 | 423 | 20 | RDR | `BaseFlightWidget.SetT…` | RDR RDR # m | RDR RDR 0 m |
-| 232 | 669 | 8 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALFUELS] | ModuleManager: 8918 patches applied (17 %) :AFTER[REALFUELS] |
-| 233 | 664 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_EXTRATEMPLATES] | ModuleManager: 55519 patches applied (96 %) :FOR[ZROWATERFA… |
+| 213 | 1099 | 17 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ROCAPSULES] | ModuleManager: 29171 patches applied (64 %) :AFTER[ROCAPSUL… |
+| 214 | 1000 | 30 | 3 | Profiler HUD | `ProfilerUI.DrawHeader…` | <b>FPS:</b> <color=#FF3333><b>#</b></color> (#) | <b>FPS:</b> <color=#FF3333><b>22</b></color> (17) |
+| 215 | 959 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[#_KSP-RECALL] | ModuleManager: 76551 patches applied (99 %) :LAST[999_KSP-R… |
+| 216 | 949 | 1 | 1 | - | `EVEManager.GlobalEVEM…` | EVE #.# Config Editor | EVE 1.11.7.2 Config Editor |
+| 217 | 890 | 1 | 1 | - | `ConfigurationGUI.rend…` | Applied rule: # matching materials / # surfaces. Save to retain it across resta… | Applied rule: 946 matching materials / 2173 surfaces. Save … |
+| 218 | 890 | 38 | 3 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>RLVAddon</b> (<color=#55FF88>#ms, #%</color>) | <b>#2</b> [Plugin] <b>RLVAddon</b> (<color=#55FF88>2.2ms, 4… |
+| 219 | 888 | 12 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KERBALISM] | ModuleManager: 8576 patches applied (14 %) :AFTER[KERBALISM] |
+| 220 | 867 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_HYBRIDPLUMES] | ModuleManager: 55998 patches applied (96 %) :AFTER[ZROWATER… |
+| 221 | 843 | 14 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[SXT] | ModuleManager: 48376 patches applied (74 %) :AFTER[SXT] |
+| 222 | 826 | 94 | 6 | - | `UIPartActionLabel.Upd…` | Flight Data: # du / # du | Flight Data: 862 du / 10000 du |
+| 223 | 796 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RO-KERBALISMHARDDRIVES] | ModuleManager: 29538 patches applied (65 %) :AFTER[RO-KERBA… |
+| 224 | 780 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_SOLARPANELS_LATE] | ModuleManager: 23493 patches applied (49 %) :FOR[REALISMOVE… |
+| 225 | 777 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZREALISMOVERHAUL_RAPATCH] | ModuleManager: 70667 patches applied (98 %) :FOR[ZZZREALISM… |
+| 226 | 750 | 7 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_HEATSHIELD] | ModuleManager: 19608 patches applied (49 %) :AFTER[REALISMO… |
+| 227 | 741 | 11 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RP-#-KERBALISMHARDDRIVES] | ModuleManager: 47798 patches applied (71 %) :AFTER[RP-0-KER… |
+| 228 | 719 | 2 | 20 | - | `HUDProfilerOverlay.Re…` | <color=#888888><b># / # (#%)</b></color> | <color=#888888><b>0 / 12 (0%)</b></color> |
+| 229 | 713 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROSOLAR] | ModuleManager: 29661 patches applied (65 %) :FOR[ROSOLAR] |
+| 230 | 711 | 423 | 20 | RDR | `BaseFlightWidget.SetT…` | RDR RDR # m | RDR RDR 0 m |
+| 231 | 669 | 8 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALFUELS] | ModuleManager: 8918 patches applied (17 %) :AFTER[REALFUELS] |
+| 232 | 664 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_#_EXTRATEMPLATES] | ModuleManager: 55519 patches applied (96 %) :FOR[ZROWATERFA… |
+| 233 | 654 | 64 | 30 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading sound asset #/# | Loading sound asset 0/234 |
 | 234 | 649 | 4 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KERBALISMDEFAULT] | ModuleManager: 8576 patches applied (14 %) :FOR[KERBALISMDE… |
 | 235 | 643 | 4 | 1 | - | `UIPartActionLabel.Upd…` | cost: Dry: # Wet: # | cost: Dry: 0 Wet: 0 |
-| 236 | 632 | 58 | 29 | LoadingScreen | `LoadingScreen.UpdateP…`, `TMP_Text.TMPro.TMP_Te…` | Loading sound asset #/# | Loading sound asset 0/234 |
-| 237 | 596 | 39 | 5 | - | `UIPartActionLabel.Upd…` | Total Run Time: #s/#s | Total Run Time: 0s/135s |
-| 238 | 596 | 46 | 5 | - | `UIPartActionLabel.Upd…` | Thrust Ratio: # | Thrust Ratio: 1 |
-| 239 | 596 | 39 | 5 | - | `UIPartActionLabel.Upd…` | Current Run Time: #s/#s | Current Run Time: 0s/135s |
-| 240 | 582 | 6 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_LIFESUPPORT] | ModuleManager: 19658 patches applied (49 %) :FOR[REALISMOVE… |
-| 241 | 572 | 8 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=ScattererReflectionProbeScaledSpaceCamera, ma… | [17:00:36][Debug] [VaporCamera] name=ScattererReflectionPro… |
-| 242 | 572 | 8 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=GalaxyCamera, mask=#, depth=None, path=Forwar… | [17:00:36][Debug] [VaporCamera] name=GalaxyCamera, mask=262… |
-| 243 | 572 | 8 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Camera #, mask=#, depth=Depth, DepthNormals, … | [17:00:36][Debug] [VaporCamera] name=Camera 00, mask=277520… |
-| 244 | 572 | 8 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=markerCam, mask=#, depth=None, path=Forward, … | [17:00:36][Debug] [VaporCamera] name=markerCam, mask=2052, … |
-| 245 | 572 | 8 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Reflection Probes Camera, mask=#, depth=None,… | [17:00:36][Debug] [VaporCamera] name=Reflection Probes Came… |
-| 246 | 572 | 8 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=UIMainCamera, mask=#, depth=None, path=Forwar… | [17:00:36][Debug] [VaporCamera] name=UIMainCamera, mask=335… |
-| 247 | 572 | 8 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=UIVectorCamera, mask=#, depth=None, path=Forw… | [17:00:36][Debug] [VaporCamera] name=UIVectorCamera, mask=4… |
-| 248 | 568 | 14 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Post-physics callback (after yield): <b><color=#ff5555># ms</color></b> (Pea… | 3. Post-physics callback (after yield): <b><color=#ff5555>2… |
-| 249 | 558 | 18 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Precalculation (Precalc / Bodies): <b><color=#ffaa55># ms</color></b> (Peak:… | 1. Precalculation (Precalc / Bodies): <b><color=#ffaa55>1.5… |
-| 250 | 512 | 6 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KERBALISMDEFAULT] | ModuleManager: 8600 patches applied (14 %) :AFTER[KERBALISM… |
-| 251 | 507 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAUL_SOLARPANELS] | ModuleManager: 23417 patches applied (49 %) :BEFORE[REALISM… |
-| 252 | 506 | 19 | 2 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>TimingPre</b> (<color=#55FF88>#ms, #%</color>) | <b>#3</b> [Plugin] <b>TimingPre</b> (<color=#55FF88>2.0ms, … |
-| 253 | 504 | 3 | 3 | - | `ProfilerUI.DrawTimeli…` | #F (~#s) | 100F (~1.5s) |
-| 254 | 500 | 3 | 1 | - | `UIPartActionLabel.Upd…` | Largest Diameter: #m | Largest Diameter: 7.0000m |
-| 255 | 500 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Total Length: #m | Total Length: 21.0000m |
-| 256 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawC…` | <color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color> | <color=#FFB380>98.9</color> / <color=#80D9FF>99.0</color> /… |
-| 257 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawC…` | #t | 39.757t |
-| 258 | 485 | 1 | 1 | - | `EngineConfigInfoPanel…` | Set to Current (#du) | Set to Current (862du) |
-| 259 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawH…` | Surv@#s | Surv@100s |
-| 260 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawC…` | # kN | 6,227 kN |
-| 261 | 476 | 434 | 4 | - | `UIPartActionLabel.Upd…` | Mass Flow: # ton/s | Mass Flow: 1.78795 ton/s |
-| 262 | 473 | 4 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[FERRAMAEROSPACERESEARCH] | ModuleManager: 4044 patches applied (12 %) :BEFORE[FERRAMAE… |
-| 263 | 471 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RSSEADRAGON] | ModuleManager: 47995 patches applied (71 %) :FOR[RSSEADRAGO… |
-| 264 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | Vessels: # | Vessels: 51 |
-| 265 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | Antennas/vessel: # | Antennas/vessel: 1.5 |
-| 266 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | GroundStations: # | GroundStations: 31 |
-| 267 | 468 | 13 | 12 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[#_RESTOCK] | ModuleManager: 3411 patches applied (11 %) :AFTER[000_RESTO… |
-| 268 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | RealAntennas v#.# | RealAntennas v2.12.0.0 |
-| 269 | 451 | 2 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ENGINEGROUPCONTOLLER] | ModuleManager: 3695 patches applied (12 %) :FOR[ENGINEGROUP… |
-| 270 | 436 | 13 | 1 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [TUFX] <b>PostProcessLayer (TUFX)</b> (<color=#55FF88>#ms, #%</color>) | <b>#2</b> [TUFX] <b>PostProcessLayer (TUFX)</b> (<color=#55… |
-| 271 | 434 | 9 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KSPCOMMUNITYFIXES] | ModuleManager: 8617 patches applied (14 %) :FOR[KSPCOMMUNIT… |
-| 272 | 426 | 8 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RESTOCK] | ModuleManager: 29030 patches applied (64 %) :AFTER[RESTOCK] |
-| 273 | 408 | 27 | 1 | Profiler HUD | `ProfilerUI.DrawHeader…` | <b>FPS:</b> <color=#FFFF33><b>#</b></color> (#) | <b>FPS:</b> <color=#FFFF33><b>35</b></color> (22) |
-| 274 | 398 | 9 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RESTOCKPLUS] | ModuleManager: 29160 patches applied (64 %) :AFTER[RESTOCKP… |
-| 275 | 397 | 2 | 5 | - | `UIPartActionLabel.Upd…` | Current Throttle: #% | Current Throttle: 100.00% |
-| 276 | 389 | 8 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_FINALIZE] | ModuleManager: 57190 patches applied (96 %) :AFTER[ZROWATER… |
-| 277 | 388 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REMOTETECH-ANTENNAS] | ModuleManager: 29030 patches applied (64 %) :FOR[REMOTETECH… |
-| 278 | 381 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_SOLARPANELS_LATE] | ModuleManager: 23519 patches applied (49 %) :AFTER[REALISMO… |
-| 279 | 378 | 1 | 1 | - | `RLVDebugGUI.DrawPerfo…` | D:/Kerbal Space Program_newmod/KSP_x#_Data/../GameData/RealisticLaunchVisuals/L… | D:/Kerbal Space Program_newmod/KSP_x64_Data/../GameData/Rea… |
-| 280 | 371 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_HEATSHIELD_LATE] | ModuleManager: 19622 patches applied (49 %) :FOR[REALISMOVE… |
-| 281 | 357 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[RP-#-KERBALISM] | ModuleManager: 78999 patches applied (100 %) :LAST[RP-0-KER… |
-| 282 | 355 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZRORESCALEDRAGCUBES] | ModuleManager: 52188 patches applied (95 %) :FOR[ZRORESCALE… |
-| 283 | 354 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RO-RCS] | ModuleManager: 29545 patches applied (65 %) :FOR[RO-RCS] |
-| 284 | 349 | 2 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ATMOSPHEREAUTOPILOT] | ModuleManager: 3478 patches applied (12 %) :FOR[ATMOSPHEREA… |
-| 285 | 342 | 8 | 5 | - | `UIPartActionLabel.Upd…` | Time Since Shutdown: #s | Time Since Shutdown: 0.00s |
-| 286 | 342 | 1 | 5 | - | `UIPartActionLabel.Upd…` | Ignition Penalty for Q: # % | Ignition Penalty for Q: 0.00 % |
-| 287 | 342 | 3 | 5 | - | `UIPartActionLabel.Upd…` | Ignition Chance: # % | Ignition Chance: 99.90 % |
-| 288 | 342 | 1 | 5 | - | `UIPartActionLabel.Upd…` | Thrust Modifier: # % | Thrust Modifier: 100.00 % |
-| 289 | 342 | 1 | 5 | - | `UIPartActionLabel.Upd…` | Restart Ignition Penalty: # % | Restart Ignition Penalty: 0.00 % |
-| 290 | 338 | 8 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Precalculation (Precalc / Bodies): <b><color=#ff5555># ms</color></b> (Peak:… | 1. Precalculation (Precalc / Bodies): <b><color=#ff5555>12.… |
-| 291 | 334 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZRP-#] | ModuleManager: 57220 patches applied (96 %) :FOR[ZRP-0] |
-| 292 | 334 | 3 | 5 | - | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #h | Mean Time Between Failures: 2.60h |
-| 293 | 321 | 12 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KERBALFOUNDRIES] | ModuleManager: 8401 patches applied (13 %) :FOR[KERBALFOUND… |
-| 294 | 318 | 1 | 4 | - | `UIPartActionLabel.Upd…` | Eng. Internal Temp: NaN K / # K | Eng. Internal Temp: NaN K / 2,430 K |
-| 295 | 312 | 14 | 1 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>EditorLogic</b> (<color=#55FF88>#ms, #%</color>) | <b>#3</b> [Plugin] <b>EditorLogic</b> (<color=#55FF88>0.7ms… |
-| 296 | 301 | 6 | 5 | - | `UIPartActionLabel.Upd…` | Last Restart: Roll: # %, Chance: # % | Last Restart: Roll: 83.08 %, Chance: 99.90 % |
-| 297 | 288 | 4 | 1 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporState] situation=ORBITING, eligible=False, source=#, fill=… | [19:59:50][Debug] [VaporState] situation=ORBITING, eligible… |
-| 298 | 288 | 4 | 1 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Camera ScaledSpace, mask=-#, depth=Depth, Mot… | [19:59:50][Debug] [VaporCamera] name=Camera ScaledSpace, ma… |
-| 299 | 284 | 4 | 2 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporCamera] name=Camera ScaledSpace, mask=#, depth=Depth, Moti… | [17:00:36][Debug] [VaporCamera] name=Camera ScaledSpace, ma… |
-| 300 | 278 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZZZ-RP#TREE] | ModuleManager: 74840 patches applied (99 %) :FOR[ZZZZZ-RP0T… |
-| 301 | 266 | 4 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <b><color=#00e5ff>TUFX:</color></b> # ms | <b><color=#00e5ff>TUFX:</color></b> 0.01 ms |
-| 302 | 261 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_SOLARPANELS] | ModuleManager: 23493 patches applied (49 %) :AFTER[REALISMO… |
-| 303 | 254 | 2 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> -> <color=#88bbdd>Fi… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> … |
-| 304 | 254 | 4 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> … |
-| 305 | 254 | 4 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightIntegrator</b> -> <co… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightI… |
-| 306 | 250 | 5 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Timing#</b> -> <color=#88bbdd>Fixe… | <b>#5</b> <color=#a29bfe>[Plugin]</color> <b>Timing1</b> ->… |
-| 307 | 249 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAULRC] | ModuleManager: 28413 patches applied (60 %) :FOR[REALISMOVE… |
-| 308 | 248 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>Angled RCS Block [ #/# N Class]</color> | <color=#FFFFFF>Angled RCS Block [ 28/45 N Class]</color> |
-| 309 | 248 | 7 | 11 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[AAA_AJE] | ModuleManager: 3435 patches applied (11 %) :FOR[AAA_AJE] |
-| 310 | 247 | 47 | 20 | - | `SmartUIExtensions.Set…`, `UIFactory.CreateText` | #G | 1.0G |
-| 311 | 245 | 223 | 3 | - | `SmartUIExtensions.Set…` | Δv # | Δv 186 |
-| 312 | 244 | 36 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FIRST | ModuleManager: 134 patches applied (0 %) :FIRST |
-| 313 | 242 | 6 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Markers & Geometry (LateUpdate / Markers): <b><color=#ff5555># ms</color></b… | 5. Markers & Geometry (LateUpdate / Markers): <b><color=#ff… |
-| 314 | 240 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[KOP_SCATTER_MASK] | ModuleManager: 77150 patches applied (100 %) :LAST[KOP_SCAT… |
-| 315 | 232 | 4 | 3 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLayer</b> -> <color=#88… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLay… |
-| 316 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Max Ignition Chance: # % | Max Ignition Chance: 100.00 % |
-| 317 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Current Reliability: # %, MTBF: #h | Current Reliability: 98.73 %, MTBF: 2.93h |
-| 318 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Reliability at Max Data: # %, MTBF: #h | Reliability at Max Data: 99.71 %, MTBF: 13.02h |
-| 319 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Current Ignition Chance: # % | Current Ignition Chance: 99.91 % |
-| 320 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Rated Burn Time: #s (#m #s) | Rated Burn Time: 135s (2m 15s) |
-| 321 | 225 | 5 | 10 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[A_ROTANKS] | ModuleManager: 3426 patches applied (11 %) :AFTER[A_ROTANKS] |
-| 322 | 220 | 3 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Aero] Attached, enabled=True | [17:00:35][Info] [Aero] Attached, enabled=True |
-| 323 | 220 | 3 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Aero] FAR optional API bound: telemetry=True, atmosphere=True, w… | [17:00:35][Info] [Aero] FAR optional API bound: telemetry=T… |
-| 324 | 220 | 3 | 3 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Info] [Transients] staging-transients-# enabled: accumulated #D mist, s… | [17:00:23][Info] [Transients] staging-transients-2 enabled:… |
-| 325 | 217 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[REALISMOVERHAULENGINES] | ModuleManager: 78936 patches applied (100 %) :LAST[REALISMO… |
-| 326 | 208 | 34 | 1 | - | `ProfilerUI.DrawHeader…` | <b>PTR:</b> <color=#FFFF33><b>#%</b></color> | <b>PTR:</b> <color=#FFFF33><b>67.0%</b></color> |
-| 327 | 206 | 2 | 1 | - | `ProfilerUI.DrawHeader…` | <color=#33FF33>GC: #</color> | <color=#33FF33>GC: 366</color> |
-| 328 | 197 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[VABORGANIZER] | ModuleManager: 48407 patches applied (74 %) :AFTER[VABORGAN… |
-| 329 | 196 | 3 | 3 | - | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FF3333>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FF3333>3469MB</color> GC: <color=#3… |
-| 330 | 196 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[ZZREALPLUME] | ModuleManager: 62140 patches applied (96 %) :BEFORE[ZZREALP… |
-| 331 | 195 | 5 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROHEATSHIELDS] | ModuleManager: 29199 patches applied (64 %) :FOR[ROHEATSHIE… |
-| 332 | 175 | 73 | 5 | - | `UIPartActionLabel.Upd…` | Mass Flow: # kg/s | Mass Flow: 0.00000 kg/s |
-| 333 | 168 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[ROSOLAR] | ModuleManager: 29658 patches applied (65 %) :BEFORE[ROSOLAR] |
-| 334 | 168 | 5 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#888888>#ms</color> | <color=#888888>149ms</color> |
-| 335 | 167 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[SOLSYSTEM] | ModuleManager: 79014 patches applied (100 %) :LAST[SOLSYSTE… |
-| 336 | 167 | 4 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALANTENNAS] | ModuleManager: 8764 patches applied (15 %) :AFTER[REALANTEN… |
-| 337 | 163 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZREALPLUME] | ModuleManager: 62159 patches applied (97 %) :AFTER[ZZREALPL… |
-| 338 | 159 | 80 | 14 | - | `BaseFlightWidget.SetT…` | # atm | 0.99 atm |
-| 339 | 158 | 4 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProbeFixer</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProb… |
-| 340 | 156 | 3 | 1 | - | `UIPartActionLabel.Upd…` | Mass: #kg | Mass: 496.4kg |
-| 341 | 148 | 2 | 2 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporPad] anchor=(#, -#, #), supports=#, radius=# | [17:00:36][Debug] [VaporPad] anchor=(32.2, -18.9, 12.0), su… |
-| 342 | 148 | 2 | 2 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporState] situation=PRELAUNCH, eligible=False, source=#, fill… | [17:00:36][Debug] [VaporState] situation=PRELAUNCH, eligibl… |
-| 343 | 148 | 2 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALCHUTE] | ModuleManager: 8770 patches applied (15 %) :AFTER[REALCHUTE] |
-| 344 | 143 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZAFTERUNIVERSALSTORAGE] | ModuleManager: 62159 patches applied (97 %) :FOR[ZZZAFTERUN… |
-| 345 | 140 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZZZROENGINES] | ModuleManager: 74838 patches applied (99 %) :FOR[ZZZZZROENG… |
-| 346 | 137 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAULTANKTYPES] | ModuleManager: 28527 patches applied (61 %) :AFTER[REALISMO… |
-| 347 | 136 | 4 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Late Sync (BetterLate / Motion): <b><color=#ff5555># ms</color></b> (Peak: #… | 4. Late Sync (BetterLate / Motion): <b><color=#ff5555>5.965… |
-| 348 | 136 | 2 | 1 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Debug] [VaporState] situation=PRELAUNCH, eligible=True, source=#, fill=… | [17:00:49][Debug] [VaporState] situation=PRELAUNCH, eligibl… |
-| 349 | 129 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROCAPSULES] | ModuleManager: 29168 patches applied (64 %) :FOR[ROCAPSULES] |
-| 350 | 124 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>UA#</color> | <color=#FFFFFF>UA1206</color> |
-| 351 | 124 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>LR#</color> | <color=#FFFFFF>LR129</color> |
-| 352 | 124 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>UA# Nosecone & Separation Motor</color> | <color=#FFFFFF>UA1205 Nosecone & Separation Motor</color> |
-| 353 | 122 | 2 | 7 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[AAA] | ModuleManager: 3432 patches applied (11 %) :FOR[AAA] |
-| 354 | 117 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ROENGINES] | ModuleManager: 29197 patches applied (64 %) :AFTER[ROENGINE… |
-| 355 | 111 | 1 | 1 | - | `UIPartActionWindow.Ad…` | # L | 80 L |
-| 356 | 108 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAUL_HEATSHIELD] | ModuleManager: 19418 patches applied (49 %) :BEFORE[REALISM… |
-| 357 | 108 | 4 | 11 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[KERBALISM] | ModuleManager: 8419 patches applied (13 %) :BEFORE[KERBALIS… |
-| 358 | 104 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[ROCAPSULES] | ModuleManager: 78936 patches applied (100 %) :LAST[ROCAPSUL… |
-| 359 | 104 | 11 | 3 | - | `unknown` | <color=#000000># kL</color> | <color=#000000>113 kL</color> |
-| 360 | 97 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[ZZZRP-#] | ModuleManager: 70667 patches applied (98 %) :BEFORE[ZZZRP-0] |
-| 361 | 96 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[B#_AEROSPACE_WINGSTUFF] | ModuleManager: 3689 patches applied (12 %) :FOR[B9_AEROSPAC… |
-| 362 | 95 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RO-KERBALISM] | ModuleManager: 29256 patches applied (65 %) :AFTER[RO-KERBA… |
-| 363 | 94 | 3 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PROCEDURALPARTS] | ModuleManager: 8684 patches applied (14 %) :FOR[PROCEDURALP… |
-| 364 | 91 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RP-#-KERBALISMHARDDRIVES] | ModuleManager: 47796 patches applied (71 %) :FOR[RP-0-KERBA… |
-| 365 | 88 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Mass: #t (both) | Mass: 0.608t (both) |
-| 366 | 88 | 2 | 9 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[A_ROTANKS] | ModuleManager: 3424 patches applied (11 %) :FOR[A_ROTANKS] |
-| 367 | 88 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Cost: # (both) | Cost: 547 (both) |
-| 368 | 86 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VABORGANIZER] | ModuleManager: 48404 patches applied (74 %) :FOR[VABORGANIZ… |
-| 369 | 82 | 1 | 1 | - | `ProfilerUI.DrawPlugin…` | UI#n.Runtime | UI18n.Runtime |
-| 370 | 82 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VENSTOCKREVAMP] | ModuleManager: 48412 patches applied (74 %) :FOR[VENSTOCKRE… |
-| 371 | 82 | 1 | 1 | - | `ProfilerUI.DrawPlugin…` | ▶ <color=#FFFFFF>UI#nAddon</color> | ▶ <color=#FFFFFF>UI18nAddon</color> |
-| 372 | 80 | 1 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :INSERT (initial) | ModuleManager: 0 patches applied (0 %) :INSERT (initial) |
-| 373 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#33ff55>#ms (#F)</color> | <color=#33ff55>16.7ms (60F)</color> |
-| 374 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#ff5555>#ms (#F)</color> | <color=#ff5555>50.0ms (20F)</color> |
-| 375 | 79 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROENGINES] | ModuleManager: 29190 patches applied (64 %) :FOR[ROENGINES] |
-| 376 | 79 | 16 | 2 | - | `UIPartActionLabel.Upd…` | Eng. Internal Temp: # K / # K | Eng. Internal Temp: 317 K / 3,600 K |
-| 377 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#ffaa22>#ms (#F)</color> | <color=#ffaa22>33.3ms (30F)</color> |
-| 378 | 78 | 2 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <color=#88bbdd>FixedUp… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <c… |
-| 379 | 78 | 1 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> … |
-| 380 | 78 | 2 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[Z_SOLSYSTEM] | ModuleManager: 51027 patches applied (95 %) :FOR[Z_SOLSYSTE… |
-| 381 | 75 | 67 | 5 | - | `SmartUIExtensions.Set…` | #x | 1.2x |
-| 382 | 70 | 2 | 7 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :BEFORE[AAA_AJE] | ModuleManager: 3433 patches applied (11 %) :BEFORE[AAA_AJE] |
-| 383 | 66 | 1 | 3 | - | `unknown` | <color=#000000>(#)</color> | <color=#000000>(0)</color> |
-| 384 | 64 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZREALFUELSVOLUMES] | ModuleManager: 51702 patches applied (95 %) :FOR[ZREALFUELS… |
-| 385 | 62 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ROSOLAR] | ModuleManager: 29665 patches applied (65 %) :AFTER[ROSOLAR] |
-| 386 | 62 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>#/#kN Thruster</color> | <color=#FFFFFF>1.1/1.78kN Thruster</color> |
-| 387 | 62 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>RL-# Series (Non-Extendable Nozzle)</color> | <color=#FFFFFF>RL-10 Series (Non-Extendable Nozzle)</color> |
-| 388 | 59 | 35 | 5 | RDR | `BaseFlightWidget.SetT…` | RDR RDR # Mm | RDR RDR 1.33 Mm |
-| 389 | 58 | 1 | 1 | - | `ProfilerUI.DrawHeader…` | <color=#ffaa22>🗑️ GC: #/s</color> | <color=#ffaa22>🗑️ GC: 1.0/s</color> |
-| 390 | 57 | 2 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[PROCEDURALFAIRINGS] | ModuleManager: 77151 patches applied (100 %) :LAST[PROCEDUR… |
-| 391 | 56 | 1 | 1 | - | `RLVDebugGUI.DrawLogs` | [#:#:#][Warning] [Vapor] Nearby solar caster broadphase reached its finite capa… | [01:06:47][Warning] [Vapor] Nearby solar caster broadphase … |
-| 392 | 54 | 2 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZZRP-#] | ModuleManager: 71146 patches applied (98 %) :AFTER[ZZZRP-0] |
-| 393 | 50 | 1 | 1 | - | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#3… |
-| 394 | 49 | 2 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RO-KERBALISM] | ModuleManager: 29255 patches applied (65 %) :FOR[RO-KERBALI… |
-| 395 | 48 | 2 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipelineManager</b> -> <co… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipeli… |
-| 396 | 46 | 2 | 1 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>RLVAddon</b> (<color=#FFAA22>#ms, #%</color>) | <b>#2</b> [Plugin] <b>RLVAddon</b> (<color=#FFAA22>4.7ms, 1… |
-| 397 | 45 | 30 | 20 | - | `ManeuverNodeEditorTab…` | T + #d, #h, #m, #s | T + 56d, 18h, 13m, 25s |
-| 398 | 45 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[ZKOPERNICUS] | ModuleManager: 79023 patches applied (100 %) :LAST[ZKOPERNI… |
-| 399 | 44 | 7 | 20 | - | `BaseFlightWidget.SetT…`, `UIFactory.CreateText` | # Kbps | 15.8 Kbps |
-| 400 | 44 | 1 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Markers & Geometry (LateUpdate / Markers): <b><color=#ffaa55># ms</color></b… | 5. Markers & Geometry (LateUpdate / Markers): <b><color=#ff… |
-| 401 | 43 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[RP-#] | ModuleManager: 78939 patches applied (100 %) :LAST[RP-0] |
-| 402 | 43 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[WATERFALL] | ModuleManager: 48412 patches applied (74 %) :AFTER[WATERFAL… |
-| 403 | 42 | 1 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -> <color=#88bbdd>Upd… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -… |
-| 404 | 41 | 2 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PARALLAXSTOCK] | ModuleManager: 8653 patches applied (14 %) :FOR[PARALLAXSTO… |
-| 405 | 40 | 1 | 20 | - | `InputFieldHandler.Upd…` | #y, #d, #:#:#​ | 0y, 0d, 00:00:00​ |
-| 406 | 40 | 2 | 20 | Profiler HUD | `HUDProfilerOverlay.Cr…` | #ms | 0.00ms |
-| 407 | 39 | 37 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) | ModuleManager: 12728 patches applied (35 %) |
-| 408 | 38 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[PROCEDURALPARTS] | ModuleManager: 8692 patches applied (14 %) :AFTER[PROCEDURA… |
-| 409 | 37 | 2 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[REALFUELS] | ModuleManager: 77253 patches applied (100 %) :LAST[REALFUEL… |
-| 410 | 36 | 1 | 2 | Profiler HUD | `PerformanceProbe.Draw…` | Principia Net: <color=#888888># ms (Offline)</color> | Principia Net: <color=#888888>0.00 ms (Offline)</color> |
-| 411 | 32 | 1 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPluginAdapter</b> -> <col… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPlugi… |
-| 412 | 28 | 1 | 28 | - | `BurstPQS.UI.DebugUI.D…`, `DebugUIManager.Create…` | #-bit Height (R# DDS) | 16-bit Height (R16 DDS) |
-| 413 | 28 | 1 | 28 | - | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn #.# Breaking Ground | 1.12.5.3190 (WindowsPlayer x64) zh-cn 1.7.1 Breaking Ground |
-| 414 | 28 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Mass: #t | Mass: 0.343t |
-| 415 | 28 | 1 | 9 | - | `StageIconInfoBox.SetM…`, `UIPartActionWindow.Ad…` | CooledLCH# | CooledLCH4 |
-| 416 | 28 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Cost: # | Cost: 34 |
-| 417 | 28 | 1 | 28 | - | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn | 1.12.5.3190 (WindowsPlayer x64) zh-cn |
-| 418 | 27 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KSPCOMMUNITYFIXES] | ModuleManager: 8643 patches applied (14 %) :AFTER[KSPCOMMUN… |
-| 419 | 26 | 1 | 20 | - | `UIFactory.CreateText` | RP-#/maintecost | RP-1/maintecost |
-| 420 | 26 | 1 | 20 | - | `UIFactory.CreateText` | EngineGroupController/ToolbarIcon# | EngineGroupController/ToolbarIcon4 |
-| 421 | 23 | 1 | 20 | - | `KbAppFrame.Setup` | #autoLoc_# | #autoLoc_6002189 |
-| 422 | 23 | 2 | 1 | - | `UIPartActionWindow.Ad…`, `UIPartActionWindow.Cr…` | # MJ | 9.67 MJ |
-| 423 | 22 | 12 | 3 | - | `EngineersReport+<Upda…` | <color=#b4d455>#t</color> | <color=#b4d455>660.978t</color> |
-| 424 | 22 | 1 | 11 | LoadingScreen | `LoadingScreen.UpdateP…` | Kopernicus: Loading RealisticLaunchVisuals\Native\Win#\RLVGpuTiming.bin | Kopernicus: Loading RealisticLaunchVisuals\Native\Win64\RLV… |
-| 425 | 20 | 1 | 20 | Profiler HUD | `WorkbenchCanvasView.C…` | # FPS \| #ms | 60 FPS \| 0.1ms |
-| 426 | 20 | 1 | 20 | - | `UIFactory.CreateText` | X: # Y: # \| #x | X: 0 Y: 0 \| 1.00x |
-| 427 | 20 | 1 | 20 | - | `WorkbenchCanvasView.B…` | MODULAR FLIGHT PANEL # | MODULAR FLIGHT PANEL 3.0 |
-| 428 | 20 | 1 | 20 | - | `UIFactory.CreateText` | UT #y, #d, #:#:# | UT 0y, 0d, 00:00:00 |
-| 429 | 20 | 1 | 20 | - | `BaseFlightWidget.SetT…` | # bps | 0.0 bps |
-| 430 | 20 | 1 | 1 | - | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#ff8800>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#f… |
-| 431 | 20 | 1 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHandler</b> -> <color=#… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHan… |
-| 432 | 18 | 1 | 13 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZZZZZZZZZZZZZZZZZZZZZZRP#] | ModuleManager: 76551 patches applied (99 %) :AFTER[ZZZZZZZZ… |
-| 433 | 16 | 1 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinWatcher</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinW… |
-| 434 | 15 | 1 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patch applied (# %) :FIRST | ModuleManager: 1 patch applied (0 %) :FIRST |
-| 435 | 14 | 1 | 3 | - | `unknown` | <color=#000000># L</color> | <color=#000000>160 L</color> |
-| 436 | 14 | 8 | 5 | - | `SmartUIExtensions.Set…` | M # | M 0.2 |
-| 437 | 14 | 2 | 7 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KOPERNICUS] | ModuleManager: 8614 patches applied (14 %) :AFTER[KOPERNICU… |
-| 438 | 14 | 1 | 3 | - | `unknown` | <color=#000000># MJ</color> | <color=#000000>76.6 MJ</color> |
-| 439 | 14 | 1 | 8 | - | `GenericCascadingList.…` | <color=#b8f4d1>#h, #m, #s</color> | <color=#b8f4d1>23h, 56m, 4s</color> |
-| 440 | 13 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_POST] | ModuleManager: 57200 patches applied (96 %) :FOR[ZROWATERFA… |
-| 441 | 13 | 2 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RP#] | ModuleManager: 31507 patches applied (68 %) :FOR[RP0] |
-| 442 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Tech Level: # | Tech Level: 10 |
-| 443 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Power (Idle): # Watts | Power (Idle): 9.50 Watts |
-| 444 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Transmit Power (dBm): # dBm | Transmit Power (dBm): 30.0 dBm |
-| 445 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Power: # W | Power: 16.4 W |
-| 446 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Power (Active): # Watts | Power (Active): 11.54 Watts |
-| 447 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Gain: # dBi | Gain: 1.5 dBi |
-| 448 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Controllable: #T | Controllable: 1.00T |
-| 449 | 8 | 1 | 8 | - | `KbApp_VesselInfo.Crea…` | <color=#c8d782>#</color> | <color=#c8d782>10</color> |
-| 450 | 8 | 7 | 8 | - | `ManeuverNodeEditorTab…` | #h, #m, #s | 1h, 46m, 27s |
-| 451 | 8 | 3 | 1 | - | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #m | Mean Time Between Failures: 17.19m |
-| 452 | 8 | 1 | 8 | - | `ManeuverNodeEditorTab…` | #m, #s | 29m, 49s |
-| 453 | 6 | 1 | 6 | - | `SmartUIExtensions.Set…` | Ap #M | Ap 1.5M |
-| 454 | 6 | 2 | 5 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PARALLAX] | ModuleManager: 8648 patches applied (14 %) :FOR[PARALLAX] |
-| 455 | 6 | 1 | 3 | - | `DirectoryActionGroup.…` | Steam (#) | Steam (0) |
-| 456 | 5 | 2 | 5 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[BURSTPQS] | ModuleManager: 76551 patches applied (99 %) :LAST[BURSTPQS] |
-| 457 | 4 | 1 | 1 | - | `MapNode.UpdateCaption…` | SSC - Santiago VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi #° S, #° W | SSC - Santiago VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi S-Band: … |
-| 458 | 4 | 1 | 1 | - | `MainWindow.RenderWind…` | #-Lévy-#-g#caad#abcbc#b#fe#aa-x#_AVX_FMA | 2026091103-Lévy-157-g2caad1abcbc5b0fe52aa-x64_AVX_FMA |
-| 459 | 4 | 2 | 4 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[HARDREMOVENONRO] | ModuleManager: 8399 patches applied (13 %) :FOR[HARDREMOVEN… |
-| 460 | 4 | 2 | 4 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[HARDREMOVENONRP#] | ModuleManager: 8400 patches applied (13 %) :FOR[HARDREMOVEN… |
-| 461 | 3 | 2 | 3 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KOPERNICUS] | ModuleManager: 8613 patches applied (14 %) :FOR[KOPERNICUS] |
-| 462 | 3 | 1 | 1 | - | `ScreenMessages.PostMe…` | Insufficient Avionics, Locking Controls (supports #t, vessel #t) | Insufficient Avionics, Locking Controls (supports 0.000t, v… |
-| 463 | 3 | 2 | 3 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PARALLAXCONTINUED] | ModuleManager: 8650 patches applied (14 %) :FOR[PARALLAXCON… |
-| 464 | 3 | 1 | 3 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[KOPERNICUS_VERSION] | ModuleManager: 8616 patches applied (14 %) :FOR[KOPERNICUS_… |
-| 465 | 2 | 1 | 1 | - | `UIPartActionFloatEdit…` | #m | 3.000m |
-| 466 | 2 | 2 | 1 | - | `SmartUIExtensions.Set…` | +#k | +1.0k |
-| 467 | 2 | 1 | 1 | - | `MapNode.UpdateCaption…` | DSA # - Malargüe VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | DSA 3 - Malargüe VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 35.78°… |
-| 468 | 2 | 2 | 2 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[NONONRO] | ModuleManager: 8646 patches applied (14 %) :FOR[NONONRO] |
-| 469 | 2 | 1 | 1 | - | `BaseFlightWidget.SetT…` | DSS # - GOLDSTONE | DSS 14 - GOLDSTONE |
-| 470 | 2 | 1 | 1 | - | `MapNode.UpdateCaption…` | STDN - Quito VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | STDN - Quito VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 0.62° S, 7… |
-| 471 | 2 | 1 | 1 | - | `BaseFlightWidget.SetT…` | DSS # - CANBERRA | DSS 43 - CANBERRA |
-| 472 | 2 | 1 | 1 | - | `BaseFlightWidget.SetT…` | NIP # - USSURIYSK | NIP 15 - USSURIYSK |
-| 473 | 2 | 1 | 1 | - | `MapNode.UpdateCaption…` | DSS # - Goldstone VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi X-Band: # dBi K… | DSS 14 - Goldstone VHF-Band: 20.0 dBi UHF-Band: 34.0 dBi S-… |
-| 474 | 2 | 1 | 1 | - | `UIPartActionChooseOpt…` | #x-Kerolox | 3.0x-Kerolox |
-| 475 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZZAFTERUNIVERSALSTORAGE] | ModuleManager: 62159 patches applied (97 %) :AFTER[ZZZAFTER… |
-| 476 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_AUTOCONFIG] | ModuleManager: 52644 patches applied (95 %) :AFTER[ZROWATER… |
-| 477 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[NONONRP#] | ModuleManager: 8647 patches applied (14 %) :FOR[NONONRP0] |
-| 478 | 1 | 1 | 1 | ModuleManager | `TMP_Text.TMPro.TMP_Te…` | ModuleManager: # patches applied (# %) :AFTER[ZZZZZ-RP#TREE] | ModuleManager: 74842 patches applied (99 %) :AFTER[ZZZZZ-RP… |
-| 479 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_MAINEFFECT] | ModuleManager: 54132 patches applied (95 %) :AFTER[ZROWATER… |
-| 480 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[PARALLAX_STOCKPLANETTEXTURES] | ModuleManager: 8650 patches applied (14 %) :AFTER[PARALLAX_… |
-| 481 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_MATERIALS_LATE] | ModuleManager: 23297 patches applied (49 %) :AFTER[REALISMO… |
-| 482 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[TEXTURESUNLIMITED] | ModuleManager: 48404 patches applied (74 %) :FOR[TEXTURESUN… |
-| 483 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[_BUILDMANAGER] | ModuleManager: 3161 patches applied (10 %) :AFTER[_BUILDMAN… |
-| 484 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[UNITY.BURST] | ModuleManager: 48404 patches applied (74 %) :AFTER[UNITY.BU… |
-| 485 | 1 | 1 | 1 | - | `ManeuverNodeEditorTab…` | T + #d, #h, #s | T + 56d, 22h, 51s |
-| 486 | 1 | 1 | 1 | ModuleManager | `TMP_Text.TMPro.TMP_Te…` | ModuleManager: # patches applied (# %) :AFTER[SOL-VISUALS] | ModuleManager: 48377 patches applied (74 %) :AFTER[SOL-VISU… |
-| 487 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZRORESCALEDRAGCUBES] | ModuleManager: 52203 patches applied (95 %) :AFTER[ZRORESCA… |
-| 488 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALHEAT] | ModuleManager: 8939 patches applied (17 %) :AFTER[REALHEAT] |
-| 489 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[PROFILEREALISMOVERHAUL] | ModuleManager: 8693 patches applied (14 %) :AFTER[PROFILERE… |
-| 490 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAUL_REACTIONWHEEL] | ModuleManager: 23297 patches applied (49 %) :BEFORE[REALISM… |
-| 491 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[#_MULTIPLEMODULEINPARTAPI] | ModuleManager: 3161 patches applied (10 %) :FOR[0_MULTIPLEM… |
-| 492 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[AAA_AJE] | ModuleManager: 3443 patches applied (12 %) :AFTER[AAA_AJE] |
+| 236 | 596 | 39 | 5 | - | `UIPartActionLabel.Upd…` | Total Run Time: #s/#s | Total Run Time: 0s/135s |
+| 237 | 596 | 46 | 5 | - | `UIPartActionLabel.Upd…` | Thrust Ratio: # | Thrust Ratio: 1 |
+| 238 | 596 | 39 | 5 | - | `UIPartActionLabel.Upd…` | Current Run Time: #s/#s | Current Run Time: 0s/135s |
+| 239 | 582 | 6 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_LIFESUPPORT] | ModuleManager: 19658 patches applied (49 %) :FOR[REALISMOVE… |
+| 240 | 568 | 14 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Post-physics callback (after yield): <b><color=#ff5555># ms</color></b> (Pea… | 3. Post-physics callback (after yield): <b><color=#ff5555>2… |
+| 241 | 558 | 18 | 3 | Profiler HUD | `PerformanceProbe.Draw…` | #. Precalculation (Precalc / Bodies): <b><color=#ffaa55># ms</color></b> (Peak:… | 1. Precalculation (Precalc / Bodies): <b><color=#ffaa55>1.5… |
+| 242 | 512 | 6 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KERBALISMDEFAULT] | ModuleManager: 8600 patches applied (14 %) :AFTER[KERBALISM… |
+| 243 | 507 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAUL_SOLARPANELS] | ModuleManager: 23417 patches applied (49 %) :BEFORE[REALISM… |
+| 244 | 506 | 19 | 2 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>TimingPre</b> (<color=#55FF88>#ms, #%</color>) | <b>#3</b> [Plugin] <b>TimingPre</b> (<color=#55FF88>2.0ms, … |
+| 245 | 504 | 3 | 3 | - | `ProfilerUI.DrawTimeli…` | #F (~#s) | 100F (~1.5s) |
+| 246 | 500 | 3 | 1 | - | `UIPartActionLabel.Upd…` | Largest Diameter: #m | Largest Diameter: 7.0000m |
+| 247 | 500 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Total Length: #m | Total Length: 21.0000m |
+| 248 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawC…` | <color=#FFB380>#</color> / <color=#80D9FF>#</color> / <color=#80E680># %</color> | <color=#FFB380>98.9</color> / <color=#80D9FF>99.0</color> /… |
+| 249 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawC…` | #t | 39.757t |
+| 250 | 485 | 1 | 1 | - | `EngineConfigInfoPanel…` | Set to Current (#du) | Set to Current (862du) |
+| 251 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawH…` | Surv@#s | Surv@100s |
+| 252 | 485 | 1 | 1 | - | `EngineConfigGUI.DrawC…` | # kN | 6,227 kN |
+| 253 | 476 | 434 | 4 | - | `UIPartActionLabel.Upd…` | Mass Flow: # ton/s | Mass Flow: 1.78795 ton/s |
+| 254 | 473 | 4 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[FERRAMAEROSPACERESEARCH] | ModuleManager: 4044 patches applied (12 %) :BEFORE[FERRAMAE… |
+| 255 | 471 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RSSEADRAGON] | ModuleManager: 47995 patches applied (71 %) :FOR[RSSEADRAGO… |
+| 256 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | Vessels: # | Vessels: 51 |
+| 257 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | Antennas/vessel: # | Antennas/vessel: 1.5 |
+| 258 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | GroundStations: # | GroundStations: 31 |
+| 259 | 468 | 13 | 12 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[#_RESTOCK] | ModuleManager: 3411 patches applied (11 %) :AFTER[000_RESTO… |
+| 260 | 468 | 1 | 1 | - | `RealAntennas.RealAnte…` | RealAntennas v#.# | RealAntennas v2.12.0.0 |
+| 261 | 451 | 2 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ENGINEGROUPCONTOLLER] | ModuleManager: 3695 patches applied (12 %) :FOR[ENGINEGROUP… |
+| 262 | 436 | 13 | 1 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [TUFX] <b>PostProcessLayer (TUFX)</b> (<color=#55FF88>#ms, #%</color>) | <b>#2</b> [TUFX] <b>PostProcessLayer (TUFX)</b> (<color=#55… |
+| 263 | 434 | 9 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KSPCOMMUNITYFIXES] | ModuleManager: 8617 patches applied (14 %) :FOR[KSPCOMMUNIT… |
+| 264 | 426 | 8 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RESTOCK] | ModuleManager: 29030 patches applied (64 %) :AFTER[RESTOCK] |
+| 265 | 408 | 27 | 1 | Profiler HUD | `ProfilerUI.DrawHeader…` | <b>FPS:</b> <color=#FFFF33><b>#</b></color> (#) | <b>FPS:</b> <color=#FFFF33><b>35</b></color> (22) |
+| 266 | 398 | 9 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RESTOCKPLUS] | ModuleManager: 29160 patches applied (64 %) :AFTER[RESTOCKP… |
+| 267 | 397 | 2 | 5 | - | `UIPartActionLabel.Upd…` | Current Throttle: #% | Current Throttle: 100.00% |
+| 268 | 389 | 8 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_FINALIZE] | ModuleManager: 57190 patches applied (96 %) :AFTER[ZROWATER… |
+| 269 | 388 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REMOTETECH-ANTENNAS] | ModuleManager: 29030 patches applied (64 %) :FOR[REMOTETECH… |
+| 270 | 381 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_SOLARPANELS_LATE] | ModuleManager: 23519 patches applied (49 %) :AFTER[REALISMO… |
+| 271 | 378 | 1 | 1 | - | `RLVDebugGUI.DrawPerfo…` | D:/Kerbal Space Program_newmod/KSP_x#_Data/../GameData/RealisticLaunchVisuals/L… | D:/Kerbal Space Program_newmod/KSP_x64_Data/../GameData/Rea… |
+| 272 | 371 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAUL_HEATSHIELD_LATE] | ModuleManager: 19622 patches applied (49 %) :FOR[REALISMOVE… |
+| 273 | 357 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[RP-#-KERBALISM] | ModuleManager: 78999 patches applied (100 %) :LAST[RP-0-KER… |
+| 274 | 355 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZRORESCALEDRAGCUBES] | ModuleManager: 52188 patches applied (95 %) :FOR[ZRORESCALE… |
+| 275 | 354 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RO-RCS] | ModuleManager: 29545 patches applied (65 %) :FOR[RO-RCS] |
+| 276 | 349 | 2 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ATMOSPHEREAUTOPILOT] | ModuleManager: 3478 patches applied (12 %) :FOR[ATMOSPHEREA… |
+| 277 | 342 | 8 | 5 | - | `UIPartActionLabel.Upd…` | Time Since Shutdown: #s | Time Since Shutdown: 0.00s |
+| 278 | 342 | 1 | 5 | - | `UIPartActionLabel.Upd…` | Ignition Penalty for Q: # % | Ignition Penalty for Q: 0.00 % |
+| 279 | 342 | 3 | 5 | - | `UIPartActionLabel.Upd…` | Ignition Chance: # % | Ignition Chance: 99.90 % |
+| 280 | 342 | 1 | 5 | - | `UIPartActionLabel.Upd…` | Thrust Modifier: # % | Thrust Modifier: 100.00 % |
+| 281 | 342 | 1 | 5 | - | `UIPartActionLabel.Upd…` | Restart Ignition Penalty: # % | Restart Ignition Penalty: 0.00 % |
+| 282 | 338 | 8 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Precalculation (Precalc / Bodies): <b><color=#ff5555># ms</color></b> (Peak:… | 1. Precalculation (Precalc / Bodies): <b><color=#ff5555>12.… |
+| 283 | 334 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZRP-#] | ModuleManager: 57220 patches applied (96 %) :FOR[ZRP-0] |
+| 284 | 334 | 3 | 5 | - | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #h | Mean Time Between Failures: 2.60h |
+| 285 | 321 | 12 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KERBALFOUNDRIES] | ModuleManager: 8401 patches applied (13 %) :FOR[KERBALFOUND… |
+| 286 | 318 | 1 | 4 | - | `UIPartActionLabel.Upd…` | Eng. Internal Temp: NaN K / # K | Eng. Internal Temp: NaN K / 2,430 K |
+| 287 | 312 | 14 | 1 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>EditorLogic</b> (<color=#55FF88>#ms, #%</color>) | <b>#3</b> [Plugin] <b>EditorLogic</b> (<color=#55FF88>0.7ms… |
+| 288 | 301 | 6 | 5 | - | `UIPartActionLabel.Upd…` | Last Restart: Roll: # %, Chance: # % | Last Restart: Roll: 83.08 %, Chance: 99.90 % |
+| 289 | 278 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZZZ-RP#TREE] | ModuleManager: 74840 patches applied (99 %) :FOR[ZZZZZ-RP0T… |
+| 290 | 266 | 4 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <b><color=#00e5ff>TUFX:</color></b> # ms | <b><color=#00e5ff>TUFX:</color></b> 0.01 ms |
+| 291 | 261 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_SOLARPANELS] | ModuleManager: 23493 patches applied (49 %) :AFTER[REALISMO… |
+| 292 | 260 | 37 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FIRST | ModuleManager: 134 patches applied (0 %) :FIRST |
+| 293 | 254 | 2 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> -> <color=#88bbdd>Fi… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>TimingPre</b> … |
+| 294 | 254 | 4 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>Kerbalism</b> … |
+| 295 | 254 | 4 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightIntegrator</b> -> <co… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>ModularFlightI… |
+| 296 | 250 | 5 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Timing#</b> -> <color=#88bbdd>Fixe… | <b>#5</b> <color=#a29bfe>[Plugin]</color> <b>Timing1</b> ->… |
+| 297 | 249 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[REALISMOVERHAULRC] | ModuleManager: 28413 patches applied (60 %) :FOR[REALISMOVE… |
+| 298 | 248 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>Angled RCS Block [ #/# N Class]</color> | <color=#FFFFFF>Angled RCS Block [ 28/45 N Class]</color> |
+| 299 | 248 | 7 | 11 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[AAA_AJE] | ModuleManager: 3435 patches applied (11 %) :FOR[AAA_AJE] |
+| 300 | 247 | 47 | 20 | - | `SmartUIExtensions.Set…`, `UIFactory.CreateText` | #G | 1.0G |
+| 301 | 245 | 223 | 3 | - | `SmartUIExtensions.Set…` | Δv # | Δv 186 |
+| 302 | 242 | 6 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Markers & Geometry (LateUpdate / Markers): <b><color=#ff5555># ms</color></b… | 5. Markers & Geometry (LateUpdate / Markers): <b><color=#ff… |
+| 303 | 240 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[KOP_SCATTER_MASK] | ModuleManager: 77150 patches applied (100 %) :LAST[KOP_SCAT… |
+| 304 | 232 | 4 | 3 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLayer</b> -> <color=#88… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>PostProcessLay… |
+| 305 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Max Ignition Chance: # % | Max Ignition Chance: 100.00 % |
+| 306 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Current Reliability: # %, MTBF: #h | Current Reliability: 98.73 %, MTBF: 2.93h |
+| 307 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Reliability at Max Data: # %, MTBF: #h | Reliability at Max Data: 99.71 %, MTBF: 13.02h |
+| 308 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Current Ignition Chance: # % | Current Ignition Chance: 99.91 % |
+| 309 | 230 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Rated Burn Time: #s (#m #s) | Rated Burn Time: 135s (2m 15s) |
+| 310 | 225 | 5 | 10 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[A_ROTANKS] | ModuleManager: 3426 patches applied (11 %) :AFTER[A_ROTANKS] |
+| 311 | 217 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[REALISMOVERHAULENGINES] | ModuleManager: 78936 patches applied (100 %) :LAST[REALISMO… |
+| 312 | 208 | 34 | 1 | - | `ProfilerUI.DrawHeader…` | <b>PTR:</b> <color=#FFFF33><b>#%</b></color> | <b>PTR:</b> <color=#FFFF33><b>67.0%</b></color> |
+| 313 | 206 | 2 | 1 | - | `ProfilerUI.DrawHeader…` | <color=#33FF33>GC: #</color> | <color=#33FF33>GC: 366</color> |
+| 314 | 197 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[VABORGANIZER] | ModuleManager: 48407 patches applied (74 %) :AFTER[VABORGAN… |
+| 315 | 196 | 3 | 3 | - | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FF3333>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FF3333>3469MB</color> GC: <color=#3… |
+| 316 | 196 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[ZZREALPLUME] | ModuleManager: 62140 patches applied (96 %) :BEFORE[ZZREALP… |
+| 317 | 195 | 5 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROHEATSHIELDS] | ModuleManager: 29199 patches applied (64 %) :FOR[ROHEATSHIE… |
+| 318 | 175 | 73 | 5 | - | `UIPartActionLabel.Upd…` | Mass Flow: # kg/s | Mass Flow: 0.00000 kg/s |
+| 319 | 168 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[ROSOLAR] | ModuleManager: 29658 patches applied (65 %) :BEFORE[ROSOLAR] |
+| 320 | 168 | 5 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#888888>#ms</color> | <color=#888888>149ms</color> |
+| 321 | 167 | 4 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[SOLSYSTEM] | ModuleManager: 79014 patches applied (100 %) :LAST[SOLSYSTE… |
+| 322 | 167 | 4 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALANTENNAS] | ModuleManager: 8764 patches applied (15 %) :AFTER[REALANTEN… |
+| 323 | 163 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZREALPLUME] | ModuleManager: 62159 patches applied (97 %) :AFTER[ZZREALPL… |
+| 324 | 159 | 80 | 14 | - | `BaseFlightWidget.SetT…` | # atm | 0.99 atm |
+| 325 | 158 | 4 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProbeFixer</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ReflectionProb… |
+| 326 | 156 | 3 | 1 | - | `UIPartActionLabel.Upd…` | Mass: #kg | Mass: 496.4kg |
+| 327 | 148 | 2 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALCHUTE] | ModuleManager: 8770 patches applied (15 %) :AFTER[REALCHUTE] |
+| 328 | 143 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZAFTERUNIVERSALSTORAGE] | ModuleManager: 62159 patches applied (97 %) :FOR[ZZZAFTERUN… |
+| 329 | 140 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZZZZZROENGINES] | ModuleManager: 74838 patches applied (99 %) :FOR[ZZZZZROENG… |
+| 330 | 137 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAULTANKTYPES] | ModuleManager: 28527 patches applied (61 %) :AFTER[REALISMO… |
+| 331 | 136 | 4 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Late Sync (BetterLate / Motion): <b><color=#ff5555># ms</color></b> (Peak: #… | 4. Late Sync (BetterLate / Motion): <b><color=#ff5555>5.965… |
+| 332 | 129 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROCAPSULES] | ModuleManager: 29168 patches applied (64 %) :FOR[ROCAPSULES] |
+| 333 | 124 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>UA#</color> | <color=#FFFFFF>UA1206</color> |
+| 334 | 124 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>LR#</color> | <color=#FFFFFF>LR129</color> |
+| 335 | 124 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>UA# Nosecone & Separation Motor</color> | <color=#FFFFFF>UA1205 Nosecone & Separation Motor</color> |
+| 336 | 122 | 2 | 7 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[AAA] | ModuleManager: 3432 patches applied (11 %) :FOR[AAA] |
+| 337 | 117 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ROENGINES] | ModuleManager: 29197 patches applied (64 %) :AFTER[ROENGINE… |
+| 338 | 111 | 1 | 1 | - | `UIPartActionWindow.Ad…` | # L | 80 L |
+| 339 | 108 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAUL_HEATSHIELD] | ModuleManager: 19418 patches applied (49 %) :BEFORE[REALISM… |
+| 340 | 108 | 4 | 11 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[KERBALISM] | ModuleManager: 8419 patches applied (13 %) :BEFORE[KERBALIS… |
+| 341 | 104 | 3 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[ROCAPSULES] | ModuleManager: 78936 patches applied (100 %) :LAST[ROCAPSUL… |
+| 342 | 104 | 11 | 3 | - | `unknown` | <color=#000000># kL</color> | <color=#000000>113 kL</color> |
+| 343 | 97 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :BEFORE[ZZZRP-#] | ModuleManager: 70667 patches applied (98 %) :BEFORE[ZZZRP-0] |
+| 344 | 96 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[B#_AEROSPACE_WINGSTUFF] | ModuleManager: 3689 patches applied (12 %) :FOR[B9_AEROSPAC… |
+| 345 | 95 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[RO-KERBALISM] | ModuleManager: 29256 patches applied (65 %) :AFTER[RO-KERBA… |
+| 346 | 94 | 3 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PROCEDURALPARTS] | ModuleManager: 8684 patches applied (14 %) :FOR[PROCEDURALP… |
+| 347 | 91 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RP-#-KERBALISMHARDDRIVES] | ModuleManager: 47796 patches applied (71 %) :FOR[RP-0-KERBA… |
+| 348 | 88 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Mass: #t (both) | Mass: 0.608t (both) |
+| 349 | 88 | 2 | 9 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[A_ROTANKS] | ModuleManager: 3424 patches applied (11 %) :FOR[A_ROTANKS] |
+| 350 | 88 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Cost: # (both) | Cost: 547 (both) |
+| 351 | 87 | 1 | 18 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :INSERT (initial) | ModuleManager: 0 patches applied (0 %) :INSERT (initial) |
+| 352 | 86 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VABORGANIZER] | ModuleManager: 48404 patches applied (74 %) :FOR[VABORGANIZ… |
+| 353 | 82 | 1 | 1 | - | `ProfilerUI.DrawPlugin…` | UI#n.Runtime | UI18n.Runtime |
+| 354 | 82 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[VENSTOCKREVAMP] | ModuleManager: 48412 patches applied (74 %) :FOR[VENSTOCKRE… |
+| 355 | 82 | 1 | 1 | - | `ProfilerUI.DrawPlugin…` | ▶ <color=#FFFFFF>UI#nAddon</color> | ▶ <color=#FFFFFF>UI18nAddon</color> |
+| 356 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#33ff55>#ms (#F)</color> | <color=#33ff55>16.7ms (60F)</color> |
+| 357 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#ff5555>#ms (#F)</color> | <color=#ff5555>50.0ms (20F)</color> |
+| 358 | 79 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ROENGINES] | ModuleManager: 29190 patches applied (64 %) :FOR[ROENGINES] |
+| 359 | 79 | 16 | 2 | - | `UIPartActionLabel.Upd…` | Eng. Internal Temp: # K / # K | Eng. Internal Temp: 317 K / 3,600 K |
+| 360 | 79 | 1 | 3 | Profiler HUD | `ProfilerUI.DrawTimeli…` | <color=#ffaa22>#ms (#F)</color> | <color=#ffaa22>33.3ms (30F)</color> |
+| 361 | 78 | 2 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <color=#88bbdd>FixedUp… | <b>#2</b> <color=#a29bfe>[Plugin]</color> <b>Part</b> -> <c… |
+| 362 | 78 | 1 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> -> <color=#88bbdd>Fi… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>FlightGUI</b> … |
+| 363 | 78 | 2 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[Z_SOLSYSTEM] | ModuleManager: 51027 patches applied (95 %) :FOR[Z_SOLSYSTE… |
+| 364 | 75 | 67 | 5 | - | `SmartUIExtensions.Set…` | #x | 1.2x |
+| 365 | 70 | 2 | 7 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :BEFORE[AAA_AJE] | ModuleManager: 3433 patches applied (11 %) :BEFORE[AAA_AJE] |
+| 366 | 66 | 1 | 3 | - | `unknown` | <color=#000000>(#)</color> | <color=#000000>(0)</color> |
+| 367 | 64 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZREALFUELSVOLUMES] | ModuleManager: 51702 patches applied (95 %) :FOR[ZREALFUELS… |
+| 368 | 62 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ROSOLAR] | ModuleManager: 29665 patches applied (65 %) :AFTER[ROSOLAR] |
+| 369 | 62 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>#/#kN Thruster</color> | <color=#FFFFFF>1.1/1.78kN Thruster</color> |
+| 370 | 62 | 1 | 1 | - | `ProfilerUI.DrawPartsT…` | <color=#FFFFFF>RL-# Series (Non-Extendable Nozzle)</color> | <color=#FFFFFF>RL-10 Series (Non-Extendable Nozzle)</color> |
+| 371 | 59 | 35 | 5 | RDR | `BaseFlightWidget.SetT…` | RDR RDR # Mm | RDR RDR 1.33 Mm |
+| 372 | 58 | 1 | 1 | - | `ProfilerUI.DrawHeader…` | <color=#ffaa22>🗑️ GC: #/s</color> | <color=#ffaa22>🗑️ GC: 1.0/s</color> |
+| 373 | 57 | 2 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[PROCEDURALFAIRINGS] | ModuleManager: 77151 patches applied (100 %) :LAST[PROCEDUR… |
+| 374 | 54 | 2 | 15 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZZRP-#] | ModuleManager: 71146 patches applied (98 %) :AFTER[ZZZRP-0] |
+| 375 | 50 | 1 | 1 | - | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#33FF33>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#3… |
+| 376 | 49 | 2 | 13 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RO-KERBALISM] | ModuleManager: 29255 patches applied (65 %) :FOR[RO-KERBALI… |
+| 377 | 48 | 2 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipelineManager</b> -> <co… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>MaterialPipeli… |
+| 378 | 46 | 2 | 1 | Profiler HUD | `ProfilerUI.DrawHeroKi…` | <b>##</b> [Plugin] <b>RLVAddon</b> (<color=#FFAA22>#ms, #%</color>) | <b>#2</b> [Plugin] <b>RLVAddon</b> (<color=#FFAA22>4.7ms, 1… |
+| 379 | 45 | 30 | 20 | - | `ManeuverNodeEditorTab…` | T + #d, #h, #m, #s | T + 56d, 18h, 13m, 25s |
+| 380 | 45 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[ZKOPERNICUS] | ModuleManager: 79023 patches applied (100 %) :LAST[ZKOPERNI… |
+| 381 | 44 | 7 | 20 | - | `BaseFlightWidget.SetT…`, `UIFactory.CreateText` | # Kbps | 15.8 Kbps |
+| 382 | 44 | 1 | 1 | Profiler HUD | `PerformanceProbe.Draw…` | #. Markers & Geometry (LateUpdate / Markers): <b><color=#ffaa55># ms</color></b… | 5. Markers & Geometry (LateUpdate / Markers): <b><color=#ff… |
+| 383 | 43 | 2 | 17 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[RP-#] | ModuleManager: 78939 patches applied (100 %) :LAST[RP-0] |
+| 384 | 43 | 2 | 16 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[WATERFALL] | ModuleManager: 48412 patches applied (74 %) :AFTER[WATERFAL… |
+| 385 | 42 | 1 | 2 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -> <color=#88bbdd>Upd… | <b>#1</b> <color=#a29bfe>[Plugin]</color> <b>RLVAddon</b> -… |
+| 386 | 41 | 2 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PARALLAXSTOCK] | ModuleManager: 8653 patches applied (14 %) :FOR[PARALLAXSTO… |
+| 387 | 40 | 1 | 20 | - | `InputFieldHandler.Upd…` | #y, #d, #:#:#​ | 0y, 0d, 00:00:00​ |
+| 388 | 40 | 2 | 20 | Profiler HUD | `HUDProfilerOverlay.Cr…` | #ms | 0.00ms |
+| 389 | 39 | 37 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) | ModuleManager: 12728 patches applied (35 %) |
+| 390 | 38 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[PROCEDURALPARTS] | ModuleManager: 8692 patches applied (14 %) :AFTER[PROCEDURA… |
+| 391 | 37 | 2 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[REALFUELS] | ModuleManager: 77253 patches applied (100 %) :LAST[REALFUEL… |
+| 392 | 36 | 1 | 2 | Profiler HUD | `PerformanceProbe.Draw…` | Principia Net: <color=#888888># ms (Offline)</color> | Principia Net: <color=#888888>0.00 ms (Offline)</color> |
+| 393 | 32 | 1 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPluginAdapter</b> -> <col… | <b>#6</b> <color=#a29bfe>[Plugin]</color> <b>PrincipiaPlugi… |
+| 394 | 28 | 1 | 28 | - | `BurstPQS.UI.DebugUI.D…`, `DebugUIManager.Create…` | #-bit Height (R# DDS) | 16-bit Height (R16 DDS) |
+| 395 | 28 | 1 | 28 | - | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn #.# Breaking Ground | 1.12.5.3190 (WindowsPlayer x64) zh-cn 1.7.1 Breaking Ground |
+| 396 | 28 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Mass: #t | Mass: 0.343t |
+| 397 | 28 | 1 | 9 | - | `StageIconInfoBox.SetM…`, `UIPartActionWindow.Ad…` | CooledLCH# | CooledLCH4 |
+| 398 | 28 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Cost: # | Cost: 34 |
+| 399 | 28 | 1 | 28 | - | `TMP_Text.TMPro.TMP_Te…`, `VersionReadout.Start` | #.# (WindowsPlayer x#) zh-cn | 1.12.5.3190 (WindowsPlayer x64) zh-cn |
+| 400 | 27 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KSPCOMMUNITYFIXES] | ModuleManager: 8643 patches applied (14 %) :AFTER[KSPCOMMUN… |
+| 401 | 26 | 1 | 20 | - | `UIFactory.CreateText` | RP-#/maintecost | RP-1/maintecost |
+| 402 | 26 | 1 | 20 | - | `UIFactory.CreateText` | EngineGroupController/ToolbarIcon# | EngineGroupController/ToolbarIcon4 |
+| 403 | 23 | 1 | 20 | - | `KbAppFrame.Setup` | #autoLoc_# | #autoLoc_6002189 |
+| 404 | 23 | 2 | 1 | - | `UIPartActionWindow.Ad…`, `UIPartActionWindow.Cr…` | # MJ | 9.67 MJ |
+| 405 | 22 | 12 | 3 | - | `EngineersReport+<Upda…` | <color=#b4d455>#t</color> | <color=#b4d455>660.978t</color> |
+| 406 | 22 | 1 | 11 | LoadingScreen | `LoadingScreen.UpdateP…` | Kopernicus: Loading RealisticLaunchVisuals\Native\Win#\RLVGpuTiming.bin | Kopernicus: Loading RealisticLaunchVisuals\Native\Win64\RLV… |
+| 407 | 20 | 1 | 20 | Profiler HUD | `WorkbenchCanvasView.C…` | # FPS \| #ms | 60 FPS \| 0.1ms |
+| 408 | 20 | 1 | 20 | - | `UIFactory.CreateText` | X: # Y: # \| #x | X: 0 Y: 0 \| 1.00x |
+| 409 | 20 | 1 | 20 | - | `WorkbenchCanvasView.B…` | MODULAR FLIGHT PANEL # | MODULAR FLIGHT PANEL 3.0 |
+| 410 | 20 | 1 | 20 | - | `UIFactory.CreateText` | UT #y, #d, #:#:# | UT 0y, 0d, 00:00:00 |
+| 411 | 20 | 1 | 20 | - | `BaseFlightWidget.SetT…` | # bps | 0.0 bps |
+| 412 | 20 | 1 | 1 | - | `ProfilerUI.DrawTimeli…` | <b>🗑️ Mono:</b> <color=#FFFF33>#MB</color> GC: <color=#ff8800>#/s</color> | <b>🗑️ Mono:</b> <color=#FFFF33>3537MB</color> GC: <color=#f… |
+| 413 | 20 | 1 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHandler</b> -> <color=#… | <b>#4</b> <color=#a29bfe>[Plugin]</color> <b>FlightInputHan… |
+| 414 | 18 | 1 | 13 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZZZZZZZZZZZZZZZZZZZZZZRP#] | ModuleManager: 76551 patches applied (99 %) :AFTER[ZZZZZZZZ… |
+| 415 | 16 | 1 | 1 | - | `ProfilerUI.DrawSpikeS…` | <b>##</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinWatcher</b> -> <color… | <b>#3</b> <color=#a29bfe>[Plugin]</color> <b>ToolbarReskinW… |
+| 416 | 16 | 1 | 14 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patch applied (# %) :FIRST | ModuleManager: 1 patch applied (0 %) :FIRST |
+| 417 | 14 | 1 | 3 | - | `unknown` | <color=#000000># L</color> | <color=#000000>160 L</color> |
+| 418 | 14 | 8 | 5 | - | `SmartUIExtensions.Set…` | M # | M 0.2 |
+| 419 | 14 | 2 | 7 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :AFTER[KOPERNICUS] | ModuleManager: 8614 patches applied (14 %) :AFTER[KOPERNICU… |
+| 420 | 14 | 1 | 3 | - | `unknown` | <color=#000000># MJ</color> | <color=#000000>76.6 MJ</color> |
+| 421 | 14 | 1 | 8 | - | `GenericCascadingList.…` | <color=#b8f4d1>#h, #m, #s</color> | <color=#b8f4d1>23h, 56m, 4s</color> |
+| 422 | 13 | 2 | 9 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[ZROWATERFALL_POST] | ModuleManager: 57200 patches applied (96 %) :FOR[ZROWATERFA… |
+| 423 | 13 | 2 | 10 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[RP#] | ModuleManager: 31507 patches applied (68 %) :FOR[RP0] |
+| 424 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Tech Level: # | Tech Level: 10 |
+| 425 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Power (Idle): # Watts | Power (Idle): 9.50 Watts |
+| 426 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Transmit Power (dBm): # dBm | Transmit Power (dBm): 30.0 dBm |
+| 427 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Power: # W | Power: 16.4 W |
+| 428 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Power (Active): # Watts | Power (Active): 11.54 Watts |
+| 429 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Gain: # dBi | Gain: 1.5 dBi |
+| 430 | 11 | 1 | 1 | - | `UIPartActionLabel.Upd…` | Controllable: #T | Controllable: 1.00T |
+| 431 | 8 | 1 | 8 | - | `KbApp_VesselInfo.Crea…` | <color=#c8d782>#</color> | <color=#c8d782>10</color> |
+| 432 | 8 | 7 | 8 | - | `ManeuverNodeEditorTab…` | #h, #m, #s | 1h, 46m, 27s |
+| 433 | 8 | 3 | 1 | - | `UIPartActionLabel.Upd…` | Mean Time Between Failures: #m | Mean Time Between Failures: 17.19m |
+| 434 | 8 | 1 | 8 | - | `ManeuverNodeEditorTab…` | #m, #s | 29m, 49s |
+| 435 | 6 | 1 | 6 | - | `SmartUIExtensions.Set…` | Ap #M | Ap 1.5M |
+| 436 | 6 | 2 | 5 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PARALLAX] | ModuleManager: 8648 patches applied (14 %) :FOR[PARALLAX] |
+| 437 | 6 | 1 | 3 | - | `DirectoryActionGroup.…` | Steam (#) | Steam (0) |
+| 438 | 5 | 2 | 5 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :LAST[BURSTPQS] | ModuleManager: 76551 patches applied (99 %) :LAST[BURSTPQS] |
+| 439 | 4 | 1 | 1 | - | `MapNode.UpdateCaption…` | SSC - Santiago VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi #° S, #° W | SSC - Santiago VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi S-Band: … |
+| 440 | 4 | 1 | 1 | - | `MainWindow.RenderWind…` | #-Lévy-#-g#caad#abcbc#b#fe#aa-x#_AVX_FMA | 2026091103-Lévy-157-g2caad1abcbc5b0fe52aa-x64_AVX_FMA |
+| 441 | 4 | 2 | 4 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[HARDREMOVENONRO] | ModuleManager: 8399 patches applied (13 %) :FOR[HARDREMOVEN… |
+| 442 | 4 | 2 | 4 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[HARDREMOVENONRP#] | ModuleManager: 8400 patches applied (13 %) :FOR[HARDREMOVEN… |
+| 443 | 3 | 2 | 3 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[KOPERNICUS] | ModuleManager: 8613 patches applied (14 %) :FOR[KOPERNICUS] |
+| 444 | 3 | 1 | 1 | - | `ScreenMessages.PostMe…` | Insufficient Avionics, Locking Controls (supports #t, vessel #t) | Insufficient Avionics, Locking Controls (supports 0.000t, v… |
+| 445 | 3 | 2 | 3 | ModuleManager | `TMP_Text.TMPro.TMP_Te…`, `unknown` | ModuleManager: # patches applied (# %) :FOR[PARALLAXCONTINUED] | ModuleManager: 8650 patches applied (14 %) :FOR[PARALLAXCON… |
+| 446 | 3 | 1 | 3 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[KOPERNICUS_VERSION] | ModuleManager: 8616 patches applied (14 %) :FOR[KOPERNICUS_… |
+| 447 | 2 | 1 | 1 | - | `UIPartActionFloatEdit…` | #m | 3.000m |
+| 448 | 2 | 2 | 1 | - | `SmartUIExtensions.Set…` | +#k | +1.0k |
+| 449 | 2 | 1 | 1 | - | `MapNode.UpdateCaption…` | DSA # - Malargüe VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | DSA 3 - Malargüe VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 35.78°… |
+| 450 | 2 | 2 | 2 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[NONONRO] | ModuleManager: 8646 patches applied (14 %) :FOR[NONONRO] |
+| 451 | 2 | 1 | 1 | - | `BaseFlightWidget.SetT…` | DSS # - GOLDSTONE | DSS 14 - GOLDSTONE |
+| 452 | 2 | 1 | 1 | - | `MapNode.UpdateCaption…` | STDN - Quito VHF-Band: # dBi UHF-Band: # dBi #° S, #° W | STDN - Quito VHF-Band: 1.0 dBi UHF-Band: 3.0 dBi 0.62° S, 7… |
+| 453 | 2 | 1 | 1 | - | `BaseFlightWidget.SetT…` | DSS # - CANBERRA | DSS 43 - CANBERRA |
+| 454 | 2 | 1 | 1 | - | `BaseFlightWidget.SetT…` | NIP # - USSURIYSK | NIP 15 - USSURIYSK |
+| 455 | 2 | 1 | 1 | - | `MapNode.UpdateCaption…` | DSS # - Goldstone VHF-Band: # dBi UHF-Band: # dBi S-Band: # dBi X-Band: # dBi K… | DSS 14 - Goldstone VHF-Band: 20.0 dBi UHF-Band: 34.0 dBi S-… |
+| 456 | 2 | 1 | 1 | - | `UIPartActionChooseOpt…` | #x-Kerolox | 3.0x-Kerolox |
+| 457 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZZZAFTERUNIVERSALSTORAGE] | ModuleManager: 62159 patches applied (97 %) :AFTER[ZZZAFTER… |
+| 458 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_AUTOCONFIG] | ModuleManager: 52644 patches applied (95 %) :AFTER[ZROWATER… |
+| 459 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[NONONRP#] | ModuleManager: 8647 patches applied (14 %) :FOR[NONONRP0] |
+| 460 | 1 | 1 | 1 | ModuleManager | `TMP_Text.TMPro.TMP_Te…` | ModuleManager: # patches applied (# %) :AFTER[ZZZZZ-RP#TREE] | ModuleManager: 74842 patches applied (99 %) :AFTER[ZZZZZ-RP… |
+| 461 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZROWATERFALL_#_MAINEFFECT] | ModuleManager: 54132 patches applied (95 %) :AFTER[ZROWATER… |
+| 462 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[PARALLAX_STOCKPLANETTEXTURES] | ModuleManager: 8650 patches applied (14 %) :AFTER[PARALLAX_… |
+| 463 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALISMOVERHAUL_MATERIALS_LATE] | ModuleManager: 23297 patches applied (49 %) :AFTER[REALISMO… |
+| 464 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[TEXTURESUNLIMITED] | ModuleManager: 48404 patches applied (74 %) :FOR[TEXTURESUN… |
+| 465 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[_BUILDMANAGER] | ModuleManager: 3161 patches applied (10 %) :AFTER[_BUILDMAN… |
+| 466 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[UNITY.BURST] | ModuleManager: 48404 patches applied (74 %) :AFTER[UNITY.BU… |
+| 467 | 1 | 1 | 1 | - | `ManeuverNodeEditorTab…` | T + #d, #h, #s | T + 56d, 22h, 51s |
+| 468 | 1 | 1 | 1 | ModuleManager | `TMP_Text.TMPro.TMP_Te…` | ModuleManager: # patches applied (# %) :AFTER[SOL-VISUALS] | ModuleManager: 48377 patches applied (74 %) :AFTER[SOL-VISU… |
+| 469 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[ZRORESCALEDRAGCUBES] | ModuleManager: 52203 patches applied (95 %) :AFTER[ZRORESCA… |
+| 470 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[REALHEAT] | ModuleManager: 8939 patches applied (17 %) :AFTER[REALHEAT] |
+| 471 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[PROFILEREALISMOVERHAUL] | ModuleManager: 8693 patches applied (14 %) :AFTER[PROFILERE… |
+| 472 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :BEFORE[REALISMOVERHAUL_REACTIONWHEEL] | ModuleManager: 23297 patches applied (49 %) :BEFORE[REALISM… |
+| 473 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :FOR[#_MULTIPLEMODULEINPARTAPI] | ModuleManager: 3161 patches applied (10 %) :FOR[0_MULTIPLEM… |
+| 474 | 1 | 1 | 1 | ModuleManager | `unknown` | ModuleManager: # patches applied (# %) :AFTER[AAA_AJE] | ModuleManager: 3443 patches applied (12 %) :AFTER[AAA_AJE] |
 
 ## 4. 口径与判据
 

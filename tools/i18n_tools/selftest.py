@@ -32,8 +32,9 @@ import shutil
 import sys
 import tempfile
 
-from . import (capture_ingest, cfgparse, ensure_stdout, fnv, glossary, harvest, ilmeta,
-                ilstrings, packindex, textnorm)
+from . import (capture_ingest, cfgparse, check_overrides, ensure_stdout, fnv, glossary,
+                harvest, harvest_cfgcache, ilmeta, ilstrings, merge_overrides, packindex,
+                textnorm)
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -422,16 +423,16 @@ def test_packindex_real():
     # 并同步这三个数字，否则本项失败——这是「清单不许与磁盘漂移」的最后一道提示。
     # 1.3 出包后（capture → 骨架 → 入包，含 overrides 人工通道）的真值。
     # 每次重跑 translate_il / packindex 之后都要同步这三行 —— 失败时把 got 抄回来，别改断言方向。
-    eq("真实 packCount == 96", doc["packCount"], 96)
-    eq("真实 totalRows == 11561", doc["totalRows"], 11561)
-    eq("真实 totalBytes == 3794336", doc["totalBytes"], 3794336)
+    eq("真实 packCount == 97", doc["packCount"], 97)
+    eq("真实 totalRows == 14954", doc["totalRows"], 14954)
+    eq("真实 totalBytes == 5170859", doc["totalBytes"], 5170859)
     eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
     entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
     eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)
-    eq("cfg 包 41 / IL 包 55", (sum(1 for e in entries if not e["file"].endswith(".il.jsonl")),
-                              sum(1 for e in entries if e["file"].endswith(".il.jsonl"))), (41, 55))
-    eq("唯一 mod 数 81（同名 IL 包与 cfg 包合并成同一个 mod 身份）",
-       len({e["mod"] for e in entries}), 81)
+    eq("cfg 包 41 / IL 包 56", (sum(1 for e in entries if not e["file"].endswith(".il.jsonl")),
+                              sum(1 for e in entries if e["file"].endswith(".il.jsonl"))), (41, 56))
+    eq("唯一 mod 数 82（同名 IL 包与 cfg 包合并成同一个 mod 身份）",
+       len({e["mod"] for e in entries}), 82)
     eq("真实 --check 退出码 0", packindex.main(["--check", "--quiet"]), 0)
 
 
@@ -680,6 +681,35 @@ def test_capture_real():
           not raw.startswith(b"\xef\xbb\xbf") and b"\r" not in raw and raw.endswith(b"\n"))
 
 
+def test_extra_tools():
+    """把三个后加的 python 工具的 selftest 并进门禁（check_overrides / harvest_cfgcache / merge_overrides）。
+
+    为什么放在这里：CI 只跑 `python -m i18n_tools.selftest`。新工具各自的 --selftest 若没人调用，
+    逻辑坏了也永远绿着——v1.4 的译文门禁（check_overrides）与 ConfigCache 通道（harvest_cfgcache）
+    正是这样进仓库的，合并器（merge_overrides）也走同一条路。
+    """
+    import contextlib
+    import io
+
+    runners = (("check_overrides", check_overrides.selftest),
+               ("harvest_cfgcache", harvest_cfgcache.selftest),
+               ("merge_overrides", merge_overrides.selftest))
+    for name, runner in runners:
+        buffer = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(buffer):
+                result = runner()
+        except Exception as exc:                     # 自检里任何异常都算失败
+            check(name + ".selftest", False, "raised {!r}".format(exc))
+            continue
+        if isinstance(result, tuple):
+            failures, total = result
+        else:
+            failures, total = ([] if result == 0 else ["见 stdout"]), 1
+        check(name + ".selftest", not failures,
+              "{} 项检查 {} 项失败 {}".format(total, len(failures), list(failures)[:3]))
+
+
 def main(argv=None) -> int:
     ensure_stdout()
     print("[selftest] i18n_tools 自检（python %s）" %
@@ -696,6 +726,7 @@ def main(argv=None) -> int:
         test_capture_ingest(os.path.join(base, "capture_ingest"))
     finally:
         shutil.rmtree(base, ignore_errors=True)
+    test_extra_tools()
     test_artifacts()
     test_packindex_real()
     test_ilstrings_real()

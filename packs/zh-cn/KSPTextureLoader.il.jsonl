@@ -9,6 +9,7 @@
 {"h":"6b0c9cab2acc0ef8","n":"Load Cubemap","s":"Load Cubemap","t":"加载立方体贴图","mod":"KSPTextureLoader"}
 {"h":"7d440132c2dca54b","n":"Async Upload Buffer Size (MB)","s":"Async Upload Buffer Size (MB)","t":"异步上传缓冲区大小 (MB)","mod":"KSPTextureLoader"}
 {"h":"844c23e861cbfbd8","n":"Loaded Textures","s":"Loaded Textures","t":"已加载纹理","mod":"KSPTextureLoader"}
+{"h":"87224c1ec77f2a5f","n":"BatchAsynchronous","s":"BatchAsynchronous","t":"BatchAsynchronous","mod":"KSPTextureLoader"}
 {"h":"900be1cc5535d043","n":"Dump Prefab","s":"Dump Prefab","t":"导出预制体","mod":"KSPTextureLoader"}
 {"h":"9441612585e47a86","n":"Loaded CPU Textures","s":"Loaded CPU Textures","t":"已加载 CPU 纹理","mod":"KSPTextureLoader"}
 {"h":"96d25466c737e015","n":"e.g., mymod_assets","s":"e.g., mymod_assets","t":"例如：mymod_assets","mod":"KSPTextureLoader"}
