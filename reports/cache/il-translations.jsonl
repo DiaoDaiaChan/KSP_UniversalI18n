@@ -1751,3 +1751,13 @@
 {"k": "a8d061edb8b4bd68|024c4e9a|il1|gemini-3.8-flash-high", "s": "ModuleManager: # patches applied", "zh": "<<M0>>：已应用 # 个补丁", "st": "ok", "m": "gemini-3.8-flash-high"}
 {"k": "03ec8e7cb9ae6106|024c4e9a|il1|gemini-3.8-flash-high", "s": "<color=#33FF33>●</color> <b>KSPPerformanceProfiler</b>", "zh": "<color=#33FF33>●</color> <b><<M0>></b>", "st": "keep", "m": "gemini-3.8-flash-high"}
 {"k": "ce7d7c87bea0d929|024c4e9a|il1|gemini-3.8-flash-high", "s": "fairing# (Instance) (Instance) [KSP/Bumped Specular]", "zh": "整流罩# (Instance) (Instance) [KSP/Bumped Specular]", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "786c081ab27be1e6|024c4e9a|il1|gemini-3.8-flash-high", "s": "GroundStations: #", "zh": "<<M0>>: #", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "8b84c9aaffedb835|024c4e9a|il1|gemini-3.8-flash-high", "s": "# bps", "zh": "# bps", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "754a42a7d4fc9649|024c4e9a|il1|gemini-3.8-flash-high", "s": "ProbeOverhead", "zh": "<<M0>>", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "a4995aab0de0097a|024c4e9a|il1|gemini-3.8-flash-high", "s": "# atm", "zh": "# atm", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "a675833b6212b4ff|024c4e9a|il1|gemini-3.8-flash-high", "s": "ProbeUI", "zh": "<<M0>>", "st": "keep", "m": "gemini-3.8-flash-high"}
+{"k": "4135133b6b76d5ba|024c4e9a|il1|gemini-3.8-flash-high", "s": "Tazhuo Kerman", "zh": "塔卓·坎曼", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "92fc7b6810ab3274|024c4e9a|il1|gemini-3.8-flash-high", "s": "Tangli Kerman", "zh": "唐利·坎曼", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "b0e9f3a2c593c7c3|024c4e9a|il1|gemini-3.8-flash-high", "s": "Cinematic-NextGen-MainMenu", "zh": "电影级-<<M0>>-<<M1>>", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "afe5950cd7927c54|024c4e9a|il1|gemini-3.8-flash-high", "s": "Jiukai Kerman", "zh": "九凯·坎曼", "st": "ok", "m": "gemini-3.8-flash-high"}
+{"k": "7ca0b9831b771373|024c4e9a|il1|gemini-3.8-flash-high", "s": "Dafen Kerman", "zh": "达芬·坎曼", "st": "ok", "m": "gemini-3.8-flash-high"}
