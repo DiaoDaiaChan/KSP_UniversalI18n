@@ -321,7 +321,8 @@ python -m i18n_tools.packindex --packs-dir <dir> --index <file> --coverage <file
 - **分子** = 这 12,792 行里 `h` 能在 `packs/zh-cn/*.jsonl` 精确命中的行数（9,073）
 - **覆盖率 = 9,073 / 12,792 = 70.93%**（按来源：`loc` 2,646/2,948 = 89.76%、`cfg` 6,427/9,844 = 65.29%）
 - 两个**失真**数字列在报告里防止误引：`11,089 / 12,792 = 86.69%`（分子混进 2,016 条池外条目，含全部 IL 包）、`8,985 / 12,792 = 70.24%`（剔除 88 行直通；全库 92 行直通里有 4 行在 IL 包里、不在 pool 交集内）
-- **报告是三节，三节的分母互不相加**：① pool 口径（cfg 包覆盖多少待译串，9,073 / 12,792）；② DLL 字面量口径（`il-translatable.jsonl` 的 `translate` 桶 1,145 条 → IL 包 1,099 条 = 95.98%，与 ① 的 `h` 交集 0，对 ① 贡献 0）；③ 运行时捕获通道现状（`capture-candidates.jsonl` **v2 = 49,658 行 = candidate 492 + template 49,166**，v1.1 不进包；本文件生成时仍是 v1 的 2,008 行口径，等 `packindex` 重生成后同步）
+- **报告是三节，三节的分母互不相加**：① pool 口径（cfg 包覆盖多少待译串，9,073 / 12,792）；② DLL 字面量口径（`il-translatable.jsonl` 的 `translate` 桶 1,145 条 → IL 包 1,099 条 = 95.98%，与 ① 的 `h` 交集 0，对 ① 贡献 0）；③ 运行时捕获通道现状（`capture-candidates.jsonl` **v2 = 49,658 行 = candidate 492 + template 49,166**，来自 23 个游戏会话 / 125 个 caller，41,757 行能反查宿主 mod（62 个）、7,901 行仍是 `unknown`，与 ①② 的 `h` 交集合计仅 22 条 = 0.04%，v1.1 不进包）
+- 三节数字**全部由 `packindex` 现算**（`_section_il` / `_section_capture` 读 `il-translatable.jsonl` / `capture-candidates.jsonl`），报告里没有任何硬编码的候选清单数字：换一版 capture 产物只要重跑一次 `packindex`，③ 就会自动跟着变；`il-translatable.jsonl` 或 `capture-candidates.jsonl` 不存在时那一节打「无法计算」，不编造数字
 
 改动 `packs/zh-cn/**` 之后**必须重跑 `python -m i18n_tools.packindex`**：`selftest` 的 [8] 会拿清单与现场扫描逐项比对，
 一旦漂移就会报 `清单条目与现场扫描逐项一致（清单不能与磁盘漂移）` 失败——这是故意的护栏，不是噪声。

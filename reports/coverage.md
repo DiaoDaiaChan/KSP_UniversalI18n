@@ -1,6 +1,6 @@
 # zh-cn 翻译包覆盖报告
 
-- 生成时间：`2026-10-24T12:55:38Z`
+- 生成时间：`2026-10-26T01:25:26Z`
 - 包目录：`packs/zh-cn/`：89 个文件 / 11,089 行 / 3,685,087 字节
   - cfg 包（`<mod>.jsonl`，GameData/**/*.cfg 抽取）：41 个 / 9,990 行 / 3,504,392 字节
   - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：48 个 / 1,099 行 / 180,695 字节
@@ -44,17 +44,18 @@
 
 静态抽取（cfg / loc / DLL 字面量）只看得到"写在文件里"的串；代码里拼出来、运行时才成形的文本（`string.Format`、计数器、进度条）只能靠运行时抓：`UI18n` 在游戏里把**实际渲染出来的**文本记成 JSONL，落在 `<KSP 安装目录>/PluginData/UI18n/capture-*.jsonl`；`python -m i18n_tools.capture_ingest` 把这些文件摄入成 `packs/capture-candidates.jsonl`（按 `h` 去重，标 `bucket` / `reason` / `caller` / `mods`）。
 
-当前候选清单：2,008 行（`candidate` 78 / `template` 1,930），distinct `h` 2,008 个，涉及 11 个 caller（`GUI.UnityEngine.GUI.Box_Patch1` / `GUI.UnityEngine.GUI.Button_Patch1` / `GUI.UnityEngine.GUI.DoModalWindow_Patch1` / `GUI.UnityEngine.GUI.DoWindow_Patch1` / `GUI.UnityEngine.GUI.Label_Patch1` / `GUI.UnityEngine.GUI.Toggle_Patch1` / `GUILayout.UnityEngine.GUILayout.DoButton_Patch1` / `GUILayout.UnityEngine.GUILayout.DoLabel_Patch1` / `GUILayout.UnityEngine.GUILayout.DoRepeatButton_Patch1` / `GUILayout.UnityEngine.GUILayout.DoToggle_Patch1` / `TMP_Text.TMPro.TMP_Text.set_text_Patch1`）。
+当前候选清单：49,658 行（`candidate` 492 / `template` 49,166），distinct `h` 49,658 个，来自 23 个游戏会话，涉及 125 个 caller（出现最多的 8 个：`unknown` / `PerformanceProbe.DrawPerformanceTab` / `MechJebModuleAscentMenu.ShowStatusGUIElements` / `NavBallBurnVector.UpdateBurnUIText` / `HUDProfilerOverlay.RefreshOverlayData` / `SmartUIExtensions.SetTextSafe` / `LoadingScreen.UpdateProgressBar` / `MechJebStageStatsHelper.DrawStageStatsColumn`，其余 117 个略）。
+`unknown` 不是真实 caller：`callers` 列表里带 `unknown` 的 7,440 行，是**至少有一次没抓到调用方**的串（`CaptureCaller` 在托管栈里找不到宿主方法时记 `unknown`；`callers` 里非 `unknown` 的排前面、最多 5 个）。
 
-- `template` 的 1,930 行按 `reason` 拆：`counter` 1,677 / `progress` 253——带计数的进度/计数器串，每次渲染都可能不同，译了也匹配不上。
-- `candidate` 的 78 行里 78 行 `reason` 为空，是真正值得人工看的候选。
-- `mods` 全部是 `unknown`（2,008 / 2,008 行）：这份清单的 caller 还是我们自己的补丁名（`GUI.UnityEngine.GUI.Box_Patch1` 这种），`capture_ingest.infer_mods()` 按设计不从 sink / Unity 类型猜 mod，推不出就记 `unknown`。
+- `template` 的 49,166 行按 `reason` 拆：`counter` 41,563 / `progress` 7,603——带计数的进度/计数器串，每次渲染都可能不同，译了也匹配不上。
+- `candidate` 的 492 行 `reason` 全为空，是真正值得人工看的候选。
+- `mods`：41,757 / 49,658 行能反查到宿主 mod（62 个），其余 7,901 行仍是 `unknown`——它们的 caller 是我们自己的补丁名或 Unity 类型，`capture_ingest.infer_mods()` 不从 sink / Unity 类型猜 mod，推不出就记 `unknown`。
 
-**这一轮不进包**：`template` 是模板串（见上）；`candidate` 还缺 mod 归属，不能凭空塞进某个包。
+**这一轮不进包**：`template` 是模板串（见上），不译；`candidate` 的 492 条里 463 条已经有了宿主 mod 归属、剩下 29 条还是 `unknown`，本轮只做分诊、不动包。
 
 其中 2 条是人造探针串（`Zzz control alpha` / `Zzz control beta`，走 `GUI.Label`），用来验证捕获通道能抓到 IMGUI 路径——它们不是游戏文本，**永远不该进包**。
 
-与现有产物的交集（现场算的）：与 `packs/zh-cn/**` 的 `h` 交集 14 条（全部落在 IL 包里，cfg 包 0 条）；与 `packs/pool.jsonl` 交集 0 条；与 `packs/il-translatable.jsonl` 交集 17 条。也就是说运行时看到的串和静态抽出来的串**基本不重叠**——这正是要开这条通道的理由。
+与现有产物的交集（现场算的）：与 `packs/zh-cn/**` 的 `h` 交集 0 条（其中 cfg 包 0 条）；与 `packs/pool.jsonl` 交集 0 条；与 `packs/il-translatable.jsonl` 交集 22 条。取并集看：这 49,658 条运行时串里只有 22 条静态侧已经采到过（0.04%），其余 49,636 条**只有运行时才看得到**——这正是要开这条通道的理由。
 
 ②③ 两节的串都**不计入** ① 的分母，也不计入任何总覆盖率。
 

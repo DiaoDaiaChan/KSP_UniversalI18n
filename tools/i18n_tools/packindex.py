@@ -481,8 +481,19 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
     hs = {r["h"] for r in cands}
     bucket = Counter(r.get("bucket") for r in cands)
     reason = Counter(r.get("reason") for r in cands)
-    callers = Counter(r.get("caller") for r in cands)
-    unknown = sum(1 for r in cands if list(r.get("mods") or []) == ["unknown"])
+    # caller 用 callers 列表的并集（v2 起一个串可能被多个 caller 看到；v1 只有单个 caller 字段）
+    callers = Counter()
+    for r in cands:
+        seen = list(r.get("callers") or ([r.get("caller")] if r.get("caller") else []))
+        for c in dict.fromkeys(seen):
+            callers[c] += 1
+    n_sessions = max((r.get("sessions") or 0) for r in cands)
+    n_unknown = sum(1 for r in cands if list(r.get("mods") or []) == ["unknown"])
+    host_mods = set()
+    for r in cands:
+        for m in (r.get("mods") or []):
+            if m != "unknown":
+                host_mods.add(m)
     pack_hit = hs & (cfg_h | il_h)
     L.append("静态抽取（cfg / loc / DLL 字面量）只看得到\"写在文件里\"的串；代码里拼出来、"
              "运行时才成形的文本（" + _c("string.Format") + "、计数器、进度条）只能靠运行时抓："
@@ -493,12 +504,24 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
              + _c("bucket") + " / " + _c("reason") + " / " + _c("caller") + " / "
              + _c("mods") + "）。")
     L.append("")
+    top_callers = [c for c, _ in callers.most_common(8)]
+    more = len(callers) - len(top_callers)
     L.append("当前候选清单：" + _n(len(cands)) + " 行（" + _c("candidate") + " "
              + _n(bucket.get("candidate", 0)) + " / " + _c("template") + " "
              + _n(bucket.get("template", 0)) + "），distinct " + _c("h") + " " + _n(len(hs))
-             + " 个，涉及 " + _n(len(callers)) + " 个 caller（"
-             + " / ".join(_c(c) for c in sorted(callers)) + "）。")
-    L.append("")
+             + " 个，来自 " + _n(n_sessions) + " 个游戏会话，涉及 " + _n(len(callers))
+             + " 个 caller（出现最多的 8 个：" + " / ".join(_c(c) for c in top_callers)
+             + ("，其余 " + _n(more) + " 个略" if more > 0 else "") + "）。")
+    n_unk_caller = sum(1 for r in cands
+                       if "unknown" in (r.get("callers")
+                                        or ([r.get("caller")] if r.get("caller") else [])))
+    if n_unk_caller:
+        L.append(_c("unknown") + " 不是真实 caller：" + _c("callers") + " 列表里带 "
+                 + _c("unknown") + " 的 " + _n(n_unk_caller) + " 行，是**至少有一次没抓到调用方**"
+                 "的串（" + _c("CaptureCaller") + " 在托管栈里找不到宿主方法时记 "
+                 + _c("unknown") + "；" + _c("callers") + " 里非 " + _c("unknown")
+                 + " 的排前面、最多 5 个）。")
+        L.append("")
     L.append("- " + _c("template") + " 的 " + _n(bucket.get("template", 0)) + " 行按 "
              + _c("reason") + " 拆：" + _c("counter") + " " + _n(reason.get("counter", 0)) + " / "
              + _c("progress") + " " + _n(reason.get("progress", 0))
@@ -506,24 +529,36 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
     n_cand = bucket.get("candidate", 0)
     n_cand_empty = sum(1 for r in cands
                        if r.get("bucket") == "candidate" and not r.get("reason"))
-    L.append("- " + _c("candidate") + " 的 " + _n(n_cand) + " 行里 " + _n(n_cand_empty)
-             + " 行 " + _c("reason") + " 为空，是真正值得人工看的候选。")
-    if unknown == len(cands):
-        L.append("- " + _c("mods") + " 全部是 " + _c("unknown") + "（" + _n(unknown) + " / "
+    if n_cand and n_cand_empty == n_cand:
+        L.append("- " + _c("candidate") + " 的 " + _n(n_cand) + " 行 " + _c("reason")
+                 + " 全为空，是真正值得人工看的候选。")
+    else:
+        L.append("- " + _c("candidate") + " 的 " + _n(n_cand) + " 行里 " + _n(n_cand_empty)
+                 + " 行 " + _c("reason") + " 为空，是真正值得人工看的候选。")
+    if n_unknown == len(cands):
+        L.append("- " + _c("mods") + " 全部是 " + _c("unknown") + "（" + _n(n_unknown) + " / "
                  + _n(len(cands)) + " 行）：这份清单的 caller 还是我们自己的补丁名（"
                  + _c("GUI.UnityEngine.GUI.Box_Patch1") + " 这种），"
                  + _c("capture_ingest.infer_mods()") + " 按设计不从 sink / Unity 类型猜 mod，"
                  "推不出就记 " + _c("unknown") + "。")
-    elif unknown:
-        L.append("- " + _c("mods") + " 还有 " + _n(unknown) + " / " + _n(len(cands))
-                 + " 行是 " + _c("unknown") + "（推不出归属）。")
+    elif n_unknown:
+        L.append("- " + _c("mods") + "：" + _n(len(cands) - n_unknown) + " / " + _n(len(cands))
+                 + " 行能反查到宿主 mod（" + _n(len(host_mods)) + " 个），其余 " + _n(n_unknown)
+                 + " 行仍是 " + _c("unknown") + "——它们的 caller 是我们自己的补丁名或 Unity 类型，"
+                 + _c("capture_ingest.infer_mods()") + " 不从 sink / Unity 类型猜 mod，"
+                 "推不出就记 " + _c("unknown") + "。")
     else:
         L.append("- " + _c("mods") + " 全部有归属（没有 " + _c("unknown") + " 行）。")
     L.append("")
     probes = sorted(r.get("n") for r in cands
                     if r.get("n") in ("Zzz control alpha", "Zzz control beta"))
-    L.append("**这一轮不进包**：" + _c("template") + " 是模板串（见上）；" + _c("candidate")
-             + " 还缺 mod 归属，不能凭空塞进某个包。")
+    n_cand_unknown = sum(1 for r in cands
+                         if r.get("bucket") == "candidate"
+                         and list(r.get("mods") or []) == ["unknown"])
+    L.append("**这一轮不进包**：" + _c("template") + " 是模板串（见上），不译；" + _c("candidate")
+             + " 的 " + _n(n_cand) + " 条里 " + _n(n_cand - n_cand_unknown)
+             + " 条已经有了宿主 mod 归属、剩下 " + _n(n_cand_unknown)
+             + " 条还是 " + _c("unknown") + "，本轮只做分诊、不动包。")
     if probes:
         L.append("")
         L.append("其中 " + _n(len(probes)) + " 条是人造探针串（"
@@ -531,11 +566,14 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
                  + "），用来验证捕获通道能抓到 IMGUI 路径——它们不是游戏文本，"
                  "**永远不该进包**。")
     L.append("")
+    seen_static = hs & (cfg_h | il_h | pool_h | il_cand_h)
     L.append("与现有产物的交集（现场算的）：与 " + _c("packs/" + LANG + "/**") + " 的 " + _c("h")
-             + " 交集 " + _n(len(pack_hit)) + " 条（全部落在 IL 包里，cfg 包 "
+             + " 交集 " + _n(len(pack_hit)) + " 条（其中 cfg 包 "
              + _n(len(hs & cfg_h)) + " 条）；与 " + _c("packs/pool.jsonl") + " 交集 "
              + _n(len(hs & pool_h)) + " 条；与 " + _c("packs/" + IL_CANDIDATES_NAME) + " 交集 "
-             + _n(len(hs & il_cand_h)) + " 条。也就是说运行时看到的串和静态抽出来的串**基本不重叠**"
+             + _n(len(hs & il_cand_h)) + " 条。取并集看：这 " + _n(len(hs)) + " 条运行时串里只有 "
+             + _n(len(seen_static)) + " 条静态侧已经采到过（" + _pct(len(seen_static), len(hs))
+             + "），其余 " + _n(len(hs) - len(seen_static)) + " 条**只有运行时才看得到**"
              "——这正是要开这条通道的理由。")
     L.append("")
     L.append("②③ 两节的串都**不计入** ① 的分母，也不计入任何总覆盖率。")
