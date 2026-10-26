@@ -33,6 +33,7 @@
 - `h = fnv1a64(normalize(s))`，唯一权威实现 `tools/i18n_tools/fnv.py`（C# 侧 `src/UI18n.Core/Hashing/Fnv1a.cs`，两边逐字节同结果）。
 - 键层级由字段推出，不写进文件：有 `ctx` → ctx 层；否则有 `mod` → site 层；否则 global 层（`src/UI18n.Core/Dict/KeyLevel.cs`）。
 - `mod` = **modId**，见 §8 注册表；包文件名 `<modId>[.<channel>].jsonl`（`channel` ∈ `il` / `cfg` / 空）。
+- `p` 有**两种等值表示**：现行产物写整数 `"p":1`（`tools/i18n_tools/translate_il.py`，C# 侧 `JsonLineReader.IsPatternFlag` 按原始字符串判），契约的规范形式是布尔 `"p":true`。**读取一律接受 `true` / `1` / `"1"` / `"true"`，新写入一律布尔**；存量旧表示由 `api validate` 报 notice（不是 error），`api apply --normalize-p` 走 put-batch 一笔事务归一（幂等，只改表示不改 `h/s/t/mod`）。
 
 ### 2.2 资源
 
@@ -56,32 +57,37 @@
 
 ### 3.1 读
 
+> **本节的 flag 表按 `tools/i18n_tools/api.py` 的实现冻结**（2026-10-26 以 `api --selftest` 113 项为口径）。全局 flag `--json` / `--root <dir>` / `--actor <who>` 可以写在任意层级（`api --root X entry put …` 与 `api entry put … --root X` 等价）；写动词缺 `--actor` 一律 exit 2。
+> `entry get` **没有 `--mod`**：`h` 是跨包键，`entry get --h <h> --all` 会列出所有提供该键的包。
+
 ```text
-pack list        [--lang zh-cn] [--mod TUFX] [--json]
-pack show        --mod TUFX [--lang zh-cn] [--channel il|cfg] [--limit N] [--grep TEXT]
-entry get        (--h <h> | --text "<英文原文>") [--lang zh-cn] [--all]
-entry search     --text "<片段>" [--lang zh-cn] [--limit 50]
-mod list         [--json]
-mod resolve      --assembly TUFX.dll | --pack TUFX.il
-journal tail     [--n 20]
-validate         [--lang zh-cn] [--mod TUFX] [--strict]
+pack list        必需 —            可选 --lang --mod
+pack show        必需 --mod       可选 --lang --channel il|cfg --limit N --grep TEXT
+entry get        必需 —           可选 --h <h> --text "<原文>" --lang --all
+entry search     必需 --text      可选 --lang --limit N
+mod list         必需 —            可选 —
+mod resolve      必需 --assembly <X.dll> 或 --pack <packId>（至少一个）
+journal tail     必需 —            可选 --n N
+validate         必需 —            可选 --lang --mod --strict --strict-p
 ```
 
 ### 3.2 写（全部要求 `--actor`，全部幂等）
 
 ```text
-entry put        --mod <modId> --lang zh-cn (--h <h> | --text "<英文>") --t "<译文>"
-                 [--s "<原文，用于校验 h>"] [--ctx <ctx>] [--p]
-                 [--actor llm:<model>|human:<who>|pipeline:<tool>] [--note "<依据>"]
-                 [--expect-revision <rev>] [--dry-run]
-entry put-batch  --stdin            # NDJSON，一文件一笔事务：全过才写，任一不过整批不写
-entry delete     --mod <modId> --lang zh-cn --h <h> --actor … [--reason "<why>"]
-override put     --en "<英文>" --zh "<中文>" --actor … [--note "<依据>"]
-glossary put     --en "<英文>" --zh "<中文>" [--short] --actor …
-mod put          --mod <modId> --display "<显示名>" [--assembly X.dll]… [--folder Studio]… [--ckan <ident>]
-submission accept --file <bundle.json> --actor pipeline:submission
-apply            [--lang zh-cn]      # 重算 packs/index.json 与报告，跑全量门禁
+entry put        必需 --mod        可选 --lang --h <h> --text "<原文>" --s "<用于校验 h 的原文>"
+                                   --t "<译文>" --ctx --p --note "<依据>" --expect-revision <rev> --dry-run
+entry put-batch  必需 —（读 stdin） 可选 --lang --note --expect-revision --dry-run
+                                   # NDJSON，一文件一笔事务：全过才写，任一不过整批不写
+entry delete     必需 --mod --h    可选 --lang --reason "<why>" --expect-revision --dry-run
+override put     必需 --en --zh    可选 --note --dry-run
+glossary put     必需 --en --zh    可选 --short --dry-run
+mod put          必需 --mod        可选 --display --assembly --folder --alias --ckan --note --dry-run
+apply            必需 —            可选 --lang --normalize-p --dry-run
+                                   # 重算 packs/index.json 与报告，跑全量门禁
+submit accept    必需 ——           M3 占位：当前调用即 exit 2
 ```
+
+`--p` 只给骨架行（含 `#` 占位符的模板文本）；**落盘写布尔 `true`**，读取容错 `true|1|"1"|"true"`，旧的 `p:1` 由 `validate` 报 notice、由 `apply --normalize-p` 一次性归一（幂等、走 put-batch 同一条 commit 路径、journal `op=apply.normalize-p`）。2026-10-26 真仓库归一 486 行 / 14 个 `.il.jsonl`（Assembly-CSharp 356、UI18n-Unattributed 251、KSPPerformanceProfiler 213、MechJeb2 169、TUFX 155、ModularFlightPanel 60、FAR 58、RealFuels 49、ksp_plugin_adapter 48、RealisticLaunchVisuals 34、RealAntennas 31、BurstPQS 15、LunarTransferPlanner 13、EVEManager 2），归一后 `validate --strict-p` 绿、97 文件 `h→(s,t,mod)` 逐条零差异。
 
 ### 3.3 envelope（`--json` 时的唯一输出形态）
 
@@ -121,7 +127,7 @@ apply            [--lang zh-cn]      # 重算 packs/index.json 与报告，跑�
 | G6 | 长度比 0.15–1.8（源 < 9 字符或 `#` 开头的键引用不判） | `translate.py:847` |
 | G7 | 术语表锁定译法逐字出现（12 条约定 + 短语级官方术语） | `translate.py` `locked_for` |
 | G8 | 译文 == 原文 → 不写，记 `keep` | `translate.py` `echo_keep` |
-| G9 | 骨架 pattern 的 `#` 个数一致（只对 `p:true`） | `translate_il.py:589` |
+| G9 | 骨架 pattern 的 `#` 个数一致（只对骨架行：`p:true` 或旧表示 `p:1`） | `translate_il.py:589` |
 
 api 额外三条**自身**约束（不属于 G 编号，属于 schema）：
 
@@ -228,10 +234,12 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 `PluginData/UI18n/prefs.json`（不是 `Config.cfg`：这是玩家状态，不该被 mod 更新覆盖）：
 
 ```json
-{"schema":1,"language":"zh-cn","defaultMode":"translated",
+{"schema":"ui18n-prefs/1","language":"zh-cn","defaultMode":"translated",
  "mods":{"FerramAerospaceResearch":{"enabled":true},"TUFX":{"enabled":false}},
- "submission":{"consent":"granted","policyVersion":1,"lastSubmittedAt":"…"}}
+ "submission":{"consent":{"granted":false},"policyVersion":1,"lastSubmittedAt":"…"}}
 ```
+
+**规范形态就是上面这份**（`schema` 是字符串 `"ui18n-prefs/1"`，`submission.consent` 是对象 `{"granted": bool}`）。早期草案里的 `{"schema":1}` + `"consent":"granted"` **只读兼容**：实现会认，但写回一律用规范形态（`PrefsFile.Save` 只产出规范形态）。缺文件 = 全开；坏 JSON = 不抛、用默认值、文件不动；未知字段原样保留（向前兼容由后来者写的新键不会被旧版吞掉）。
 
 语义（**必须在文档里写清，否则会被当 bug 报**）：
 
