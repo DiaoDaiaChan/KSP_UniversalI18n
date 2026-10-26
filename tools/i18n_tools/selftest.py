@@ -27,6 +27,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -419,16 +420,18 @@ def test_packindex_real():
     doc = packindex.load_index(index_path)
     # 真值随手上的包体变化：改了 packs/zh-cn 就必须重跑 python -m i18n_tools.packindex
     # 并同步这三个数字，否则本项失败——这是「清单不许与磁盘漂移」的最后一道提示。
-    eq("真实 packCount == 89", doc["packCount"], 89)
-    eq("真实 totalRows == 11089", doc["totalRows"], 11089)
-    eq("真实 totalBytes == 3685087", doc["totalBytes"], 3685087)
+    # 1.3 出包后（capture → 骨架 → 入包，含 overrides 人工通道）的真值。
+    # 每次重跑 translate_il / packindex 之后都要同步这三行 —— 失败时把 got 抄回来，别改断言方向。
+    eq("真实 packCount == 96", doc["packCount"], 96)
+    eq("真实 totalRows == 11561", doc["totalRows"], 11561)
+    eq("真实 totalBytes == 3794336", doc["totalBytes"], 3794336)
     eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
     entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
     eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)
-    eq("cfg 包 41 / IL 包 48", (sum(1 for e in entries if not e["file"].endswith(".il.jsonl")),
-                              sum(1 for e in entries if e["file"].endswith(".il.jsonl"))), (41, 48))
-    eq("唯一 mod 数 74（同名 IL 包与 cfg 包合并成同一个 mod 身份）",
-       len({e["mod"] for e in entries}), 74)
+    eq("cfg 包 41 / IL 包 55", (sum(1 for e in entries if not e["file"].endswith(".il.jsonl")),
+                              sum(1 for e in entries if e["file"].endswith(".il.jsonl"))), (41, 55))
+    eq("唯一 mod 数 81（同名 IL 包与 cfg 包合并成同一个 mod 身份）",
+       len({e["mod"] for e in entries}), 81)
     eq("真实 --check 退出码 0", packindex.main(["--check", "--quiet"]), 0)
 
 
@@ -655,9 +658,9 @@ def test_capture_real():
     with open(path, "rb") as fh:
         raw = fh.read()
     rows = [json.loads(x) for x in raw.decode("utf-8").split("\n") if x]
-    check("真实捕获候选行数 > 1000", len(rows) > 1000, "got=%d" % len(rows))
-    eq("只有 candidate / template 两档",
-       sorted({r["bucket"] for r in rows}), ["candidate", "template"])
+    check("真实捕获候选行数 > 500", len(rows) > 500, "got=%d" % len(rows))
+    eq("只有 candidate / pattern 两档（template 已塌缩）",
+       sorted({r["bucket"] for r in rows}), ["candidate", "pattern"])
     eq("每行 h == fnv.hash_text(normalize(n))（与 pool 同口径）",
        sum(1 for r in rows if r["h"] != fnv.hash_text(textnorm.normalize(r["n"]))), 0)
     eq("h 无重复", len({r["h"] for r in rows}), len(rows))
@@ -665,8 +668,14 @@ def test_capture_real():
     eq("排序 = (bucket 序, h)", order, sorted(order))
     eq("字段顺序固定", list(rows[0]), list(capture_ingest.OUT_FIELDS))
     check("mods 是非空列表", all(isinstance(r["mods"], list) and r["mods"] for r in rows))
-    eq("没有本该 never 的串混进产物",
-       sum(1 for r in rows if capture_ingest.classify_capture(r["n"])[0] == "never"), 0)
+    # pattern 行是骨架（数字已换成 #），不是运行时拿来匹配的原文，所以只查 candidate。
+    eq("没有本该 never 的串混进产物（candidate 行）",
+       sum(1 for r in rows
+           if r["bucket"] != "pattern"
+           and capture_ingest.classify_capture(r["n"])[0] == "never"), 0)
+    eq("pattern 骨架里没有纯符号（不含 ASCII 字母）的残留",
+       sum(1 for r in rows if r["bucket"] == "pattern"
+           and not re.search(r"[A-Za-z]", r["n"])), 0)
     check("无 BOM、只有 LF、末尾有换行",
           not raw.startswith(b"\xef\xbb\xbf") and b"\r" not in raw and raw.endswith(b"\n"))
 

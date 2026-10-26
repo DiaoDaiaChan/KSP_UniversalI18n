@@ -20,6 +20,9 @@ namespace UI18n.Core.Dict
     {
         private readonly List<DictEntry> _entries = new List<DictEntry>();
         private Dictionary<ulong, int[]> _index;
+        private Dictionary<ulong, int[]> _patternIndex;
+        private int _patternEntries;
+        private int _patternHits;
         private int _hits;
         private int _misses;
         private int _keeps;
@@ -55,6 +58,21 @@ namespace UI18n.Core.Dict
             get { return _parseErrors; }
         }
 
+        /// <summary>
+        /// 骨架行条数（v1.3 pattern 通道，JSONL 带 <c>"p":1</c> 的行）。
+        /// <see cref="Entries"/> 是<b>全部</b>条目数（精确 + 骨架），本属性只是其中的骨架部分。
+        /// </summary>
+        public int PatternEntries
+        {
+            get { return _patternEntries; }
+        }
+
+        /// <summary>骨架查表命中次数（<see cref="TryGetPattern"/> 成功返回译文的次数）。</summary>
+        public int PatternHits
+        {
+            get { return _patternHits; }
+        }
+
         /// <summary>没有任何条目。</summary>
         public bool IsEmpty
         {
@@ -68,6 +86,7 @@ namespace UI18n.Core.Dict
             _misses = 0;
             _keeps = 0;
             _parseErrors = 0;
+            _patternHits = 0;
         }
 
         /// <summary>载入若干 JSONL 行。<paramref name="lines"/> 为 null 时返回空包。</summary>
@@ -98,7 +117,13 @@ namespace UI18n.Core.Dict
             if (status == JsonLineReader.Status.Ok)
             {
                 _entries.Add(entry);
-                _index = null;                              // 索引失效，下次查找时重建
+                if (entry.IsPattern)
+                {
+                    _patternEntries++;
+                }
+
+                _index = null;                              // 精确索引失效
+                _patternIndex = null;                       // 骨架索引一起失效（下次查找时重建）
             }
             else if (status == JsonLineReader.Status.Error)
             {
@@ -200,7 +225,56 @@ namespace UI18n.Core.Dict
             return false;
         }
 
-        /// <summary>条目只读快照（调试 / dump 用，顺序即载入顺序）。</summary>
+        /// <summary>
+        /// 骨架查表（v1.3 pattern 通道的<b>唯一</b>入口）：<paramref name="skeletonHash"/> 是骨架文本的 FNV-1a 64，
+        /// <paramref name="skeleton"/> 用于同哈希消歧（与条目的 <c>s</c> 做 Ordinal 比对）。
+        /// <para>
+        /// <b>与精确查表彻底隔离</b>：骨架行只进独立索引，所以
+        /// <see cref="TryGet(ulong, string, out string)"/> 永远不会命中骨架行（同名文本 + <c>p:1</c> 时精确查表必须 miss），
+        /// 这里也永远不会命中精确行。两条索引互不可见 —— 靠类型判断在装配期分流，不靠运行时猜。
+        /// </para>
+        /// <para>
+        /// 命中计 <see cref="PatternHits"/>，<b>不</b>动精确通道的 <see cref="Hits"/> / <see cref="Misses"/>
+        /// （那两个数的分母是精确查表的次数，混进来命中率就没意义了）。keep（译文 == 骨架）按未命中处理。
+        /// </para>
+        /// </summary>
+        public bool TryGetPattern(ulong skeletonHash, string skeleton, out string translation)
+        {
+            translation = null;
+
+            if (_patternIndex == null)
+            {
+                BuildIndex();
+            }
+
+            int[] bucket;
+            if (!_patternIndex.TryGetValue(skeletonHash, out bucket))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < bucket.Length; i++)
+            {
+                DictEntry entry = _entries[bucket[i]];
+                if (!string.Equals(entry.Source, skeleton, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (entry.IsKeep)
+                {
+                    return false;                           // 明确「不要翻」：与精确通道同口径
+                }
+
+                translation = entry.Translation;
+                _patternHits++;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>条目只读快照（调试 / dump 用，顺序即载入顺序；含骨架行）。</summary>
         public IList<DictEntry> GetEntries()
         {
             return _entries.AsReadOnly();
@@ -217,26 +291,42 @@ namespace UI18n.Core.Dict
         }
 
         /// <summary>
+        /// 建<b>两条</b>索引：精确行 → <c>_index</c>，骨架行 → <c>_patternIndex</c>（v1.3 起分流，两条索引互不可见）。
         /// 桶内顺序：Level 升序（ctx 优先），同层保持载入顺序（稳定插入排序；桶一般只有 1–2 个元素，
         /// 比 List.Sort + 比较器分配更省，符合 05 §4「未命中 0 B 分配」的约束）。
         /// </summary>
         private void BuildIndex()
         {
             var buckets = new Dictionary<ulong, List<int>>(_entries.Count);
+            Dictionary<ulong, List<int>> patternBuckets = _patternEntries > 0
+                ? new Dictionary<ulong, List<int>>(_patternEntries)
+                : null;
 
             for (int i = 0; i < _entries.Count; i++)
             {
-                ulong h = _entries[i].Hash;
+                DictEntry entry = _entries[i];
+                Dictionary<ulong, List<int>> target = entry.IsPattern ? patternBuckets : buckets;
+
                 List<int> ids;
-                if (!buckets.TryGetValue(h, out ids))
+                if (!target.TryGetValue(entry.Hash, out ids))
                 {
                     ids = new List<int>(1);
-                    buckets[h] = ids;
+                    target[entry.Hash] = ids;
                 }
 
                 ids.Add(i);
             }
 
+            _index = BuildBuckets(buckets);
+            _patternIndex = patternBuckets != null ? BuildBuckets(patternBuckets) : EmptyIndex;
+        }
+
+        /// <summary>骨架索引为空时的共享实例（避免每次为「包里没有骨架行」分配一个字典）。</summary>
+        private static readonly Dictionary<ulong, int[]> EmptyIndex = new Dictionary<ulong, int[]>(0);
+
+        /// <summary>把「hash → 插入序列表」排成「hash → 桶内按 Level 升序的索引数组」。</summary>
+        private Dictionary<ulong, int[]> BuildBuckets(Dictionary<ulong, List<int>> buckets)
+        {
             var index = new Dictionary<ulong, int[]>(buckets.Count);
             foreach (KeyValuePair<ulong, List<int>> pair in buckets)
             {
@@ -258,7 +348,7 @@ namespace UI18n.Core.Dict
                 index[pair.Key] = ids;
             }
 
-            _index = index;
+            return index;
         }
 
         private static bool SourceMatches(DictEntry entry, string source)

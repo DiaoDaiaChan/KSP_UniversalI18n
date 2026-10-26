@@ -28,14 +28,15 @@ text.text = "All Input Locks Cleared";
 | 需要作者配合 | 是（要作者把文本抽成键） | 否 |
 | 出问题时的形态 | 词条错位、错翻译被写进存档 | 未命中即原文，永不产生「翻错但改不回来」的状态 |
 
-## 当前状态（v1.1.0 实测）
+## 当前状态（v1.3.0 出包）
 
 | 项目 | 数字 |
 |---|---|
 | 拦截点（hook 目标） | **17** 个：`UI.Text.set_text`、`TMP_Text.set_text`、`GUILayout.DoLabel/DoButton/DoRepeatButton/DoToggle/DoWindow`、`GUI.Label/Box/Button/RepeatButton/Toggle(4 参)/Toggle(5 参)/DoWindow(title)/DoModalWindow/DoButtonGrid`、`ScreenMessages.PostMessage` |
-| 字典 | **89** 个包 / **11,089** 条（cfg 级 41 包 9,990 条 + DLL 字面量级 48 包 1,099 条） |
-| 单测 | C# **423** 例、python 工具链 selftest **216** 项，全绿 |
-| 游戏内验证 | round 10（2026-10-24）：`installed 17/17 patches`、`parseErrors=0`、`entries=11089`、`error lines: 0` |
+| 字典 | **96** 个包 / **11,561** 条（cfg 级 41 包 9,990 条 + DLL 字面量级 55 包 1,571 条；其中 **102** 行是数字骨架） |
+| 屏幕覆盖率（29 局实测） | 该翻的 3,129 条里 **265** 条已中文 = **8.47%**（v1.2 出包那一代是 14 条 / 0.45%）；全量口径 2.53% |
+| 单测 | C# **637** 例全绿；python 工具链 selftest **280** 项全绿 |
+| 游戏内验证 | round 10（2026-10-24，v1.1.0 那对 DLL）：`installed 17/17 patches`、`parseErrors=0`、`entries=11089`、`error lines: 0` |
 
 ## 安装
 
@@ -59,7 +60,7 @@ text.text = "All Input Locks Cleared";
 - **开关**：`Enabled`、`ForceOverride`（非中文环境也翻）
 - **字典**：`MaxEntries`、`CheckForUpdates` / `AutoDownload` / `UpdateBaseUrl` / `UpdateChannel` / `UpdateCheckDays`（联网更新，v1.2）
 - **字体**：`FontMode`（`Off` / `OsFont` 默认 / `Bundled`）、`OsFontName`、`BundledFontPath`、`TmpMode`（`Auto` / `KeepSource` / `Force`）
-- **诊断**：`LogLevel`（`Error` / `Warn` / `Info` 默认 / `Verbose`，v1.3）、`HitSampleLimit`、`CaptureMisses`、`CaptureMaxEntries`、`CaptureMaxTemplateEntries`（模板档单独限额，v1.3）、`ShadowStyleDraw`
+- **诊断**：`LogLevel`（`Error` / `Warn` / `Info` 默认 / `Verbose`，v1.3）、`HitSampleLimit`、`CaptureMisses`、`CaptureMaxEntries`、`CaptureMaxTemplateEntries`（模板档单独限额，v1.3）、`ShadowStyleDraw`、`PatternMatching`（数字骨架通道，默认 `True`；关掉就没有第二级查表，v1.3）
 
 `CaptureMisses = True` 会把字典里没有的 UI 文本聚合写到 `<KSP>/PluginData/UI18n/capture-<时间戳>.jsonl`，**只写本地文件、绝不上传**（上传只受 `ReportOptIn` 控制，且当前版本没有任何上传代码）。
 
@@ -80,8 +81,11 @@ mod 代码 ──► GUILayout.Label / GUI.Window / TMP_Text.set_text / …（17
               Translator.Translate(原文)
                     │  ① 归一化（NFKC + 折叠空白）
                     ▼
-              FNV-1a 64 位哈希 → DictPack 查表
+              FNV-1a 64 位哈希 → DictPack 查表（第一级：精确）
                     │  ② ctx → site → global 三层回退，命中 keep 即终止
+                    ▼
+        未命中 → TextSkeleton 把数字塌缩成 <<n>> 骨架再查一次
+                    │  ③ 第二级：pattern（KeyLevel.Pattern），默认开
                     ▼
         命中 → 就地改写参数/内容（并记录样本）
         未命中 → 什么都不做（+ 可选：写进 capture 文件）
@@ -95,6 +99,8 @@ mod 代码 ──► GUILayout.Label / GUI.Window / TMP_Text.set_text / …（17
 
 `h` = `fnv1a64(normalize(s))` 的 16 位小写 hex，`n` = 归一化后的源文。运行时不解析原文、不拼路径，只用一个整数查表 —— 这是能做到「每帧几千次调用仍无感」的原因。
 
+骨架行多一个 `"p":1` 字段，键是塌缩后的骨架（如 `<<n>> kg`），槽位数上限 8；译文用 `<<1>>…<<8>>` 回填，填不上就按未命中处理（v1.3）。
+
 ### 三层优先级
 
 | 层 | 键的构成 | 用途 |
@@ -102,6 +108,8 @@ mod 代码 ──► GUILayout.Label / GUI.Window / TMP_Text.set_text / …（17
 | ctx | 程序集 + 类型 + 成员 + 序号 + 文本哈希 | 同一个词在不同控件里要翻成不同意思时用 |
 | site | 程序集 + 文本哈希 | 只在某个 mod 里成立的译法（默认层） |
 | global | 纯文本哈希 | 通用词，任何 mod 都适用 |
+
+骨架（pattern）不算第四层 —— 它就是同一套查表在「精确未命中」之后再跑一遍，只查 pattern 档（v1.3，见 `docs/06 §5.5`）。
 
 **永远优先原生 i18n**：作者自己写过 `Localization/` 的 mod，本模组只填空缺，不覆盖它的键。
 
@@ -113,6 +121,9 @@ harvest（本地，需要真实 KSP 安装）
   ├─ 反编译 DLL，按调用点回溯 IL 字面量（只取流向 UI sink 的）
   └─ 官方 Localization/*.cfg 提取为「官方译文记忆」（2,126 条，优先于模型）
         │
+        ▼
+capture_ingest（把玩家会话的缺命中 capture 归并：去重 → 分档 never/template/candidate → 抽骨架）
+        │  纯数字模板进 pattern 档，塌缩成骨架后和静态串一起进包（v1.3）
         ▼
 translate（CI，LLM 批量翻译 + 断点续跑缓存）
         │  八道硬门禁：占位符/富文本/格式串多重集、长度比、术语锁、keep 判定、非法字符、空译文
@@ -128,7 +139,7 @@ CI 见 `.github/workflows/i18n.yml`（`gates` 四道门禁每次 push 都跑，�
 
 ## 能力边界
 
-**能翻**：配置文件文本、官方语言包里已有的键、DLL 里能静态回溯到 UI 调用点的字面量。
+**能翻**：配置文件文本、官方语言包里已有的键、DLL 里能静态回溯到 UI 调用点的字面量；再加一级**骨架** —— 把 `"Mass: 12.5 t"` 这类数字模板塌缩成骨架后翻译、运行时回填数字（v1.3）。
 
 **翻不了（机制上不可达，不是没做）**：
 
@@ -155,12 +166,12 @@ pwsh src\UI18n.Runtime\build-release.ps1 -Version 1.1.0   # 出包到 dist/（11
 
 | 路径 | 内容 |
 |---|---|
-| `src/UI18n.Core/` | 纯 .NET 逻辑：哈希、归一化、字典、语言门禁、包发现、缺命中捕获（无 Unity 依赖，可单测） |
+| `src/UI18n.Core/` | 纯 .NET 逻辑：哈希、归一化、字典、语言门禁、包发现、缺命中捕获、数字骨架塌缩（`Text/TextSkeleton.cs`，v1.3）（无 Unity 依赖，可单测） |
 | `src/UI18n.Runtime/` | KSP 插件本体：Harmony patch、字体注入、配置读取、联网更新 |
-| `packs/` | 字典源：`pool.jsonl`（候选池）、`glossary.jsonl`（官方译文记忆）、`zh-cn/*.jsonl`（成品包）、`index.json`（清单） |
-| `tools/i18n_tools/` | 采集 / 翻译 / 解析 / 审计 / 清单的 python 工具链 |
+| `packs/` | 字典源：`pool.jsonl`（候选池）、`glossary.jsonl`（官方译文记忆）、`zh-cn/*.jsonl`（成品包，含 `"p":1` 骨架行）、`index.json`（清单）、`capture-candidates.jsonl`（会话捕获归并出的骨架候选，v1.3） |
+| `tools/i18n_tools/` | 采集 / 翻译 / 解析 / 审计 / 清单的 python 工具链；v1.3 加 `capture_ingest`（会话捕获归并）、`skeleton`（骨架抽取）、`screen_coverage`（屏幕覆盖率） |
 | `tools/collect-diagnostics.ps1` | 排障一把梭：把一个玩家的现场收成单个 zip（v1.3） |
-| `tests/UI18n.Core.Tests/` | xunit v3 单测 |
+| `tests/UI18n.Core.Tests/` | xunit v3 单测：18 个测试类 / **637** 例；夹具在 `Data/`（`pool-sample.jsonl`、`skeleton-golden.jsonl` 331 行） |
 | `docs/` | 设计文档：总体设计、翻译流水线、原生性与性能、工程骨架与构建、进度追踪 |
 
 ## 许可

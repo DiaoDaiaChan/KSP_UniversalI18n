@@ -29,6 +29,20 @@ namespace UI18n.Core.Capture
         /// </summary>
         public int MaxTemplateEntries { get; set; } = 200;
 
+        /// <summary>
+        /// 单个调用者最多贡献多少条 distinct 记录（默认 <c>60</c>；<c>0</c> 与 <c>&lt; 0</c> 都<b>不限制</b>，
+        /// 口径与 <see cref="MaxEntries"/> 一致）。
+        /// <para>
+        /// 为什么需要（v1.3 实测）：<c>ProfilerUI.DrawPluginsContent</c> 一个 caller 独占 130 条、
+        /// <c>LoadingScreen</c> 独占 3,028 条 —— 一两个渲染循环就能把整局配额（以及候选档）挤掉。
+        /// </para>
+        /// <para>
+        /// 只对<b>已知 caller</b> 生效：<see cref="CaptureCaller.Unknown"/> 与空串一律豁免
+        /// （取不到栈的那些本来就该照收，否则丢掉的是唯一线索）。
+        /// </para>
+        /// </summary>
+        public int MaxPerCaller { get; set; } = 60;
+
         /// <summary>单条文本上限：超过这个长度的串不录（不是截断）。</summary>
         public int MaxTextLength { get; set; } = 400;
 
@@ -48,6 +62,7 @@ namespace UI18n.Core.Capture
             copy.Enabled = Enabled;
             copy.MaxEntries = MaxEntries;
             copy.MaxTemplateEntries = MaxTemplateEntries;
+            copy.MaxPerCaller = MaxPerCaller;
             copy.MaxTextLength = MaxTextLength;
             copy.MinTextLength = MinTextLength;
             return copy;

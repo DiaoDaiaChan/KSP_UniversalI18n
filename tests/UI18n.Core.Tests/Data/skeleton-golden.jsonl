@@ -1,0 +1,331 @@
+{"t":"Mass Flow: 2.20917 ton/s","sk":"Mass Flow: # ton/s","nums":["2.20917"]}
+{"t":"Vessels: 51","sk":"Vessels: #","nums":["51"]}
+{"t":"1.2.3","sk":"#.#","nums":["1.2","3"]}
+{"t":"0","sk":"#","nums":["0"]}
+{"t":"","sk":null,"nums":[]}
+{"t":"no digits here","sk":null,"nums":[]}
+{"t":"TWR 1.5","sk":"TWR #","nums":["1.5"]}
+{"t":"Delta-v: 3,456.7 m/s","sk":"Delta-v: #.# m/s","nums":["3,456","7"]}
+{"t":"A 1 B 2 C 3 D 4 E 5 F 6 G 7 H 8","sk":"A # B # C # D # E # F # G # H #","nums":["1","2","3","4","5","6","7","8"]}
+{"t":"1 2 3 4 5 6 7 8 9","sk":null,"nums":[]}
+{"t":"1e5","sk":"#e#","nums":["1","5"]}
+{"t":"1.","sk":"#.","nums":["1"]}
+{"t":".5","sk":".#","nums":["5"]}
+{"t":"x-y-42","sk":"x-y-#","nums":["42"]}
+{"t":"Line 1\nLine 2","sk":"Line #\nLine #","nums":["1","2"]}
+{"t":"<color=#FF00AA>12 ms</color>","sk":"<color=#FF00AA># ms</color>","nums":["12"]}
+{"t":"<b><color=#79C0FF>Cinematic</color></b>","sk":null,"nums":[]}
+{"t":"<color=#FF00AA>Cinematic</color>","sk":null,"nums":[]}
+{"t":"<size=14>Alt: 1,234 m</size>","sk":"<size=14>Alt: # m</size>","nums":["1,234"]}
+{"t":"Toggle <<1>> on part 3","sk":"Toggle <<#>> on part #","nums":["1","3"]}
+{"t":"Loading texture asset 1280/5736 (buffer=1536MB)","sk":"Loading texture asset #/# (buffer=#MB)","nums":["1280","5736","1536"]}
+{"t":"ModuleManager: 42 patches applied (3.7 %)\n:AFTER[Squad]","sk":"ModuleManager: # patches applied (# %)\n:AFTER[Squad]","nums":["42","3.7"]}
+{"t":"Total Run Time: 1234s","sk":"Total Run Time: #s","nums":["1234"]}
+{"t":"Orbit: 100 km x 120 km","sk":"Orbit: # km x # km","nums":["100","120"]}
+{"t":"a < b and 7","sk":"a < b and #","nums":["7"]}
+{"t":"<quad width=2>x</quad>","sk":"<quad width=#>x</quad>","nums":["2"]}
+{"t":"-12 (x)","sk":"-# (x)","nums":["12"]}
+{"t":"50%","sk":"#%","nums":["50"]}
+{"t":"1,000,000","sk":"#,#","nums":["1,000","000"]}
+{"t":"1,2,3,4,5,6,7,8","sk":"#,#,#,#","nums":["1,2","3,4","5,6","7,8"]}
+{"t":"1,2,3,4,5,6,7,8,9","sk":"#,#,#,#,#","nums":["1,2","3,4","5,6","7,8","9"]}
+{"t":"Pole (Instance)  [KSP/Scenery/Specular]","sk":null,"nums":[]}
+{"t":"Planet Parameters","sk":null,"nums":[]}
+{"t":"RAPTOR (Instance)  [KSP/Bumped Specular]","sk":null,"nums":[]}
+{"t":"Last Restart: ","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>Kerbalism</color>","sk":null,"nums":[]}
+{"t":"AA Off","sk":null,"nums":[]}
+{"t":"Abort","sk":null,"nums":[]}
+{"t":"Enable Crossfeed","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>VesselDeltaV</color>","sk":null,"nums":[]}
+{"t":"Alt: ","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>DeferredEngineExhaustDamage</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>EditorGUI</color>","sk":null,"nums":[]}
+{"t":"FerramAerospaceResearch","sk":null,"nums":[]}
+{"t":"SaturnStandHoldArmStrut_SaturnStandHoldArmStrut_auvMat (Instance)  [KSP/Diffuse]","sk":null,"nums":[]}
+{"t":"Navigation","sk":null,"nums":[]}
+{"t":"CPU Textures","sk":null,"nums":[]}
+{"t":"SSC - SANTIAGO","sk":null,"nums":[]}
+{"t":"m/s","sk":null,"nums":[]}
+{"t":"Hardware & DirectDMA","sk":null,"nums":[]}
+{"t":"<color=#FFFFFF>Saturn IB Launch Stand</color>","sk":null,"nums":[]}
+{"t":"AtmosphereManager","sk":null,"nums":[]}
+{"t":"SaturnStandCap_SaturnStandCap_auvMat (Instance)  [KSP/Diffuse]","sk":null,"nums":[]}
+{"t":"SC-TANK-Mat (Instance)  [TU/Metallic]","sk":null,"nums":[]}
+{"t":"Kopernicus: Loading TUFX\\Native\\TUFXGpuProfiler.bin","sk":null,"nums":[]}
+{"t":"Thrust","sk":null,"nums":[]}
+{"t":"EditorExtensionsRedux","sk":null,"nums":[]}
+{"t":"Jianbing Kerman","sk":null,"nums":[]}
+{"t":"Zzz control beta","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>Highlighter</color>","sk":null,"nums":[]}
+{"t":"Toggle Open/Closed","sk":null,"nums":[]}
+{"t":"ZP (Instance)  [Sprite/Simple Texture (Unlit)]","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>RaymarchedShadowsRenderer</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>AlarmClockScenario</color>","sk":null,"nums":[]}
+{"t":"Screenshot","sk":null,"nums":[]}
+{"t":"ActionGroupsAppIcon","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>CBTMonitor</color>","sk":null,"nums":[]}
+{"t":"XP (Instance)  [Sprite/Simple Texture (Unlit)]","sk":null,"nums":[]}
+{"t":"Avionics: Unlocking Controls","sk":null,"nums":[]}
+{"t":"Physics","sk":null,"nums":[]}
+{"t":"HueVsSatCurve","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>FlightGlobals</color>","sk":null,"nums":[]}
+{"t":"Extra radius","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>FlightInputHandler</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>EventHandler</color>","sk":null,"nums":[]}
+{"t":"Saining Kerman","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>RLVPerformanceDriver</color>","sk":null,"nums":[]}
+{"t":"Cm (r,g,b):","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>OrbitPhysicsManager</color>","sk":null,"nums":[]}
+{"t":"FrontColor (Instance)  [KSP/Scenery/Diffuse]","sk":null,"nums":[]}
+{"t":"Raptor (Surface Variant)","sk":null,"nums":[]}
+{"t":"ksc_exterior_terrain_asphalt_line_highUltraQuality  [KSP/Scenery/Diffuse Ground KSC Specular]","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>VolumeNormalizer</color>","sk":null,"nums":[]}
+{"t":"Unguided Stages: ","sk":null,"nums":[]}
+{"t":"RCSGear (Instance)  [KSP/Bumped Specular]","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>MechanicDriller</color>","sk":null,"nums":[]}
+{"t":"Burnout Altitude:","sk":null,"nums":[]}
+{"t":"Open","sk":null,"nums":[]}
+{"t":"Pressure Scan","sk":null,"nums":[]}
+{"t":"Custom/HapkeScaled  [Custom/HapkeScaled]","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>TimeOfDayAnimation</color>","sk":null,"nums":[]}
+{"t":"Length","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>DynamicAmbientLight</color>","sk":null,"nums":[]}
+{"t":"Last Stage: ","sk":null,"nums":[]}
+{"t":"Deferred Mod: Detected, Camera: Forward","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>OrbitRendererUpdater</color>","sk":null,"nums":[]}
+{"t":"Texture Selector GUI","sk":null,"nums":[]}
+{"t":"Diameter","sk":null,"nums":[]}
+{"t":"ConstructionModeAppIcon","sk":null,"nums":[]}
+{"t":"Statistics","sk":null,"nums":[]}
+{"t":"Atm Composition","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>GlobalEVEManager</color>","sk":null,"nums":[]}
+{"t":"Launch to LAN","sk":null,"nums":[]}
+{"t":"IntensityX","sk":null,"nums":[]}
+{"t":"IntensityY","sk":null,"nums":[]}
+{"t":"Tech","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>OceanWhiteCaps</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>MechanicWrench</color>","sk":null,"nums":[]}
+{"t":"STDN - TANANARIVE","sk":null,"nums":[]}
+{"t":"Gameplay","sk":null,"nums":[]}
+{"t":"Sol-Visuals/Sol-Shadows","sk":null,"nums":[]}
+{"t":"<color=#fefefe>Propellant GSE OK:</color>","sk":null,"nums":[]}
+{"t":"Planet Resources","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>FlightGUI</color>","sk":null,"nums":[]}
+{"t":"CloudsManager","sk":null,"nums":[]}
+{"t":"ProceduralParts","sk":null,"nums":[]}
+{"t":"CPU Threads & Topology","sk":null,"nums":[]}
+{"t":"Vant-Kcalbeloh","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>AlarmClockScenarioAudio</color>","sk":null,"nums":[]}
+{"t":"Planet Info","sk":null,"nums":[]}
+{"t":"Loading sound assets...","sk":null,"nums":[]}
+{"t":"RealismOverhaul","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>ModelMultiShurikenPersistFX</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>ScatterManager</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>Part</color>","sk":null,"nums":[]}
+{"t":"Shape","sk":null,"nums":[]}
+{"t":"Overall Performance","sk":null,"nums":[]}
+{"t":"Kerbals","sk":null,"nums":[]}
+{"t":"NaN °","sk":null,"nums":[]}
+{"t":"Dump Textures Layout","sk":null,"nums":[]}
+{"t":"Fairing Auto-struts","sk":null,"nums":[]}
+{"t":"STDN - QUITO","sk":null,"nums":[]}
+{"t":"SSC - SOUTH POINT","sk":null,"nums":[]}
+{"t":"Iterations","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>Planetarium</color>","sk":null,"nums":[]}
+{"t":"Modular Tank (Balloon)","sk":null,"nums":[]}
+{"t":"RealFuels","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>TestFlightEditorInfoWindow</color>","sk":null,"nums":[]}
+{"t":"podMemorialBase (Instance)  [KSP/Scenery/Bumped]","sk":null,"nums":[]}
+{"t":"Missions","sk":null,"nums":[]}
+{"t":"Cost","sk":null,"nums":[]}
+{"t":"Core","sk":null,"nums":[]}
+{"t":"SolverEngines","sk":null,"nums":[]}
+{"t":"N/A","sk":null,"nums":[]}
+{"t":"Default-MainMenu","sk":null,"nums":[]}
+{"t":"model_vab_interior_props (Instance)  [KSP/Scenery/Specular]","sk":null,"nums":[]}
+{"t":"Tooled","sk":null,"nums":[]}
+{"t":"Gauges","sk":null,"nums":[]}
+{"t":"US - CAPE CANAVERAL","sk":null,"nums":[]}
+{"t":"Range Safety","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>NavballSphereWidget</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>MapObject</color>","sk":null,"nums":[]}
+{"t":"Export All Planets","sk":null,"nums":[]}
+{"t":"RO-Tanks","sk":null,"nums":[]}
+{"t":"Lift","sk":null,"nums":[]}
+{"t":"Jebediah Kerman","sk":null,"nums":[]}
+{"t":"Debug Mode","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>ScreenMessages</color>","sk":null,"nums":[]}
+{"t":"Systems","sk":null,"nums":[]}
+{"t":"MechJeb","sk":null,"nums":[]}
+{"t":"Toolbar / SelectionGrid (DoButtonGrid)","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>EditorExtensions</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>SolverFlightSys</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>RocketCloudFlight</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>AudioFX</color>","sk":null,"nums":[]}
+{"t":"Tazhuo Kerman","sk":null,"nums":[]}
+{"t":"Engine Module: SOLVERENGINE","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>KopernicusStar</color>","sk":null,"nums":[]}
+{"t":"Preview","sk":null,"nums":[]}
+{"t":"RealAntennas/RealAntennas","sk":null,"nums":[]}
+{"t":"HumanRated:","sk":null,"nums":[]}
+{"t":"Spinup lead time: ","sk":null,"nums":[]}
+{"t":"CenterX","sk":null,"nums":[]}
+{"t":"CenterY","sk":null,"nums":[]}
+{"t":"Disable antenna permanently","sk":null,"nums":[]}
+{"t":"Ullage lead time: ","sk":null,"nums":[]}
+{"t":"Fairing Auto-shape","sk":null,"nums":[]}
+{"t":"Saving Cache","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>VABCamera</color>","sk":null,"nums":[]}
+{"t":"Mass:","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>FXCamera</color>","sk":null,"nums":[]}
+{"t":"Options","sk":null,"nums":[]}
+{"t":"TUFX: Beyond ★ [Modern Suite]","sk":null,"nums":[]}
+{"t":"Dump","sk":null,"nums":[]}
+{"t":"L_D (r,g,b):","sk":null,"nums":[]}
+{"t":"Deferred/DummyForwardShader  [Deferred/DummyForwardShader]","sk":null,"nums":[]}
+{"t":"Loading...","sk":null,"nums":[]}
+{"t":"XN (Instance)  [Sprite/Simple Texture (Unlit)]","sk":null,"nums":[]}
+{"t":"Mass","sk":null,"nums":[]}
+{"t":"Mask","sk":null,"nums":[]}
+{"t":"Zzz control alpha","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>EditorLogic</color>","sk":null,"nums":[]}
+{"t":"Default-KSC","sk":null,"nums":[]}
+{"t":"SSC - DONGARA","sk":null,"nums":[]}
+{"t":"ModularFlightIntegrator","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>DishController</color>","sk":null,"nums":[]}
+{"t":"Valentina Kerman","sk":null,"nums":[]}
+{"t":"English","sk":null,"nums":[]}
+{"t":"KSAT - SINGAPORE","sk":null,"nums":[]}
+{"t":"Antenna Planning","sk":null,"nums":[]}
+{"t":"Bill Kerman","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>AppLauncherButton</color>","sk":null,"nums":[]}
+{"t":"Pathfinding","sk":null,"nums":[]}
+{"t":"ApplicationButton(Clone)","sk":null,"nums":[]}
+{"t":"Petal Hinge","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>PrincipiaPluginAdapter</color>","sk":null,"nums":[]}
+{"t":"Engine Group ID is : not set","sk":null,"nums":[]}
+{"t":"# of Engines:","sk":null,"nums":[]}
+{"t":"Loading from Cache","sk":null,"nums":[]}
+{"t":"Stringer Mass","sk":null,"nums":[]}
+{"t":"noseinterstage: Disabled","sk":null,"nums":[]}
+{"t":"restock-antenna-foil  [KSP/ScreenSpaceMaskSpecular]","sk":null,"nums":[]}
+{"t":"LumVsSatCurve","sk":null,"nums":[]}
+{"t":"Precompute LateRebuild","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>GroundCrew</color>","sk":null,"nums":[]}
+{"t":"◆ Telemetry","sk":null,"nums":[]}
+{"t":"{ALT:MODE}","sk":null,"nums":[]}
+{"t":"Overall difficulty slider.","sk":null,"nums":[]}
+{"t":"KSPTextureLoader","sk":null,"nums":[]}
+{"t":"Procedural Tank (Conventional Structure)","sk":null,"nums":[]}
+{"t":"ModuleManager: Reloading things","sk":null,"nums":[]}
+{"t":"Procedural Fairing Shape","sk":null,"nums":[]}
+{"t":"Kopernicus: Loading ParallaxContinued\\Models\\ScaledMesh.bin","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>FARVesselAero</color>","sk":null,"nums":[]}
+{"t":"ksc_exterior_terrain_asphalt_diffuse (Instance)  [KSP/Scenery/Diffuse]","sk":null,"nums":[]}
+{"t":"ksp_runway_lights_diff (Instance)  [KSP/Scenery/Emissive/Bumped Specular]","sk":null,"nums":[]}
+{"t":"Beyond-Integrated-SignalCheck","sk":null,"nums":[]}
+{"t":"ksc_exterior_terrain_asphalt_diffuse (Instance) (Instance)  [KSP/Scenery/Diffuse]","sk":null,"nums":[]}
+{"t":"<color=#FFFFFF>Modular Tank (Balloon)</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>ThreadSafeDebugLogger</color>","sk":null,"nums":[]}
+{"t":"YP (Instance)  [Sprite/Simple Texture (Unlit)]","sk":null,"nums":[]}
+{"t":"Loading texture assets...","sk":null,"nums":[]}
+{"t":"DebugAntenna","sk":null,"nums":[]}
+{"t":"Principia","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>PersistentEmitterManager</color>","sk":null,"nums":[]}
+{"t":"Disable Avionics permanently","sk":null,"nums":[]}
+{"t":"Kerolox","sk":null,"nums":[]}
+{"t":"Ejection torque","sk":null,"nums":[]}
+{"t":"ksp_pad_concrete_mat (Instance)  [KSP/Scenery/Diffuse]","sk":null,"nums":[]}
+{"t":"SaturnStandMain_SaturnStand_auvMat (Instance)  [KSP/Diffuse]","sk":null,"nums":[]}
+{"t":"SaturnStandColumn_SaturnStand_auvMat (Instance)  [KSP/Diffuse]","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>RLVTransientFlight</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>SkyNode</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>SharedScaledSpaceFader</color>","sk":null,"nums":[]}
+{"t":"Disabled","sk":null,"nums":[]}
+{"t":"Nose","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>ModularFlightIntegrator</color>","sk":null,"nums":[]}
+{"t":"Checking Cache","sk":null,"nums":[]}
+{"t":"GPU ms","sk":null,"nums":[]}
+{"t":"ksp_pad_sphereTank_mat (Instance)  [KSP/Scenery/Specular]","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>EditorPartIcon</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>UllageModule</color>","sk":null,"nums":[]}
+{"t":"Hide Experimental parts","sk":null,"nums":[]}
+{"t":"Load Cubemap","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>OrbitDriver</color>","sk":null,"nums":[]}
+{"t":"SaturnStandFooting_SaturnStandFooting_auvMat (Instance)  [KSP/Diffuse]","sk":null,"nums":[]}
+{"t":"bluedog_TitanSolids_Misc (Instance)  [KSP/Bumped Specular]","sk":null,"nums":[]}
+{"t":"RDR {ALT:AGL:DIST}","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>TextMeshProUGUI</color>","sk":null,"nums":[]}
+{"t":"RF Cryogenics","sk":null,"nums":[]}
+{"t":"Advanced & debug","sk":null,"nums":[]}
+{"t":"Show","sk":null,"nums":[]}
+{"t":"Normal Variance Scale","sk":null,"nums":[]}
+{"t":"Beyond-Legacy-LightingReference","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>Deferred</color>","sk":null,"nums":[]}
+{"t":"Lunar Transfer","sk":null,"nums":[]}
+{"t":"Astronauts","sk":null,"nums":[]}
+{"t":"RealAntennas","sk":null,"nums":[]}
+{"t":"Toggle Flag Visibility","sk":null,"nums":[]}
+{"t":"Reload Settings","sk":null,"nums":[]}
+{"t":"ModuleManager","sk":null,"nums":[]}
+{"t":"ProbeOverhead","sk":null,"nums":[]}
+{"t":"<color=#FFFFFF>Procedural Fairing</color>","sk":null,"nums":[]}
+{"t":"kap_pad_launchPad_mat (Instance)  [KSP/Scenery/Bumped Specular]","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>Scatterer</color>","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>CollisionManager</color>","sk":null,"nums":[]}
+{"t":"Credits","sk":null,"nums":[]}
+{"t":"Shock Diamonds","sk":null,"nums":[]}
+{"t":"ModuleManager: Running post patch callbacks","sk":null,"nums":[]}
+{"t":"Shutdown Avionics","sk":null,"nums":[]}
+{"t":"Midpoint (MET)","sk":null,"nums":[]}
+{"t":"Full LateRebuild","sk":null,"nums":[]}
+{"t":"V/S","sk":null,"nums":[]}
+{"t":"Dafen Kerman","sk":null,"nums":[]}
+{"t":"Ullg","sk":null,"nums":[]}
+{"t":"Async Upload Buffer Size (MB)","sk":null,"nums":[]}
+{"t":"Pre patch init","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>MechanicWrenchEnglish</color>","sk":null,"nums":[]}
+{"t":"<b>Overall Architecture Latency (estimates):</b>","sk":null,"nums":[]}
+{"t":"AtmosphereAutopilot/icon","sk":null,"nums":[]}
+{"t":"ROLib","sk":null,"nums":[]}
+{"t":"Fixed Coast Length:","sk":null,"nums":[]}
+{"t":"Density","sk":null,"nums":[]}
+{"t":"Clear Group ID","sk":null,"nums":[]}
+{"t":"Continue","sk":null,"nums":[]}
+{"t":"▼ Brakes ▼","sk":null,"nums":[]}
+{"t":"Controls","sk":null,"nums":[]}
+{"t":"Loaded Textures","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>ModuleManager</color>","sk":null,"nums":[]}
+{"t":"Unlocked","sk":null,"nums":[]}
+{"t":"pre: ","sk":null,"nums":[]}
+{"t":"Bent Normal Strength","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>ROLStockInterop</color>","sk":null,"nums":[]}
+{"t":"BatchAsynchronous","sk":null,"nums":[]}
+{"t":"Cd (r,g,b):","sk":null,"nums":[]}
+{"t":"Deferred","sk":null,"nums":[]}
+{"t":"Warp","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>MechanicScrew</color>","sk":null,"nums":[]}
+{"t":"TVC Tank","sk":null,"nums":[]}
+{"t":"MSFN - KAUAI","sk":null,"nums":[]}
+{"t":"Radial","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>Vessel</color>","sk":null,"nums":[]}
+{"t":"◆ ProbeUI","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>UICraftSaveFlyoutController</color>","sk":null,"nums":[]}
+{"t":"Deferred Mod: Detected, Camera: DeferredShading","sk":null,"nums":[]}
+{"t":"Export Color Map","sk":null,"nums":[]}
+{"t":"Paintjob","sk":null,"nums":[]}
+{"t":"R-IN","sk":null,"nums":[]}
+{"t":"Dump Prefab","sk":null,"nums":[]}
+{"t":"Assembly-CSharp","sk":null,"nums":[]}
+{"t":"CelestialShadows","sk":null,"nums":[]}
+{"t":"Gear","sk":null,"nums":[]}
+{"t":"MSFN - BDA BERMUDA","sk":null,"nums":[]}
+{"t":"▶ <color=#FFFFFF>RuntimeUtility</color>","sk":null,"nums":[]}
+{"t":"Tangli Kerman","sk":null,"nums":[]}
+{"t":"Beyond-Integrated-LightingOnly","sk":null,"nums":[]}
+{"t":"Loaded CPU Textures","sk":null,"nums":[]}
+{"t":"Sides","sk":null,"nums":[]}
+{"t":"Planets","sk":null,"nums":[]}
+{"t":"Burst Compilation","sk":null,"nums":[]}
+{"t":"FB - Procedural Ribbed Payload Adapter","sk":null,"nums":[]}

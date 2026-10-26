@@ -116,6 +116,7 @@
 {"h":"6e29be9ea903f584","n":"Warning: A preset with that short name already exists!","s":"Warning: A preset with that short name already exists!","t":"警告：已存在使用该简称的预设。","mod":"RP0"}
 {"h":"718f504e7c9df8b8","n":"Max Timewarp","s":"Max Timewarp","t":"最大时间加速","mod":"RP0"}
 {"h":"72a7d44bff850e9a","n":"No Active Projects","s":"No Active Projects","t":"无进行中的项目","mod":"RP0"}
+{"h":"72eef4a55137784d","n":"Astronauts","s":"Astronauts","t":"宇航员","mod":"RP0"}
 {"h":"73096df19f30a71e","n":"Fill Tanks & Launch","s":"Fill Tanks & Launch","t":"加注燃料并启动","mod":"RP0"}
 {"h":"73d7a74054322332","n":"Size Limits:","s":"Size Limits:","t":"尺寸限制：","mod":"RP0"}
 {"h":"74ad3f918f1afb93","n":"Show in Sandbox Games","s":" Show in Sandbox Games","t":"在沙盒模式中显示","mod":"RP0"}
@@ -221,6 +222,7 @@
 {"h":"e3159b11c2138802","n":"Integration at","s":"Integration at","t":"总装于","mod":"RP0"}
 {"h":"e591ba52b9c987f1","n":"Add LC Support For:","s":"Add LC Support For:","t":"增加发射设施支持：","mod":"RP0"}
 {"h":"e5de1d01b713b255","n":"Cost/day:","s":"Cost/day:","t":"每日成本：","mod":"RP0"}
+{"h":"e65e4e6f3696e997","n":"Training","s":"Training","t":"训练","mod":"RP0"}
 {"h":"e6b4a075d3038167","n":"Uses shared efficiency:","s":"Uses shared efficiency:","t":"使用共享效率：","mod":"RP0"}
 {"h":"e7bd8e0f8c1aa89d","n":"Yearly Upkeep:","s":"Yearly Upkeep:","t":"年维护费：","mod":"RP0"}
 {"h":"e8028aee6b48ae9b","n":"Blank disables autostage. Parts in stages above this number will be shed and destroyed at sim start (highlighted red in the editor; retained parts blue).","s":"Blank disables autostage. Parts in stages above this number will be shed and destroyed at sim start (highlighted red in the editor; retained parts blue).","t":"留空则禁用自动分级。高于此序号的级数中的部件将在模拟开始时被分离并摧毁（编辑器中红色高亮，保留部件为蓝色）。","mod":"RP0"}

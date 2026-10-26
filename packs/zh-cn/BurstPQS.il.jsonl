@@ -1,1 +1,15 @@
+{"h":"38982a462c1ba4b8","n":"#-bit Height (R# DDS)","s":"#-bit Height (R# DDS)","t":"#-位高度 (R# DDS)","mod":"BurstPQS","p":1}
+{"h":"3b02a0d6510d4473","n":"Export All Planets","s":"Export All Planets","t":"导出全部星球","mod":"BurstPQS"}
 {"h":"6d3bdf0c06427f46","n":"No planets available","s":"No planets available","t":"无可用的行星","mod":"BurstPQS"}
+{"h":"8e953bb418f42eea","n":"Export Color Map","s":"Export Color Map","t":"导出颜色贴图","mod":"BurstPQS"}
+{"h":"94ef6c5a649a3e80","n":"Planets","s":"Planets","t":"星球","mod":"BurstPQS"}
+{"h":"95089659b960625e","n":"Burst Compilation","s":"Burst Compilation","t":"Burst 编译","mod":"BurstPQS"}
+{"h":"96224469b1f9190d","n":"Export planetary surface textures (height, color, normal) for use in external tools. Textures will be exported under <KSPDIR>/PluginData/BurstPQS.","s":"Export planetary surface textures (height, color, normal) for use in external tools. Textures will be exported under <KSPDIR>/PluginData/BurstPQS. ","t":"导出星球表面纹理（高度、颜色、法线），以便在外部工具中使用。纹理会导出到 <KSPDIR>/PluginData/BurstPQS。","mod":"BurstPQS"}
+{"h":"965c503c3e42fdfe","n":"Enabled","s":"Enabled","t":"已启用","mod":"BurstPQS"}
+{"h":"a04241cc3ca9702c","n":"Export Normal Map","s":"Export Normal Map","t":"导出法线贴图","mod":"BurstPQS"}
+{"h":"a27ff84ee3d9f14e","n":"Projection:","s":"Projection:","t":"投影：","mod":"BurstPQS"}
+{"h":"aac2f5a1b8d5c48f","n":"Resolution:","s":"Resolution:","t":"分辨率：","mod":"BurstPQS"}
+{"h":"c92905d14a9421f3","n":"Idle","s":"Idle","t":"空闲","mod":"BurstPQS"}
+{"h":"db9f675b3f6f6ac4","n":"Export Height Map","s":"Export Height Map","t":"导出高度贴图","mod":"BurstPQS"}
+{"h":"e52985e1e20621c7","n":"Export Planet","s":"Export Planet","t":"导出星球","mod":"BurstPQS"}
+{"h":"fc42cc574e6cf808","n":"Orient North Up","s":"Orient North Up","t":"朝北","mod":"BurstPQS"}

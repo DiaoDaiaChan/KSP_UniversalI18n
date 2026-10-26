@@ -1,4 +1,283 @@
-{"en": "<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>", "zh": "<color=yellow>前向激活（SSSR 模式）</color><color=green>延迟激活（完整 PBR SSR）</color>", "note": "渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
-{"en": "[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>", "zh": "[SSR Pipeline] Status: <color=green>延迟激活（完整 PBR SSR）</color>", "note": "渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
-{"en": "[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>", "zh": "[SSR Pipeline] Status: <color=yellow>前向激活（SSSR 模式）</color>", "note": "渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
+{"en":"<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>","zh":"<color=yellow>前向激活（SSSR 模式）</color><color=green>延迟激活（完整 PBR SSR）</color>","note":"渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
+{"en":"[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>","zh":"[SSR Pipeline] Status: <color=green>延迟激活（完整 PBR SSR）</color>","note":"渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
+{"en":"[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>","zh":"[SSR Pipeline] Status: <color=yellow>前向激活（SSSR 模式）</color>","note":"渲染路径术语：Forward=前向 / Deferred=延迟（业界标准译法，lead m01628 裁定）"}
 {"en":"Research & Development","zh":"研发","note":"TestFlightCore 分类标签；G6 下界误拒（0.091），人工裁定短译正确，lead m01857 裁定"}
+{"en":"Planet Parameters","zh":"星球参数","note":"捕获候选档（真实 UI 文案）| caller=KbAppFrame.Setup | sessions=20 | count=23"}
+{"en":"Last Restart: ","zh":"上次重启：","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionLabel.UpdateItem | sessions=2 | count=41"}
+{"en":"AA Off","zh":"抗锯齿关闭","note":"捕获候选档（真实 UI 文案）| caller=ConfigurationGUI.renderAdvancedAntiAliasingSettings | sessions=3 | count=6478"}
+{"en":"Enable Crossfeed","zh":"启用交叉输送","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=28"}
+{"en":"CPU Textures","zh":"CPU 纹理","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Hardware & DirectDMA","zh":"硬件与 DirectDMA","note":"捕获候选档（真实 UI 文案）| caller=PerformanceProbe.DrawWindow | sessions=3 | count=11763"}
+{"en":"<color=#FFFFFF>Saturn IB Launch Stand</color>","zh":"<color=#FFFFFF>土星 IB 发射台</color>","note":"捕获候选档（真实 UI 文案）| caller=ProfilerUI.DrawPartsTab | sessions=1 | count=62"}
+{"en":"Toggle Open/Closed","zh":"切换开/合","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=88"}
+{"en":"Avionics: Unlocking Controls","zh":"航电：解锁操控","note":"捕获候选档（真实 UI 文案）| caller=ScreenMessages.PostMessage | sessions=1 | count=3"}
+{"en":"Extra radius","zh":"额外半径","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatRange.UpdateItem | sessions=1 | count=56"}
+{"en":"Cm (r,g,b):","zh":"Cm 分量（r,g,b）：","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARDebugAndSettings.ChangeColor | sessions=1 | count=6020"}
+{"en":"Raptor (Surface Variant)","zh":"猛禽（表面变体）","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionWindow.Setup | sessions=1 | count=1"}
+{"en":"Unguided Stages: ","zh":"无制导级数：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ToggledTextBox | sessions=20 | count=60466"}
+{"en":"Burnout Altitude:","zh":"燃尽高度：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ToggledTextBox | sessions=20 | count=60516"}
+{"en":"Pressure Scan","zh":"压力扫描","note":"捕获候选档（真实 UI 文案）| caller=KERBALISM.KsmGui.KsmGuiText..ctor | sessions=24 | count=24"}
+{"en":"Last Stage: ","zh":"末级：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"Deferred Mod: Detected, Camera: Forward","zh":"延迟渲染模式：已检测，相机：前向","note":"捕获候选档（真实 UI 文案）| caller=ConfigurationGUI.renderScreenSpaceReflectionsSettings | sessions=2 | count=15728"}
+{"en":"Texture Selector GUI","zh":"纹理选择器界面","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=3"}
+{"en":"Atm Composition","zh":"大气组成","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARDebugAndSettings.debugWindow | sessions=1 | count=3010"}
+{"en":"Launch to LAN","zh":"发射至升交点经度","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ButtonTextBox | sessions=14 | count=27738"}
+{"en":"<color=#fefefe>Propellant GSE OK:</color>","zh":"<color=#fefefe>推进剂地面保障设备正常：</color>","note":"捕获候选档（真实 UI 文案）| caller=EngineersReport+<UpdateCraftStatsRoutine>d__73.MoveNext | sessions=3 | count=21"}
+{"en":"Planet Resources","zh":"星球资源","note":"捕获候选档（真实 UI 文案）| caller=KbAppFrame.Setup | sessions=20 | count=23"}
+{"en":"CPU Threads & Topology","zh":"CPU 线程与拓扑","note":"捕获候选档（真实 UI 文案）| caller=PerformanceProbe.DrawWindow | sessions=3 | count=11763"}
+{"en":"Planet Info","zh":"星球信息","note":"捕获候选档（真实 UI 文案）| caller=KbAppFrame.Setup | sessions=20 | count=23"}
+{"en":"Overall Performance","zh":"总体性能","note":"捕获候选档（真实 UI 文案）| caller=PerformanceProbe.DrawWindow | sessions=3 | count=11763"}
+{"en":"Dump Textures Layout","zh":"导出纹理布局","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"Fairing Auto-struts","zh":"整流罩自动支撑","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=1"}
+{"en":"Modular Tank (Balloon)","zh":"模块化贮箱（气囊式）","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionWindow.Setup | sessions=5 | count=5"}
+{"en":"Range Safety","zh":"射程安全","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=11"}
+{"en":"Export All Planets","zh":"导出全部星球","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"Debug Mode","zh":"调试模式","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Engine Module: SOLVERENGINE","zh":"发动机模块：SOLVERENGINE","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionLabel.UpdateItem | sessions=5 | count=342"}
+{"en":"Spinup lead time: ","zh":"启动提前量：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"Disable antenna permanently","zh":"永久禁用天线","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=11"}
+{"en":"Ullage lead time: ","zh":"沉底提前量：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"Fairing Auto-shape","zh":"整流罩自动成形","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=1"}
+{"en":"Saving Cache","zh":"保存缓存","note":"捕获候选档（真实 UI 文案）| caller=TMP_Text.TMPro.TMP_Text.set_text_Patch1 | sessions=17 | count=10288"}
+{"en":"L_D (r,g,b):","zh":"L_D 分量（r,g,b）：","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARDebugAndSettings.ChangeColor | sessions=1 | count=6020"}
+{"en":"Antenna Planning","zh":"天线规划","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=11"}
+{"en":"Petal Hinge","zh":"瓣片铰链","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=1"}
+{"en":"Engine Group ID is : not set","zh":"发动机组 ID：未设置","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionLabel.UpdateItem | sessions=6 | count=627"}
+{"en":"# of Engines:","zh":"发动机数量：","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigInfoPanel.DrawSimulationControls | sessions=1 | count=485"}
+{"en":"Stringer Mass","zh":"桁条质量","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatRange.UpdateItem | sessions=1 | count=1286"}
+{"en":"noseinterstage: Disabled","zh":"noseinterstage：已禁用","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=500"}
+{"en":"Precompute LateRebuild","zh":"预计算延迟重建","note":"捕获候选档（真实 UI 文案）| caller=RealAntennas.RealAntennasUI.WindowGUI | sessions=1 | count=468"}
+{"en":"◆ Telemetry","zh":"◆ 遥测","note":"捕获候选档（真实 UI 文案）| caller=RLVDebugGUI.DrawPerformance | sessions=3 | count=4802"}
+{"en":"Overall difficulty slider.","zh":"总体难度滑条。","note":"捕获候选档（真实 UI 文案）| caller=GUILayout.UnityEngine.GUILayout.DoLabel_Patch1 | sessions=3 | count=168"}
+{"en":"Procedural Tank (Conventional Structure)","zh":"程序化贮箱（常规结构）","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionWindow.Setup | sessions=1 | count=1"}
+{"en":"Procedural Fairing Shape","zh":"程序化整流罩外形","note":"捕获候选档（真实 UI 文案）| caller=PAWItemsOrder.UIPartActionWindow_AddGroup_1_Prefix | sessions=1 | count=1"}
+{"en":"<color=#FFFFFF>Modular Tank (Balloon)</color>","zh":"<color=#FFFFFF>模块化贮箱（气囊式）</color>","note":"捕获候选档（真实 UI 文案）| caller=ProfilerUI.DrawPartsTab | sessions=1 | count=62"}
+{"en":"Disable Avionics permanently","zh":"永久禁用航电","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=11"}
+{"en":"Ejection torque","zh":"弹射扭矩","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatRange.UpdateItem | sessions=1 | count=176"}
+{"en":"Checking Cache","zh":"检查缓存","note":"捕获候选档（真实 UI 文案）| caller=TMP_Text.TMPro.TMP_Text.set_text_Patch1 | sessions=29 | count=177"}
+{"en":"GPU ms","zh":"GPU 毫秒","note":"捕获候选档（真实 UI 文案）| caller=RLVDebugGUI.PerfHeaderCell | sessions=2 | count=3762"}
+{"en":"Hide Experimental parts","zh":"隐藏实验性部件","note":"捕获候选档（真实 UI 文案）| caller=TooltipController_Text.OnTooltipSpawned | sessions=3 | count=3"}
+{"en":"Load Cubemap","zh":"加载立方体贴图","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"RF Cryogenics","zh":"RF 低温推进剂","note":"捕获候选档（真实 UI 文案）| caller=PAWItemsOrder.UIPartActionWindow_AddGroup_1_Prefix | sessions=8 | count=13"}
+{"en":"Advanced & debug","zh":"高级与调试","note":"捕获候选档（真实 UI 文案）| caller=GUI.UnityEngine.GUI.Label_Patch1 | sessions=3 | count=39446"}
+{"en":"Normal Variance Scale","zh":"法线方差缩放","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.ParamSlider | sessions=9 | count=34828"}
+{"en":"Lunar Transfer","zh":"月球转移","note":"捕获候选档（真实 UI 文案）| caller=LunarTransferPlanner.LunarTransferPlanner.OnGUI | sessions=1 | count=758"}
+{"en":"Toggle Flag Visibility","zh":"切换旗帜可见性","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=500"}
+{"en":"Reload Settings","zh":"重新加载设置","note":"捕获候选档（真实 UI 文案）| caller=GUILayout.UnityEngine.GUILayout.DoRepeatButton_Patch1 | sessions=3 | count=78868"}
+{"en":"<color=#FFFFFF>Procedural Fairing</color>","zh":"<color=#FFFFFF>程序化整流罩</color>","note":"捕获候选档（真实 UI 文案）| caller=ProfilerUI.DrawPartsTab | sessions=1 | count=62"}
+{"en":"Shock Diamonds","zh":"激波钻石","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.ParamSlider | sessions=9 | count=34828"}
+{"en":"Shutdown Avionics","zh":"关闭航电","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=11"}
+{"en":"Midpoint (MET)","zh":"中点（任务时间）","note":"捕获候选档（真实 UI 文案）| caller=DifferentialSlider.Render | sessions=6 | count=154"}
+{"en":"Full LateRebuild","zh":"完整延迟重建","note":"捕获候选档（真实 UI 文案）| caller=RealAntennas.RealAntennasUI.WindowGUI | sessions=1 | count=468"}
+{"en":"Async Upload Buffer Size (MB)","zh":"异步上传缓冲区大小 (MB)","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Pre patch init","zh":"补丁前初始化","note":"捕获候选档（真实 UI 文案）| caller=TMP_Text.TMPro.TMP_Text.set_text_Patch1 | sessions=17 | count=112"}
+{"en":"<b>Overall Architecture Latency (estimates):</b>","zh":"<b>整体架构延迟（估算）：</b>","note":"捕获候选档（真实 UI 文案）| caller=PerformanceProbe.DrawPerformanceTab | sessions=3 | count=23526"}
+{"en":"Fixed Coast Length:","zh":"固定滑行时长：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ToggledTextBox | sessions=20 | count=60466"}
+{"en":"Clear Group ID","zh":"清除组 ID","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=230"}
+{"en":"▼ Brakes ▼","zh":"▼ 刹车 ▼","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIDropDown.GUIDropDownDisplay | sessions=1 | count=6020"}
+{"en":"Loaded Textures","zh":"已加载纹理","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=56"}
+{"en":"Bent Normal Strength","zh":"弯曲法线强度","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.ParamSlider | sessions=9 | count=34828"}
+{"en":"Cd (r,g,b):","zh":"Cd 分量（r,g,b）：","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARDebugAndSettings.ChangeColor | sessions=1 | count=6020"}
+{"en":"TVC Tank","zh":"TVC 贮箱","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionSubtypeSelector.Setup | sessions=1 | count=2"}
+{"en":"◆ ProbeUI","zh":"◆ 探针界面","note":"捕获候选档（真实 UI 文案）| caller=RLVDebugGUI.DrawPerformance | sessions=3 | count=4802"}
+{"en":"Deferred Mod: Detected, Camera: DeferredShading","zh":"延迟渲染模式：已检测，相机：延迟着色","note":"捕获候选档（真实 UI 文案）| caller=ConfigurationGUI.renderScreenSpaceReflectionsSettings | sessions=9 | count=25980"}
+{"en":"Export Color Map","zh":"导出颜色贴图","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateToggle | sessions=28 | count=28"}
+{"en":"Dump Prefab","zh":"导出预制体","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"Loaded CPU Textures","zh":"已加载 CPU 纹理","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Burst Compilation","zh":"Burst 编译","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"FB - Procedural Ribbed Payload Adapter","zh":"FB - 程序化带肋有效载荷适配器","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionWindow.Setup | sessions=1 | count=1"}
+{"en":"Export planetary surface textures (height, color, normal) for use in external tools. Textures will be exported under <KSPDIR>/PluginData/BurstPQS. ","zh":"导出星球表面纹理（高度、颜色、法线），以便在外部工具中使用。纹理会导出到 <KSPDIR>/PluginData/BurstPQS。","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateDirectLabel | sessions=28 | count=28"}
+{"en":"↓ Earth ↓","zh":"↓ 地球 ↓","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils+ComboBox.Box | sessions=3 | count=24188"}
+{"en":"Lum. Contrib","zh":"亮度贡献","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.ParamSlider | sessions=9 | count=13610"}
+{"en":"Export Normal Map","zh":"导出法线贴图","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateToggle | sessions=28 | count=28"}
+{"en":"Smoothed per call; peaks decay. Debug frame exports provide frame totals, call counts and additional stages.","zh":"每次调用平滑；峰值会衰减。调试帧导出提供帧总计、调用次数与附加阶段。","note":"捕获候选档（真实 UI 文案）| caller=PerformanceProbe.DrawPerformanceTab | sessions=3 | count=23526"}
+{"en":"Assign Group ID","zh":"分配组 ID","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=230"}
+{"en":"Unowned Info","zh":"未归属信息","note":"捕获候选档（真实 UI 文案）| caller=KbAppFrame.Setup | sessions=20 | count=23"}
+{"en":"Test Bundle Upload","zh":"测试资源包上传","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"🌐 Language ▾","zh":"🌐 语言 ▾","note":"捕获候选档（真实 UI 文案）| caller=ProfilerUI.DrawHeaderHUD | sessions=3 | count=768"}
+{"en":"Optical Vignetting","zh":"光学暗角","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.ParamSlider | sessions=9 | count=27220"}
+{"en":"Coast Stage: ","zh":"滑行级：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ToggledTextBox | sessions=20 | count=60466"}
+{"en":"Dump Handle Refs","zh":"导出句柄引用","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"Cl (r,g,b):","zh":"Cl 分量（r,g,b）：","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARDebugAndSettings.ChangeColor | sessions=1 | count=6020"}
+{"en":"Update ms","zh":"更新毫秒","note":"捕获候选档（真实 UI 文案）| caller=RLVDebugGUI.PerfCell | sessions=5 | count=6016"}
+{"en":"SAS: OFF","zh":"SAS：关闭","note":"捕获候选档（真实 UI 文案）| caller=UIFactory.CreateText | sessions=20 | count=30"}
+{"en":"Antenna Target: ","zh":"天线目标：","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionLabel.UpdateItem | sessions=1 | count=11"}
+{"en":"Voxels Controllable Vessel: ","zh":"体素·可控载具：","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIUtils.TextEntryField | sessions=1 | count=6020"}
+{"en":"Asset Bundles","zh":"资源包列表","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Asset Bundle","zh":"资源包","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Size\nHeight:\nWidth:\nLength:","zh":"尺寸 高度： 宽度： 长度：","note":"捕获候选档（真实 UI 文案）| caller=GenericCascadingList.CreateBodyKeyValueAutofit | sessions=3 | count=6"}
+{"en":"Core Tex","zh":"核心纹理","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=2"}
+{"en":"N/A: not supplied by player/backend","zh":"不可用：玩家/后端未提供","note":"捕获候选档（真实 UI 文案）| caller=RLVDebugGUI.DrawMetricCard | sessions=3 | count=4802"}
+{"en":"Dump Layout","zh":"导出布局","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"Early Shutoff Stage: ","zh":"提前关机级：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ToggledTextBox | sessions=20 | count=60466"}
+{"en":"Dump Tools","zh":"导出工具","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Ignition %","zh":"点火 %","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=1 | count=485"}
+{"en":"Use Preset","zh":"使用预设","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=1"}
+{"en":"Open Diameter Selection","zh":"打开直径选择","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=500"}
+{"en":"Q Trigger:","zh":"动压触发：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"Select Nose","zh":"选择头部","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=500"}
+{"en":"Extracting patches","zh":"提取补丁","note":"捕获候选档（真实 UI 文案）| caller=TMP_Text.TMPro.TMP_Text.set_text_Patch1 | sessions=17 | count=954"}
+{"en":"Difficulty and Debug","zh":"难度与调试","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARDebugAndSettings.debugWindow | sessions=1 | count=3010"}
+{"en":"Vessel Crew","zh":"载具乘员","note":"捕获候选档（真实 UI 文案）| caller=KbAppFrame.Setup | sessions=20 | count=23"}
+{"en":"Min Phys Ticks per Voxel Update: ","zh":"每体素更新最小物理步：","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIUtils.TextEntryField | sessions=1 | count=6020"}
+{"en":"Spinup stage: ","zh":"启动级：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ToggledTextBox | sessions=20 | count=60466"}
+{"en":"mountinterstage: Disabled","zh":"mountinterstage：已禁用","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=500"}
+{"en":"Open Recoloring GUI","zh":"打开改色界面","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=1143"}
+{"en":"Voxels Debris: ","zh":"体素·碎片：","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIUtils.TextEntryField | sessions=1 | count=6020"}
+{"en":"Load Texture","zh":"加载纹理","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"<color=#FFFFFF>Blanket Solar Panel</color>","zh":"<color=#FFFFFF>毯式太阳能板</color>","note":"捕获候选档（真实 UI 文案）| caller=ProfilerUI.DrawPartsTab | sessions=1 | count=124"}
+{"en":"Vessel Info","zh":"载具信息","note":"捕获候选档（真实 UI 文案）| caller=KbAppFrame.Setup | sessions=20 | count=23"}
+{"en":"Export Height Map","zh":"导出高度贴图","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateToggle | sessions=28 | count=28"}
+{"en":"Kernel Size","zh":"核大小","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.EnumSelector | sessions=9 | count=13610"}
+{"en":"Bundle Unload Delay","zh":"资源包卸载延迟","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Fairing Decoupler","zh":"整流罩分离器","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=1"}
+{"en":"Vacuum Gas Plumes","zh":"真空燃气羽流","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.Toggle | sessions=9 | count=34828"}
+{"en":"Schlieren Detail","zh":"纹影细节","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.ParamSlider | sessions=9 | count=34828"}
+{"en":"Adding more fuel and upgrading engines...","zh":"再添点燃料、升级下发动机……","note":"捕获候选档（真实 UI 文案）| caller=LoadingScreen.SetTip | sessions=1 | count=1"}
+{"en":"Export Planet","zh":"导出星球","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateButton | sessions=28 | count=28"}
+{"en":"RF Band: UHF","zh":"RF 频段：UHF","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionLabel.UpdateItem | sessions=1 | count=11"}
+{"en":"Select Mount","zh":"选择安装座","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionButton.UpdateItem | sessions=1 | count=500"}
+{"en":"Ejection power","zh":"弹射力度","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatRange.UpdateItem | sessions=1 | count=176"}
+{"en":"▼ None ▼","zh":"▼ 无 ▼","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIDropDown.GUIDropDownDisplay | sessions=1 | count=12040"}
+{"en":"Aerodynamic Failure","zh":"气动失效","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARDebugAndSettings.debugWindow | sessions=1 | count=3010"}
+{"en":"Base Size","zh":"基础尺寸","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatEdit.Setup | sessions=1 | count=2"}
+{"en":"PVG After Stage:","zh":"PVG 起始级：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.ToggledTextBox | sessions=20 | count=60466"}
+{"en":"◆ ProbeOverhead","zh":"◆ 探针开销","note":"捕获候选档（真实 UI 文案）| caller=RLVDebugGUI.DrawPerformance | sessions=3 | count=4802"}
+{"en":"Max Texture Load Memory (MB)","zh":"最大纹理加载内存 (MB)","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Fairing Nodes","zh":"整流罩节点","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatRange.UpdateItem | sessions=1 | count=56"}
+{"en":"Legacy Textures","zh":"旧版纹理","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=3"}
+{"en":"Orient North Up","zh":"朝北","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateToggle | sessions=28 | count=28"}
+{"en":"Shape Preset","zh":"外形预设","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=1"}
+{"en":"Condition: Enabled","zh":"状态：启用","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionLabel.UpdateItem | sessions=1 | count=11"}
+{"en":"▼ Full Drag, Strict Area Ruling ▼","zh":"▼ 全阻力，严格面积律 ▼","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIDropDown.GUIDropDownDisplay | sessions=1 | count=6020"}
+{"en":"Spectral LUT","zh":"光谱 LUT","note":"捕获候选档（真实 UI 文案）| caller=ConfigurationGUI.DrawParamToggle | sessions=9 | count=13610"}
+{"en":"Abort","zh":"中止","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIDropDown.OnDisplayList | sessions=1 | count=460"}
+{"en":"Navigation","zh":"导航","note":"捕获候选档（真实 UI 文案）| caller=WorkbenchControls.CreatePill | sessions=20 | count=180"}
+{"en":"Screenshot","zh":"截图","note":"捕获候选档（真实 UI 文案）| caller=GUI.UnityEngine.GUI.Box_Patch1 | sessions=3 | count=39446"}
+{"en":"Physics","zh":"物理","note":"捕获候选档（真实 UI 文案）| caller=unknown | sessions=2 | count=22468"}
+{"en":"Open","zh":"打开","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.SetButtonState | sessions=1 | count=27"}
+{"en":"Length","zh":"长度","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatEdit.Setup | sessions=1 | count=10"}
+{"en":"Diameter","zh":"直径","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatEdit.Setup | sessions=1 | count=8"}
+{"en":"Statistics","zh":"统计","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Tech","zh":"科技","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=1 | count=485"}
+{"en":"Gameplay","zh":"游戏玩法","note":"捕获候选档（真实 UI 文案）| caller=unknown | sessions=2 | count=22468"}
+{"en":"Pathfinding","zh":"寻路","note":"捕获候选档（真实 UI 文案）| caller=RealAntennas.RealAntennasUI.WindowGUI | sessions=1 | count=468"}
+{"en":"ShadowManager","zh":"阴影管理器","note":"捕获候选档（真实 UI 文案）| caller=Utils.GUIHelper.DrawSelector | sessions=1 | count=399"}
+{"en":"CloudsManager","zh":"云层管理器","note":"捕获候选档（真实 UI 文案）| caller=Utils.GUIHelper.DrawSelector | sessions=1 | count=529"}
+{"en":"AtmosphereManager","zh":"大气管理器","note":"捕获候选档（真实 UI 文案）| caller=Utils.GUIHelper.DrawSelector | sessions=1 | count=64"}
+{"en":"Iterations","zh":"迭代次数","note":"捕获候选档（真实 UI 文案）| caller=RealAntennas.RealAntennasUI.WindowGUI | sessions=1 | count=468"}
+{"en":"EarlyRebuild","zh":"提前重建","note":"捕获候选档（真实 UI 文案）| caller=RealAntennas.RealAntennasUI.WindowGUI | sessions=1 | count=468"}
+{"en":"Shape","zh":"外形","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=4"}
+{"en":"Kerbals","zh":"克曼人","note":"捕获候选档（真实 UI 文案）| caller=unknown | sessions=2 | count=22468"}
+{"en":"Missions","zh":"任务","note":"捕获候选档（真实 UI 文案）| caller=unknown | sessions=2 | count=22468"}
+{"en":"Cost","zh":"成本","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=1 | count=485"}
+{"en":"Core","zh":"核心","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=2"}
+{"en":"Gauges","zh":"仪表","note":"捕获候选档（真实 UI 文案）| caller=WorkbenchControls.CreatePill | sessions=20 | count=160"}
+{"en":"Lift","zh":"升力","note":"捕获候选档（真实 UI 文案）| caller=TUFXWidgets.Vector4Picker | sessions=9 | count=13610"}
+{"en":"Systems","zh":"系统","note":"捕获候选档（真实 UI 文案）| caller=WorkbenchControls.CreatePill | sessions=20 | count=260"}
+{"en":"Preview","zh":"预览","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateButton | sessions=28 | count=56"}
+{"en":"Options","zh":"选项","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Loading...","zh":"加载中……","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Dump","zh":"导出","note":"捕获候选档（真实 UI 文案）| caller=TextureReplacer.TRGui.ShowDumpTexture | sessions=1 | count=320"}
+{"en":"Mask","zh":"遮罩","note":"捕获候选档（真实 UI 文案）| caller=ConfigurationGUI.DrawParamToggle | sessions=9 | count=13610"}
+{"en":"Disabled","zh":"已禁用","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.SetButtonState | sessions=1 | count=735"}
+{"en":"Show","zh":"显示","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.SetButtonState | sessions=1 | count=646"}
+{"en":"Enabled","zh":"已启用","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Idle","zh":"空闲","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Linear","zh":"线性","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Planets","zh":"星球","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Contracts","zh":"合同","note":"捕获候选档（真实 UI 文案）| caller=unknown | sessions=2 | count=22468"}
+{"en":"Console","zh":"控制台","note":"捕获候选档（真实 UI 文案）| caller=GUI.UnityEngine.GUI.DoModalWindow_Patch1 | sessions=3 | count=78958"}
+{"en":"Database","zh":"数据库","note":"捕获候选档（真实 UI 文案）| caller=GUI.UnityEngine.GUI.Box_Patch1 | sessions=3 | count=61902"}
+{"en":"English","zh":"英语","note":"捕获候选档（真实 UI 文案）| caller=RLVDebugGUI.DrawWindow | sessions=20 | count=55880"}
+{"en":"Name","zh":"名称","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=2 | count=953"}
+{"en":"Mass","zh":"质量","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=1 | count=485"}
+{"en":"Resources","zh":"资源","note":"捕获候选档（真实 UI 文案）| caller=unknown | sessions=2 | count=22468"}
+{"en":"Cheats","zh":"作弊","note":"捕获候选档（真实 UI 文案）| caller=unknown | sessions=2 | count=22468"}
+{"en":"Configuration","zh":"配置","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Apply","zh":"应用","note":"捕获候选档（真实 UI 文案）| caller=EVEManager.GenericEVEManager.DrawConfigManagement | sessions=4 | count=40374"}
+{"en":"Owned","zh":"已拥有","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawActionCell | sessions=1 | count=485"}
+{"en":"Ends","zh":"端面","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=3"}
+{"en":"Variant","zh":"变体","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=2"}
+{"en":"Decoupler","zh":"分离器","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=1"}
+{"en":"Neutral","zh":"中性","note":"捕获候选档（真实 UI 文案）| caller=ConfigurationGUI.renderSubsurfaceMaterialAuthoring | sessions=1 | count=2598"}
+{"en":"Bottom","zh":"底部","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatEdit.Setup | sessions=1 | count=2"}
+{"en":"Mount","zh":"安装座","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=2"}
+{"en":"Type","zh":"类型","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionSubtypeSelector.Setup | sessions=1 | count=2"}
+{"en":"Training","zh":"训练","note":"捕获候选档（真实 UI 文案）| caller=RP0.UIBase.RenderToggleButton | sessions=1 | count=368"}
+{"en":"Astronauts","zh":"宇航员","note":"捕获候选档（真实 UI 文案）| caller=RP0.UIBase.RenderToggleButton | sessions=1 | count=368"}
+{"en":"Credits","zh":"制作人员","note":"捕获候选档（真实 UI 文案）| caller=GUI.UnityEngine.GUI.Toggle_Patch1 | sessions=3 | count=39446"}
+{"en":"Continue","zh":"继续","note":"捕获候选档（真实 UI 文案）| caller=GUI.UnityEngine.GUI.Toggle_Patch1 | sessions=3 | count=39446"}
+{"en":"Unlocked","zh":"已解锁","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.SetButtonState | sessions=1 | count=89"}
+{"en":"Brakes","zh":"刹车","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIDropDown.OnDisplayList | sessions=1 | count=460"}
+{"en":"Gear","zh":"起落架","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIDropDown.OnDisplayList | sessions=1 | count=460"}
+{"en":"Thrust","zh":"推力","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=1 | count=485"}
+{"en":"Density","zh":"密度","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionFloatRange.UpdateItem | sessions=1 | count=176"}
+{"en":"Radial","zh":"径向","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionSubtypeSelector.Setup | sessions=1 | count=2"}
+{"en":"Paintjob","zh":"涂装","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionSubtypeSelector.Setup | sessions=1 | count=2"}
+{"en":"Sides","zh":"侧面","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=3"}
+{"en":"Fairing","zh":"整流罩","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionToggle.Setup | sessions=1 | count=1"}
+{"en":"Hint","zh":"提示","note":"捕获候选档（真实 UI 文案）| caller=DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Projection:","zh":"投影：","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Resolution:","zh":"分辨率：","note":"捕获候选档（真实 UI 文案）| caller=BurstPQS.UI.DebugUI.DebugUIManager.CreateLabel | sessions=28 | count=28"}
+{"en":"Simulate:","zh":"模拟：","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigInfoPanel.DrawSimulationControls | sessions=1 | count=485"}
+{"en":"HumanRated:","zh":"载人认证：","note":"捕获候选档（真实 UI 文案）| caller=GenericCascadingList.CreateBodyKeyValueAutofit | sessions=3 | count=3"}
+{"en":"Mass:","zh":"质量：","note":"捕获候选档（真实 UI 文案）| caller=GenericCascadingList.CreateBodyKeyValueAutofit | sessions=3 | count=3"}
+{"en":"Resources:","zh":"资源：","note":"捕获候选档（真实 UI 文案）| caller=GenericCascadingList.CreateBodyKeyValueAutofit | sessions=3 | count=3"}
+{"en":"Alt: ","zh":"高度：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"pre: ","zh":"前：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"post: ","zh":"后：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"Delays: ","zh":"延迟：","note":"捕获候选档（真实 UI 文案）| caller=MechJebModuleStagingController.AutostageSettingsInfoItem | sessions=20 | count=60466"}
+{"en":"Warp","zh":"加速","note":"捕获候选档（真实 UI 文案）| caller=LunarTransferPlanner.LunarTransferPlanner.MakeMainWindow | sessions=1 | count=756"}
+{"en":"Nose","zh":"头部","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.Setup | sessions=1 | count=2"}
+{"en":"Kerolox","zh":"煤油液氧","note":"捕获候选档（真实 UI 文案）| caller=UIPartActionChooseOption.UpdateDisplay | sessions=1 | count=2"}
+{"en":"Igns","zh":"点火次数","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=1 | count=485"}
+{"en":"Ullg","zh":"沉底","note":"捕获候选档（真实 UI 文案）| caller=EngineConfigGUI.DrawHeaderCell | sessions=1 | count=485"}
+{"en":"Mercury","zh":"水星","note":"捕获候选档（真实 UI 文案）| caller=Utils.GUIHelper.DrawSelector | sessions=1 | count=2"}
+{"en":"Stage   ","zh":"级","note":"捕获候选档（真实 UI 文案）| caller=FerramAerospaceResearch.FARGUI.GUIDropDown.OnDisplayList | sessions=21 | count=73340"}
+{"en":"Min ∆v: ","zh":"最小 Δv：","note":"捕获候选档（真实 UI 文案）| caller=GuiUtils.SimpleTextBox | sessions=20 | count=60466"}
+{"en":"Aero: Stock | RH preset: # %","zh":"气动：原版 | RH 预设：# %","note":"骨架通道（pattern）| 骨架 47678 个实例 / 1 个源串 | caller=RLVDebugGUI.DrawTelemetry"}
+{"en":"Aero: FAR | RH preset: # %","zh":"气动：FAR | RH 预设：# %","note":"骨架通道（pattern）| 骨架 43930 个实例 / 1 个源串 | caller=RLVDebugGUI.DrawTelemetry"}
+{"en":"Tracking: <color=#88FF88># m</color>","zh":"跟踪：<color=#88FF88># m</color>","note":"骨架通道（pattern）| 骨架 34828 个实例 / 1 个源串 | caller=ConfigurationGUI.renderSpectralBokehSettings"}
+{"en":"Net: # nodes. # links. # occluders.","zh":"网络：# 节点，# 链路，# 遮挡体。","note":"骨架通道（pattern）| 骨架 31380 个实例 / 1 个源串 | caller=RealAntennas.RealAntennasUI.WindowGUI"}
+{"en":"Intel CMAA # (No Ghosting)","zh":"Intel CMAA #（无残影）","note":"骨架通道（pattern）| 骨架 6478 个实例 / 1 个源串 | caller=ConfigurationGUI.renderAdvancedAntiAliasingSettings"}
+{"en":"Mesh: use # bit indices:","zh":"网格：使用 # 位索引：","note":"骨架通道（pattern）| 骨架 6020 个实例 / 1 个源串 | caller=FerramAerospaceResearch.FARSettingsScenarioModule.DisplaySelection"}
+{"en":"# bit indices","zh":"# 位索引","note":"骨架通道（pattern）| 骨架 6020 个实例 / 1 个源串 | caller=FerramAerospaceResearch.FARSettingsScenarioModule.DisplaySelection"}
+{"en":"FAR Debug Options, v#.# 'Marangoni'","zh":"FAR 调试选项 v#.# Marangoni","note":"骨架通道（pattern）| 骨架 5716 个实例 / 1 个源串 | caller=FerramAerospaceResearch.FARDebugAndSettings.OnGUI"}
+{"en":"Flight Data: # du / # du","zh":"飞行数据：# du / # du","note":"骨架通道（pattern）| 骨架 826 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"cost: Dry: # Wet: #","zh":"成本：干重 # 湿重 #","note":"骨架通道（pattern）| 骨架 643 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Thrust Ratio: #","zh":"推力比：#","note":"骨架通道（pattern）| 骨架 596 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Largest Diameter: #m","zh":"最大直径：#m","note":"骨架通道（pattern）| 骨架 500 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Total Length: #m","zh":"总长度：#m","note":"骨架通道（pattern）| 骨架 500 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Mass Flow: # ton/s","zh":"质量流量：# ton/s","note":"骨架通道（pattern）| 骨架 476 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Antennas/vessel: #","zh":"天线/载具：#","note":"骨架通道（pattern）| 骨架 468 个实例 / 1 个源串 | caller=RealAntennas.RealAntennasUI.WindowGUI"}
+{"en":"Current Throttle: #%","zh":"当前节流阀：#%","note":"骨架通道（pattern）| 骨架 397 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Ignition Chance: # %","zh":"点火概率：# %","note":"骨架通道（pattern）| 骨架 342 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Ignition Penalty for Q: # %","zh":"动压点火惩罚：# %","note":"骨架通道（pattern）| 骨架 342 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Restart Ignition Penalty: # %","zh":"重启点火惩罚：# %","note":"骨架通道（pattern）| 骨架 342 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Thrust Modifier: # %","zh":"推力修正：# %","note":"骨架通道（pattern）| 骨架 342 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Time Since Shutdown: #s","zh":"关机后时长：#s","note":"骨架通道（pattern）| 骨架 342 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Mean Time Between Failures: #h","zh":"平均故障间隔：#h","note":"骨架通道（pattern）| 骨架 334 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Eng. Internal Temp: NaN K / # K","zh":"发动机内部温度：NaN K / # K","note":"骨架通道（pattern）| 骨架 318 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Last Restart: Roll: # %, Chance: # %","zh":"上次重启：抽检 # %，概率 # %","note":"骨架通道（pattern）| 骨架 301 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Current Ignition Chance: # %","zh":"当前点火概率：# %","note":"骨架通道（pattern）| 骨架 230 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Current Reliability: # %, MTBF: #h","zh":"当前可靠性：# %，MTBF：#h","note":"骨架通道（pattern）| 骨架 230 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Max Ignition Chance: # %","zh":"最大点火概率：# %","note":"骨架通道（pattern）| 骨架 230 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Rated Burn Time: #s (#m #s)","zh":"额定燃烧时间：#s（#m #s）","note":"骨架通道（pattern）| 骨架 230 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Reliability at Max Data: # %, MTBF: #h","zh":"满数据可靠性：# %，MTBF：#h","note":"骨架通道（pattern）| 骨架 230 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Mass Flow: # kg/s","zh":"质量流量：# kg/s","note":"骨架通道（pattern）| 骨架 175 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Mass: #kg","zh":"质量：#kg","note":"骨架通道（pattern）| 骨架 156 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Cost: # (both)","zh":"成本：#（两者）","note":"骨架通道（pattern）| 骨架 88 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Mass: #t (both)","zh":"质量：#t（两者）","note":"骨架通道（pattern）| 骨架 88 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Eng. Internal Temp: # K / # K","zh":"发动机内部温度：# K / # K","note":"骨架通道（pattern）| 骨架 79 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Gain: # dBi","zh":"增益：# dBi","note":"骨架通道（pattern）| 骨架 11 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"Power (Active): # Watts","zh":"功率（激活）：# 瓦","note":"骨架通道（pattern）| 骨架 11 个实例 / 1 个源串 | caller=UIPartActionLabel.UpdateItem"}
+{"en":"MODULAR FLIGHT PANEL #","zh":"模块化飞行面板 #","note":"骨架通道（pattern）| 骨架 20 个实例 / 1 个源串 | caller=WorkbenchCanvasView.BuildTopHeader"}
+{"en":"Set to Current (#du)","zh":"设为当前（#du）","note":"骨架通道（pattern）| 骨架 485 个实例 / 1 个源串 | caller=EngineConfigInfoPanel.DrawSimulationControls"}
+{"en":"<color=#FFFFFF>Angled RCS Block [ #/# N Class]</color>","zh":"<color=#FFFFFF>斜置 RCS 组件 [ #/# N 类]</color>","note":"骨架通道（pattern）| 骨架 248 个实例 / 1 个源串 | caller=ProfilerUI.DrawPartsTab"}
+{"en":"<color=#FFFFFF>#/#kN Thruster</color>","zh":"<color=#FFFFFF>#/#kN 推进器</color>","note":"骨架通道（pattern）| 骨架 62 个实例 / 1 个源串 | caller=ProfilerUI.DrawPartsTab"}
+{"en":"<color=#FFFFFF>UA# Nosecone & Separation Motor</color>","zh":"<color=#FFFFFF>UA# 头锥与分离发动机</color>","note":"骨架通道（pattern）| 骨架 124 个实例 / 1 个源串 | caller=ProfilerUI.DrawPartsTab"}
+{"en":"<color=#FFFFFF>RL-# Series (Non-Extendable Nozzle)</color>","zh":"<color=#FFFFFF>RL-# 系列（不可延伸喷管）</color>","note":"骨架通道（pattern）| 骨架 62 个实例 / 1 个源串 | caller=ProfilerUI.DrawPartsTab"}
+{"en":"RP-# Initialization & Setup","zh":"RP-# 初始化与设置","note":"骨架通道（pattern）| 骨架 2494 个实例 / 1 个源串 | caller=LoadingScreen.UpdateProgressBar"}
+{"en":"Applied rule: # matching materials / # surfaces. Save to retain it across restarts.","zh":"已应用规则：# 个匹配材质 / # 个表面。保存后可在重启后保留。","note":"骨架通道（pattern）| 骨架 890 个实例 / 1 个源串 | caller=ConfigurationGUI.renderSubsurfaceMaterialAuthoring"}
+{"en":"EVE #.# Config Editor","zh":"EVE #.# 配置编辑器","note":"骨架通道（pattern）| 骨架 949 个实例 / 1 个源串 | caller=EVEManager.GlobalEVEManager.OnGUI"}

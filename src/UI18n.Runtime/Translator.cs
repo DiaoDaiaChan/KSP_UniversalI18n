@@ -209,9 +209,17 @@ namespace UI18n.Runtime
                     translation = hit;
                     RecordHit(patch, source, translation, level);
                 }
-                else if (_capture != null && _pack.Keeps == keepsBefore)
+                else
                 {
-                    // 真未命中才捕获：keep（译文 == 原文）说明字典里有它，不算缺命中（04 §6.3 门禁 5）
+                    // 骨架兜底（v1.3 pattern 通道）：精确未命中 → 骨化 → 骨架查表 → 数字填回。
+                    // 只在「首次未命中」走这条路（重复未命中在方法开头就由缓存短路了，零分配性质不变）。
+                    translation = TryPattern(normalized, config, patch);
+                }
+
+                if (translation == null && _capture != null && _pack.Keeps == keepsBefore)
+                {
+                    // 真未命中才捕获：keep（译文 == 原文）说明字典里有它，不算缺命中（04 §6.3 门禁 5）；
+                    // 骨架命中的也不算（translation 非 null 时分母不进来）
                     _capture.Record(hash, source, normalized, patch);
                 }
             }
@@ -230,6 +238,56 @@ namespace UI18n.Runtime
         }
 
         /// <summary>
+        /// 骨架兜底（v1.3）：归一化文本 → <see cref="TextSkeleton.TryBuild"/> → 骨架查表 → <see cref="TextSkeleton.FillBack"/>。
+        /// 返回 <c>null</c> 表示未命中（骨化失败 / 没有骨架行 / 槽位不匹配 / 通道关闭）。
+        /// <para>
+        /// 调用点固定在「精确查表未命中之后、缺命中捕获之前」：骨架命中的串<b>不进</b>捕获文件，
+        /// 否则捕获库会被成千上万条只差数字的模板串重新灌满 —— 那正是这个通道要消灭的东西。
+        /// </para>
+        /// <para>分配：一次骨架串 + 数字数组 + 填回结果，只在首次未命中路径上发生（05 §4 的零分配约束针对命中路径）。</para>
+        /// </summary>
+        private static string TryPattern(string normalized, UI18nConfig config, string patch)
+        {
+            DictPack pack = _pack;
+            if (pack == null || pack.PatternEntries == 0)
+            {
+                return null;                                // 包里没有骨架行：连正则都不碰
+            }
+
+            if (config != null && !config.PatternMatching)
+            {
+                return null;
+            }
+
+            string skeleton;
+            string[] numbers;
+            if (!TextSkeleton.TryBuild(normalized, out skeleton, out numbers))
+            {
+                return null;                                // 没有数字 / 槽位超限：不是模板
+            }
+
+            string patternTranslation;
+            if (!pack.TryGetPattern(Fnv1a.Hash(skeleton), skeleton, out patternTranslation))
+            {
+                return null;
+            }
+
+            string filled = TextSkeleton.FillBack(patternTranslation, numbers);
+            if (filled == null)
+            {
+                // 槽位数和数字个数不一致 = 语言包坏了（t 里 # 的个数必须等于骨架占位符数）。
+                // 只 log 不抛（红线 6），并且按未命中处理 —— 绝不能把带 # 的半成品显示出去。
+                Log.Warn("pattern: fill-back mismatch, skeleton=\"" + Clip(skeleton) + "\", numbers=" + numbers.Length
+                         + "（译文里 # 的个数应与骨架占位符数相等）");
+                return null;
+            }
+
+            // 样本里记「原文」（不是骨架）：distinct 的口径保持「不同原文」，日志里也看得懂是谁被骨架救的
+            RecordHit(patch, normalized, filled, KeyLevel.Pattern);
+            return filled;
+        }
+
+        /// <summary>
         /// 只读探针（task-31 影子计数用）：问「这句在字典里有译文吗」，<b>不</b>替换任何东西。
         /// <para>
         /// 与 <see cref="Translate(string, string)"/> 的三条硬差别，都是为了不污染现有统计：
@@ -239,6 +297,10 @@ namespace UI18n.Runtime
         /// <item>不检查 <c>Enabled</c>（影子只在 Enabled 且 ShadowStyleDraw 都成立时才会被调用）。</item>
         /// </list>
         /// 成本 = 归一化 + FNV-1a + 一次桶查找（未命中不分配；已归一时 Normalize 返回原引用）。
+        /// </para>
+        /// <para>
+        /// 只查<b>精确</b>通道，<b>故意不走</b>骨架通道（v1.3）：影子实验测的是「精确字典还漏什么」，
+        /// 混进骨架会让「缺口条数」在骨架包上线前后不可比；何况影子开关（<c>ShadowStyleDraw</c>）已归档。
         /// </para>
         /// </summary>
         internal static bool Peek(string source, out string translation)
@@ -399,6 +461,8 @@ namespace UI18n.Runtime
                     return "site";
                 case KeyLevel.Global:
                     return "global";
+                case KeyLevel.Pattern:
+                    return "pattern";
                 default:
                     return "miss";
             }

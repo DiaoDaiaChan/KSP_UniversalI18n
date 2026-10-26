@@ -4,7 +4,8 @@
 > `s` 以 `#` 开头的行 **22**（插入守卫拒绝的键行，故意保留，见 §9.2.1），契约校验 0 问题
 > （Lead 的 audit_packs + 本侧加严探针）。
 > 本文件只记录"怎么跑、怎么算、哪些是已知边界"，细节见 reports/translation-<ts>.json。
-> §1–§10 是 41 包（translate.py）的口径；**§11 是 IL / 捕获候选流水线（translate_il.py）**，两条流水线产物不同、G6 口径暂时不同（见 §11.5）。
+> §1–§10 是 41 包（translate.py）的口径；**§11 是 IL / 捕获候选流水线（translate_il.py）**，两条流水线产物不同、G6 口径暂时不同（见 §11.5）；
+> §12 是 task-32 捕获摄入，**§13 是 task-46 骨架（pattern）通道 + 捕获内容播种**。
 
 ## 1. 调用范式（唯一正确姿势）
 
@@ -537,3 +538,124 @@ x3 5 / 1 / 1 / 1；x4 231 / 84 / 195 / 195。**x1（补 `ScreenMessages.PostScre
 5. **静态采集天花板 5/8**：枚举成员名、运行时拼接、特性载荷三类原理不可达（报告 §13），v1.1 主数据源必须是运行时捕获，IL 扫描降级为离线辅助。
 6. **基线漂移**：Principia `ksp_plugin_adapter.dll` 在 2026-10-23 13:11 更新过，今天重跑 ilstrings 得 2,286 行（历史产物 2,285 行保持不动）。
 7. **未 commit、未跑 packindex**：按 Lead 要求等统一跑（新产物 `packs/il-translatable.jsonl` 与 `packs/capture-candidates.jsonl` 一旦入包索引会改变 `packs/index.json` 的 totalRows/totalBytes）。
+
+## 13. 骨架（pattern）通道 + 捕获内容播种（task-46）
+
+相机捕获里绝大多数重复上屏文本是**带数字的模板**（`Aero: FAR | RH preset: 12 %`、`Mass Flow: 3.2 ton/s`）：
+一条条实例翻译会让字典爆炸且永远追不上数字变化。task-46 加第二条通道：翻**骨架**（数字段换成 `#`），
+运行时 `TextSkeleton.TryBuild` → `DictPack.TryGetPattern(hash(骨架), 骨架)` → `TextSkeleton.FillBack` 填回数字。
+本文件记录这条通道的契约、138 条数字与踩过的坑。
+
+### 13.1 改了什么文件
+
+| 文件 | 变更 | 说明 |
+|---|---|---|
+| `tools/i18n_tools/translate_il.py` | 修改（**+344 / −34 行，净 +310**） | `pattern` 桶（别名 `skeleton`）、第 9 道门禁 G9、骨架归一、`p:1` 落库、批上限 60、`PATTERN_PROMPT`；`write_packs(merge=)` + `--merge`/`--no-prune`；`prefilter(override_keys=)` 人工覆盖豁免 |
+| `packs/overrides.jsonl` | **4 → 283 行**（1,055 → 47,338 B） | candidate/rescue 234 条 + pattern 45 条 + 原有 4 条；是"无密钥也能出中文"的人工通道 |
+| `reports/overrides_map.py` | 新增（provenance） | 283 条人工译文的**唯一来源**；键是 ASCII anchor（先精确 `normalize(s)` 再唯一子串），避免逐字节重打含 U+2206/尾空格/真实换行的原文 |
+| `reports/build_overrides.py` | 新增（provenance） | 译文表 + `packs/capture-candidates.jsonl`（缺则退回 v3）→ `packs/overrides.jsonl`（幂等；手写 4 行原样保留，其余全部重算） |
+| `reports/coverage_overrides.py` | 新增（provenance） | 覆盖度核算（§13.2 的数字由它产出） |
+
+### 13.2 实测数字
+
+**自测**：`python -m i18n_tools.translate_il --selftest` = **143 项全绿**（108 → 125 → 130 → 131 → 139 → 143：
+pattern/G9 17 条 + 骨架归一 6 条 + merge/未产出包保护 8 条 + 人工覆盖豁免 4 条）。
+
+**全量 dry-run（`--source capture --capture packs/capture-candidates.jsonl --offline --dry-run`；本机无 LLM 密钥，桩响应）**：
+
+```
+[il] 候选 1206 行（来自 1 个文件）
+[il] 去重 1206 组；跨 mod 合并 78 组；同 h 原文变体 0 组
+[il] 人工覆盖 packs/overrides.jsonl 283 条（冲突 0 / 坏行 0）
+[il] 跳过 103 组：{'no-words': 80, 'no-letters': 23}
+[il] 送翻 1103 组 / 75 批
+[il] 九门禁：{'G1': 0, 'G2': 0, 'G3': 0, 'G4': 0, 'G5': 0, 'G6': 0, 'G7': 0, 'G8': 0, 'G9': 0}
+[il] 写盘 51 个文件 / 1103 行（dry-run，未写）
+[il] 分桶统计：candidate 684 条：ok 450 / override 234 ； pattern 419 条：ok 374 / override 45
+[il] 人工覆盖 283 条：应用 279 / 被拒 0
+```
+
+- 报告 JSON（`translation-*.json`）：`overrides_total=283` / `overrides_applied=279` / `override_rejected=[]` /
+  `il_conflict=[]` / `input_conflicts=[]` / `existing_h_skipped=0` / `runtime_reachable=True`。
+- **`ok 450 / 374` 全部是 offline 桩响应，不是质量指标**；本轮可信数字只有 override 的 **279 应用 / 0 拒绝 / 0 冲突**。
+- 4 条未命中的 overrides 是手写 3 条 TUFX + `Research & Development → 研发`（针对 IL 语料，不在 capture 档），不是坏数据。
+
+**人工覆盖 vs 启发式预筛的冲突（本轮真踩到并修了）**：`prefilter` 在 override 之前跑，把 8 条有译文的行挡住
+（`Cm (r,g,b):` / `Cd (r,g,b):` / `Cl (r,g,b):` / `L_D (r,g,b):` / `GPU ms` / `SAS: OFF` /
+`MODULAR FLIGHT PANEL #` / `# of Engines:`）——其中 4 条是 lead 点名必须覆盖的，等于白写。
+修法：`prefilter(group, existing=None, override_keys=None)` 在「已是中文」之后加一条豁免
+`group["h"] in override_keys and not is_key_like(stripped)`，`load_overrides` 提前到 `prefilter` 之前，
+`override_hashes = {hash_text(key) for key in overrides}` 传进去；`#autoLOC_500` 这类紧凑键引用仍然判 `key-ref`。
+修完 `应用 271 → 279`、跳过 `111 → 103`。**教训：人手写的译文是最高优先级信号，任何启发式预筛都不能越过它。**
+
+**覆盖度**（`python reports/coverage_overrides.py`，输入为 task-45 已落地的 `packs/capture-candidates.jsonl`；
+老 `_scratch/capture-candidates-v3.jsonl` 仅作 fallback）：
+
+| 通道 | 输入 | 覆盖 | 备注 |
+|---|---|---|---|
+| candidate | 714 行 / 714 唯一 | **234 行（32.8%）** | 266 条干净保留里全译 + 从「单 token 误杀」里救回（Pathfinding / Mass / Diameter 一类真 UI 标签） |
+| 骨架（pattern） | 492 行 / 492 唯一骨架 | **45 行（9.1%）/ 196,211 会话次数（3.2%，总 6,154,687）** | 覆盖 45/492 唯一骨架 |
+
+- candidate 分类（行=唯一，task-45 档）：keep 266 / single-token 171 / typename 146 / material 96 / kerbal-name 12 / station 10 / loading 5 / mm 5 / kopernicus 3。
+- 未覆盖骨架 top：`<color=#FFE000><b># ms</b></color>` / `ModuleManager: # patches applied (# %) :AFTER[…]` /
+  `<color=#b4d455>#t</color>` / `# # m/s` / `Total Run Time: #s/#s` / `SSC - Santiago VHF-Band: # dBi …` ——
+  **都是纯数字 HUD 与日志行，按设计不翻**，不是漏。
+
+**端到端 smoke（无真密钥，全程 override 命中，`calls == 0`）**：fixture 19 行（10 candidate + 9 pattern，其中 1 条无数字段）
+→ `跳过 1 组：{'pattern-no-slots': 1}` / `送翻 18 组 / 7 批` / `调用 0 次` / `tokens 0 + 0` / `写盘 6 个文件 / 18 行` /
+`candidate 10 条：override 10` + `pattern 8 条：override 8` / `人工覆盖 283 条：应用 18 / 被拒 0` / `九门禁：全 0`。
+
+### 13.3 契约要点（改动前必须先读）
+
+1. **pattern 行的 `s` 必须是骨架、`h` 必须是骨架的哈希。** 运行时是「实时文本 → TryBuild → 按骨架哈希查表 →
+   `entry.Source` 与骨架 Ordinal 比对 → FillBack」，所以落库骨架之外的任何形态（带真实数字的实例、或者 h 按实例算）
+   **一条都查不到**。归一发生在 `load_candidates`：`bucket == pattern` 时 `text = skeleton(text)`。
+   无数字段 / >8 槽位的 pattern 行 → `prefilter` 返回 `pattern-no-slots` 跳过（运行时永远不会算成骨架，写进去是死行）。
+2. `p:1` 是硬契约（Core 侧已实现，见 `JsonLineReader` 的 `p` 字段、`DictEntry.IsPattern`、
+   `DictPack._patternIndex` / `TryGetPattern`、`KeyLevel.Pattern`）：`p` 行只进骨架索引，`TryGet` 永远不命中骨架行，
+   `TryGetPattern` 也永远不命中精确行。非 pattern 行**不写** `p`（`ALLOWED_FIELDS` 里 `p` 是可选字段）。
+3. **G9（第 9 道门禁）**：还原后译文里 `#` 的个数必须等于原文骨架的 `#` 个数；**TMP 标签内部的 `#` 不算占位符**
+   （`<color=#FF00AA># ms</color>` 只需要填 1 个数字）。override 通道同样走这条（`override_gate(..., pattern=True)`
+   → `skeleton-slot`），所以人工译文表在**构建期**就挡住漏 `#` 的错译（本轮真的挡住 4 条：Saturn IB Launch Stand、
+   Propellant GSE OK: 等因富文本多重集不等被拒）。
+4. **批上限 60**（`PATTERN_BATCH_CAP`）而不是按字符长度算：骨架文本极短，按字符算会一次塞几百条，
+   模型漏 `#` 的概率随条数线性上升。
+5. `PATTERN_PROMPT` 追加进 system prompt（不改 `translate.py`，因为它属于流水线而非 prompt 资产）：
+   「`#` 是数字占位符」「个数必须逐个相同」「绝不换成具体数字 / 合并 / 新造」。
+6. `bucket` 别名：`skeleton` ≡ `pattern`，`--only-bucket pattern` 可单跑。
+7. **出包必须 `--merge`（必要时再加 `--no-prune`）。** `write_packs(..., merge=False)` 是「整文件覆盖」语义：
+   本次没产出的行会从 `packs/zh-cn/<mod>.il.jsonl` 里**消失**；而 `main` 的 prune 默认值在「整跑（无 `--limit` / `--mods` / `--only-bucket`）」时是 True，
+   会 unlink 本次没产出的 `<mod>.il.jsonl`。本机无 LLM 密钥时尤其危险：只有 overrides 覆盖的 279 条能出译文，
+   整跑会把 48 个既有 IL 包（11,089 行里的一部分）清空或删除。
+   `--merge` 的实现：先读回既有行（`h` → row，读不动的计 `existing_bad` 后跳过、不抛）→ 本次行按 `h` 覆盖/追加 →
+   按 `h` 升序整文件写回；summary 增 `merged`（既有保留行数）/ `added`（本次新增行数）/ `existing_bad`，`files` 记写回后的总行数。
+   实测（`_scratch/t46-merge`，pre-seed 1 行旧 h + 1 个不该被删的包）：
+   `[il] merge：既有保留 18 行 / 本次新增 1 行 / 既有坏行 0 条`，目标包最终 2 行且含旧行、`h` 升序，未产出的包未被删。
+
+### 13.4 交接要求（给 task-45 / capture_ingest）—— 已落地，留作约束
+
+- **骨架行的 bucket 必须标成 `pattern`（或 `skeleton`）**。task-45 已按此产出（1,206 行 = candidate 714 / pattern 492）。
+  若标 `template`：没有 G9 门禁、不写 `p:1`、且按具体实例落库（运行时永远查不到）。
+  实测：同一个 fixture 标 `template` 时 8 条全部打到 API 且 `failed 8 / G1 8`；改成 `pattern` 后 `override 8 / 调用 0`。
+- `s` **具体实例或已骨化都接受**（`load_candidates` 两种形态都归一）：
+  实例 → `skeleton(text)` 现算骨架并据此算 `h`；已骨化（含 `#` 但 `skeleton()` 返回 None）→ 原样使用。
+  task-45 现在给的是**已骨化**形态（`<color=#FFE000><b># ms</b></color>`），端到端 smoke 19 行全部按预期命中。
+
+### 13.5 已知限制
+
+1. **骨架通道覆盖只有 9.1% 行 / 3.2% 会话次数**：剩余全是纯数字 HUD 与日志（§13.2），按设计不翻；
+   这条通道的收益在「会话次数」而非「行数」，别拿行数当 KPI。
+2. **candidate 剩余 480 行不翻**（714 − 234）：material 96（材质名 + 着色器路径）、typename 146（程序集类型名，不是 UI 文案）、
+   single-token 171（真标识符 `HueVsSatCurve` / `{ALT:MODE}`）、kerbal-name 12（人名）、station 10（测控站呼号）、
+   loading/kopernicus/mm 13（日志前缀）。
+3. 明确不译、留 pending：`Zzz control alpha/beta`（测试串）、`NaN °`、`Toolbar`、`RDR {ALT:AGL:DIST}`、
+   `Sol-Visuals / Sol-Shadows`（mod 名，无公认中文译名）。
+4. **overrides 无法从译文表反向校验**：改了 `packs/overrides.jsonl` 而不改 `reports/overrides_map.py`，下次重跑
+   `build_overrides.py` 会把改动冲掉（脚本口径：手写 4 行 + 译文表全量重算）。要改译文就改表。
+5. `pattern` 行跨 mod 归并沿用 `dedupe` 规则（同骨架只落一行，`mod` 取字典序最小），所以一条骨架只出现在一个
+   `<mod>.il.jsonl` 里 —— 这是 Core 的 h 全库唯一约束，不是丢数据。
+6. 本轮未 commit；`packs/index.json` 未重跑（新增 `p:1` 行会改变 totalRows / pattern 计数）。
+7. **C 阶段真出包（`--source auto` 整跑 + 写 `packs/zh-cn/`）不由本任务执行**：本机无 LLM 密钥，跑 = 只有 279 条 override 出中文、
+   其余全部走失败分支不进 entries，一旦不加 `--merge` 就会覆盖掉既有 IL 包。出包命令必须是
+   `python -m i18n_tools.translate_il --merge --no-prune ...`（本轮的 dry-run 一律 `--dry-run`，未写过 `packs/zh-cn/`）。
+

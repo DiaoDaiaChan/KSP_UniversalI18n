@@ -17,9 +17,10 @@ namespace UI18n.Core.Dict
     /// 裸 <c>null</c> 一律解析成「该字段缺失」（不写进字段表），于是 <c>"t": null</c> 与 <c>t</c> 缺失
     /// 完全等价 —— 整行按坏行跳过并计入 ParseErrors，<b>绝不会</b>把字符串 <c>"null"</c> 当成译文
     /// （否则它还能通过 04 §6.3 的非空门禁，最后把 "null" 显示给玩家）。
-    /// 裸 <c>true</c> / <c>false</c> 在当前 schema（h/n/s/t/mod/ctx，全是字符串或整数）里没有任何合法位置，
-    /// 因此出现即整行非法 —— 同样计 ParseErrors，不会退化成字符串 "true"。
-    /// 将来若 schema 真要加布尔字段，必须在这里显式转换，而不是让字面量漏成字符串。
+    /// 裸 <c>true</c> / <c>false</c> 在 schema（h/n/s/t/mod/ctx/p）里只有一个合法位置：<c>p</c>
+    /// （v1.3 骨架行标记，见 <see cref="IsPatternFlag"/>）。它在 <see cref="ParseObject"/> 里被<b>显式转换</b>成
+    /// <c>"true"</c> / <c>"false"</c> 两个字符串，绝不让字面量漏成字符串。其它键上出现 <c>true</c> / <c>false</c>
+    /// 仍按整行非法处理（计 ParseErrors）。将来若还要加布尔字段，照 <c>p</c> 的写法显式转换。
     /// </para>
     /// <para>
     /// 结果三态：<see cref="Status.Ok"/> / <see cref="Status.Blank"/>（空行、null 行，静默跳过）/
@@ -44,6 +45,9 @@ namespace UI18n.Core.Dict
         }
 
         private const char Bom = '\uFEFF';
+
+        /// <summary>骨架行标记字段名（v1.3 pattern 通道）：<c>{"p":1}</c>。</summary>
+        private const string PatternKey = "p";
 
         /// <summary>
         /// 解析一行。返回 <see cref="Status.Ok"/> 时 <paramref name="entry"/> 非 null；
@@ -110,9 +114,29 @@ namespace UI18n.Core.Dict
                 Get(map, "s"),
                 translation,
                 Get(map, "mod"),
-                Get(map, "ctx"));
+                Get(map, "ctx"),
+                IsPatternFlag(Get(map, PatternKey)));
 
             return Status.Ok;
+        }
+
+        /// <summary>
+        /// <c>p</c> 字段值判定（v1.3）：接受 <c>1</c> 或 <c>true</c>（大小写不敏感）；缺省、空串、其它值都是 false。
+        /// 非法值刻意<b>不当坏行</b>：「不是骨架行」是安全退化（那条行会进精确索引），没必要为它丢一整行。
+        /// </summary>
+        private static bool IsPatternFlag(string raw)
+        {
+            if (string.IsNullOrEmpty(raw))
+            {
+                return false;
+            }
+
+            if (raw.Length == 1 && raw[0] == '1')
+            {
+                return true;
+            }
+
+            return string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string Get(Dictionary<string, string> map, string key)
@@ -252,14 +276,20 @@ namespace UI18n.Core.Dict
                         return false;
                     }
 
-                    if (literal != JsonLiteral.Null)
+                    if (literal == JsonLiteral.Null)
                     {
-                        // true / false：当前 schema 里没有任何布尔字段（见类注释），
-                        // 出现它们是格式错误，整行按坏行处理（计 ParseErrors），绝不把 "true" 当译文。
+                        value = null;                   // 裸 null = 该字段「缺失」，不写进 map
+                    }
+                    else if (string.Equals(key, PatternKey, StringComparison.Ordinal))
+                    {
+                        // v1.3：schema 里唯一的布尔字段 p（骨架行标记）。显式转换，绝不漏成字符串。
+                        value = literal == JsonLiteral.True ? "true" : "false";
+                    }
+                    else
+                    {
+                        // 其它键上的 true / false：schema 里没有它们的合法位置，整行按坏行处理（计 ParseErrors）。
                         return false;
                     }
-
-                    value = null;                       // 裸 null = 该字段「缺失」，不写进 map
                 }
 
                 if (value != null)

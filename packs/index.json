@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "lang": "zh-cn",
-  "generatedAt": "2026-10-26T01:25:26Z",
-  "totalRows": 11089,
-  "totalBytes": 3685087,
-  "packCount": 89,
+  "generatedAt": "2026-10-26T04:35:38Z",
+  "totalRows": 11561,
+  "totalBytes": 3794336,
+  "packCount": 96,
   "packs": [
     {
       "mod": "000_TexturesUnlimited",
@@ -41,10 +41,10 @@
     {
       "mod": "Assembly-CSharp",
       "file": "zh-cn/Assembly-CSharp.il.jsonl",
-      "rows": 180,
-      "bytes": 36939,
-      "sha256": "3dd54ecf9c22e45a987a3e823774b448a9499bc5bbd25111660e47efb41490a1",
-      "keepRows": 1
+      "rows": 295,
+      "bytes": 52349,
+      "sha256": "c9fe2ee401d8af5bb349cef455f15f4f91fe7d24f89a8b4f9cedf322c2c92419",
+      "keepRows": 3
     },
     {
       "mod": "AtmosphereAutopilot",
@@ -71,6 +71,14 @@
       "keepRows": 0
     },
     {
+      "mod": "B9PartSwitch",
+      "file": "zh-cn/B9PartSwitch.il.jsonl",
+      "rows": 4,
+      "bytes": 348,
+      "sha256": "ac7cf6d6a25788c5fb68996ac34757d27b83ec21d5caeceb6d9ab15aca228569",
+      "keepRows": 0
+    },
+    {
       "mod": "B9_Aerospace_ProceduralWings",
       "file": "zh-cn/B9_Aerospace_ProceduralWings.jsonl",
       "rows": 4,
@@ -81,9 +89,9 @@
     {
       "mod": "BurstPQS",
       "file": "zh-cn/BurstPQS.il.jsonl",
-      "rows": 1,
-      "bytes": 121,
-      "sha256": "916d0679b89cf5912a29f9f419bda0606d72edd7631cdc549f212dca3645283e",
+      "rows": 15,
+      "bytes": 1954,
+      "sha256": "1535f1206e567014e188a179c49a9823262a7c7433ce5a0793e18ae9d19b9947",
       "keepRows": 0
     },
     {
@@ -135,6 +143,14 @@
       "keepRows": 0
     },
     {
+      "mod": "EVEManager",
+      "file": "zh-cn/EVEManager.il.jsonl",
+      "rows": 1,
+      "bytes": 136,
+      "sha256": "4dd78718fad8a4c46c0707cbc8445af8eb1f970b56ed77ae1723d1af0a67896b",
+      "keepRows": 0
+    },
+    {
       "mod": "EditorExtensionsRedux",
       "file": "zh-cn/EditorExtensionsRedux.il.jsonl",
       "rows": 6,
@@ -153,9 +169,9 @@
     {
       "mod": "FerramAerospaceResearch",
       "file": "zh-cn/FerramAerospaceResearch.il.jsonl",
-      "rows": 22,
-      "bytes": 3816,
-      "sha256": "3b35254fda285eef2077691a5f2a836425ef895b160452d944156d18a0e0d512",
+      "rows": 43,
+      "bytes": 6771,
+      "sha256": "b26eea38dbe296c8daef9a3dc6b9c7e68ec5c7d1f2e0e8ff22d84da8b6b8a198",
       "keepRows": 0
     },
     {
@@ -201,9 +217,9 @@
     {
       "mod": "KSPCommunityFixes",
       "file": "zh-cn/KSPCommunityFixes.il.jsonl",
-      "rows": 10,
-      "bytes": 1527,
-      "sha256": "4a10bb2cce0e3eae0cfeec77433155e332320993288e80bbc0be024837a0e630",
+      "rows": 12,
+      "bytes": 1787,
+      "sha256": "0c0be49dc556c79b00ec7deaa369ee6fc0272927640ef967276a13f287c693e9",
       "keepRows": 1
     },
     {
@@ -215,11 +231,19 @@
       "keepRows": 0
     },
     {
+      "mod": "KSPPerformanceProfiler",
+      "file": "zh-cn/KSPPerformanceProfiler.il.jsonl",
+      "rows": 28,
+      "bytes": 8413,
+      "sha256": "8f5178aabbab21e7aadc8ee9e0b49b3d478fd47dcf984acc4879e9dbc3c9744c",
+      "keepRows": 1
+    },
+    {
       "mod": "KSPTextureLoader",
       "file": "zh-cn/KSPTextureLoader.il.jsonl",
-      "rows": 3,
-      "bytes": 385,
-      "sha256": "5e6b0d0ca52e450f1fcbe16dc002ee34cbe0ed7b1329fb32bf4032720feae5ef",
+      "rows": 27,
+      "bytes": 3080,
+      "sha256": "aa8460de31318f1c35bbb907611ce5f8ac9320afbe28e9f2e4040f2c1ed07c61",
       "keepRows": 0
     },
     {
@@ -263,6 +287,14 @@
       "keepRows": 0
     },
     {
+      "mod": "Kerbalism",
+      "file": "zh-cn/Kerbalism.il.jsonl",
+      "rows": 1,
+      "bytes": 102,
+      "sha256": "218767788a9952ac28c397f9f2716ca8c394101196d1be610849971a64d06e11",
+      "keepRows": 0
+    },
+    {
       "mod": "KerbalismConfig",
       "file": "zh-cn/KerbalismConfig.jsonl",
       "rows": 131,
@@ -289,17 +321,17 @@
     {
       "mod": "LunarTransferPlanner",
       "file": "zh-cn/LunarTransferPlanner.il.jsonl",
-      "rows": 10,
-      "bytes": 1628,
-      "sha256": "7459007dffd7998a63035cea73cc6ce9c3e0cc9578576e0168beea3baf403600",
+      "rows": 12,
+      "bytes": 1832,
+      "sha256": "60e381ee7b36b0c4f070e54e51f494b4620857ddb7261b1e319baef056c187c1",
       "keepRows": 0
     },
     {
       "mod": "MechJeb2",
       "file": "zh-cn/MechJeb2.il.jsonl",
-      "rows": 31,
-      "bytes": 3414,
-      "sha256": "d4c82a182aec6bf55a961b86d97bfd039ee3ee6b2c5fdde114c53da8022eef51",
+      "rows": 147,
+      "bytes": 54829,
+      "sha256": "698636d04f3cfc772606a6fabae0e509cddfc35c53d3d0b8cd3aa428668fd325",
       "keepRows": 0
     },
     {
@@ -308,6 +340,14 @@
       "rows": 6,
       "bytes": 880,
       "sha256": "84e82d4aa69aa360939e6ccc1d2793d1b0466b3b9cedbe2058287a4a2b669b1b",
+      "keepRows": 0
+    },
+    {
+      "mod": "ModularFlightPanel",
+      "file": "zh-cn/ModularFlightPanel.il.jsonl",
+      "rows": 7,
+      "bytes": 841,
+      "sha256": "2677560a646d6512f4bf4af05b5a8c87f12d7d3100be1f1399a6b641169235d5",
       "keepRows": 0
     },
     {
@@ -465,9 +505,9 @@
     {
       "mod": "RP0",
       "file": "zh-cn/RP0.il.jsonl",
-      "rows": 244,
-      "bytes": 41669,
-      "sha256": "c9632969bd4ee0d1d3326cebfa7cb8e7ff13fb483d55d7e8cb6fcbf46908689f",
+      "rows": 246,
+      "bytes": 41836,
+      "sha256": "683aa57d78009163d30ce8dd1d7387ad80b0745901f6f2899af2bb60d5375b7b",
       "keepRows": 0
     },
     {
@@ -489,9 +529,9 @@
     {
       "mod": "RealAntennas",
       "file": "zh-cn/RealAntennas.il.jsonl",
-      "rows": 18,
-      "bytes": 2371,
-      "sha256": "19b07818b3ab1ff172c6e2bcfbc2a6cdbcd4aa9f306f46baf3c5ca9a84faed6b",
+      "rows": 26,
+      "bytes": 3312,
+      "sha256": "6192a65e231bcd0aacae38de6ade9fa437c9bb4fd0d104cd6b5a9ebb268bbebe",
       "keepRows": 0
     },
     {
@@ -521,9 +561,9 @@
     {
       "mod": "RealFuels",
       "file": "zh-cn/RealFuels.il.jsonl",
-      "rows": 28,
-      "bytes": 3607,
-      "sha256": "7b585e54c8307e3b5c2aa0f0c83d744460962ada5ae42e94a0f8672235c68cc6",
+      "rows": 43,
+      "bytes": 5383,
+      "sha256": "9152ce5b97bf4dc0b6bf8b1c9e4d3d2ad56da0a5e315f4c7dfb2fdd539805414",
       "keepRows": 0
     },
     {
@@ -549,6 +589,14 @@
       "bytes": 750177,
       "sha256": "db435d40b8cf964c7a44260d2f28912535a1dd8d76e308a448f8b8d301e3d3a6",
       "keepRows": 35
+    },
+    {
+      "mod": "RealisticLaunchVisuals",
+      "file": "zh-cn/RealisticLaunchVisuals.il.jsonl",
+      "rows": 27,
+      "bytes": 8361,
+      "sha256": "a944f6a6a4a594332a0cc7e3645b8af30a33a4f867a4c37baaf91714f7901f75",
+      "keepRows": 0
     },
     {
       "mod": "Renamer",
@@ -609,10 +657,10 @@
     {
       "mod": "TUFX",
       "file": "zh-cn/TUFX.il.jsonl",
-      "rows": 9,
-      "bytes": 2134,
-      "sha256": "fe341b73b173cf3410a9f503004732a2afbf16ca7befb734b20e8d42cab1f083",
-      "keepRows": 0
+      "rows": 51,
+      "bytes": 10184,
+      "sha256": "8f88396915a153b0b0cbdfc0323ee2594e133d66a1102e73c5158242243d0819",
+      "keepRows": 21
     },
     {
       "mod": "Telecom",
@@ -641,9 +689,9 @@
     {
       "mod": "TextureReplacer",
       "file": "zh-cn/TextureReplacer.il.jsonl",
-      "rows": 5,
-      "bytes": 668,
-      "sha256": "4c86df593c7f8bdb48fc4cadd92fe4f116a21ac7d77d3205157ebedc5fa2d857",
+      "rows": 6,
+      "bytes": 752,
+      "sha256": "b92a6572febe7c141e91f3d58c71ea242fc3b88039d70579346e3424ae2c6275",
       "keepRows": 0
     },
     {
@@ -679,11 +727,19 @@
       "keepRows": 10
     },
     {
+      "mod": "UI18n-Unattributed",
+      "file": "zh-cn/UI18n-Unattributed.il.jsonl",
+      "rows": 31,
+      "bytes": 3582,
+      "sha256": "d15d99a5877e9dcd5c8067edf9cf9542a5dcc4d9ae498c21b8460e0ff94f05c3",
+      "keepRows": 1
+    },
+    {
       "mod": "Utils",
       "file": "zh-cn/Utils.il.jsonl",
-      "rows": 1,
-      "bytes": 98,
-      "sha256": "0fc0f2824f0e0130d88ebc398180f042e1cb32dc3ca8c364525effcef02785cc",
+      "rows": 5,
+      "bytes": 489,
+      "sha256": "c7c521c5fde7831f188b654c1f6ce53f9cce47d7409f1aecd72b5f557ba9cc2d",
       "keepRows": 0
     },
     {
@@ -713,10 +769,10 @@
     {
       "mod": "ksp_plugin_adapter",
       "file": "zh-cn/ksp_plugin_adapter.il.jsonl",
-      "rows": 19,
-      "bytes": 3374,
-      "sha256": "c51880dab45958983ca742fff0981b82a0ed395b129b3f52cf66dfb307d89edc",
-      "keepRows": 0
+      "rows": 26,
+      "bytes": 4659,
+      "sha256": "4f160e272be46932d50f966df98c8f32a95f10be3fde968eaed95f2f2a30e2ba",
+      "keepRows": 1
     }
   ]
 }

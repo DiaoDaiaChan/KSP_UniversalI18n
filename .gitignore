@@ -32,6 +32,8 @@ reports/sample-*.jsonl
 # IL 流水线的机械副产物（可由 translate_il.py 重跑再生，15 个文件 831 KB）
 reports/il-provenance-*.jsonl
 reports/il-sample*.jsonl
+# 每次跑 translate_il 都会落一份的统计报告（可由命令重跑再生）
+reports/translation-*.json
 
 # 真实会话的缺失命中捕获（玩家数据，只留在本机 PluginData/UI18n）
 PluginData/

@@ -25,6 +25,11 @@ namespace UI18n.Core.Tests
             var options = CaptureOptions.Default;
             options.MaxEntries = maxEntries;
             options.MaxTemplateEntries = maxTemplateEntries;
+
+            // 本文件只管「模板档额度」这一层：caller 额度（v1.3 新增，默认 60）先关掉，
+            // 否则 4,000 条噪声会先被 caller 额度挡住，测不到模板档的行为。
+            // caller 额度自己的用例在 CaptureCallerQuotaTests.cs。
+            options.MaxPerCaller = 0;
             return new CaptureStore(options);
         }
 

@@ -41,6 +41,7 @@ namespace UI18n.Core.Capture
         private long _filtered;
         private long _overflow;
         private long _templateSkipped;
+        private long _callerSkipped;
         private int _candidates;
         private int _templates;
         private int _never;
@@ -141,6 +142,15 @@ namespace UI18n.Core.Capture
         public long Overflow
         {
             get { return _overflow; }
+        }
+
+        /// <summary>
+        /// 因为单个调用者配额（<see cref="CaptureOptions.MaxPerCaller"/>）用尽而被丢弃的条数（v1.3）。
+        /// 取不到调用栈的记录（<see cref="CaptureCaller.Unknown"/> / 空串）<b>豁免</b>，永远不会记到这里。
+        /// </summary>
+        public long CallerSkipped
+        {
+            get { return _callerSkipped; }
         }
 
         /// <summary>是否已触顶（触顶后新原文一律丢弃，只计 <see cref="Overflow"/>）。</summary>
@@ -304,6 +314,11 @@ namespace UI18n.Core.Capture
             if (_templateSkipped > 0)
             {
                 sb.Append(", tmplSkipped=").Append(_templateSkipped.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (_callerSkipped > 0)
+            {
+                sb.Append(", callerSkipped=").Append(_callerSkipped.ToString(CultureInfo.InvariantCulture));
             }
 
             if (_overflow > 0)
@@ -476,6 +491,20 @@ namespace UI18n.Core.Capture
 
             string callerValue = captureCaller ? CaptureCaller.FromStack(2) : (caller ?? string.Empty);
             string seen = firstSeen ?? DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
+
+            // v1.3：每个 caller 的配额（实测 ProfilerUI.DrawPluginsContent 独占 130 条、LoadingScreen 独占 3,028 条）。
+            // 取不到栈的 caller 豁免 —— 那些记录本来就少，而且丢掉的是唯一线索。
+            int perCallerCap = _options.MaxPerCaller;
+            if (perCallerCap > 0 && !IsUnknownCaller(callerValue))
+            {
+                int fromCaller;
+                if (_callers.TryGetValue(callerValue, out fromCaller) && fromCaller >= perCallerCap)
+                {
+                    _index[hash] = IndexFiltered;          // 与别的丢弃同口径：不建记录、重复 miss 只计 filtered
+                    _callerSkipped++;
+                    return false;
+                }
+            }
 
             CaptureRecord record = new CaptureRecord(hash, source, normalized, sink, callerValue, seen);
             _index[hash] = _records.Count;

@@ -468,6 +468,46 @@ def _section_il(entries: list, cfg_h: set, il_h: set, pool_h: set, il_path: str)
     return L
 
 
+def _count_pattern_rows(packs_dir: str) -> int:
+    """数语言包里带 p（骨架行，v1.3 pattern 通道）的条数。目录不存在返回 -1（＝未知）。"""
+    if not os.path.isdir(packs_dir):
+        return -1
+    total = 0
+    for name in sorted(os.listdir(packs_dir)):
+        if not name.endswith(".jsonl"):
+            continue
+        try:
+            with open(os.path.join(packs_dir, name), "r", encoding="utf-8") as handle:
+                for line in handle:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        row = json.loads(line)
+                    except ValueError:
+                        continue
+                    flag = row.get("p")
+                    if flag is True or flag == 1 or flag == "1" or flag == "true":
+                        total += 1
+        except OSError:
+            continue
+    return total
+
+
+UNATTRIBUTED_LABELS = ("unknown", "UI18n-Unattributed")
+
+
+def _mods_of(row) -> list:
+    """产物行上的 mods 列表（v2 起是 dll 名；1.3 起查不出宿主 mod 时记 UI18n-Unattributed）。"""
+    return [m for m in (row.get("mods") or []) if isinstance(m, str)]
+
+
+def _is_unattributed(row) -> bool:
+    """整行的归属全是「查不出宿主 mod」。空列表也算（更老的产物可能连 mods 都没有）。"""
+    mods = _mods_of(row)
+    return not mods or all(m in UNATTRIBUTED_LABELS for m in mods)
+
+
 def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
                      il_cand_h: set) -> list:
     """coverage ③：运行时捕获通道现状。数据源 = packs/capture-candidates.jsonl。"""
@@ -488,12 +528,18 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
         for c in dict.fromkeys(seen):
             callers[c] += 1
     n_sessions = max((r.get("sessions") or 0) for r in cands)
-    n_unknown = sum(1 for r in cands if list(r.get("mods") or []) == ["unknown"])
+    n_unknown = sum(1 for r in cands if _is_unattributed(r))
     host_mods = set()
     for r in cands:
-        for m in (r.get("mods") or []):
-            if m != "unknown":
+        for m in _mods_of(r):
+            if m not in UNATTRIBUTED_LABELS:
                 host_mods.add(m)
+    n_pattern = bucket.get("pattern", 0)
+    n_pattern_inst = sum(int(r.get("count") or 1) for r in cands
+                         if r.get("bucket") == "pattern")
+    n_pattern_pack = _count_pattern_rows(os.path.join(os.path.dirname(capture_path), LANG))
+    no_mod_label = ("UI18n-Unattributed"
+                    if any("UI18n-Unattributed" in _mods_of(r) for r in cands) else "unknown")
     pack_hit = hs & (cfg_h | il_h)
     L.append("静态抽取（cfg / loc / DLL 字面量）只看得到\"写在文件里\"的串；代码里拼出来、"
              "运行时才成形的文本（" + _c("string.Format") + "、计数器、进度条）只能靠运行时抓："
@@ -507,8 +553,8 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
     top_callers = [c for c, _ in callers.most_common(8)]
     more = len(callers) - len(top_callers)
     L.append("当前候选清单：" + _n(len(cands)) + " 行（" + _c("candidate") + " "
-             + _n(bucket.get("candidate", 0)) + " / " + _c("template") + " "
-             + _n(bucket.get("template", 0)) + "），distinct " + _c("h") + " " + _n(len(hs))
+             + _n(bucket.get("candidate", 0)) + " / " + _c("pattern") + " "
+             + _n(n_pattern) + " 个数字骨架），distinct " + _c("h") + " " + _n(len(hs))
              + " 个，来自 " + _n(n_sessions) + " 个游戏会话，涉及 " + _n(len(callers))
              + " 个 caller（出现最多的 8 个：" + " / ".join(_c(c) for c in top_callers)
              + ("，其余 " + _n(more) + " 个略" if more > 0 else "") + "）。")
@@ -522,10 +568,14 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
                  + _c("unknown") + "；" + _c("callers") + " 里非 " + _c("unknown")
                  + " 的排前面、最多 5 个）。")
         L.append("")
-    L.append("- " + _c("template") + " 的 " + _n(bucket.get("template", 0)) + " 行按 "
-             + _c("reason") + " 拆：" + _c("counter") + " " + _n(reason.get("counter", 0)) + " / "
-             + _c("progress") + " " + _n(reason.get("progress", 0))
-             + "——带计数的进度/计数器串，每次渲染都可能不同，译了也匹配不上。")
+    L.append("- " + _c("template") + "（带数字的模板串）在 1.3 已**塌缩成骨架**：落盘的 "
+             + _c("template") + " 行数为 " + _n(bucket.get("template", 0)) + "，取而代之的是 "
+             + _n(n_pattern) + " 个 " + _c("pattern") + " 骨架行（"
+             + _c("skeleton.skeleton()") + " 把数字换成 " + _c("#") + "，行上带 " + _c("p")
+             + " 字段），覆盖 " + _n(n_pattern_inst) + " 条模板实例；运行期由 " + _c("TextSkeleton")
+             + " 做骨架查表 + 数字填回（" + _c("Mass Flow: 2.2 ton/s") + " → "
+             + _c("Mass Flow: # ton/s") + "）。原因：这类串每帧数字都不同，精确匹配永远不命中，"
+             "逐条翻译等于给每个可能数值都存一条。")
     n_cand = bucket.get("candidate", 0)
     n_cand_empty = sum(1 for r in cands
                        if r.get("bucket") == "candidate" and not r.get("reason"))
@@ -536,29 +586,32 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
         L.append("- " + _c("candidate") + " 的 " + _n(n_cand) + " 行里 " + _n(n_cand_empty)
                  + " 行 " + _c("reason") + " 为空，是真正值得人工看的候选。")
     if n_unknown == len(cands):
-        L.append("- " + _c("mods") + " 全部是 " + _c("unknown") + "（" + _n(n_unknown) + " / "
+        L.append("- " + _c("mods") + " 全部是 " + _c(no_mod_label) + "（" + _n(n_unknown) + " / "
                  + _n(len(cands)) + " 行）：这份清单的 caller 还是我们自己的补丁名（"
                  + _c("GUI.UnityEngine.GUI.Box_Patch1") + " 这种），"
-                 + _c("capture_ingest.infer_mods()") + " 按设计不从 sink / Unity 类型猜 mod，"
-                 "推不出就记 " + _c("unknown") + "。")
+                 + _c("capture_ingest.attrib_mod()") + " 按设计不从 sink / Unity 类型猜 mod，"
+                 "反查不出 dll 名就记 " + _c(no_mod_label) + "。")
     elif n_unknown:
         L.append("- " + _c("mods") + "：" + _n(len(cands) - n_unknown) + " / " + _n(len(cands))
-                 + " 行能反查到宿主 mod（" + _n(len(host_mods)) + " 个），其余 " + _n(n_unknown)
-                 + " 行仍是 " + _c("unknown") + "——它们的 caller 是我们自己的补丁名或 Unity 类型，"
-                 + _c("capture_ingest.infer_mods()") + " 不从 sink / Unity 类型猜 mod，"
-                 "推不出就记 " + _c("unknown") + "。")
+                 + " 行能反查到宿主 mod（" + _n(len(host_mods)) + " 个 dll 名），其余 "
+                 + _n(n_unknown) + " 行记 " + _c(no_mod_label) + "——它们的 caller 是我们自己的"
+                 "补丁名或 Unity 类型，" + _c("capture_ingest.attrib_mod()")
+                 + " 只按 caller 的宿主程序集名反查 dll，查不出就记 " + _c(no_mod_label) + "。")
     else:
-        L.append("- " + _c("mods") + " 全部有归属（没有 " + _c("unknown") + " 行）。")
+        L.append("- " + _c("mods") + " 全部有归属（没有 " + _c(no_mod_label) + " 行）。")
     L.append("")
     probes = sorted(r.get("n") for r in cands
                     if r.get("n") in ("Zzz control alpha", "Zzz control beta"))
     n_cand_unknown = sum(1 for r in cands
-                         if r.get("bucket") == "candidate"
-                         and list(r.get("mods") or []) == ["unknown"])
-    L.append("**这一轮不进包**：" + _c("template") + " 是模板串（见上），不译；" + _c("candidate")
-             + " 的 " + _n(n_cand) + " 条里 " + _n(n_cand - n_cand_unknown)
-             + " 条已经有了宿主 mod 归属、剩下 " + _n(n_cand_unknown)
-             + " 条还是 " + _c("unknown") + "，本轮只做分诊、不动包。")
+                         if r.get("bucket") == "candidate" and _is_unattributed(r))
+    L.append("**入包口径（1.3 起）**：" + _c("candidate") + " 里真 UI 文案走 "
+             + _c("packs/overrides.jsonl") + " 人工通道先落地；" + _c("pattern") + " 的 "
+             + _n(n_pattern) + " 个骨架走同一条翻译流水线（新门禁 " + _c("G9") + " 保证译文的 "
+             + _c("#") + " 个数与骨架一致，否则填回会错位）。当前语言包里带 " + _c("p")
+             + " 的骨架行：" + ("未知（没找到语言包目录）" if n_pattern_pack < 0
+                              else _n(n_pattern_pack) + " 条") + "。"
+             + ("⚠️ 0 条 = 骨架通道已通、但字典里还没有骨架行，运行期不会有 pattern 命中。"
+                if n_pattern_pack == 0 else ""))
     if probes:
         L.append("")
         L.append("其中 " + _n(len(probes)) + " 条是人造探针串（"
@@ -575,6 +628,11 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
              + _n(len(seen_static)) + " 条静态侧已经采到过（" + _pct(len(seen_static), len(hs))
              + "），其余 " + _n(len(hs) - len(seen_static)) + " 条**只有运行时才看得到**"
              "——这正是要开这条通道的理由。")
+    L.append("")
+    L.append("注意「以屏幕覆盖率判成败」：上表的交集分母是**全部**捕获串（含进度条、日志、计数器），"
+             "所以数字天然很小。真正该看的是 " + _c("reports/screen-coverage.md") + ""
+             "（" + _c("python -m i18n_tools.screen_coverage") + " 生成）：分母收敛到「该翻的文本」，"
+             "并同时统计精确命中与骨架命中。")
     L.append("")
     L.append("②③ 两节的串都**不计入** ① 的分母，也不计入任何总覆盖率。")
     L.append("")

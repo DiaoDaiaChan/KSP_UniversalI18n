@@ -17,6 +17,13 @@ namespace UI18n.Core.Dict
         Site = 2,
 
         /// <summary>global 层（跨 mod 复用）。</summary>
-        Global = 3
+        Global = 3,
+
+        /// <summary>
+        /// 骨架层（v1.3 pattern 通道）：<b>只由</b> <see cref="DictPack.TryGetPattern"/> 产出，
+        /// 精确查表永远不会返回它。<b>不参与桶内排序</b> —— 骨架条目走独立索引，
+        /// 这个值只用于命中层级统计（<c>hit sample: … (pattern)</c>）与日志。
+        /// </summary>
+        Pattern = 4
     }
 }

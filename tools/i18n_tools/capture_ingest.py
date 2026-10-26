@@ -19,22 +19,33 @@ r"""capture_ingest.py -- 运行时捕获摄入：capture-*.jsonl -> packs/captur
 **不许假设新文件一定带那三个字段**：带了且取值合法就采信（运行时与采集器看到的是同一份
 上下文，比离线重算更准），缺了或非法就自己按同一套规则算一遍（见 classify_capture）。
 
-三档 vocabulary
----------------
+四档 vocabulary（前三档是输入侧判定，pattern 是产物侧派生档）
+--------------------------------------------------------------
     never     -- 不该翻（路径 / 已含中文 / 纯标点 / 标识符 / 空 / 过短 / 过长）
-    template  -- 含数字或占位符的进度、计数、格式串（保留数据，交下游决定怎么处理）
+    template  -- 含数字或占位符的进度、计数、格式串（**不原样进产物**，见下）
     candidate -- 其余，即真正可翻的
+    pattern   -- （派生）一条**数字骨架**一行，如 `ModuleManager: # patches applied`；
+                 一条骨架的译文覆盖它全部实例，运行时按骨架查表、再把数字按顺序填回去。
+                 骨架算法只用 skeleton.py（与 C# UI18n.Core/Text/TextSkeleton.cs 逐字同口径），
+                 本模块只负责「按骨架分组 + 聚合 count/sessions/callers/mods」。
+    为什么必须塌缩：template 档每条原文的数字都不同（`Mass Flow: 2.2 ton/s`），
+    直译不可能覆盖 —— 一局捕获就能攒出五万多条 template。塌缩后只剩几百条骨架。
+    **不丢行**：skeleton() 判不出骨架的 template（0 个数字段 / 数字段超过 8 个）降级成
+    candidate 原样落盘；真要看未塌缩的 template 行请加 `--raw-templates`（排障用）。
 注意它和 IL 侧 buckets.py 的四档不是一套：那里的 translate + short_label 在这里合并成
 candidate（运行时只看「要不要翻」，不区分句子和按钮词）。
 
 输出 schema（固定字段顺序）
 --------------------------
     {"h","n","s","sink","caller","count","firstSeen","lastSeen","sessions",
-     "callers","bucket","reason","mods"}
+     "callers","bucket","reason","mods","exact"}
     lastSeen  -- 该 h 在最晚一次会话里的时间戳（跨会话合并用）
     sessions  -- 出现过的会话文件数（>=2 就是「跨会话反复 miss」，优先级最高）
     callers   -- 去重后的 caller 列表，Ordinal 排序、最多 5 个，**非 unknown 优先**
+    exact     -- 只有 bucket="pattern" 行有值：该骨架下 count 最大的一条**真实原文**样本
+                 （非 pattern 行为空串）。人看骨架时要对照一条真样本才知道它长什么样。
     （count 跨会话求和，firstSeen 取最早，sink 取众数）
+    pattern 行的 n==s==骨架；h 按 fnv.hash_text(textnorm.normalize(骨架)) 算，与 pack 行同口径。
 排序 (bucket 序, h)；同一 bucket 内按 h 升序。**没有改成一维 h 升序**：selftest.py:664 对真实产物
 有「排序 = (bucket 序, h)」的既有断言，那条断言不在本模块 scope 内，改序会把它打红。
 无 BOM、LF；同一批输入连跑两遍逐字节相同（幂等）。
@@ -53,7 +64,9 @@ candidate（运行时只看「要不要翻」，不区分句子和按钮词）�
     python -m i18n_tools.capture_ingest --all "D:\Kerbal Space Program_newmod\PluginData\UI18n"
     python -m i18n_tools.capture_ingest --dir <目录>        # --dir 与 --all 等价
     python -m i18n_tools.capture_ingest --all <目录> --report ..\reports\capture-triage.md
+    python -m i18n_tools.capture_ingest --all <目录> --patterns ..\reports\capture-patterns.md
     python -m i18n_tools.capture_ingest --all <目录> --buckets candidate
+    python -m i18n_tools.capture_ingest --all <目录> --raw-templates   # 排障：保留未塌缩的 template
     python -m i18n_tools.capture_ingest cap-a.jsonl cap-b.jsonl --out ..\packs\capture-candidates.jsonl
     python -m i18n_tools.capture_ingest --selftest
 """
@@ -69,18 +82,31 @@ import re
 import sys
 
 from . import ensure_stdout, fnv, textnorm
+from .skeleton import MAX_SLOTS as SKELETON_MAX_SLOTS
+from .skeleton import TMP_TAG_PATTERN as SKELETON_TAG_PATTERN
+from .skeleton import skeleton as make_skeleton
 
 SCHEMA_FIELDS = ("h", "n", "s", "sink", "caller", "count", "firstSeen")
 DECLARED_FIELDS = ("template", "reason", "bucket")
 OUT_FIELDS = ("h", "n", "s", "sink", "caller", "count", "firstSeen",
-              "lastSeen", "sessions", "callers", "bucket", "reason", "mods")
+              "lastSeen", "sessions", "callers", "bucket", "reason", "mods",
+              "exact")
 
-BUCKETS = ("candidate", "template", "never")
-BUCKET_ORDER = {"candidate": 0, "template": 1, "never": 2}
-# 合并时「取更保守」的优先级（与 BUCKET_ORDER 相反：never 最保守、candidate 最宽）
-CONSERVATIVE = {"never": 0, "template": 1, "candidate": 2}
+PATTERN = "pattern"      # 产物侧派生档：一条数字骨架一行（见 collapse_templates）
+BUCKETS = ("candidate", "pattern", "template", "never")
+BUCKET_ORDER = {"candidate": 0, "pattern": 1, "template": 2, "never": 3}
+# 合并时「取更保守」的优先级（与 BUCKET_ORDER 相反：never 最保守、candidate 最宽）。
+# pattern 是**产物侧派生档**，不会出现在输入侧的 pairs 里；给值与 template 相同（骨架
+# 表达的正是「这条还带数字」），只是为了让 CONSERVATIVE 覆盖 BUCKETS 全集。
+CONSERVATIVE = {"never": 0, "template": 1, "pattern": 1, "candidate": 2}
 MAX_CALLERS = 5          # 每个 h 最多保留几个 caller（够定位宿主，又不让行变胖）
-OUTPUT_BUCKETS = ("candidate", "template")   # 允许进产物的档；never 一律不进
+# 允许进产物的档：template 先塌缩成 pattern（或 --raw-templates 时原样保留）；never 一律不进
+OUTPUT_BUCKETS = ("candidate", "pattern")
+
+# 没归属的行的 mods 取值（唯一兜底值，不再用 caller 的类型名根、也不再写 "unknown"）。
+# 出包时这些行统一落 UI18n-Unattributed.il.jsonl 一个文件，不会把配置界面类名
+# （GuiUtils / ConfigurationGUI …）变成几十个假 mod 包。
+UNATTRIBUTED = "UI18n-Unattributed"
 
 # 原因码：顺序即短路优先级（与运行时分类器的口径一致，见模块 docstring）
 REASONS = ("empty", "too-short", "too-long", "blank", "path", "already-cjk",
@@ -185,6 +211,8 @@ def new_stats():
         "h_mismatch": 0, "rows_in": 0, "distinct": 0,
         "covered_pack": 0, "covered_pool": 0, "covered": 0,
         "never": 0, "template": 0, "candidate": 0,
+        "pattern": 0, "pattern_instances": 0, "pattern_none": 0,
+        "pattern_sym": 0, "pattern_sym_instances": 0,
         "declared_used": 0, "computed": 0, "offline_veto": 0,
         "sessions": 0, "multi_session": 0,
         "out_rows": 0, "out_bytes": 0,
@@ -345,6 +373,148 @@ def infer_mods(callers):
     return sorted(mods) if mods else ["unknown"]
 
 
+def attrib_mod(caller, attrib):
+    """caller -> mod id。**dll 名优先**（与 packs/zh-cn/*.il.jsonl 的命名口径一致）。
+
+    attribute_callers() 的 rec 里，能在托管 dll 里找到宿主类型时 rec["asm"] 是 dll 文件名
+    （MechJeb2.dll / Assembly-CSharp.dll / TUFX.dll），GameData 目录名在 rec["mod"] ——
+    dll 名更贴近「这个类型编译进了哪个 mod 的程序集」，且正是 IL 包建文件用的名字，所以
+    优先取它；只有 dll 名缺失（理论上不会）才退回 rec["mod"]。
+    反查不出（unknown-caller / ui18n-patch / broken-caller / ambiguous / miss）一律
+    UNATTRIBUTED —— 不拿 caller 的命名空间根冒充 mod。
+    """
+    rec = attrib.get(caller) or {}
+    asm = (rec.get("asm") or "").strip()
+    if asm:
+        stem = os.path.splitext(os.path.basename(asm))[0].strip()
+        if stem:
+            return stem
+    mod = (rec.get("mod") or "").strip()
+    if mod:
+        return mod
+    return UNATTRIBUTED
+
+
+def mods_of(callers, attrib=None):
+    """caller 列表 -> mods（去重排序）。attrib 为空时退回 caller 类型名根的老口径。
+
+    老口径（infer_mods）只在两种情况下还生效：显式 --no-attrib，或找不到 GameData /
+    Managed 目录（没法反查 dll）。这时产物里的 mods 会是 GuiUtils 这类类型名根，只能
+    当临时值用 —— 报告里会写明这一档。
+
+    一条行有多个 caller 时：只要有一个反查出真 mod，UNATTRIBUTED 就不进列表（与
+    _union_mods 同一口径）—— 一个 caller 没查出来不代表整行没有归属。
+    """
+    if not attrib:
+        return infer_mods(callers)
+    mods = {attrib_mod(c, attrib) for c in callers}
+    mods.discard("")
+    real = sorted(m for m in mods if m != UNATTRIBUTED)
+    return real if real else [UNATTRIBUTED]
+
+
+# ---------------------------------------------------------------------------
+# 骨架塌缩（template -> pattern）
+#
+# 为什么塌缩：template 档每一条原文的数字都不同（`Mass Flow: 2.2 ton/s`），直译不可能覆盖。
+# 把数字换成 `#` 后几万条原文塌成几百条骨架，一条骨架的译文覆盖它全部实例；运行时按骨架
+# 查表、再把数字按顺序填回去。骨架算法**只在 skeleton.py 里实现一份**（与 C# 逐字同口径），
+# 这里只负责分组与聚合，不重复实现正则。
+# ---------------------------------------------------------------------------
+def _union_mods(mods):
+    """mod 并集：去掉 unknown / UNATTRIBUTED 之外的空值后排序；一个都没有才写 UNATTRIBUTED。"""
+    real = sorted({m for m in mods if m and m not in ("unknown", UNATTRIBUTED)})
+    return real if real else [UNATTRIBUTED]
+
+
+# 骨架卫生门：骨架里连一个 ASCII 字母都没有的（数字被换成 # 后只剩符号，如
+# "−#"、"#\u200b"、"#:#:#\u200b"），送翻没有意义，运行时也不会拿它当原文匹配。
+_LETTER_RE = re.compile(r"[A-Za-z]")
+
+
+def collapse_templates(pairs, stats, attrib=None):
+    """[(row, rec)] -> (pattern 行, 降级 candidate 行)。一条骨架一条产物行。
+
+    - `skeleton()` 判不出骨架的行（0 个数字段 / 数字段超过 MAX_SLOTS）**不丢**：bucket 改
+      candidate 原样落盘 —— 它的原文还没人翻过。
+    - 骨架**一个 ASCII 字母都不含**（纯符号，如 "−#" / "#\u200b"）的实例丢弃，但
+      骨架数与实例数记进 stats（`pattern_sym` / `pattern_sym_instances`），报告里要能读到，
+      不许无声消失。
+    - 骨架 h = fnv.hash_text(textnorm.normalize(骨架))，与 pack 行同口径；n 与 s 都写归一化
+      后的骨架，于是产物里 `h == fnv.hash_text(normalize(n))` 恒成立。
+    - count 求和、firstSeen 最早、lastSeen 最晚、sessions 取并集、sink/caller 取众数、
+      callers 前 5、mods 取并集（attrib 有值时按 dll 名归属，见 mods_of）；exact 留该骨架下
+      count 最大的一条真实原文（平票取字典序最小，保证幂等）。
+    """
+    groups = {}
+    downgraded = []
+    for row, rec in pairs:
+        sk, _nums = make_skeleton(row["s"])
+        key = textnorm.normalize(sk) if sk else ""
+        if not key:
+            row["bucket"] = "candidate"
+            downgraded.append(row)
+            stats["pattern_none"] = stats.get("pattern_none", 0) + 1
+            continue
+        if not _LETTER_RE.search(key):
+            # 纯符号骨架：丢弃，但记账（见上面 docstring 第三条）。
+            sym = stats.setdefault("_pattern_sym", {})
+            sym[key] = sym.get(key, 0) + 1
+            continue
+        slot = groups.get(key)
+        if slot is None:
+            slot = groups[key] = {"h": fnv.hash_text(key), "count": 0,
+                                  "firstSeen": "", "lastSeen": "",
+                                  "sessions": set(), "sinks": {}, "callers": {},
+                                  "mods": set(), "instances": 0,
+                                  "exact": "", "exact_count": -1}
+        try:
+            count = int(row.get("count") or 0)
+        except (TypeError, ValueError):
+            count = 0
+        slot["count"] += count
+        slot["instances"] += 1
+        slot["sessions"] |= rec["sessions"]
+        for sink, n in rec["sinks"].items():
+            slot["sinks"][sink] = slot["sinks"].get(sink, 0) + n
+        for caller, n in rec["callers"].items():
+            slot["callers"][caller] = slot["callers"].get(caller, 0) + n
+        slot["mods"].update(mods_of(rec["callers"], attrib))
+        fs = rec["firstSeen"]
+        ls = rec["lastSeen"]
+        if fs and (not slot["firstSeen"] or fs < slot["firstSeen"]):
+            slot["firstSeen"] = fs
+        if ls and (not slot["lastSeen"] or ls > slot["lastSeen"]):
+            slot["lastSeen"] = ls
+        if count > slot["exact_count"] or (count == slot["exact_count"]
+                                          and (not slot["exact"]
+                                               or row["n"] < slot["exact"])):
+            slot["exact"] = row["n"]
+            slot["exact_count"] = count
+
+    sym = stats.pop("_pattern_sym", None) or {}
+    stats["pattern_sym"] = len(sym)
+    stats["pattern_sym_instances"] = sum(sym.values())
+    stats["pattern"] = len(groups)
+    stats["pattern_instances"] = sum(s["instances"] for s in groups.values())
+    stats["_pattern_meta"] = {s["h"]: s["instances"] for s in groups.values()}
+    pattern_rows = []
+    for key in sorted(groups):
+        slot = groups[key]
+        pattern_rows.append({"h": slot["h"], "n": key, "s": key,
+                             "sink": _mode(slot["sinks"]),
+                             "caller": _mode(slot["callers"]),
+                             "count": slot["count"],
+                             "firstSeen": slot["firstSeen"],
+                             "lastSeen": slot["lastSeen"],
+                             "sessions": len(slot["sessions"]),
+                             "callers": callers_list(slot["callers"]),
+                             "bucket": PATTERN, "reason": "",
+                             "mods": _union_mods(slot["mods"]),
+                             "exact": slot["exact"]})
+    return pattern_rows, downgraded
+
+
 # ---------------------------------------------------------------------------
 # 已被覆盖的 h 集合
 # ---------------------------------------------------------------------------
@@ -381,10 +551,25 @@ def load_covered(packs_dir, pool_path):
 # ---------------------------------------------------------------------------
 # 产物
 # ---------------------------------------------------------------------------
-def build_rows(agg, pack_h, pool_h, stats, buckets=None):
-    """agg -> 产物行。buckets 是允许进产物的档（默认 candidate + template）。"""
+def build_rows(agg, pack_h, pool_h, stats, buckets=None, raw_templates=False,
+               attrib=None):
+    """agg -> 产物行。buckets 是允许进产物的档（默认 candidate + pattern）。
+
+    template 档**默认不原样落盘**：先按数字骨架塌缩成 bucket="pattern" 的行（见
+    collapse_templates），判不出骨架的降级成 candidate，一条都不丢。
+    `raw_templates=True`（CLI `--raw-templates`）或 `buckets` 里显式点名 template 时
+    保留原样的 template 行 —— 排障时用来对照「塌缩前长什么样」。
+
+    attrib 是 attribute_callers() 的结果（{caller: rec}）：有值时行的 mods 按 **dll 名**
+    归属、反查不出统一 UNATTRIBUTED；为空（--no-attrib / 找不到 GameData）时退回
+    infer_mods() 的 caller 类型名根老口径。
+    """
     allowed = set(buckets or OUTPUT_BUCKETS)
+    if raw_templates:
+        allowed.add("template")
+    collapse = "template" not in allowed
     rows = []
+    pending = []          # [(row, rec)]：等塌缩的 template 行
     reasons = stats["reasons"]
     for h in sorted(agg):
         rec = agg[h]
@@ -405,15 +590,25 @@ def build_rows(agg, pack_h, pool_h, stats, buckets=None):
             stats["offline_veto"] += 1
         stats[bucket] = stats.get(bucket, 0) + 1
         reasons[reason] = reasons.get(reason, 0) + 1
-        if bucket not in allowed:
+        if bucket not in allowed and not (bucket == "template" and collapse):
             continue
-        rows.append({"h": h, "n": rec["n"], "s": rec["s"],
-                     "sink": _mode(rec["sinks"]), "caller": _mode(rec["callers"]),
-                     "count": rec["count"], "firstSeen": rec["firstSeen"],
-                     "lastSeen": rec["lastSeen"], "sessions": len(rec["sessions"]),
-                     "callers": callers_list(rec["callers"]),
-                     "bucket": bucket, "reason": reason,
-                     "mods": infer_mods(rec["callers"])})
+        row = {"h": h, "n": rec["n"], "s": rec["s"],
+               "sink": _mode(rec["sinks"]), "caller": _mode(rec["callers"]),
+               "count": rec["count"], "firstSeen": rec["firstSeen"],
+               "lastSeen": rec["lastSeen"], "sessions": len(rec["sessions"]),
+               "callers": callers_list(rec["callers"]),
+               "bucket": bucket, "reason": reason,
+               "mods": mods_of(rec["callers"], attrib), "exact": ""}
+        if bucket == "template" and collapse:
+            pending.append((row, rec))
+        else:
+            rows.append(row)
+    if pending:
+        pattern_rows, downgraded = collapse_templates(pending, stats, attrib)
+        rows.extend(pattern_rows)
+        if "candidate" in allowed:
+            rows.extend(downgraded)
+    rows = [r for r in rows if r["bucket"] in allowed]
     rows.sort(key=lambda r: (BUCKET_ORDER[r["bucket"]], r["h"]))
     stats["covered"] = stats["covered_pack"] + stats["covered_pool"]
     stats["out_rows"] = len(rows)
@@ -424,7 +619,7 @@ def write_rows(path, rows):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
         for r in rows:
-            fh.write(json.dumps({k: r[k] for k in OUT_FIELDS},
+            fh.write(json.dumps({k: r.get(k, "") for k in OUT_FIELDS},
                                 ensure_ascii=False, separators=(",", ":")) + "\n")
     return len(rows)
 
@@ -446,6 +641,18 @@ def repo_root():
 
 def default_packs_dir():
     return os.path.join(repo_root(), "packs")
+
+
+def resolve_repo_path(path):
+    """把产物路径按**仓库根**解析，不是按当前工作目录。
+
+    踩过的坑：在 tools/ 下跑 `--out packs/capture-candidates.jsonl`（照抄文档里的相对路径），
+    命令成功、打印也正常，产物却落在 `tools/packs/capture-candidates.jsonl`，仓库里的真产物
+    一动不动 —— 看起来像「跑了没生效」。所有产物路径统一按仓库根解析，并把绝对路径打出来。
+    """
+    if not path:
+        return path
+    return path if os.path.isabs(path) else os.path.join(repo_root(), path)
 
 
 def default_capture_dir():
@@ -484,10 +691,16 @@ def file_inventory(path, rows):
             "first": lo, "last": hi}
 
 
-def ingest(files, packs_dir=None, pool_path=None, out_path=None, buckets=None):
-    """读 files -> 跨会话合并 -> 剔已覆盖 -> 分桶 -> 落盘。返回 (stats, rows)。
+def ingest(files, packs_dir=None, pool_path=None, out_path=None, buckets=None,
+           raw_templates=False, gamedata="", managed="", do_attrib=True):
+    """读 files -> 跨会话合并 -> 剔已覆盖 -> 分桶 -> （塌缩 template）-> 落盘。
 
-    每个文件的清单（行数/distinct/首末时间）记在 stats["per_file"]，供 --report 用。
+    返回 (stats, rows)。每个文件的清单（行数/distinct/首末时间）记在 stats["per_file"]，
+    供 --report 用；raw_templates 只在排障时用（保留未塌缩的 template 行）。
+
+    gamedata/managed/do_attrib 决定产物行 mods 的口径：给了 GameData 就先做 dll 反查，
+    行的 mods 直接是 dll 名（见 mods_of）；给不出就退回 caller 类型名根老口径。
+    归属结果缓存到 stats["_attrib"] / stats["_dll_info"]，build_triage 复用、不重复扫 dll。
     """
     stats = new_stats()
     rows_in = []
@@ -504,7 +717,11 @@ def ingest(files, packs_dir=None, pool_path=None, out_path=None, buckets=None):
     if pool_path is None:
         pool_path = os.path.join(packs_dir, "pool.jsonl")
     pack_h, pool_h = load_covered(packs_dir, pool_path)
-    rows = build_rows(agg, pack_h, pool_h, stats, buckets)
+    # 归属必须在 build_rows 之前算：行的 mods 直接取它（dll 名优先，见 mods_of）。
+    attrib, dll_info = build_attrib(agg, gamedata, managed, do_attrib)
+    stats["_attrib"] = attrib
+    stats["_dll_info"] = dll_info
+    rows = build_rows(agg, pack_h, pool_h, stats, buckets, raw_templates, attrib)
     stats["_agg"] = agg                       # 报告要用完整合并结果（含 never 档）
     stats["_pack_h"] = pack_h
     if out_path:
@@ -522,6 +739,26 @@ def ingest(files, packs_dir=None, pool_path=None, out_path=None, buckets=None):
 # ---------------------------------------------------------------------------
 BROKEN_CALLER_RE = re.compile(r"^[0-9]+, Culture=")  # 采集器截断程序集限定名后的残片
 MANAGED_DIRS = ("KSP_x64_Data", "KSP_Data")
+
+
+def build_attrib(agg, gamedata="", managed="", do_attrib=True):
+    """合并结果 -> ({caller: rec}, info)。口子不分岔：给不出 GameData 就返回空 attrib。
+
+    空 attrib 意味着产物行的 mods 退回 caller 类型名根（infer_mods 老口径），只在
+    --no-attrib / 找不到 GameData / 没有 Managed 目录时发生；info["why"] 记原因，报告里
+    要写明这一档，免得把 GuiUtils 这类类型名当 mod 用。
+    """
+    info = {"dlls": 0, "bad": 0, "types": 0, "why": ""}
+    if not do_attrib:
+        info["why"] = "no-attrib"
+        return {}, info
+    if not gamedata or not os.path.isdir(gamedata):
+        info["why"] = "no-gamedata"
+        return {}, info
+    callers = sorted({c for rec in agg.values() for c in rec["callers"]})
+    index, info = build_type_index(gamedata, managed)
+    info["why"] = ""
+    return attribute_callers(callers, index), info
 
 
 def default_managed(gamedata=""):
@@ -664,6 +901,58 @@ def _kb(n):
     return "%.2f MB" % (n / (1024.0 * 1024.0))
 
 
+# --- 骨架判定（给 capture-patterns.md 与分诊报告 §6 用；纯正则，不碰 skeleton.py 的算法）---
+_TAG_STRIP_RE = re.compile(SKELETON_TAG_PATTERN)
+# 「英文词」= 2 个字母以上的 ASCII 词；单字母（单位 m/s 拆出来的 s、变量 i）不算词。
+_WORD_RE = re.compile(r"[A-Za-z][A-Za-z'\-]+")
+
+# 已知噪声骨架：加载屏 / ModuleManager / Profiler HUD / RDR 遥测。这些即使含英文单词也不该翻
+# （全是游戏内部诊断串，翻了没有观感收益，还会白占翻译配额）。
+NOISE_PATTERNS = (
+    ("LoadingScreen", re.compile(r"\bloading\b", re.I)),
+    ("ModuleManager", re.compile(r"modulemanager", re.I)),
+    ("Profiler HUD", re.compile(r"profiler|\bfps\b|#\s*ms\b|\bframe\b", re.I)),
+    ("RDR", re.compile(r"\bRDR\b", re.I)),
+)
+
+
+def strip_tmp_tags(text):
+    """去掉 TMP 富文本标签后的正文（判词/判噪声都要先剥标签）。"""
+    return _TAG_STRIP_RE.sub("", text or "")
+
+
+def english_words(text):
+    """剥掉 TMP 标签后还剩几个英文词（>=2 才算「一句可译的话」）。"""
+    return len(_WORD_RE.findall(strip_tmp_tags(text)))
+
+
+def noise_label(text):
+    """骨架是不是已知噪声类（LoadingScreen / ModuleManager / Profiler HUD / RDR）。
+
+    返回噪声类名；不是噪声返回空串。只看剥掉 TMP 标签后的正文 —— 否则
+    `<color=#FF><b># ms</b></color>` 里的十六进制色值会误伤判定。
+    """
+    body = strip_tmp_tags(text)
+    for label, rx in NOISE_PATTERNS:
+        if rx.search(body):
+            return label
+    return ""
+
+
+def is_translatable_pattern(text):
+    """可译骨架：>=2 个英文词、且不是已知噪声。"""
+    return english_words(text) >= 2 and not noise_label(text)
+
+
+def _intake_text(bucket):
+    """§2 表「进产物」列：告诉读者这个档最后是原样进、塌缩进，还是被剔除。"""
+    if bucket == PATTERN:
+        return "是（骨架）"
+    if bucket == "template":
+        return "否（塌缩成 pattern）"
+    return "是" if bucket in OUTPUT_BUCKETS else "否（剔除）"
+
+
 def build_triage(stats, rows, pack_h, gamedata="", managed="", do_attrib=True):
     """把 stats/rows 整理成报告用数据（渲染见 render_triage）。"""
     agg = stats.get("_agg") or {}
@@ -694,9 +983,12 @@ def build_triage(stats, rows, pack_h, gamedata="", managed="", do_attrib=True):
             slot["rows"] += 1
             slot[row["bucket"]] = slot.get(row["bucket"], 0) + 1
 
-    attrib = {}
-    info = {"dlls": 0, "bad": 0, "types": 0}
-    if do_attrib and gamedata and os.path.isdir(gamedata):
+    # 归属优先用 ingest 阶段算好的那份（产物行的 mods 就是它写的，口径必须一致）；
+    # 没有（老调用方直接 build_triage）才在这里补扫一次 dll。
+    attrib = stats.get("_attrib") or {}
+    info = stats.get("_dll_info") or {"dlls": 0, "bad": 0, "types": 0, "why": ""}
+    attrib_from_ingest = bool(attrib)
+    if not attrib and do_attrib and gamedata and os.path.isdir(gamedata):
         index, info = build_type_index(gamedata, managed)
         attrib = attribute_callers(list(caller_rows), index)
 
@@ -726,8 +1018,62 @@ def build_triage(stats, rows, pack_h, gamedata="", managed="", do_attrib=True):
         path_rich.append((rec["count"], rec["n"]))
     path_rich.sort(key=lambda p: (-p[0], p[1]))
 
+    # template 行已塌缩成 pattern：pattern 档的条数按**产物里的骨架行**现算。
+    # 注意 §2 表里 template 那行仍是「合并口径的实例数」（去重后 effective bucket 为
+    # template 的 h 数），塌缩不影响它 —— 报告数字不会因为塌缩而变小。
+    pattern_rows = [r for r in rows if r["bucket"] == PATTERN]
+    if pattern_rows:
+        slot = per_bucket[PATTERN]
+        slot["items"] = len(pattern_rows)
+        slot["multi"] = sum(1 for r in pattern_rows if r["sessions"] >= 2)
+        slot["count"] = sum(int(r.get("count") or 0) for r in pattern_rows)
+    noise = {}
+    transl = 0
+    for r in pattern_rows:
+        label = noise_label(r["n"])
+        if label:
+            noise[label] = noise.get(label, 0) + 1
+        elif english_words(r["n"]) >= 2:
+            transl += 1
+    out_by_bucket = {}
+    for r in rows:
+        out_by_bucket[r["bucket"]] = out_by_bucket.get(r["bucket"], 0) + 1
+
+    # 产物行的 mods 直方图（一行可能有多个 mod：跨 mod 合并的行）+ 没有归属的行数，
+    # 以及「从 caller 类型名改成真 mod」的行数（--no-attrib 时必然 0）。
+    mod_hist = {}
+    no_mod = 0
+    remapped = 0
+    for r in rows:
+        mods = list(r.get("mods") or [])
+        for m in mods:
+            mod_hist[m] = mod_hist.get(m, 0) + 1
+        if not mods or all(m in ("unknown", UNATTRIBUTED) for m in mods):
+            no_mod += 1
+        if mods and mods != infer_mods(r.get("callers") or []):
+            remapped += 1
+
     return {"per_bucket": per_bucket, "caller_rows": caller_rows, "attrib": attrib,
             "dll_info": info, "covered": covered, "agg": agg, "managed": managed,
+            "out_by_bucket": out_by_bucket,
+            "mods": {"hist": mod_hist, "no_mod": no_mod, "remapped": remapped,
+                     "attributed": bool(attrib),
+                     "from_ingest": attrib_from_ingest,
+                     "why": "" if attrib else (info.get("why") or "no-gamedata"),
+                     "dlls": info.get("dlls", 0),
+                     "types": info.get("types", 0)},
+            "pattern": {"rows": len(pattern_rows),
+                        "instances": stats.get("pattern_instances", 0),
+                        "downgraded": stats.get("pattern_none", 0),
+                        "sym": stats.get("pattern_sym", 0),
+                        "sym_instances": stats.get("pattern_sym_instances", 0),
+                        "noise": noise, "n_noise": sum(noise.values()),
+                        "transl": transl,
+                        "bytes": per_bucket[PATTERN]["bytes"],
+                        "meta": stats.get("_pattern_meta") or {},
+                        "top": sorted(pattern_rows,
+                                      key=lambda r: (-int(r.get("count") or 0),
+                                                     r["h"]))[:15]},
             "path_rich": {"items": len(path_rich),
                           "samples": [{"n": n, "count": c}
                                       for c, n in path_rich[:10]]}}
@@ -748,8 +1094,8 @@ def render_triage(stats, rows, tri, argv_note=""):
 
     w("# 运行时捕获分诊报告（task-41）")
     w("")
-    w("> 只读分析。本报告**不写** `packs/zh-cn/`、不翻译、不出包；产物只有本文件与 "
-      "`packs/capture-candidates.jsonl`（v2 跨会话合并版）。")
+    w("> 只读分析。本报告**不写** `packs/zh-cn/`、不翻译、不出包；产物是本文件、"
+      "`packs/capture-candidates.jsonl`（v3 骨架塌缩版）与 `reports/capture-patterns.md`。")
     w("")
     w("| 项 | 值 |")
     w("|---|---|")
@@ -791,17 +1137,51 @@ def render_triage(stats, rows, tri, argv_note=""):
     for bucket in BUCKETS:
         slot = per_bucket.get(bucket) or {"items": 0, "multi": 0, "count": 0,
                                           "bytes": 0}
+        if bucket == PATTERN:
+            # pattern 是产物侧派生档（骨架），不参与 h 的划分：条数标「骨架」，
+            # 占比留 "-"，这样 candidate / template / never 三行的占比刚好凑满 100%。
+            w("| `%s` | %d（骨架） | %d | - | %d | %s | %s |"
+              % (bucket, slot["items"], slot["multi"], slot["count"],
+                 _intake_text(bucket),
+                 _kb(slot["bytes"]) if slot["bytes"] else "-"))
+            continue
         w("| `%s` | %d | %d | %.1f%% | %d | %s | %s |"
           % (bucket, slot["items"], slot["multi"],
              100.0 * slot["items"] / total, slot["count"],
-             "是" if bucket in OUTPUT_BUCKETS else "否（剔除）",
+             _intake_text(bucket),
              _kb(slot["bytes"]) if slot["bytes"] else "-"))
     w("")
-    w("- 口径对账：去重 **%d** 个 h = 已覆盖剔除 **%d**（zh-cn %d / pool %d）+ "
-      "never 剔除 **%d** + 产物 **%d** 行（candidate %d / template %d）。"
-      % (stats["distinct"], stats["covered"], stats["covered_pack"],
-         stats["covered_pool"], stats["never"], stats["out_rows"],
-         stats["candidate"], stats["template"]))
+    pat = tri["pattern"]
+    outb = tri.get("out_by_bucket") or {}
+    cov_c = per_bucket["candidate"]["items"] - stats["candidate"]
+    cov_t = per_bucket["template"]["items"] - stats["template"]
+    cov_n = per_bucket["never"]["items"] - stats["never"]
+    w("- 口径对账（合并侧）：去重 **%d** 个 h = 上表三档合计（candidate %d + "
+      "template %d + never %d，**含已被包覆盖的 %d 条**）；扣掉覆盖"
+      "（candidate %d / template %d / never %d）后进判定的是 **%d** 条，"
+      "其中 never %d 全部剔除、待出 **%d** 条（candidate %d 原样 / template %d 待塌缩）。"
+      % (stats["distinct"], per_bucket["candidate"]["items"],
+         per_bucket["template"]["items"], per_bucket["never"]["items"],
+         stats["covered"], cov_c, cov_t, cov_n,
+         stats["distinct"] - stats["covered"], stats["never"],
+         stats["candidate"] + stats["template"], stats["candidate"],
+         stats["template"]))
+    w("- 口径对账（产物侧）：落盘 **%d** 行 = candidate %d（其中骨架判不出、从 template "
+      "降级的 %d）+ pattern %d 个骨架（由 %d 条 template 实例塌缩而来）。"
+      % (stats["out_rows"], outb.get("candidate", 0), pat["downgraded"],
+         outb.get("pattern", 0), pat["instances"]))
+    w("- **模板塌缩**：本次 **%d 个会话 / %d 条 distinct 原文**，模板档 **%d 条 → %d 个"
+      "数字骨架**（覆盖 %d 条实例，另 %d 条判不出骨架、降级 candidate，%d 条落在纯符号骨架"
+      "上丢弃 —— 见下一条）；一个骨架的译文覆盖它全部实例（count 合计 %d）。为什么塌：模板档"
+      "每条原文的数字都不同（`Mass Flow: 2.2 ton/s`），直译不可能覆盖；把数字换成 `#` 后"
+      "几万条塌成几百条，翻几百条骨架就能覆盖全部实例，运行时按骨架查表再把数字填回。"
+      % (len(per), stats["distinct"], stats["template"], pat["rows"],
+         pat["instances"], pat["downgraded"], pat["sym_instances"],
+         per_bucket[PATTERN]["count"]))
+    w("- **pattern 纯符号丢弃**：**%d 个骨架 / %d 条实例**不含任何 ASCII 字母"
+      "（`−#`、`#<零宽空格>` 这类：骨架把数字换成 `#` 后只剩符号），送翻没有意义，"
+      "运行时也不会拿它当原文匹配，已丢弃；丢的不是隐形，骨架数与实例数就在这里记账。"
+      % (pat["sym"], pat["sym_instances"]))
     w("- **跨会话反复 miss（`sessions>=2`）共 %d 条**：candidate %d / template %d / "
       "never %d —— 这一档优先级最高，`sessions` 字段可直接排序。"
       % (stats["multi_session"], per_bucket["candidate"]["multi"],
@@ -879,16 +1259,20 @@ def render_triage(stats, rows, tri, argv_note=""):
           % (i, r["count"], r["sessions"], r["reason"] or "-",
              _md_cell((r.get("callers") or ["-"])[0], 34), _md_cell(r["s"], 90)))
     w("")
-    w("### 5.2 template（含数字/占位符，取前 12 条）")
+    w("### 5.2 pattern（数字骨架，取 count 最大的 12 个；" + "`样本`" +
+      " 是该骨架下 count 最大的一条真实原文）")
     w("")
-    tmpl_rows = sorted([r for r in rows if r["bucket"] == "template"],
-                       key=lambda r: (-r["count"], r["h"]))
-    w("| # | count | sessions | reason | caller | 文本 |")
-    w("|---:|---:|---:|---|---|---|")
-    for i, r in enumerate(tmpl_rows[:12], 1):
-        w("| %d | %d | %d | %s | `%s` | %s |"
-          % (i, r["count"], r["sessions"], r["reason"] or "-",
-             _md_cell((r.get("callers") or ["-"])[0], 34), _md_cell(r["s"], 90)))
+    pat_rows = sorted([r for r in rows if r["bucket"] == PATTERN],
+                      key=lambda r: (-int(r.get("count") or 0), r["h"]))
+    w("| # | count | sessions | 噪声 | caller | 骨架 | 样本 |")
+    w("|---:|---:|---:|---|---|---|---|")
+    for i, r in enumerate(pat_rows[:12], 1):
+        w("| %d | %d | %d | %s | `%s` | %s | %s |"
+          % (i, r["count"], r["sessions"], noise_label(r["n"]) or "-",
+             _md_cell((r.get("callers") or ["-"])[0], 28),
+             _md_cell(r["s"], 70), _md_cell(r.get("exact") or "", 60)))
+    w("")
+    w("（全部 %d 个骨架按 count 降序排在 `reports/capture-patterns.md`。）" % len(pat_rows))
     w("")
     w("### 5.3 never（永远不该进包，展示判据，取前 4 条）")
     w("")
@@ -915,23 +1299,35 @@ def render_triage(stats, rows, tri, argv_note=""):
                   if effective_bucket(r) == ("template", "counter"))
     w("| 子集 | 条数 | 建议 | 预估体积 |")
     w("|---|---:|---|---:|")
-    w("| `bucket=candidate` | %d | **现在就该进包**：不带数字的行，翻了不会错位 | %s |"
-      % (cand["items"], _kb(cand["bytes"]) if cand["bytes"] else "-"))
+    w("| `bucket=candidate` | %d（产物里 %d 行：原样候选 + 骨架判不出降级的 %d） | "
+      "**现在就该进包**：不带数字的行，翻了不会错位 | %s |"
+      % (cand["items"], outb.get("candidate", 0), pat["downgraded"],
+         _kb(cand["bytes"]) if cand["bytes"] else "-"))
+    w("| `bucket=pattern` | %d（骨架）<br>覆盖 %d 条实例 | **送翻的正是这一档**："
+      "可译骨架 %d 个值得翻，噪声骨架 %d 个翻它没用；一条骨架的译文覆盖全部实例，"
+      "运行时把数字填回 | %s |"
+      % (pat["rows"], pat["instances"], pat["transl"], pat["n_noise"],
+         _kb(pat["bytes"]) if pat["bytes"] else "-"))
     w("| `template` + `progress` | %d | **永远不进**：`12/345` 这类进度，"
       "数字由游戏填，翻了只会错位 | - |" % progress)
-    w("| `template` + `counter` | %d | **暂不进**：计数/表格串，`s` 里数字位置"
-      "不固定，翻成中文要重排；要翻必须逐条人看 | %s |"
-      % (counter, _kb(tmpl["bytes"]) if tmpl["bytes"] else "-"))
+    w("| `template` + `counter` | %d | **已塌缩进 pattern**：数字位置由骨架固定，"
+      "翻骨架即可，不再逐条翻 | 计入上行 |" % counter)
     w("| `bucket=never` | %d | **永远不进**：路径 / 已含中文 / 标识符 / 纯标点 / 过长 | - |"
       % never["items"])
     w("")
-    w("- 全量 v2 产物 = candidate + template 共 %d 行 / %s。"
+    w("- 全量 v3 产物 = candidate + pattern 共 %d 行 / %s（v2 的 template 行不再原样落盘）。"
       "**只给打包用时请加 `--buckets candidate`**，产物缩到 %d 行 / %s。"
-      % (stats["out_rows"], _kb(stats["out_bytes"]), cand["items"],
+      % (stats["out_rows"], _kb(stats["out_bytes"]), outb.get("candidate", 0),
          _kb(cand["bytes"]) if cand["bytes"] else "-"))
-    w("- 翻译成本参考：candidate 的 %d 条按 IL 总线同口径（~1,100 条 / 81k tokens）"
-      "约需 %.0fk tokens；template 那 %d 条不建议整体送翻（多为数字串，翻了大概率被门禁退回）。"
-      % (cand["items"], cand["items"] * 74.0 / 1000.0, tmpl["items"]))
+    w("- 翻译成本参考：candidate 的 %d 条 + 可译骨架 %d 个，按 IL 总线同口径"
+      "（~1,100 条 / 81k tokens）约需 %.0fk tokens。"
+      % (cand["items"], pat["transl"],
+         (cand["items"] + pat["transl"]) * 74.0 / 1000.0))
+    w("- 噪声骨架（%s）不建议送翻：加载屏进度、ModuleManager 诊断、Profiler HUD、RDR 遥测"
+      "这些即使有英文单词，翻了也没有观感收益，还白占配额。"
+      % (" / ".join("%s %d 个" % (k, v)
+                    for k, v in sorted(pat["noise"].items(), key=lambda kv: -kv[1]))
+         or "无"))
     w("")
 
     w("## 7. mod 归属结论")
@@ -976,6 +1372,48 @@ def render_triage(stats, rows, tri, argv_note=""):
         w("（本次未做 dll 反查：没找到 GameData 目录，或显式 `--no-attrib`。）")
     w("")
 
+    w("### 产物行 `mods` 的取值口径")
+    w("")
+    md = tri.get("mods") or {}
+    hist = md.get("hist") or {}
+    if md.get("attributed"):
+        w("- **dll 名优先**：`attribute_callers()` 在托管 dll 里找到宿主类型时，取 `rec['asm']`"
+          "（dll 文件名）去掉扩展名 —— `MechJeb2.dll` → `MechJeb2`、`TUFX.dll` → `TUFX`、"
+          "`Assembly-CSharp.dll` → `Assembly-CSharp`。这与 `packs/zh-cn/*.il.jsonl` 的建文件"
+          "口径一致：出包时不会再冒出 `GuiUtils.il.jsonl` / `ConfigurationGUI.il.jsonl` 这种"
+          "以类型名命名的假 mod 包（本版 %d 个 mod 取值，全部是 dll 名或共享包 %s）。"
+           % (len(hist), UNATTRIBUTED))
+        w("- **反查不出统一 `UI18n-Unattributed`**：`caller=unknown`、我们自己的补丁帧"
+          "（`*_Patch1`）、被截断的程序集限定名残片、同名类型落在两个 mod（`ambiguous`）都归"
+          "这一档，出包时落一个共享包；不再拿 caller 的类型名根冒充 mod，也不再写 `unknown`。")
+        w("- **`mods` 是列表**：跨 mod 合并的行会有多个值（去重排序）；出包落地时取字典序最小"
+          "的那个建 `<mod>.il.jsonl`。")
+        w("- 口径来源：%s。" % ("ingest 阶段同一份反查结果（本报告不重复扫 dll）"
+                              if md.get("from_ingest") else "build_triage 里补扫的 dll 反查"))
+    else:
+        why = {"no-attrib": "显式 `--no-attrib`",
+               "no-gamedata": "没找到 GameData / Managed 目录"}.get(md.get("why") or "",
+                                                                  md.get("why") or "未知")
+        w("- **本次退回 caller 类型名根**（`infer_mods()` 老口径；原因：%s）："
+          "`GuiUtils.SimpleTextBox` → `GuiUtils`、`ConfigurationGUI.x` → `ConfigurationGUI`。"
+          "这一档只为产物不空转，`mods` **不能**当 mod 身份出包 —— 要真归属必须传 "
+          "`--gamedata`（或让自动探测找到 GameData）。" % why)
+    total_rows = len(rows)
+    w("- 产出统计：%d 行有归属 / 共 %d 行；其中 %d 行与 caller 类型名根不同（改归到真 mod），"
+      "%d 行只有 `UI18n-Unattributed`。"
+      % (total_rows - int(md.get("no_mod") or 0), total_rows,
+         int(md.get("remapped") or 0), int(md.get("no_mod") or 0)))
+    if hist:
+        top = sorted(hist.items(), key=lambda kv: (-kv[1], kv[0]))
+        w("")
+        w("| `mods` 取值（产物行） | 行数 |")
+        w("|---|---:|")
+        for name, n in top[:15]:
+            w("| `%s` | %d |" % (name, n))
+        if len(top) > 15:
+            w("| …（其余 %d 个值） | - |" % (len(top) - 15))
+    w("")
+
     w("## 8. 已知问题与下一步")
     w("")
     w("1. `count` 是会话内 miss 次数，不是「屏幕上出现过几次」：采集器按 h 累加，"
@@ -993,9 +1431,13 @@ def render_triage(stats, rows, tri, argv_note=""):
       % (rich.get("items", 0),
          "、".join("`%s`（%d 次）" % (_md_cell(s["n"], 44), s["count"])
                   for s in (rich.get("samples") or [])[:6]) or "-"))
-    w("4. **下一轮**（不在本任务）：candidate 的 %d 条走 `translate_il` 同一套门禁"
-      "翻一遍 → 按 §7 归到 `<modId>.il.jsonl` 或 `_captured.jsonl` → 重跑 "
-      "`packindex` 与 `selftest`。" % cand["items"])
+    w("4. **下一轮**（不在本任务）：candidate 的 %d 条 **+ pattern 的可译骨架 %d 个**"
+      "一起走 `translate_il` 同一套门禁翻一遍 → 按 §7 归到 `<modId>.il.jsonl` 或 "
+      "`_captured.jsonl` → 重跑 `packindex` 与 `selftest`。翻译侧要按 `bucket` 分流："
+      "`pattern` 行存的是骨架（`#` 占位），译文也必须保留同样数量的 `#`，"
+      "运行时才能把数字填回（`skeleton.fill_back`）。" % (cand["items"], pat["transl"]))
+    w("5. **下游注意**：`translate_il.py` 目前把 `bucket` 原样透传，读到 "
+      "`bucket=\"pattern\"` 的行时按「骨架 + `#` 占位」处理，不能当成普通 template。")
     w("")
     return "\n".join(out) + "\n"
 
@@ -1005,6 +1447,121 @@ def write_triage(path, text):
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(text)
     return len(text.encode("utf-8"))
+
+
+# 报告里不许写死数字：这两个函数只从 stats/tri 现算，文件缺失时打「无法计算」不编造。
+def build_patterns(stats, rows, tri, argv_note=""):
+    """reports/capture-patterns.md 全文：骨架清单 + 噪声/可译分类 + 口径。"""
+    pat = tri["pattern"]
+    meta = pat.get("meta") or {}
+    pat_rows = sorted([r for r in rows if r["bucket"] == PATTERN],
+                      key=lambda r: (-int(r.get("count") or 0), r["h"]))
+    per = stats.get("per_file") or []
+    out = []
+    w = out.append
+
+    def inst(r):
+        return meta.get(r["h"], 0)
+
+    w("# 运行时捕获：模板骨架清单（pattern）")
+    w("")
+    w("> 由 `python -m i18n_tools.capture_ingest --patterns` 生成，只读分析、不写包。"
+      "骨架算法见 `tools/i18n_tools/skeleton.py`（与 C# 侧同口径），本文件只列产物里 "
+      "`bucket=\"pattern\"` 的行。")
+    w("")
+    w("| 项 | 值 |")
+    w("|---|---|")
+    w("| 输入会话 | %d 个 `capture-*.jsonl` |" % len(per))
+    w("| 去重后 distinct 原文 | %d |" % stats["distinct"])
+    w("| 模板档（合并口径实例数） | %d |" % stats["template"])
+    w("| **塌缩成的骨架** | **%d 个**（一条骨架覆盖多条实例） |" % pat["rows"])
+    w("| 骨架覆盖的实例行 | %d |" % pat["instances"])
+    w("| 判不出骨架、降级 candidate | %d |" % pat["downgraded"])
+    w("| 纯符号骨架丢弃（不含 ASCII 字母） | %d 个骨架 / %d 条实例 |"
+      % (pat["sym"], pat["sym_instances"]))
+    w("| **可译骨架**（≥2 英文词且非噪声） | **%d 个**（占骨架 %.1f%%） |"
+      % (pat["transl"], 100.0 * pat["transl"] / max(1, pat["rows"])))
+    w("| 噪声骨架 | %d 个 |" % pat["n_noise"])
+    for label in sorted(pat["noise"], key=lambda k: -pat["noise"][k]):
+        w("| └ %s | %d 个 |" % (label, pat["noise"][label]))
+    w("| 落盘体积 | %s |" % (_kb(pat["bytes"]) if pat["bytes"] else "无法计算"))
+    if argv_note:
+        w("| 复现命令 | `%s` |" % _md_cell(argv_note, 200))
+    w("")
+
+    def table(title, items, with_noise):
+        w(title)
+        w("")
+        if not items:
+            w("（无。）")
+            w("")
+            return
+        if with_noise:
+            w("| # | count | 实例 | sessions | 噪声类 | callers | 骨架 | 样本 |")
+            w("|---:|---:|---:|---:|---|---|---|---|")
+        else:
+            w("| # | count | 实例 | sessions | callers | 骨架 | 样本 |")
+            w("|---:|---:|---:|---:|---|---|---|")
+        for i, r in enumerate(items, 1):
+            callers = ", ".join("`%s`" % _md_cell(c, 22)
+                               for c in (r.get("callers") or ["-"])[:2])
+            if with_noise:
+                w("| %d | %d | %d | %d | %s | %s | %s | %s |"
+                  % (i, r["count"], inst(r), r["sessions"],
+                     noise_label(r["n"]) or "-", callers,
+                     _md_cell(r["n"], 80), _md_cell(r.get("exact") or "", 60)))
+            else:
+                w("| %d | %d | %d | %d | %s | %s | %s |"
+                  % (i, r["count"], inst(r), r["sessions"], callers,
+                     _md_cell(r["n"], 80), _md_cell(r.get("exact") or "", 60)))
+        w("")
+
+    transl_rows = [r for r in pat_rows
+                   if not noise_label(r["n"]) and english_words(r["n"]) >= 2]
+    noise_rows = [r for r in pat_rows if noise_label(r["n"])]
+
+    w("## 1. 可译骨架（建议送翻，按 count 降序）")
+    w("")
+    w("判据：剥掉 TMP 标签后仍有 **≥2 个英文词**，且不姓已知噪声类。翻译时**必须原样保留 "
+      "`#` 的个数与顺序** —— 运行时按顺序把数字填回（`skeleton.fill_back`）。")
+    w("")
+    table("", transl_rows, False)
+
+    w("## 2. 噪声骨架（不建议翻）")
+    w("")
+    w("这些即使含英文单词也不该进包：加载屏进度、ModuleManager 诊断、Profiler HUD、"
+      "RDR 遥测 —— 全是游戏内部诊断串，翻了没有观感收益，还白占翻译配额。")
+    w("")
+    table("", noise_rows, True)
+
+    w("## 3. 全部骨架（按 count 降序，共 %d 个）" % len(pat_rows))
+    w("")
+    w("其余（既不到 2 个英文词、也不姓噪声类的 %d 个）多为 `#` 加单位/符号的碎片，"
+      "按需人工扫一眼即可。" % (len(pat_rows) - len(transl_rows) - len(noise_rows)))
+    w("")
+    table("", pat_rows, True)
+
+    w("## 4. 口径与判据")
+    w("")
+    w("- **骨架**：把每段数字（`\\d+(?:[.,]\\d+)?`）换成 `#`；TMP 标签里的数字"
+      "（`<color=#FF0000>`）不骨化。数字段为 0 或超过 %d 段时判「无骨架」→ 该行降级 "
+      "`bucket=candidate` 原样落盘，不丢。" % SKELETON_MAX_SLOTS)
+    w("- **h**：`fnv.hash_text(textnorm.normalize(骨架))`，与包内 `h` 同口径，"
+      "所以一条骨架天然对应一个包内条目。")
+    w("- **count**：实例 count 之和（会话内 miss 次数累加，不是屏幕上出现次数）；"
+      "`sessions`：出现过该骨架的会话文件数。")
+    w("- **callers/mods**：该骨架全部实例的并集（前 5 个、非 unknown 优先）。")
+    w("- **样本（exact）**：该骨架下 count 最大的一条真实原文，用来核对「译了骨架能不能"
+      "覆盖它」；平票取字典序最小，保证重跑逐字节相同。")
+    w("- **纯符号骨架**：骨架一个 ASCII 字母都不含（`−#`、`#` 后跟零宽空格这类）"
+      "时丢弃，不进产物也不送翻；丢弃的骨架数与实例数在总览表里记账，不会无声消失。")
+    w("- **噪声类**：加载屏（`loading`）、ModuleManager、Profiler HUD"
+      "（`profiler`/`fps`/`# ms`/`frame`）、RDR。只看剥掉 TMP 标签后的正文 —— 否则"
+      "`<color=#FF0000>` 里的十六进制色值会误伤判定。")
+    w("- 本文件全部数字由 `capture_ingest` 现算（读 capture 目录与产物行），无硬编码；"
+      "骨架为 0 时本文件仍会生成，但表里会是「无」。")
+    w("")
+    return "\n".join(out) + "\n"
 
 
 def _reason_text(stats):
@@ -1033,16 +1590,21 @@ def main(argv=None):
                         help="输出（默认 packs/capture-candidates.jsonl）")
     parser.add_argument("--selftest", action="store_true", help="跑本模块的断言")
     parser.add_argument("--buckets", default=None,
-                        help="只保留这些档（逗号分隔，默认 candidate,template；"
-                             "never 永远不进产物）")
+                        help="只保留这些档（逗号分隔，默认 candidate,pattern；"
+                             "template 会塌缩成 pattern，never 永远不进产物）")
+    parser.add_argument("--raw-templates", dest="raw_templates", action="store_true",
+                        help="排障用：保留未塌缩的 template 行（产物会回到几十 MB）")
     parser.add_argument("--report", default=None,
                         help="写分诊报告 markdown（如 ..\\reports\\capture-triage.md）")
+    parser.add_argument("--patterns", default=None,
+                        help="写骨架清单 markdown（如 ..\\reports\\capture-patterns.md）")
     parser.add_argument("--gamedata", default=None,
-                        help="GameData 目录（报告做 caller 反查用；默认自动探测）")
+                        help="GameData 目录（caller 反查 / 产物 mods 归属用；默认自动探测）")
     parser.add_argument("--managed", default=None,
                         help="KSP_x64_Data\\Managed 目录（同上；默认自动探测）")
     parser.add_argument("--no-attrib", dest="attrib", action="store_false",
-                        default=True, help="报告跳过 dll 反查（快，但没有 mod 归属）")
+                        default=True,
+                        help="跳过 dll 反查（快，但产物的 mods 退回 caller 类型名根）")
     parser.add_argument("--quiet", action="store_true", help="不打印逐文件信息")
     args = parser.parse_args(argv)
 
@@ -1069,7 +1631,9 @@ def main(argv=None):
         files.extend(sorted(glob.glob(os.path.join(args.dir, "capture-*.jsonl"))))
     if not files:
         files = sorted(glob.glob(os.path.join(default_capture_dir(), "capture-*.jsonl")))
-    out_path = args.out or os.path.join(args.packs_dir, "capture-candidates.jsonl")
+    out_path = resolve_repo_path(args.out) or os.path.join(args.packs_dir, "capture-candidates.jsonl")
+    report_path = resolve_repo_path(args.report)
+    patterns_path = resolve_repo_path(args.patterns)
     if not files:
         print("[capture] 没找到 capture-*.jsonl（目录 %s）" % default_capture_dir())
         print("[capture] 提示：插件跑过一轮游戏后才会生成；也可以显式传文件名。")
@@ -1085,7 +1649,17 @@ def main(argv=None):
     if not args.quiet:
         for path in files:
             print("[capture] 输入 %s" % path)
-    stats, rows = ingest(files, args.packs_dir, args.pool, out_path, buckets)
+    # 归属（dll 反查）必须在 ingest 之前解析：产物行的 mods 直接取它，报告再复用同一份。
+    gamedata = args.gamedata
+    if not gamedata and args.attrib:
+        try:
+            from .harvest import default_gamedata
+            gamedata = default_gamedata()
+        except Exception:
+            gamedata = None
+    managed = args.managed or (default_managed(gamedata) if gamedata else "")
+    stats, rows = ingest(files, args.packs_dir, args.pool, out_path, buckets,
+                         args.raw_templates, gamedata or "", managed, args.attrib)
     print("[capture] 文件 %d 个（缺失 %d）/ 读入 %d 行（坏行 %d / 坏记录 %d / h 不一致 %d）"
           % (stats["files"], stats["missing_files"], stats["rows_in"],
              stats["bad_lines"], stats["bad_rows"], stats["h_mismatch"]))
@@ -1095,27 +1669,53 @@ def main(argv=None):
     print("[capture] 分桶 never %d / template %d / candidate %d（声明字段采信 %d / 自算 %d）"
           % (stats["never"], stats["template"], stats["candidate"],
              stats["declared_used"], stats["computed"]))
+    if stats.get("pattern") or stats.get("pattern_none") or stats.get("pattern_sym"):
+        print("[capture] 骨架塌缩：template %d 条 -> %d 个骨架（覆盖 %d 条实例）；"
+              "判不出骨架降级 candidate %d 条；纯符号骨架丢弃 %d 个 / %d 条实例"
+              % (stats["template"], stats["pattern"],
+                 stats.get("pattern_instances", 0),
+                 stats.get("pattern_none", 0),
+                 stats.get("pattern_sym", 0),
+                 stats.get("pattern_sym_instances", 0)))
     print("[capture] reason: %s" % (_reason_text(stats) or "-"))
     print("[capture] 输出 %d 行 / %d 字节 -> %s"
           % (stats["out_rows"], stats["out_bytes"], out_path))
     if os.path.isfile(out_path):
         print("[capture] sha256 %s" % sha256_file(out_path))
+    attrib = stats.get("_attrib") or {}
+    if attrib:
+        hist = {}
+        for row in rows:
+            for mod in row["mods"]:
+                hist[mod] = hist.get(mod, 0) + 1
+        no_mod = sum(1 for row in rows
+                     if all(m in ("unknown", UNATTRIBUTED) for m in row["mods"]))
+        top = sorted(hist.items(), key=lambda kv: (-kv[1], kv[0]))[:8]
+        print("[capture] mod 归属：%d 个 mod id（%d 行有归属 / 共 %d 行，%d 行只有 %s）"
+              % (len(hist), len(rows) - no_mod, len(rows), no_mod, UNATTRIBUTED))
+        print("[capture] mods top: %s"
+              % "，".join("%s %d" % (k, v) for k, v in top))
+    else:
+        why = (stats.get("_dll_info") or {}).get("why") or ""
+        print("[capture] mod 归属：没做 dll 反查（%s），行的 mods 退回 caller 类型名根"
+              % ({"no-attrib": "--no-attrib",
+                  "no-gamedata": "没找到 GameData / Managed"}.get(why, why or "未知")))
 
-    if args.report:
-        gamedata = args.gamedata
-        if not gamedata and args.attrib:
-            try:
-                from .harvest import default_gamedata
-                gamedata = default_gamedata()
-            except Exception:
-                gamedata = None
-        managed = args.managed or (default_managed(gamedata) if gamedata else "")
+    if report_path or patterns_path:
         note = " ".join(["python -m i18n_tools.capture_ingest"] + list(sys.argv[1:]))
         tri = build_triage(stats, rows, stats.get("_pack_h") or set(),
                            gamedata or "", managed, args.attrib)
+    else:
+        tri = None
+        note = ""
+    if patterns_path and tri is not None:
+        ptext = build_patterns(stats, rows, tri, argv_note=note)
+        pwritten = write_triage(patterns_path, ptext)
+        print("[capture] 骨架清单 %d 字节 -> %s" % (pwritten, patterns_path))
+    if report_path and tri is not None:
         text = render_triage(stats, rows, tri, argv_note=note)
-        written = write_triage(args.report, text)
-        print("[capture] 报告 %d 字节 -> %s" % (written, args.report))
+        written = write_triage(report_path, text)
+        print("[capture] 报告 %d 字节 -> %s" % (written, report_path))
         if tri["attrib"]:
             known = sum(1 for r in tri["attrib"].values() if r["mod"])
             print("[capture] caller 归属 %d / %d 个能反查出宿主（扫 %d 个 dll / %d 个类型）"
@@ -1243,8 +1843,10 @@ def selftest_cases(base):
     a("声明字段被采信（10 字段）", stats["declared_used"] == 3,
       "got=%d" % stats["declared_used"])
     a("缺声明字段时自算", stats["computed"] == 5, "got=%d" % stats["computed"])
-    a("产物行数 = candidate + template", stats["out_rows"] == 5,
-      "got=%d" % stats["out_rows"])
+    a("产物行数 = candidate + pattern（template 已塌缩）",
+      stats["out_rows"] == 5 and stats["pattern"] == 2 and stats["pattern_none"] == 0,
+      "rows=%d pattern=%d none=%d" % (stats["out_rows"], stats["pattern"],
+                                      stats["pattern_none"]))
 
     by_n = {r["n"]: r for r in rows}
     vessel = by_n.get("Vessel mass") or {}
@@ -1258,8 +1860,10 @@ def selftest_cases(base):
     a("caller 是我们补丁名时 mods=unknown",
       (by_n.get("All Input Locks Cleared") or {}).get("mods") == ["unknown"],
       "got=%r" % (by_n.get("All Input Locks Cleared") or {}).get("mods"))
-    a("template 行保留（reason 来自声明字段）",
-      (by_n.get("ModuleManager: 8448 patches applied") or {}).get("reason") == "counter")
+    a("template 行塌缩成 pattern（不再原样落盘）",
+      (by_n.get("ModuleManager: # patches applied") or {}).get("bucket") == PATTERN
+      and "ModuleManager: 8448 patches applied" not in by_n
+      and stats["reasons"].get("counter", 0) >= 1)
     a("输出字段顺序固定", bool(rows) and list(rows[0]) == list(OUT_FIELDS),
       "got=%r" % (list(rows[0]) if rows else None))
     a("排序 = (bucket 序, h)",
@@ -1313,9 +1917,13 @@ def selftest_cases(base):
     a("跨会话: callers 去重、非 unknown 优先",
       v2.get("callers") == ["RCSBuildAid.MenuMass.get_buttonTitle", "unknown"],
       "got=%r" % (v2.get("callers"),))
-    load2 = by_n2.get("Loading sound asset 0/234") or {}
-    a("跨会话: 同 h 不同 bucket 取更保守", load2.get("bucket") == "template", "got=%r" % load2.get("bucket"))
-    a("跨会话: reason 跟着最终 bucket 走", load2.get("reason") == "progress", "got=%r" % load2.get("reason"))
+    load2 = by_n2.get("Loading sound asset #/#") or {}
+    a("跨会话: 同 h 不同 bucket 取更保守（合并侧仍是 template）",
+      effective_bucket(stats2["_agg"][h_load]) == ("template", "progress"),
+      "got=%r" % (effective_bucket(stats2["_agg"][h_load]),))
+    a("跨会话: 塌缩后的 pattern 行 count / sessions 跨会话累加",
+      load2.get("count") == 3 and load2.get("sessions") == 2,
+      "got=%r/%r" % (load2.get("count"), load2.get("sessions")))
     a("offline_veto: 声明 candidate 但离线判 never 的串不进产物",
       "ReStockPlus/Parts/Deep/x" not in by_n2 and stats2["offline_veto"] >= 1,
       "veto=%d rows=%d" % (stats2["offline_veto"], len(rows2)))
@@ -1371,8 +1979,245 @@ def selftest_cases(base):
       attribute_callers(["Thing.Draw"], {"X.Thing": ("A.dll", "A"), "Y.Thing": ("A2.dll", "A")})["Thing.Draw"]["how"] == "suffix-same-mod")
     a("归属: 没给 GameData 时报告不做反查（不抛）",
       build_triage(stats2, rows2, stats2["_pack_h"], "", "", True)["attrib"] == {})
-    return out
 
+    # --- 骨架塌缩（pattern）：判据 / 聚合 / 降级 / --raw-templates / --buckets / 报告 ---
+    a("noise_label: 加载屏骨架姓 LoadingScreen",
+      noise_label("Loading texture asset #/# (buffer=#MB)") == "LoadingScreen",
+      "got=%r" % (noise_label("Loading texture asset #/# (buffer=#MB)"),))
+    a("noise_label: 普通句子不算噪声", noise_label("Engine thrust: # kN") == "")
+    a("english_words: 只数剥掉 TMP 标签后的英文单词",
+      english_words("Engine thrust: # kN") == 3
+      and english_words("<color=#FF0000></color>") == 0,
+      "got=%r/%r" % (english_words("Engine thrust: # kN"),
+                     english_words("<color=#FF0000></color>")))
+    a("is_translatable_pattern: ≥2 词且非噪声才算可译",
+      is_translatable_pattern("Engine thrust: # kN")
+      and not is_translatable_pattern("Loading texture asset #/# (buffer=#MB)")
+      and not is_translatable_pattern("# m/s"))
+
+    d3 = os.path.join(base, "cap3")
+
+    def _cap(n, s, caller, count, seen, sink="GUILayout.DoLabel"):
+        return {"h": fnv.hash_text(textnorm.normalize(n)), "n": n, "s": s,
+                "sink": sink, "caller": caller, "count": count, "firstSeen": seen}
+
+    _write(os.path.join(d3, "capture-p.jsonl"), _jsonl([
+        _cap("Engine thrust: 1.5 kN", "Engine thrust: 1.5 kN",
+             "RealFuels.Engine.thrust", 2, "2026-10-25T01:00:00Z"),
+        _cap("Engine thrust: 2.5 kN", "Engine thrust: 2.5 kN",
+             "RealFuels.Engine.thrust", 1, "2026-10-25T01:05:00Z"),
+        _cap("Loading texture asset 12/34 (buffer=256MB)",
+             "Loading texture asset 12/34 (buffer=256MB)",
+             "KSP.LoadingScreen.update", 7, "2026-10-25T01:10:00Z", "GUI.Label"),
+        # 10 个数字段 > MAX_SLOTS(8)：判不出骨架 -> 降级 candidate
+        _cap("Stage 1: 2 3 4 5 6 7 8 9 10", "Stage 1: 2 3 4 5 6 7 8 9 10",
+             "KSP.Countdown.tick", 3, "2026-10-25T01:15:00Z", "GUI.Label"),
+        # 0 个数字段：判不出骨架 -> 降级 candidate
+        _cap("Hello world", "Hello world", "KSP.DebugToolbar.draw", 1,
+             "2026-10-25T01:20:00Z", "GUI.Box"),
+        # 纯符号骨架：skeleton 得 "# - #"，一个 ASCII 字母都没有 -> 卫生门丢弃
+        _cap("1.5 - 2.5", "1.5 - 2.5", "KSP.NavBall.read", 2,
+             "2026-10-25T01:25:00Z", "GUI.Label"),
+    ]))
+    _write(os.path.join(d3, "capture-q.jsonl"), _jsonl([
+        _cap("Engine thrust: 3.5 kN", "Engine thrust: 3.5 kN",
+             "MechJeb2.Embedded.display", 4, "2026-10-25T02:00:00Z"),
+        _cap("Loading texture asset 99/100 (buffer=1024MB)",
+             "Loading texture asset 99/100 (buffer=1024MB)",
+             "KSP.LoadingScreen.update", 5, "2026-10-25T02:05:00Z", "GUI.Label"),
+    ]))
+    pfiles = [os.path.join(d3, "capture-p.jsonl"), os.path.join(d3, "capture-q.jsonl")]
+    out_p = os.path.join(base, "patterns.jsonl")
+    stats_p, rows_p = ingest(pfiles, packs, os.path.join(packs, "pool.jsonl"), out_p)
+    byn = {r["n"]: r for r in rows_p}
+    thrust = byn.get("Engine thrust: # kN") or {}
+    loading = byn.get("Loading texture asset #/# (buffer=#MB)") or {}
+    a("骨架: 5 条 template 实例塌缩成 2 个骨架",
+      stats_p["pattern"] == 2 and stats_p["pattern_instances"] == 5,
+      "pattern=%d instances=%d" % (stats_p["pattern"], stats_p["pattern_instances"]))
+    a("骨架: count 是实例 count 之和、sessions 取并集",
+      thrust.get("count") == 7 and thrust.get("sessions") == 2,
+      "got=%r/%r" % (thrust.get("count"), thrust.get("sessions")))
+    a("骨架: exact 取该骨架下 count 最大的真实原文",
+      thrust.get("exact") == "Engine thrust: 3.5 kN", "got=%r" % (thrust.get("exact"),))
+    a("骨架: n == s == 骨架文本", thrust.get("n") == "Engine thrust: # kN"
+      and thrust.get("s") == "Engine thrust: # kN")
+    a("骨架: caller 取众数、callers 去重、mods 取并集",
+      thrust.get("caller") == "RealFuels.Engine.thrust"
+      and thrust.get("callers") == ["MechJeb2.Embedded.display",
+                                   "RealFuels.Engine.thrust"]
+      and thrust.get("mods") == ["MechJeb2", "RealFuels"],
+      "got=%r/%r/%r" % (thrust.get("caller"), thrust.get("callers"),
+                        thrust.get("mods")))
+    a("骨架: reason 为空（pattern 是产物侧派生档）", thrust.get("reason") == "",
+      "got=%r" % (thrust.get("reason"),))
+    a("骨架: 噪声骨架也照样落盘（翻不翻另说）",
+      loading.get("count") == 12 and loading.get("sessions") == 2,
+      "got=%r/%r" % (loading.get("count"), loading.get("sessions")))
+    a("骨架判不出（>8 个数字段）的行降级 candidate，不丢",
+      stats_p["pattern_none"] == 1
+      and (byn.get("Stage 1: 2 3 4 5 6 7 8 9 10") or {}).get("bucket") == "candidate"
+      and (byn.get("Hello world") or {}).get("bucket") == "candidate",
+      "none=%d" % stats_p["pattern_none"])
+    a("产物里没有 template 行（raw 得显式开）",
+      all(r["bucket"] != "template" for r in rows_p),
+      "got=%r" % sorted({r["bucket"] for r in rows_p}))
+    a("pattern 行 h == fnv.hash_text(normalize(n))",
+      all(r["h"] == fnv.hash_text(textnorm.normalize(r["n"]))
+          for r in rows_p if r["bucket"] == PATTERN))
+    a("骨架卫生门: 纯符号骨架（# - #）丢弃且记账（实例数按行计，不是 count）",
+      stats_p["pattern_sym"] == 1 and stats_p["pattern_sym_instances"] == 1
+      and not [r for r in rows_p if r["bucket"] == PATTERN
+               and not _LETTER_RE.search(r["n"])],
+      "sym=%d/%d" % (stats_p["pattern_sym"], stats_p["pattern_sym_instances"]))
+    a("产物行数 = 2 pattern + 2 降级 candidate（纯符号骨架不落盘）",
+      len(rows_p) == 4, "got=%d" % len(rows_p))
+
+    out_raw = os.path.join(base, "raw-templates.jsonl")
+    stats_raw, rows_raw = ingest(pfiles, packs, os.path.join(packs, "pool.jsonl"),
+                                 out_raw, raw_templates=True)
+    a("--raw-templates: 保留 template 行、不塌缩",
+      sorted({r["bucket"] for r in rows_raw}) == ["candidate", "template"]
+      and not stats_raw.get("pattern"),
+      "got=%r pattern=%r" % (sorted({r["bucket"] for r in rows_raw}),
+                             stats_raw.get("pattern")))
+    out_only_pat = os.path.join(base, "only-pattern.jsonl")
+    stats_q, rows_q = ingest(pfiles, packs, os.path.join(packs, "pool.jsonl"),
+                             out_only_pat, ["pattern"])
+    a("--buckets pattern: 产物只剩 pattern（降级的 candidate 被滤掉）",
+      bool(rows_q) and all(r["bucket"] == PATTERN for r in rows_q),
+      "got=%r" % sorted({r["bucket"] for r in rows_q}))
+    with open(out_p, "rb") as fh:
+        p1 = fh.read()
+    ingest(pfiles, packs, os.path.join(packs, "pool.jsonl"), out_p)
+    with open(out_p, "rb") as fh:
+        p2 = fh.read()
+    a("骨架塌缩连跑两遍逐字节相同", p1 == p2)
+
+    tri_p = build_triage(stats_p, rows_p, stats_p["_pack_h"], "", "", False)
+    a("报告: pattern 档按骨架计数、噪声/可译分类现算",
+      tri_p["pattern"]["rows"] == 2 and tri_p["pattern"]["n_noise"] == 1
+      and tri_p["pattern"]["transl"] == 1
+      and tri_p["pattern"]["downgraded"] == 1
+      and tri_p["pattern"]["sym"] == 1
+      and tri_p["pattern"]["sym_instances"] == 1,
+      "got=%r" % ({k: tri_p["pattern"][k] for k in
+                   ("rows", "n_noise", "transl", "downgraded",
+                    "sym", "sym_instances")},))
+    ptext = build_patterns(stats_p, rows_p, tri_p, argv_note="python -m x --patterns p")
+    pmarks = ("# 运行时捕获：模板骨架清单", "## 1. 可译骨架", "## 2. 噪声骨架",
+              "## 3. 全部骨架", "## 4. 口径与判据")
+    a("骨架清单: 含全部 5 个关键小节", all(m in ptext for m in pmarks),
+      "missing=%r" % [m for m in pmarks if m not in ptext])
+    a("骨架清单: 总览表里记了纯符号丢弃的骨架数/实例数",
+      "纯符号骨架丢弃" in ptext and "| 1 个骨架 / 1 条实例 |" in ptext)
+    a("骨架清单: 可译骨架出现在第 1 节、噪声骨架不出现",
+      ptext.split("## 2. 噪声骨架")[0].count("Engine thrust: # kN") >= 1
+      and "Loading texture asset" not in ptext.split("## 2. 噪声骨架")[0])
+    a("骨架清单: 写到盘上 UTF-8 无 BOM 以换行结尾",
+      write_triage(os.path.join(base, "reports", "capture-patterns.md"), ptext) > 500)
+    # --- mods 归属口径：dll 名优先 / UI18n-Unattributed 兜底 / --no-attrib 退回类型名根 ---
+    a("归属: dll 名去掉扩展名才是 mod id（MechJeb2.dll -> MechJeb2）",
+      attrib_mod("GuiUtils.SimpleTextBox",
+                 {"GuiUtils.SimpleTextBox": {"asm": "MechJeb2.dll", "mod": "MechJeb2"}})
+      == "MechJeb2")
+    a("归属: asm 缺失才退回 GameData 目录名",
+      attrib_mod("c", {"c": {"asm": "", "mod": "TUFX"}}) == "TUFX")
+    a("归属: 反查不出（asm/mod 都空）落 UI18n-Unattributed",
+      attrib_mod("c", {"c": {"asm": "", "mod": ""}}) == UNATTRIBUTED
+      and attrib_mod("not-in-attrib", {}) == UNATTRIBUTED)
+    a("归属: mods_of 去重排序、空 attrib 退回 infer_mods",
+      mods_of(["B.x", "A.y", "B.z"],
+              {"B.x": {"asm": "Zed.dll"}, "A.y": {"asm": "Alpha.dll"},
+               "B.z": {"asm": "Zed.dll"}}) == ["Alpha", "Zed"]
+      and mods_of(["GuiUtils.SimpleTextBox"]) == ["GuiUtils"])
+    a("归属: 一行里只要有一个 caller 查得出，就不记 UI18n-Unattributed",
+      mods_of(["A.y", "unknown"], {"A.y": {"asm": "Alpha.dll"}})
+      == ["Alpha"]
+      and mods_of(["unknown"], {}) == ["unknown"],
+      "got=%r" % (mods_of(["A.y", "unknown"], {"A.y": {"asm": "Alpha.dll"}}),))
+    fake_index = {"GuiUtils": ("MechJeb2.dll", "MechJeb2"),
+                  "ConfigurationGUI": ("TUFX.dll", "TUFX"),
+                  "ProfilerUI": ("KSPPerformanceProfiler.dll", "KSPPerformanceProfiler"),
+                  "UIPartActionLabel": ("Assembly-CSharp.dll", "KSP")}
+    callers4 = ["GuiUtils.SimpleTextBox", "ConfigurationGUI",
+                "ProfilerUI.DrawPluginsContent", "UIPartActionLabel.UpdateItem",
+                "unknown"]
+    att4 = attribute_callers(callers4, fake_index)
+    a("归属: 精确命中时 asm 就是 dll 文件名",
+      att4["GuiUtils.SimpleTextBox"]["asm"] == "MechJeb2.dll"
+      and att4["GuiUtils.SimpleTextBox"]["mod"] == "MechJeb2",
+      "got=%r" % (att4["GuiUtils.SimpleTextBox"],))
+    d4 = []
+
+    def _cap4(n, caller, count=3):
+        d4.append({"h": fnv.hash_text(textnorm.normalize(n)), "n": n, "s": n,
+                   "sink": "GUILayout.DoLabel", "caller": caller, "count": count,
+                   "firstSeen": "2026-10-25T03:00:00Z", "_session": "s"})
+
+    _cap4("Engine thrust: 1.5 kN", "GuiUtils.SimpleTextBox")
+    _cap4("Samples: 4 x 4", "ConfigurationGUI")
+    _cap4("Pressure: 101 kPa", "UIPartActionLabel.UpdateItem")
+    _cap4("Press space to continue", "ProfilerUI.DrawPluginsContent")
+    _cap4("Mystery gauge", "unknown")
+    st4 = new_stats()
+    agg4 = merge_rows(list(d4), st4)
+    rows4 = build_rows(agg4, set(), set(), st4, attrib=att4)
+    byn4 = {r["n"]: r for r in rows4}
+    thr4 = byn4.get("Engine thrust: # kN") or {}
+    smp4 = byn4.get("Samples: # x #") or {}
+    pre4 = byn4.get("Pressure: # kPa") or {}
+    prs4 = byn4.get("Press space to continue") or {}
+    mys4 = byn4.get("Mystery gauge") or {}
+    a("归属: 产物 mods 取 dll 名（不是 caller 的类型名根）",
+      thr4.get("mods") == ["MechJeb2"] and smp4.get("mods") == ["TUFX"]
+      and prs4.get("mods") == ["KSPPerformanceProfiler"],
+      "got=%r/%r/%r" % (thr4.get("mods"), smp4.get("mods"), prs4.get("mods")))
+    a("归属: dll 名优先于 GameData 目录名（Assembly-CSharp 而不是 KSP）",
+      pre4.get("mods") == ["Assembly-CSharp"], "got=%r" % (pre4.get("mods"),))
+    a("归属: 反查不出的 caller 落 UI18n-Unattributed（不写 unknown、不写类型名）",
+      mys4.get("mods") == [UNATTRIBUTED], "got=%r" % (mys4.get("mods"),))
+    bad_ids = ("GuiUtils", "ConfigurationGUI", "ProfilerUI", "UIPartActionLabel",
+               "unknown")
+    a("归属: 产物里没有任何类型名 / unknown 冒充 mod",
+      not [m for r in rows4 for m in r["mods"] if m in bad_ids],
+      "got=%r" % ([m for r in rows4 for m in r["mods"] if m in bad_ids],))
+    st4b = new_stats()
+    agg4b = merge_rows(list(d4), st4b)
+    rows4b = build_rows(agg4b, set(), set(), st4b)
+    byn4b = {r["n"]: r for r in rows4b}
+    a("归属: 不给 attrib 时退回 caller 类型名根（--no-attrib 老口径）",
+      (byn4b.get("Engine thrust: # kN") or {}).get("mods") == ["GuiUtils"]
+      and (byn4b.get("Mystery gauge") or {}).get("mods") == ["unknown"],
+      "got=%r/%r" % ((byn4b.get("Engine thrust: # kN") or {}).get("mods"),
+                     (byn4b.get("Mystery gauge") or {}).get("mods")))
+    a("归属: build_attrib 找不到 GameData / 关掉反查时返回空 attrib 并记原因",
+      build_attrib(agg4, os.path.join(base, "NoSuchGameData"), "", True)
+      == ({}, {"dlls": 0, "bad": 0, "types": 0, "why": "no-gamedata"})
+      and build_attrib(agg4, "", "", True)[1]["why"] == "no-gamedata"
+      and build_attrib(agg4, "", "", False)[1]["why"] == "no-attrib")
+    st4["_attrib"] = att4
+    st4["_dll_info"] = {"dlls": 4, "bad": 0, "types": 4, "why": ""}
+    tri4 = build_triage(st4, rows4, set(), "", "", False)
+    a("报告: mods 直方图 / 无归属行数 / 改归行数都是现算",
+      tri4["mods"]["hist"].get("MechJeb2") == 1
+      and tri4["mods"]["hist"].get(UNATTRIBUTED) == 1
+      and tri4["mods"]["no_mod"] == 1 and tri4["mods"]["remapped"] == len(rows4)
+      and tri4["mods"]["attributed"] is True,
+      "got=%r" % ({k: tri4["mods"][k] for k in
+                   ("no_mod", "remapped", "attributed")},))
+    text4 = render_triage(st4, rows4, tri4, argv_note="python -m x --all d")
+    a("报告: 含『产物行 mods 的取值口径』小节、且点名 dll 名优先与兜底值",
+      "### 产物行" in text4 and "取值口径" in text4
+      and "dll 名优先" in text4 and UNATTRIBUTED in text4)
+    st4c = new_stats()
+    agg4c = merge_rows(list(d4), st4c)
+    rows4c = build_rows(agg4c, set(), set(), st4c)
+    tri4c = build_triage(st4c, rows4c, set(), "", "", False)
+    a("报告: 没做反查时小节说明退回 caller 类型名根",
+      "退回 caller 类型名根" in render_triage(st4c, rows4c, tri4c, argv_note="x"))
+
+    return out
 
 
 if __name__ == "__main__":

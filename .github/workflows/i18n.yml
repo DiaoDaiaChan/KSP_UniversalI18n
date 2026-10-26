@@ -54,7 +54,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: 工具自检（240 项）
+      - name: 工具自检（280 项）
         working-directory: tools
         run: python -m i18n_tools.selftest
 
@@ -76,7 +76,7 @@ jobs:
           {
             echo "### i18n 门禁"
             echo ""
-            echo "四道门按顺序执行：selftest（240 项）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）。"
+            echo "四道门按顺序执行：selftest（280 项）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）。"
             echo ""
             echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
           } >> "$GITHUB_STEP_SUMMARY"

@@ -264,9 +264,16 @@ namespace UI18n.Runtime
             //     门禁顺序在 UpdateWorkflow 里：地址空 -> 完全不联网（连 socket 都不开）。
             StartUpdater(config, language);
 
-            // 7) 一行汇总
+            // 7) 一行汇总（token 一个都不许改：外部脚本与 README 都按这一行抓）
             Log.Info("ready: patches=" + ok + "/" + (ok + failed) + ", dict entries=" + pack.Entries
                      + ", language=" + Printable(language) + ", version=" + Version);
+
+            // 7b) 骨架通道（v1.3）：单独一行，且只在真的有骨架行时打 —— 没启用的人日志一个字节都不多。
+            if (pack.PatternEntries > 0)
+            {
+                Log.Info("pattern: entries=" + pack.PatternEntries + ", enabled=" + Bool(config.PatternMatching));
+            }
+
             Log.Always(DiagInstalled(config, pack, ok, failed));
 
             _statsActive = ok > 0;

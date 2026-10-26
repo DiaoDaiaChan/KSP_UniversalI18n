@@ -390,6 +390,7 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `CaptureMisses` | `True` | 缺命中捕获总开关（§9.8）：把「字典里没有、但真的被渲染层看到」的字符串去重后落到 `PluginData/UI18n/capture-*.jsonl`。**只写本地文件，不上传任何东西** |
 | `CaptureMaxEntries` | `5000` | 捕获的去重条数上限，触顶后只计数不再记录（日志 `capture: cap reached`）。负数按 `0` 处理 |
 | `CaptureMaxTemplateEntries` | `200` | 模板档（含数字的计数器 / 进度串）**单独**的条数上限，**0 = 一条都不录、负数 = 不限制**。与上一行分开算（§7.4） |
+| `PatternMatching` | `True` | **数字骨架**（v1.3，规则与门禁见 `src/UI18n.Core/Text/TextSkeleton.cs` 与 `tests/UI18n.Core.Tests/Data/skeleton-golden.jsonl`）：精确查表未命中时把原文里的数字换成 `#` 得到骨架再查一次，命中就把数字填回。`False` = 退回 v1.2 的精确匹配（模板串重新变成不翻）。TMP 标签里的 `#`（`<color=#FF00AA>`）不算占位符 |
 | `ShadowStyleDraw` | `False` | **实验开关，正常玩家不要开**（§9.9）：额外给 `GUIStyle.Internal_Draw` / `Internal_Draw2` 装两个只读影子 prefix，只统计、绝不改文本。round 8 实测零收益，已归档，代码保留只作取证工具 |
 | `UpdateBaseUrl` | `https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/update` | 起点地址（§11、§12.2）。**空 = 完全不联网**：一个 socket 都不开，行为与 v1.1 一致。非空时只接受 `https://` 任意主机或 `http://127.0.0.1` / `http://localhost`，其它写法一律直接拒绝并 warn |
 | `UpdateChannel` | `stable` | 发布通道目录名，manifest 地址 = `<UpdateBaseUrl>/<UpdateChannel>/manifest.json` |
@@ -666,6 +667,15 @@ pwsh -File _scratch\p1\probe.ps1 -Action Remove      # 必须移除，否则会�
 - 被额度挡掉的条数记在 `tmplSkipped`，出现在每次落盘的 `capture: distinct=…, template=…, tmplSkipped=…` 里；
   **不会**打印 cap reached 告警（限额是设计行为，不是故障）。
 - 挡掉的 hash 记成 `filtered`，所以后续 `CountMiss` 只累加计数、不会凭空造记录。
+
+**单个调用者的限额（v1.3，`CaptureOptions.MaxPerCaller`，默认 60）**：模板档被限额之后噪声换了地方 ——
+round 11 的同批数据里，`ProfilerUI.DrawPluginsContent` 一个调用者独占 **130 条**，
+`LoadingScreen` 系列合计 **3,028 条**，候选档额度被几个大窗口吃光，而采集本来要回答的是
+「**哪些界面**缺翻译」。所以再按调用者分一层额度：同一调用者最多 60 条 distinct，
+超出部分只累加 `callerSkipped`（出现在 `capture: distinct=…, callerSkipped=…` 里），
+**取不到调用栈的**（`caller=unknown` / 空串）**豁免** —— 那些记录本来就少，且是唯一的线索。
+`0` 与负数 = 不限制（口径同 `CaptureMaxEntries`）。它是代码级选项，模板里没有对应 cfg 键。
+
 落盘是**追加**语义：每 60 s（`MissCapture.Tick`）把新记录追加进同一个文件，退出/销毁时再 flush 一次并打 `Describe()`。
 写失败（目录不可写等）只 `Warn` 一次并记 `LastWriteError`，**不抛**、不影响游戏。
 
@@ -1184,6 +1194,6 @@ pwsh tools\publish-update.ps1 -Version 1.2.1 -Channel beta
 
 ---
 
-配置键总数：18（§9.3）。其中 4 个是本功能新增（`UpdateBaseUrl` / `UpdateChannel` / `UpdateTimeoutSeconds` / `UpdateCheckDays`）。模板里 `UpdateBaseUrl` 默认填官方通道，因此**默认会做一次只读清单检查**；把它留空则行为与 v1.1 完全一致（不发一个请求，只有一行 `update: disabled (UpdateBaseUrl empty)`）。`AutoDownload` 默认 `False`：只提示不落盘。
+配置键总数：19（§9.3）。其中 4 个是本功能新增（`UpdateBaseUrl` / `UpdateChannel` / `UpdateTimeoutSeconds` / `UpdateCheckDays`）。模板里 `UpdateBaseUrl` 默认填官方通道，因此**默认会做一次只读清单检查**；把它留空则行为与 v1.1 完全一致（不发一个请求，只有一行 `update: disabled (UpdateBaseUrl empty)`）。`AutoDownload` 默认 `False`：只提示不落盘。
 
 

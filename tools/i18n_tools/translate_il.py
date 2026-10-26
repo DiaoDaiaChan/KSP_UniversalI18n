@@ -35,6 +35,7 @@ from pathlib import Path
 
 from . import llm as llmlib
 from . import mask as masklib
+from . import skeleton as SK
 from . import translate as T
 from .fnv import hash_text
 from .textnorm import has_cjk, is_key_like, is_pure_number, is_url_only, normalize
@@ -58,8 +59,28 @@ PROMPT_VERSION_IL = "il1"
 
 DEFAULT_MAX_CHARS = 6000
 OUT_SUFFIX = ".il.jsonl"
-ALLOWED_FIELDS = ("h", "n", "s", "t", "mod", "ctx")
+ALLOWED_FIELDS = ("h", "n", "s", "t", "mod", "ctx", "p")
 MIN_LETTERS = 2
+
+#: 捕获通道的骨架桶：s 是「数字换成 #」的骨架串，译文必须逐字保留 # 的个数。
+#: 运行时仍按原样匹配（h = fnv1a(normalize(骨架))），p=1 只是审计标记。
+PATTERN_BUCKET = "pattern"
+
+#: 九门禁：G1..G8 复用 translate.GATES（不改那个文件——它属于 cfg 通道，
+#: 口径一改 218 例单测跟着漂），G9（骨架占位符个数）只对 pattern 桶生效。
+GATE_NAMES = tuple(T.GATES) + ("G9",)
+
+#: 骨架批上限（比 short_label 的 120 小：一条骨架要判 # 个数，长批里模型更容易漏）。
+PATTERN_BATCH_CAP = 60
+
+#: 批内含骨架时追加到 system prompt 的额外约束（不改 T.system_prompt 的既有口径）。
+PATTERN_PROMPT = "\n".join([
+    "【本批含骨架字符串（数字占位符版）】",
+    "1. 原文里的 # 是数字占位符，运行时会被真实数字（可能带单位）替换。"
+    "译文里 # 的个数必须与原文逐个相同；位置可随中文语序移动，# 前后的空格可自行调整。",
+    "2. 绝不把 # 替换成具体数字，绝不合并相邻的两个 #，绝不新造 #。",
+    "3. 其余规则不变：<<1>> 一类编号、{0} %s %d、TMP 标签与属性值、哨兵 <<M0>> 一律逐字节保留。",
+]) + "\n"
 
 _LETTER_RE = re.compile(r"[A-Za-z]")
 _TAG_RE = re.compile(r"<[^<>]{0,80}>")
@@ -93,7 +114,7 @@ def iter_jsonl(path):
 
 
 def asm_version_base(base):
-    """剥掉尾部版本段：ModuleManager.4.2.3 -> ModuleManager。
+    r"""剥掉尾部版本段：ModuleManager.4.2.3 -> ModuleManager。
 
     lead 裁定（m01857）：真实程序集叫 ModuleManager.4.2.3.dll，版本号留在 mod 身份里会让
     packs/index.json 出现版本号、下次升级就换名。规则固定：尾部匹配 (\.[0-9]+){2,} 才整段剥掉；
@@ -186,8 +207,11 @@ def mods_of(row, kind):
 
 def bucket_of(row, text):
     bucket = (row.get("bucket") or "").strip().lower()
-    if bucket in ("never", "translate", "short_label"):
+    if bucket in ("never", "translate", "short_label", PATTERN_BUCKET):
         return bucket
+    # 兼容别名：task-45 的骨架行若标成 skeleton 也能进骨架通道（口径只有一个）
+    if bucket == "skeleton":
+        return PATTERN_BUCKET
     if bucket:
         return bucket
     return "short_label" if len(text) <= 24 else "translate"
@@ -208,11 +232,25 @@ def load_candidates(paths, source="auto"):
                 text = row.get("text") if isinstance(row.get("text"), str) else row.get("s")
             if not isinstance(text, str):
                 continue
+            bucket = bucket_of(row, text)
+            pattern_no_slots = False
+            if bucket == PATTERN_BUCKET:
+                # 骨架通道的键是**骨架**本身：运行时先 TextSkeleton.TryBuild 再按骨架哈希查表
+                # （DictPack.TryGetPattern(hash(skeleton), skeleton) → FillBack 填回数字），
+                # 所以送翻与落库的原文必须是骨化后的文本，不是带真实数字的具体实例。
+                skeleton_text, _slots = SK.skeleton(text)
+                if skeleton_text is not None:
+                    text = skeleton_text           # 具体实例（带真实数字）→ 归一成骨架
+                elif SK.placeholders(text) > 0:
+                    pass                           # 上游已骨化（task-45 起 capture_ingest 直接产骨架）：原样用
+                else:
+                    pattern_no_slots = True        # 既无数字段也无 #：不是骨架，运行时永不算骨架 → 不写死行
             out.append({
                 "kind": kind,
                 "text": text,
                 "h_given": row.get("h"),
-                "bucket": bucket_of(row, text),
+                "bucket": bucket,
+                "pattern_no_slots": pattern_no_slots,
                 "mods": mods_of(row, kind),
                 "ctx": ctx_of(row, kind),
                 "path": str(path),
@@ -249,6 +287,7 @@ def dedupe(cands):
                 "ctxs": [cand["ctx"]],
                 "kinds": [cand["kind"]],
                 "bucket": cand["bucket"],
+                "pattern_no_slots": cand.get("pattern_no_slots", False),
                 "count": 1,
                 "h_given": cand["h_given"],
             }
@@ -264,6 +303,8 @@ def dedupe(cands):
             group["ctxs"].append(cand["ctx"])
         if cand["kind"] not in group["kinds"]:
             group["kinds"].append(cand["kind"])
+        if cand.get("pattern_no_slots"):
+            group["pattern_no_slots"] = True
         if cand["bucket"] == "translate":
             group["bucket"] = "translate"
         elif cand["bucket"] == "never":
@@ -297,16 +338,29 @@ def visible_letters(text):
     return len(_LETTER_RE.findall(body))
 
 
-def prefilter(group, existing=None):
-    """返回拒绝原因（None = 送去翻译）。顺序即优先级。"""
+def prefilter(group, existing=None, override_keys=None):
+    """返回拒绝原因（None = 送去翻译）。顺序即优先级。
+
+    override_keys：人工覆盖命中的 h 集合。覆盖优先于后面所有启发式跳过 ——
+    单 token 真 UI 文案（Iterations / Pathfinding / EarlyRebuild）会被 no-words 误杀，
+    而人工表里已经有负责的译文，不能因为启发式规则丢掉（实测漏 8 条）。
+    """
     text = group["text"]
     stripped = text.strip()
     if not stripped:
         return "empty"
     if has_cjk(text):
         return "already-cjk"
-    if stripped.startswith("#") or is_key_like(stripped):
+    # 人工覆盖豁免：但仍不许放过真正的键引用（#autoLOC_500 这类无空白的紧凑标识符）
+    if override_keys and group["h"] in override_keys and not is_key_like(stripped):
+        return None
+    # 骨架天然可能以 # 开头（"# bit indices"、"#/#kN Thruster" 一类），
+    # 那不是未解析的本地化键引用，key-ref 判定只对真实文案生效。
+    if group["bucket"] != PATTERN_BUCKET and (stripped.startswith("#")
+                                              or is_key_like(stripped)):
         return "key-ref"
+    if group.get("pattern_no_slots"):
+        return "pattern-no-slots"
     # 安全网：不管上游标了什么 bucket，去掉标签/占位符后不足 2 个字母就不该进翻译
     # （"--------------"、"x"、纯符号分隔线都走这条，比 bucket-never 更早）
     if visible_letters(text) < MIN_LETTERS:
@@ -362,7 +416,8 @@ def build_items(groups):
             "row": {"text": group["text"], "mod": group["host"]},
             "masked": res.text,
             "res": res,
-            "role": "label" if group["bucket"] == "short_label" else "description",
+            "role": ("pattern" if group["bucket"] == PATTERN_BUCKET
+                     else "label" if group["bucket"] == "short_label" else "description"),
             "bucket": group["bucket"],
         })
     return items
@@ -379,7 +434,8 @@ def build_batches(items, max_chars=DEFAULT_MAX_CHARS, group_by_mod=True):
         current = []
         chars = 0
         for item in pending:
-            cap = limit_for(item["masked"])
+            cap = (PATTERN_BATCH_CAP if item["bucket"] == PATTERN_BUCKET
+                   else limit_for(item["masked"]))
             size = len(item["masked"])
             if current and (len(current) >= cap or chars + size > max_chars):
                 batches.append({"key": key, "bucket": key[1], "items": current})
@@ -518,7 +574,7 @@ def load_overrides(path=None) -> tuple:
     return table, {"conflicts": conflicts, "bad": bad}
 
 
-def override_gate(source, zh) -> str:
+def override_gate(source, zh, pattern=False) -> str:
     """人工译文的结构性门禁（与 G2/G4 同口径）：占位符多重集、富文本标签多重集。
 
     人工优先不等于免检：这两项一旦不符，运行时就是崩/串号/颜色错乱，所以不通过就整条跳过
@@ -530,6 +586,9 @@ def override_gate(source, zh) -> str:
         return "placeholder"
     if masklib.count_rich_tags(source) != masklib.count_rich_tags(zh):
         return "richtext"
+    # G9 的人工通道口径：骨架的 # 个数必须一致（写错个数 = 运行时数字错位）
+    if pattern and SK.placeholders(source) != SK.placeholders(zh):
+        return "skeleton-slot"
     return ""
 
 
@@ -572,8 +631,8 @@ class Runner:
             "finish_reasons": {},
             "latency_total": 0.0,
             "latencies": [],
-            "gates": {name: 0 for name in T.GATES},
-            "gate_examples": {name: [] for name in T.GATES},
+            "gates": {name: 0 for name in GATE_NAMES},
+            "gate_examples": {name: [] for name in GATE_NAMES},
             "terms_injected": 0,
             "terms_distinct": set(),
             "locked_triggered": set(),
@@ -589,8 +648,11 @@ class Runner:
                                  for item in items]}
             self.stats["calls"] += 1
             return _OfflineResponse(json.dumps(payload, ensure_ascii=False))
+        system = T.system_prompt(soft_pairs)
+        if any(item["bucket"] == PATTERN_BUCKET for item in items):
+            system = system + "\n" + PATTERN_PROMPT
         messages = [
-            {"role": "system", "content": T.system_prompt(soft_pairs)},
+            {"role": "system", "content": system},
             {"role": "user", "content": T.user_message(items)},
         ]
         result = self.client.chat(messages, temperature=self.temperature)
@@ -614,6 +676,16 @@ class Runner:
         """门禁 + （可选）约定术语的 G6 窄豁免。所有门禁调用点都必须走这里。"""
         pairs = self._locked_pairs(item)
         restored, failed, notes = T.gate(item, zh_raw, pairs)
+        # G9（只对 pattern 桶）：骨架的 # 个数必须与原文一致。
+        # 与 G2 分开的理由：# 不是 TMP/KSP 的富文本占位符，运行时替换语义不同
+        # （骨架是数字段的抽象），混进 G2 会让报告看不出是骨架通道出的问题。
+        if item["bucket"] == PATTERN_BUCKET:
+            want_slots = SK.placeholders(item["group"]["text"])
+            got_slots = SK.placeholders(restored or "")
+            if want_slots != got_slots:
+                failed = list(failed) + ["G9"]
+                notes = dict(notes)
+                notes["G9"] = "骨架占位符 期望{} 实际{}".format(want_slots, got_slots)
         if failed and set(failed) == {"G6"} and self.g6_exempt:
             hit = g6_convention_exempt(item, restored, self.conventions)
             if hit:
@@ -642,7 +714,7 @@ class Runner:
         row = self.overrides.get(normalize(text)) or self.overrides.get(text)
         if row is None:
             return None
-        why = override_gate(text, row["zh"])
+        why = override_gate(text, row["zh"], pattern=item["bucket"] == PATTERN_BUCKET)
         if why:
             if len(self.stats["override_rejected"]) < 100:
                 self.stats["override_rejected"].append({
@@ -679,10 +751,14 @@ class Runner:
             status = "override"
             entry = {"h": group["h"], "n": group["n"], "s": group["text"],
                      "t": restored, "mod": T.safe_mod_name(group["host"])}
+            if bucket == PATTERN_BUCKET:
+                entry["p"] = 1
         elif not failed:
             status = "ok"
             entry = {"h": group["h"], "n": group["n"], "s": group["text"],
                      "t": restored, "mod": T.safe_mod_name(group["host"])}
+            if bucket == PATTERN_BUCKET:
+                entry["p"] = 1
         elif set(failed) == {"G8"} and (T.echo_keep(group["text"], restored)
                                         or keep_no_cjk(group["text"], restored)):
             status = "keep"
@@ -943,6 +1019,8 @@ def build_entries(results, ctx_mode="drop"):
             "t": entry["t"],
             "mod": T.safe_mod_name(entry["mod"]),
         }
+        if entry.get("p"):
+            row["p"] = int(entry["p"])
         if ctx_mode == "keep":
             ctxs = result.get("ctxs") or []
             if ctxs:
@@ -952,12 +1030,20 @@ def build_entries(results, ctx_mode="drop"):
     return entries, conflicts
 
 
-def write_packs(entries, out_dir=None, dry_run=False, prune=False):
+def write_packs(entries, out_dir=None, dry_run=False, prune=False, merge=False):
+    """把条目写成 packs/zh-cn/<mod>.il.jsonl。
+
+    merge=False（默认）：整文件覆盖本次条目（既有 selftest 期望的逐字节行为）。
+    merge=True：先读回既有文件，按 h 用本次条目覆盖/追加后整文件写回 —— 既有行不丢。
+    为什么需要：无密钥或限跑时只有人工覆盖的条目能出译文，整文件覆盖会把上千行既有
+    IL 包清空（lead 核对 write_packs/prune 时发现的两个毁数据行为之一）。
+    """
     out_dir = Path(out_dir or OUT_DIR)
     files = {}
     for entry in entries:
         files.setdefault(entry["mod"], []).append(entry)
-    summary = {"files": {}, "total": 0, "written": False, "removed": []}
+    summary = {"files": {}, "total": 0, "written": False, "removed": [],
+               "merged": {}, "added": {}, "existing_bad": 0}
     for mod, rows in files.items():
         rows.sort(key=lambda row: row["h"])
         summary["files"][mod] = len(rows)
@@ -968,9 +1054,40 @@ def write_packs(entries, out_dir=None, dry_run=False, prune=False):
     out_dir.mkdir(parents=True, exist_ok=True)
     for mod, rows in sorted(files.items()):
         path = out_dir / (mod + OUT_SUFFIX)
-        with path.open("w", encoding="utf-8", newline="\n") as handle:
+        if merge:
+            kept = {}  # h -> row（既有行）
+            if path.exists():
+                with path.open("r", encoding="utf-8") as handle:
+                    for line in handle:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            row = json.loads(line)
+                            key = row["h"]
+                        except (ValueError, TypeError, KeyError):
+                            summary["existing_bad"] += 1
+                            continue
+                        kept[key] = row
+            existing_rows = len(kept)
+            added = 0
             for row in rows:
-                handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+                if row["h"] not in kept:
+                    added += 1
+                kept[row["h"]] = row
+            ordered = [kept[key] for key in sorted(kept)]
+            with path.open("w", encoding="utf-8", newline="\n") as handle:
+                for row in ordered:
+                    handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+            summary["files"][mod] = len(ordered)
+            summary["merged"][mod] = existing_rows
+            summary["added"][mod] = added
+        else:
+            with path.open("w", encoding="utf-8", newline="\n") as handle:
+                for row in rows:
+                    handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+    if merge:
+        summary["total"] = sum(summary["files"].values())
     if prune:
         for path in sorted(out_dir.glob("*" + OUT_SUFFIX)):
             stem = path.name[:-len(OUT_SUFFIX)]
@@ -993,6 +1110,7 @@ def write_sample(results, path):
                 "h": result["h"],
                 "mod": result["mod"],
                 "bucket": result["bucket"],
+                "pattern": result["bucket"] == PATTERN_BUCKET,
                 "status": result["status"],
                 "gates": result["gates"],
                 "why": result.get("notes", {}),
@@ -1132,7 +1250,7 @@ def print_summary(payload):
         print("[il] 结果 ok {} / keep {} / failed {} / gated_ratio {}".format(
             stats.get("items_ok", 0), stats.get("items_keep", 0), stats.get("items_failed", 0),
             stats.get("items_gated_ratio", 0)))
-    print("[il] 八门禁：{}".format(stats.get("gates", {})))
+    print("[il] 九门禁：{}".format(stats.get("gates", {})))
     print("[il] 调用 {} 次 / 拆分 {} / 单条重试 {} / 缓存命中 {} / {}s".format(
         stats.get("calls", 0), stats.get("splits", 0), stats.get("retried", 0),
         stats.get("cache_hits", 0), stats.get("elapsed_s", 0)))
@@ -1144,6 +1262,10 @@ def print_summary(payload):
     print("[il] 写盘 {} 个文件 / {} 行{}".format(
         len(written.get("files", {})), written.get("total", 0),
         "" if written.get("written") else "（dry-run，未写）"))
+    if written.get("merged"):
+        print("[il] merge：既有保留 {} 行 / 本次新增 {} 行 / 既有坏行 {} 条（明细见报告 written.merged/added）".format(
+            sum(written["merged"].values()), sum(written.get("added", {}).values()),
+            written.get("existing_bad", 0)))
     if payload.get("il_conflict"):
         print("[il] il_conflict {} 条（同 h 不同译文/原文，只保留一行）".format(
             len(payload["il_conflict"])))
@@ -1195,6 +1317,18 @@ def _gate_probe(text, zh, locked=()):
     item["masked"] = res.text
     restored, failed, notes = T.gate(item, zh, list(locked))
     return restored, failed, notes, item
+
+
+def _pattern_probe(text):
+    """构造一条 bucket=pattern 的探针 item（骨架串，不做 API 调用）。"""
+    item = {"id": 1, "group": {"h": hash_text(normalize(text)), "n": normalize(text),
+                               "text": text, "host": "Probe"},
+            "row": {"text": text, "mod": "Probe"}, "role": "pattern",
+            "bucket": PATTERN_BUCKET}
+    res = masklib.mask(text)
+    item["res"] = res
+    item["masked"] = res.text
+    return item
 
 
 def selftest():
@@ -1287,6 +1421,22 @@ def selftest():
     check("already-cjk 拦下中文行", reasons.get("already-cjk", 0) >= 1, reasons)
     check("bucket-never 生效（含字母的 never 行）", reasons.get("bucket-never", 0) >= 1, reasons)
     check("existing-h 拦下 Science", reasons.get("existing-h", 0) >= 1, reasons)
+    # 实测这 8 条曾被 no-words / key-ref 误杀（Cm/Cd/Cl/L_D 是 lead 点名必须覆盖的）：
+    # "Cm (r,g,b):" / "L_D (r,g,b):" / "Cd (r,g,b):" / "Cl (r,g,b):" / "GPU ms" / "SAS: OFF" /
+    # "MODULAR FLIGHT PANEL #" / "# of Engines:"
+    rescue_group = {"text": "Cm (r,g,b):", "bucket": "candidate", "h": "abcdabcdabcdabcd"}
+    base_reason = prefilter(rescue_group, set())
+    check("真 UI 文案 'Cm (r,g,b):' 默认被 no-words 误杀（要有覆盖才能救）",
+          base_reason == "no-words", base_reason)
+    check("人工覆盖命中则绕过启发式跳过",
+          prefilter(rescue_group, set(), {rescue_group["h"]}) is None)
+    check("key-like 串即使有覆盖仍判 key-ref",
+          prefilter({"text": "#autoLOC_500", "bucket": "candidate", "h": "1111111111111111"},
+                    None, {"1111111111111111"}) == "key-ref")
+    check("真文案 '# of Engines:' 有覆盖时不被 key-ref 误杀",
+          prefilter({"text": "# of Engines:", "bucket": "candidate", "h": "2222222222222222"},
+                    None, {"2222222222222222"}) is None)
+
     check("单字母 x 被拒", prefilter({"text": "x", "bucket": "translate",
                                      "h": hash_text("x")}, set()) == "no-letters")
 
@@ -1366,6 +1516,49 @@ def selftest():
     check("无 BOM 且 LF 结尾", all(not data.startswith(b"\xef\xbb\xbf") and data.endswith(b"\n")
                                   for data in bytes_a.values()))
     check("写盘行数一致", summary_a["total"] == summary_b["total"] == len(entries))
+
+    # 7c. write_packs(merge=True)：既有行不丢 / 同 h 新值胜出 / added+merged+existing_bad 计数 / 坏行不炸
+    head = [e for e in entries if e["mod"] == entries[0]["mod"]]
+    mod0 = entries[0]["mod"]
+    out_m = tmpdir / "out-merge"
+    out_m.mkdir(parents=True, exist_ok=True)
+    target = out_m / (mod0 + OUT_SUFFIX)
+    old_only = {"h": "00000000000000aa", "n": "old", "s": "Old", "t": "旧", "mod": mod0}
+    same_h = dict(entries[0])
+    same_h["t"] = "旧译文（必须被本次新值覆盖）"
+    with target.open("w", encoding="utf-8", newline="\n") as handle:
+        for row in (old_only, same_h):
+            handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+        handle.write("{坏行不是 JSON}\n")
+    summary_m = write_packs(head, out_m, merge=True)
+    got = [json.loads(line) for line in target.read_text(encoding="utf-8").strip().split("\n")]
+    got_h = [row["h"] for row in got]
+    check("merge 保留既有独有行", old_only["h"] in got_h, got_h[:3])
+    check("merge 同 h 新值胜出",
+          [row["t"] for row in got if row["h"] == entries[0]["h"]] == [entries[0]["t"]])
+    check("merge 计数 added/merged/existing_bad",
+          summary_m["added"].get(mod0) == len(head) - 1
+          and summary_m["merged"].get(mod0) == 2 and summary_m["existing_bad"] == 1,
+          (summary_m["added"], summary_m["merged"], summary_m["existing_bad"]))
+    check("merge 后行数=既有保留+新增且按 h 升序",
+          summary_m["files"][mod0] == len(got) == summary_m["total"]
+          and got_h == sorted(got_h) and len(set(got_h)) == len(got_h), got_h)
+
+    # 7d. prune 语义：True 删除本次未产出的既有包，False（--no-prune）保留
+    out_p = tmpdir / "out-prune"
+    out_p.mkdir(parents=True, exist_ok=True)
+    stale = out_p / ("NoSuchMod" + OUT_SUFFIX)
+    stale_row = '{"h":"00000000000000bb","n":"x","s":"X","t":"X","mod":"NoSuchMod"}\n'
+    stale.write_text(stale_row, encoding="utf-8")
+    write_packs(head, out_p, prune=True)
+    check("prune=True 删除本次未产出的既有包", not stale.exists())
+    stale.write_text(stale_row, encoding="utf-8")
+    write_packs(head, out_p, prune=False)
+    check("prune=False（--no-prune）保留本次未产出的既有包", stale.exists())
+    parsed = _build_parser().parse_args(["--no-prune", "--merge"])
+    check("CLI --no-prune / --merge 解析", parsed.no_prune is True and parsed.merge is True)
+    check("CLI 默认不 prune 不 merge",
+          _build_parser().parse_args([]).no_prune is False and _build_parser().parse_args([]).merge is False)
 
     # 7b. G8-only 但无中文可译 -> keep（G8 不放宽）；G6-only -> gated_ratio 不重试
     check("keep_no_cjk 正例（Delta-V->Δv）",
@@ -1530,8 +1723,8 @@ def selftest():
     check("override 的 h/n 与模型路径同源",
           ov_res["entry"]["h"] == hash_text(normalize("Toggle <<1>>")), ov_res["entry"]["h"])
     real_ov, real_meta = load_overrides()
-    check("packs/overrides.jsonl 4 条 / 冲突 0 / 坏行 0",
-          len(real_ov) == 4 and real_meta == {"conflicts": 0, "bad": 0},
+    check("packs/overrides.jsonl 283 条 / 冲突 0 / 坏行 0",
+          len(real_ov) == 283 and real_meta == {"conflicts": 0, "bad": 0},
           (len(real_ov), real_meta))
     # lead m01857 裁定一：Research & Development 走人工覆盖，短译「研发」是正确译法（不靠括号补英文骗 G6）
     check("R&D 覆盖成最短正确译法「研发」",
@@ -1544,6 +1737,112 @@ def selftest():
           any("前向激活" in v["zh"] for v in real_ov.values())
           and any("延迟激活" in v["zh"] for v in real_ov.values()),
           [v["zh"] for v in real_ov.values()])
+
+    # 11. 骨架通道（bucket=pattern）+ G9
+    pat_runner = Runner(_OfflineConfig(), glossary,
+                        T.Cache(tmpdir / "pattern-cache.jsonl", enabled=False),
+                        jobs=1, offline=True, log=lambda *_a: None)
+    check("G9 正例：# 个数一致 -> 无门禁",
+          pat_runner._eval(_pattern_probe("Thrust Ratio: #"), "推力比：#")[1] == [],
+          pat_runner._eval(_pattern_probe("Thrust Ratio: #"), "推力比：#")[1])
+    check("G9 负例：译文漏掉 # -> G9",
+          "G9" in pat_runner._eval(_pattern_probe("Thrust Ratio: #"), "推力比")[1],
+          pat_runner._eval(_pattern_probe("Thrust Ratio: #"), "推力比")[1])
+    check("G9 负例：译文多一个 # -> G9",
+          "G9" in pat_runner._eval(_pattern_probe("Thrust Ratio: #"), "推力比：##")[1],
+          pat_runner._eval(_pattern_probe("Thrust Ratio: #"), "推力比：##")[1])
+    check("G9 正例：TMP 标签里的 # 不算占位符",
+          pat_runner._eval(_pattern_probe("<color=#FFFFFF>#/#kN Thruster</color>"),
+                           "<color=#FFFFFF>#/#kN 推进器</color>")[1] == [],
+          pat_runner._eval(_pattern_probe("<color=#FFFFFF>#/#kN Thruster</color>"),
+                           "<color=#FFFFFF>#/#kN 推进器</color>")[1])
+    check("G9 计入 gates 统计（stats 里有 G9 键）", "G9" in pat_runner.stats["gates"],
+          sorted(pat_runner.stats["gates"]))
+    check("override_gate(pattern) 拦 # 个数不符",
+          override_gate("Thrust Ratio: #", "推力比", pattern=True) == "skeleton-slot",
+          override_gate("Thrust Ratio: #", "推力比", pattern=True))
+    check("override_gate(pattern) 放行 # 个数正确",
+          override_gate("Thrust Ratio: #", "推力比：#", pattern=True) == "",
+          override_gate("Thrust Ratio: #", "推力比：#", pattern=True))
+    check("override_gate 非 pattern 不看 #",
+          override_gate("Thrust Ratio: #", "推力比") == "",
+          override_gate("Thrust Ratio: #", "推力比"))
+    check("bucket_of 认 pattern", bucket_of({"bucket": "pattern"}, "# x") == PATTERN_BUCKET,
+          bucket_of({"bucket": "pattern"}, "# x"))
+    check("prefilter 对 pattern 不判 key-ref",
+          prefilter({"text": "# bit indices", "bucket": PATTERN_BUCKET, "h": "d0d0d0d0d0d0d0d0"})
+          is None,
+          prefilter({"text": "# bit indices", "bucket": PATTERN_BUCKET, "h": "d0d0d0d0d0d0d0d0"}))
+    check("prefilter 对真实文案仍判 key-ref",
+          prefilter({"text": "#autoLOC_123", "bucket": "translate", "h": "d0d0d0d0d0d0d0d1"})
+          == "key-ref")
+    pat_entries, _pc = build_entries([
+        {"h": "e0e0e0e0e0e0e0e0", "n": "Thrust Ratio: #", "s": "Thrust Ratio: #",
+         "mod": "TestFlight", "bucket": PATTERN_BUCKET, "status": "override", "gates": [],
+         "notes": {}, "entry": {"h": "e0e0e0e0e0e0e0e0", "n": "Thrust Ratio: #",
+                               "s": "Thrust Ratio: #", "t": "推力比：#",
+                               "mod": "TestFlight", "p": 1}},
+    ], "drop")
+    check("pattern 落库写 p:1", pat_entries[0].get("p") == 1, pat_entries[0])
+    check("p 在允许字段里", "p" in ALLOWED_FIELDS, ALLOWED_FIELDS)
+    check("非 pattern 行不写 p",
+          "p" not in build_entries(dup, "drop")[0][0], build_entries(dup, "drop")[0][0])
+    pat_items = build_items([{"text": "Field #: #", "h": "%016x" % i, "n": "Field #: #",
+                              "host": "M%d" % (i % 3), "bucket": PATTERN_BUCKET}
+                             for i in range(70)])
+    pat_batches = build_batches(pat_items)
+    check("pattern 批上限 60（70 条 -> >=2 批）",
+          len(pat_batches) >= 2 and max(len(b["items"]) for b in pat_batches) <= PATTERN_BATCH_CAP,
+          [len(b["items"]) for b in pat_batches])
+    check("pattern item 的 role 是 pattern", pat_items[0]["role"] == "pattern", pat_items[0]["role"])
+
+    # 11.1 骨架通道的输入归一：具体实例 -> 骨架。
+    # 运行时是 TextSkeleton.TryBuild(实时文本) -> DictPack.TryGetPattern(hash(骨架), 骨架)
+    # -> FillBack 填回数字，所以落库的 s 必须是骨架、h 必须是骨架的哈希，否则一条都查不到。
+    pat_capture = tmpdir / "pattern-capture.jsonl"
+    pat_capture.write_text("\n".join([
+        json.dumps({"s": "Aero: Stock | RH preset: 12 %", "bucket": "pattern",
+                    "mod": "TestFlight", "h": "1111111111111111"}, ensure_ascii=False),
+        json.dumps({"s": "Aero: Stock | RH preset: 33 %", "bucket": "pattern",
+                    "mod": "TestFlight", "h": "1111111111111112"}, ensure_ascii=False),
+        json.dumps({"s": "Aero: FAR | RH preset: 7.5 %", "bucket": "pattern",
+                    "mod": "TestFlight", "h": "2222222222222222"}, ensure_ascii=False),
+        json.dumps({"s": "Loading scenery", "bucket": "pattern",
+                    "mod": "Kopernicus", "h": "3333333333333333"}, ensure_ascii=False),
+    ]) + "\n", encoding="utf-8")
+    pat_cands = load_candidates([pat_capture], "capture")
+    pat_groups, _pat_conflicts = dedupe(pat_cands)
+    pat_texts = sorted(g["text"] for g in pat_groups.values())
+    check("pattern 实例先骨化成骨架再分组",
+          pat_texts == sorted(["Aero: FAR | RH preset: # %", "Aero: Stock | RH preset: # %",
+                               "Loading scenery"]),
+          pat_texts)
+    check("pattern 同骨架的多实例合并成一行（12%/33% -> 1 组 count=2）",
+          sum(1 for g in pat_groups.values()
+              if g["text"] == "Aero: Stock | RH preset: # %" and g["count"] == 2) == 1,
+          [(g["text"], g["count"]) for g in pat_groups.values()])
+    check("pattern 的 h 用骨架算（不是实例的 h）",
+          any(g["h"] == hash_text(normalize("Aero: Stock | RH preset: # %"))
+              for g in pat_groups.values()),
+          sorted(g["h"] for g in pat_groups.values()))
+    check("pattern 无数字段 -> prefilter 拦 pattern-no-slots",
+          prefilter([g for g in pat_groups.values()
+                     if g["text"] == "Loading scenery"][0]) == "pattern-no-slots",
+          prefilter([g for g in pat_groups.values() if g["text"] == "Loading scenery"][0]))
+    pat_skel_capture = tmpdir / "pattern-skel-capture.jsonl"
+    pat_skel_capture.write_text(json.dumps(
+        {"s": "<color=#FFE000><b># ms</b></color>", "bucket": "pattern",
+         "mod": "HUD", "h": "4444444444444444"}, ensure_ascii=False) + "\n", encoding="utf-8")
+    pat_skel_cands = load_candidates([pat_skel_capture], "capture")
+    check("pattern 上游已骨化的行原样保留（不因无数字段被跳过）",
+          pat_skel_cands[0]["text"] == "<color=#FFE000><b># ms</b></color>"
+          and pat_skel_cands[0]["pattern_no_slots"] is False,
+          (pat_skel_cands[0]["text"], pat_skel_cands[0]["pattern_no_slots"]))
+    check("pattern 有骨架的组 prefilter 放行",
+          prefilter([g for g in pat_groups.values()
+                     if g["text"] == "Aero: Stock | RH preset: # %"][0]) is None,
+          prefilter([g for g in pat_groups.values()
+                     if g["text"] == "Aero: Stock | RH preset: # %"][0]))
 
     return failures, checks
 
@@ -1570,8 +1869,12 @@ def _build_parser():
     parser.add_argument("--mods", default=None, help="只处理这些 mod（逗号分隔）")
     parser.add_argument("--prune", action="store_true",
                         help="即使限跑/单桶也删除本次结果里不存在的 <mod>.il.jsonl（程序集改名后清理旧文件用）")
+    parser.add_argument("--no-prune", action="store_true",
+                        help="强制不删除任何既有 <mod>.il.jsonl（整跑也保留；无密钥/限跑时必用）")
+    parser.add_argument("--merge", action="store_true",
+                        help="与既有 <mod>.il.jsonl 合并写回（按 h 覆盖，既有行不丢）")
     parser.add_argument("--only-bucket", default=None,
-                        choices=("translate", "short_label", "template"))
+                        choices=("translate", "short_label", "template", PATTERN_BUCKET))
     parser.add_argument("--dry-run", action="store_true", help="不写 packs（仍会调 API）")
     parser.add_argument("--offline", action="store_true", help="桩响应，不发请求")
     parser.add_argument("--no-cache", action="store_true")
@@ -1641,13 +1944,27 @@ def main(argv=None):
     print("[il] 去重 {} 组；跨 mod 合并 {} 组；同 h 原文变体 {} 组".format(
         len(groups), merged, len(input_conflicts)))
 
+    # 人工覆盖必须先加载：prefilter 需要它的 h 集合来豁免启发式跳过（no-words 会误杀单 token UI 文案）
+    if args.no_overrides:
+        overrides, override_meta = {}, {"conflicts": 0, "bad": 0}
+    else:
+        overrides, override_meta = load_overrides(args.overrides)
+    if args.no_overrides:
+        print("[il] 人工覆盖已禁用（--no-overrides）")
+    elif overrides:
+        print("[il] 人工覆盖 packs/overrides.jsonl {} 条（冲突 {} / 坏行 {}）".format(
+            len(overrides), override_meta.get("conflicts", 0), override_meta.get("bad", 0)))
+    else:
+        print("[il] 人工覆盖：packs/overrides.jsonl 不存在或为空，跳过")
+    override_hashes = {hash_text(key) for key in overrides}
+
     existing = existing_pack_hashes(args.out)
     print("[il] 现有 cfg 包 h {} 个（同 h 不再写 IL 行）".format(len(existing)))
 
     skip_reasons = {}
     kept = []
     for group in groups.values():
-        reason = prefilter(group, existing)
+        reason = prefilter(group, existing, override_hashes)
         if reason:
             skip_reasons[reason] = skip_reasons.get(reason, 0) + 1
             continue
@@ -1688,15 +2005,6 @@ def main(argv=None):
         print("[il] 端点 " + config.describe())
 
     conventions = load_conventions()
-    overrides, override_meta = ({}, {"conflicts": 0, "bad": 0}) if args.no_overrides \
-        else load_overrides(args.overrides)
-    if args.no_overrides:
-        print("[il] 人工覆盖已禁用（--no-overrides）")
-    elif overrides:
-        print("[il] 人工覆盖 packs/overrides.jsonl {} 条（冲突 {} / 坏行 {}）".format(
-            len(overrides), override_meta.get("conflicts", 0), override_meta.get("bad", 0)))
-    else:
-        print("[il] 人工覆盖：packs/overrides.jsonl 不存在或为空，跳过")
     g6_exempt = args.g6_convention_exempt
     if g6_exempt:
         if conventions:
@@ -1718,8 +2026,10 @@ def main(argv=None):
         if not args.dry_run:
             write_provenance(results, provenance)
     written = write_packs(entries, args.out, dry_run=args.dry_run,
-                          prune=args.prune or (not args.dry_run and not args.limit
-                                               and not args.mods and not args.only_bucket))
+                          prune=(args.prune or (not args.dry_run and not args.limit
+                                                and not args.mods and not args.only_bucket))
+                                and not args.no_prune,
+                          merge=args.merge)
     sample_path = None
     if args.sample_out:
         sample_path = Path(args.sample_out)

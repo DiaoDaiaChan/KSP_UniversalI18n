@@ -93,6 +93,17 @@ namespace UI18n.Core.Config
         public int CaptureMaxTemplateEntries { get; set; } = 200;
 
         /// <summary>
+        /// 数字骨架（pattern）通道开关（配置键 <c>PatternMatching</c>，默认 <c>true</c>；v1.3）。
+        /// <para>
+        /// 开启后：精确查表未命中时把原文里的数字换成 <c>#</c> 得到骨架，按骨架查表，命中再把数字填回
+        /// （<c>Mass Flow: 2.20917 ton/s</c> → 骨架 <c>Mass Flow: # ton/s</c> → 一条译文覆盖全部实例）。
+        /// 只在<b>首次</b>未命中路径上多一次查表，重复未命中仍走既有缓存短路，零分配性质不变。
+        /// 关掉它 = 完全回到 v1.2 行为（骨架行即使载入了也一条都不用）。
+        /// </para>
+        /// </summary>
+        public bool PatternMatching { get; set; } = true;
+
+        /// <summary>
         /// 实验开关（配置键 <c>ShadowStyleDraw</c>，默认 <c>false</c>）：给 IMGUI 的统一出口
         /// <c>GUIStyle.Internal_Draw</c> / <c>Internal_Draw2</c> 装两个<b>影子前缀</b>，
         /// 只统计「统一出口看到哪些文本」，用来回答「13 个 IMGUI hook 能不能收敛成 2 个」。

@@ -1,9 +1,51 @@
+{"h":"03d12601f9adad5a","n":"AA Off","s":"AA Off","t":"抗锯齿关闭","mod":"TUFX"}
+{"h":"08dde82a70e6ae5c","n":"model_vab_exterior_tile_# (Instance) [KSP/Scenery/Specular]","s":"model_vab_exterior_tile_# (Instance) [KSP/Scenery/Specular]","t":"model_vab_exterior_tile_# (Instance) [KSP/Scenery/Specular]","mod":"TUFX"}
 {"h":"0d8637b776ad2cfd","n":"<color=#FFDD55><b>[Anti-Aliasing Control Center] Next-Gen AA Presets & Tuning</b></color>","s":"<color=#FFDD55><b>[Anti-Aliasing Control Center] Next-Gen AA Presets & Tuning</b></color>","t":"<color=#FFDD55><b>[抗锯齿控制中心] 次世代抗锯齿预设与微调</b></color>","mod":"TUFX"}
 {"h":"159f156fcfc8096b","n":"<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>","s":"<color=yellow>Forward Active (SSSR Mode)</color><color=green>Deferred Active (Full PBR SSR)</color>","t":"<color=yellow>前向激活（SSSR 模式）</color><color=green>延迟激活（完整 PBR SSR）</color>","mod":"TUFX"}
+{"h":"1767e54879f4fdad","n":"bluedog_Centaur_RL# (Instance) [KSP/Emissive/Bumped Specular]","s":"bluedog_Centaur_RL# (Instance) [KSP/Emissive/Bumped Specular]","t":"bluedog_Centaur_RL# (Instance) [KSP/Emissive/Bumped Specular]","mod":"TUFX"}
+{"h":"1d216a782f18264e","n":"model_vab_exterior_lines_#_decal (Instance) [KSP/Scenery/Diffuse]","s":"model_vab_exterior_lines_#_decal (Instance) [KSP/Scenery/Diffuse]","t":"model_vab_exterior_lines_#_decal (Instance) [KSP/Scenery/Diffuse]","mod":"TUFX"}
+{"h":"209992cb7c85dd10","n":"Deferred Mod: Detected, Camera: Forward","s":"Deferred Mod: Detected, Camera: Forward","t":"延迟渲染模式：已检测，相机：前向","mod":"TUFX"}
+{"h":"21371e304bea1c51","n":"ends.# (Instance) (Instance) [TU/Metallic]","s":"ends.# (Instance) (Instance) [TU/Metallic]","t":"ends.# (Instance) (Instance) [TU/Metallic]","mod":"TUFX"}
+{"h":"2446a6cea9bb82f6","n":"Monolith# [Legacy Shaders/Bumped Specular]","s":"Monolith# [Legacy Shaders/Bumped Specular]","t":"Monolith# [Legacy Shaders/Bumped Specular]","mod":"TUFX"}
+{"h":"35f3b2d57cf4be68","n":"ksc_exterior_terrain_tile_#_diffuse (Instance) [KSP/Scenery/Diffuse]","s":"ksc_exterior_terrain_tile_#_diffuse (Instance) [KSP/Scenery/Diffuse]","t":"ksc_exterior_terrain_tile_#_diffuse (Instance) [KSP/Scenery/Diffuse]","mod":"TUFX"}
+{"h":"3a61209075c0ca6c","n":"restock-antenna-# [KSP/ScreenSpaceMaskBumped]","s":"restock-antenna-# [KSP/ScreenSpaceMaskBumped]","t":"restock-antenna-# [KSP/ScreenSpaceMaskBumped]","mod":"TUFX"}
+{"h":"3cdd85b47fc6f91c","n":"Lift","s":"Lift","t":"升力","mod":"TUFX"}
+{"h":"411ac092d2795f45","n":"<size=10><color=grey>Non-temporal morphological filters (CMAA # / SMAA) produce ZERO black ghost trails behind orbital vessels!</color></size>","s":"<size=10><color=grey>Non-temporal morphological filters (CMAA # / SMAA) produce ZERO black ghost trails behind orbital vessels!</color></size>","t":"<size=10><color=grey>非时间性形态学滤波（CMAA # / SMAA）在轨道载具后方绝无黑色鬼影拖尾！</color></size>","mod":"TUFX","p":1}
+{"h":"49c560aecfeb8c29","n":"Mask","s":"Mask","t":"遮罩","mod":"TUFX"}
+{"h":"5664af4755522e75","n":"Applied rule: # matching materials / # surfaces. Save to retain it across restarts.","s":"Applied rule: # matching materials / # surfaces. Save to retain it across restarts.","t":"已应用规则：# 个匹配材质 / # 个表面。保存后可在重启后保留。","mod":"TUFX","p":1}
+{"h":"5dca18f3abf3c56a","n":"SC-GEN-FR-Mat.# (Instance) [TU/Metallic]","s":"SC-GEN-FR-Mat.# (Instance) [TU/Metallic]","t":"SC-GEN-FR-Mat.# (Instance) [TU/Metallic]","mod":"TUFX"}
+{"h":"5f8d829f6bf439dd","n":"sides.# (Instance) (Instance) [TU/Metallic]","s":"sides.# (Instance) (Instance) [TU/Metallic]","t":"sides.# (Instance) (Instance) [TU/Metallic]","mod":"TUFX"}
+{"h":"61817d6c358fa4fb","n":"model_vab_exterior_tile_#_roof (Instance) [KSP/Scenery/Specular]","s":"model_vab_exterior_tile_#_roof (Instance) [KSP/Scenery/Specular]","t":"model_vab_exterior_tile_#_roof (Instance) [KSP/Scenery/Specular]","mod":"TUFX"}
+{"h":"71fd892d76405f4b","n":"Normal Variance Scale","s":"Normal Variance Scale","t":"法线方差缩放","mod":"TUFX"}
+{"h":"7b3c679271778326","n":"Shock Diamonds","s":"Shock Diamonds","t":"激波钻石","mod":"TUFX"}
 {"h":"7d11962ef5edfd06","n":"TAA (Smooth Temporal)","s":"TAA (Smooth Temporal)","t":"TAA（平滑时间性）","mod":"TUFX"}
 {"h":"849e55fbcd136d11","n":"[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>","s":"[SSR Pipeline] Status: <color=green>Deferred Active (Full PBR SSR)</color>","t":"[SSR Pipeline] Status: <color=green>延迟激活（完整 PBR SSR）</color>","mod":"TUFX"}
+{"h":"861ea0c092a89849","n":"model_vab_exterior_lines_# (Instance) [KSP/Specular]","s":"model_vab_exterior_lines_# (Instance) [KSP/Specular]","t":"model_vab_exterior_lines_# (Instance) [KSP/Specular]","mod":"TUFX"}
+{"h":"8635cbaae27ffdf2","n":"Bent Normal Strength","s":"Bent Normal Strength","t":"弯曲法线强度","mod":"TUFX"}
+{"h":"8e5c13e2afe6b2be","n":"Deferred Mod: Detected, Camera: DeferredShading","s":"Deferred Mod: Detected, Camera: DeferredShading","t":"延迟渲染模式：已检测，相机：延迟着色","mod":"TUFX"}
+{"h":"93037eed00669b78","n":"phong# (Instance) [Legacy Shaders/Diffuse]","s":"phong# (Instance) [Legacy Shaders/Diffuse]","t":"phong# (Instance) [Legacy Shaders/Diffuse]","mod":"TUFX"}
+{"h":"9b6ddab140123748","n":"#d#caa-#a-#-b#-e#d#ba# [EVE/ScreenSpacePlanetLight]","s":"#d#caa-#a-#-b#-e#d#ba# [EVE/ScreenSpacePlanetLight]","t":"#d#caa-#a-#-b#-e#d#ba# [EVE/ScreenSpacePlanetLight]","mod":"TUFX"}
 {"h":"9c5cefe86d2bc432","n":"SMAA Ultra (Zero Smear)","s":"SMAA Ultra (Zero Smear)","t":"SMAA 极致 (无拖影)","mod":"TUFX"}
+{"h":"9e496dc4d7b3afc0","n":"Lum. Contrib","s":"Lum. Contrib","t":"亮度贡献","mod":"TUFX"}
 {"h":"9ea3b9cbdcfabc40","n":"<b>Enhanced TAA Parameters:</b> <color=grey>(Supports keyboard typing with decimals and slider)</color>","s":"<b>Enhanced TAA Parameters:</b> <color=grey>(Supports keyboard typing with decimals and slider)</color>","t":"<b>增强型 TAA 参数：</b><color=grey>（支持滑块与键盘输入小数）</color>","mod":"TUFX"}
+{"h":"a1e0ef19528787eb","n":"Material ## (Instance) (Instance) [DepthMask]","s":"Material ## (Instance) (Instance) [DepthMask]","t":"材质 ## (Instance) (Instance) [DepthMask]","mod":"TUFX","p":1}
+{"h":"a882164dabab2db8","n":"Optical Vignetting","s":"Optical Vignetting","t":"光学暗角","mod":"TUFX"}
 {"h":"ac5bd7de7e1f8c3e","n":"TUFX Profile Settings","s":"TUFX Profile Settings","t":"TUFX 配置文件设置","mod":"TUFX"}
+{"h":"ad083a12af9427d7","n":"Tracking: <color=#88FF88># m</color>","s":"Tracking: <color=#88FF88># m</color>","t":"跟踪：<color=#88FF88># m</color>","mod":"TUFX","p":1}
+{"h":"b8d21c1f8dfcc8cc","n":"model_vab_exterior_tile_# (Instance) [KSP/Scenery/Emissive/Specular]","s":"model_vab_exterior_tile_# (Instance) [KSP/Scenery/Emissive/Specular]","t":"model_vab_exterior_tile_# (Instance) [KSP/Scenery/Emissive/Specular]","mod":"TUFX"}
+{"h":"bc75db0c5436b6fa","n":"model_vab_exterior_details_# (Instance) [KSP/Scenery/Emissive/Specular]","s":"model_vab_exterior_details_# (Instance) [KSP/Scenery/Emissive/Specular]","t":"model_vab_exterior_details_# (Instance) [KSP/Scenery/Emissive/Specular]","mod":"TUFX"}
 {"h":"bd0e760afaedd0b7","n":"[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>","s":"[SSR Pipeline] Status: <color=yellow>Forward Active (SSSR Mode)</color>","t":"[SSR Pipeline] Status: <color=yellow>前向激活（SSSR 模式）</color>","mod":"TUFX"}
+{"h":"c3e93c5b2fd1e0d8","n":"Neutral","s":"Neutral","t":"中性","mod":"TUFX"}
+{"h":"ce06b0acf0246c7c","n":"ksc_exterior_terrain_tile_#_diffuse (Instance) (Instance) [KSP/Scenery/Diffuse]","s":"ksc_exterior_terrain_tile_#_diffuse (Instance) (Instance) [KSP/Scenery/Diffuse]","t":"ksc_exterior_terrain_tile_#_diffuse (Instance) (Instance) [KSP/Scenery/Diffuse]","mod":"TUFX"}
+{"h":"ce7d7c87bea0d929","n":"fairing# (Instance) (Instance) [KSP/Bumped Specular]","s":"fairing# (Instance) (Instance) [KSP/Bumped Specular]","t":"整流罩# (Instance) (Instance) [KSP/Bumped Specular]","mod":"TUFX","p":1}
+{"h":"d4c530c221f810f6","n":"model_vab_exterior_lines_#_decal (Instance) (Instance) [KSP/Scenery/Diffuse]","s":"model_vab_exterior_lines_#_decal (Instance) (Instance) [KSP/Scenery/Diffuse]","t":"model_vab_exterior_lines_#_decal (Instance) (Instance) [KSP/Scenery/Diffuse]","mod":"TUFX"}
+{"h":"dde16b9126492f79","n":"Kernel Size","s":"Kernel Size","t":"核大小","mod":"TUFX"}
+{"h":"de971e87791df7cd","n":"model_vab_exterior_tile_#_glass (Instance) [KSP/Scenery/Emissive/Specular]","s":"model_vab_exterior_tile_#_glass (Instance) [KSP/Scenery/Emissive/Specular]","t":"model_vab_exterior_tile_#_glass (Instance) [KSP/Scenery/Emissive/Specular]","mod":"TUFX"}
+{"h":"df78cced68410d33","n":"Vacuum Gas Plumes","s":"Vacuum Gas Plumes","t":"真空燃气羽流","mod":"TUFX"}
+{"h":"e0260df5f62999c7","n":"Schlieren Detail","s":"Schlieren Detail","t":"纹影细节","mod":"TUFX"}
+{"h":"e4aa12f5c8837306","n":"model_vab_exterior_props_# (Instance) [KSP/Scenery/Specular]","s":"model_vab_exterior_props_# (Instance) [KSP/Scenery/Specular]","t":"model_vab_exterior_props_# (Instance) [KSP/Scenery/Specular]","mod":"TUFX"}
+{"h":"eae2f8b3a6594a72","n":"restock-decouplers-# (Instance) [KSP/Bumped Specular]","s":"restock-decouplers-# (Instance) [KSP/Bumped Specular]","t":"restock-decouplers-# (Instance) [KSP/Bumped Specular]","mod":"TUFX"}
+{"h":"ed23904aea9f66b1","n":"Intel CMAA # (No Ghosting)","s":"Intel CMAA # (No Ghosting)","t":"Intel CMAA #（无残影）","mod":"TUFX","p":1}
+{"h":"f1d53d6de49ef8b1","n":"model_tracking_exterior_# (Instance) [KSP/Scenery/Specular]","s":"model_tracking_exterior_# (Instance) [KSP/Scenery/Specular]","t":"model_tracking_exterior_# (Instance) [KSP/Scenery/Specular]","mod":"TUFX"}
+{"h":"ff336e085e57c74c","n":"Spectral LUT","s":"Spectral LUT","t":"光谱 LUT","mod":"TUFX"}
 {"h":"ff952e5267cf7bfb","n":"Not DetectedDetected, Camera: N/A","s":"Not DetectedDetected, Camera: N/A","t":"非 DetectedDetected，相机：无","mod":"TUFX"}

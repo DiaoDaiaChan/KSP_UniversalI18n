@@ -1,7 +1,10 @@
 {"h":"075eb0c52112624d","n":"Close Probe","s":"Close Probe","t":"关闭探针","mod":"ksp_plugin_adapter"}
+{"h":"09286bbacd000d5a","n":"Hardware & DirectDMA","s":"Hardware & DirectDMA","t":"硬件与 DirectDMA","mod":"ksp_plugin_adapter"}
 {"h":"1e434dd4cb217b68","n":"★ Preferred Compute GPU","s":"★ Preferred Compute GPU","t":"★ 首选计算 GPU","mod":"ksp_plugin_adapter"}
 {"h":"2a18a13638f95e54","n":"<color=#ff5555><b>⚠️ [STALE - Plugin Offline / Not In Flight]</b> Native metrics are in standby.</color>","s":"<color=#ff5555><b>⚠️ [STALE - Plugin Offline / Not In Flight]</b> Native metrics are in standby.</color>","t":"<color=#ff5555><b>⚠️ [已失效 - 插件离线 / 非飞行状态]</b> 本地指标处于待机状态。</color>","mod":"ksp_plugin_adapter"}
+{"h":"2ad5f87b5508f40b","n":"CPU Threads & Topology","s":"CPU Threads & Topology","t":"CPU 线程与拓扑","mod":"ksp_plugin_adapter"}
 {"h":"2e0335e39b035ab9","n":"Transfer Mode:","s":"Transfer Mode:","t":"转移模式：","mod":"ksp_plugin_adapter"}
+{"h":"2e29ef356790c888","n":"Overall Performance","s":"Overall Performance","t":"总体性能","mod":"ksp_plugin_adapter"}
 {"h":"41781af5284b66e5","n":"Benchmarking in background...","s":"Benchmarking in background...","t":"后台基准测试中...","mod":"ksp_plugin_adapter"}
 {"h":"4212acf18b8ef349","n":"Set Preferred Compute GPU","s":"Set Preferred Compute GPU","t":"设置首选计算 GPU","mod":"ksp_plugin_adapter"}
 {"h":"448fc953162e8119","n":"● PureCpu (Local)","s":"● PureCpu (Local)","t":"● PureCpu（本地）","mod":"ksp_plugin_adapter"}
@@ -9,10 +12,14 @@
 {"h":"4f757feef6fabc13","n":"Copy measured timing JSON (latest collected snapshot)","s":"Copy measured timing JSON (latest collected snapshot)","t":"复制测得的时序 JSON（最新采集快照）","mod":"ksp_plugin_adapter"}
 {"h":"6372b00dc556a354","n":"⚡ Reset Ephemeris Cache Counters","s":"⚡ Reset Ephemeris Cache Counters","t":"⚡ 重置星历缓存计数器","mod":"ksp_plugin_adapter"}
 {"h":"6ea86d2a96aad1c0","n":"<b>Overall Architecture Latency:</b>","s":"<b>Overall Architecture Latency:</b>","t":"<b>整体架构延迟：</b>","mod":"ksp_plugin_adapter"}
+{"h":"7c2b28bf17508af4","n":"Midpoint (MET)","s":"Midpoint (MET)","t":"中点（任务时间）","mod":"ksp_plugin_adapter"}
+{"h":"7f1e7cd557c7eeae","n":"<b>Overall Architecture Latency (estimates):</b>","s":"<b>Overall Architecture Latency (estimates):</b>","t":"<b>整体架构延迟（估算）：</b>","mod":"ksp_plugin_adapter"}
 {"h":"8495f10b620f0cf3","n":"Principia save file migration","s":"Principia save file migration","t":"Principia 存档文件迁移","mod":"ksp_plugin_adapter"}
 {"h":"87181b8830b7aa95","n":"PureCpu (Local)","s":"PureCpu (Local)","t":"PureCpu（本地）","mod":"ksp_plugin_adapter"}
+{"h":"8f3cdbcc87f096c2","n":"#-Lévy-#-gf#c#a#b#f#-x#_AVX_FMA","s":"#-Lévy-#-gf#c#a#b#f#-x#_AVX_FMA","t":"#-Lévy-#-gf#c#a#b#f#-x#_AVX_FMA","mod":"ksp_plugin_adapter"}
 {"h":"916d088dda3b74bd","n":"Change the time base of this manœuvre","s":"Change the time base of this manœuvre","t":"更改此机动的时间基准","mod":"ksp_plugin_adapter"}
 {"h":"91a82ec8ed65d1b4","n":"<color=#55ffff>i️ Non-flight scene (e.g. Space Center / KSC); worker pool on standby.</color>","s":"<color=#55ffff>ℹ️ Non-flight scene (e.g. Space Center / KSC); worker pool on standby.</color>","t":"<color=#55ffff>ℹ️ 非飞行场景（例如航天中心 / KSC）；工作线程池待机中。</color>","mod":"ksp_plugin_adapter"}
+{"h":"a227a070f8d34afd","n":"Smoothed per call; peaks decay. Debug frame exports provide frame totals, call counts and additional stages.","s":"Smoothed per call; peaks decay. Debug frame exports provide frame totals, call counts and additional stages.","t":"每次调用平滑；峰值会衰减。调试帧导出提供帧总计、调用次数与附加阶段。","mod":"ksp_plugin_adapter"}
 {"h":"cb78108552a0b82a","n":"Principia Performance Probe","s":"Principia Performance Probe","t":"Principia 性能监测探针","mod":"ksp_plugin_adapter"}
 {"h":"e76201d45e04d2ff","n":"📋 Copy Diagnostics","s":"📋 Copy Diagnostics","t":"📋 复制诊断信息","mod":"ksp_plugin_adapter"}
 {"h":"e8a198bd0d8d493c","n":"● StagingFallback (Copy)","s":"● StagingFallback (Copy)","t":"● StagingFallback（副本）","mod":"ksp_plugin_adapter"}

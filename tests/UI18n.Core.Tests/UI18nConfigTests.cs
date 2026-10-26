@@ -74,6 +74,21 @@ namespace UI18n.Core.Tests
             Assert.Equal(1, config.MaxEntries);
         }
 
+        /// <summary>
+        /// v1.3 骨架通道默认<b>开</b>：它是正常翻译路径的一部分（不是实验开关），
+        /// 关掉只是退回 v1.2 的精确匹配（模板串重新变成不翻）。实验开关是 Shadow* 那几个。
+        /// </summary>
+        [Fact]
+        public void PatternMatching_DefaultsOn()
+        {
+            Assert.True(new UI18nConfig().PatternMatching);
+            Assert.True(UI18nConfig.Default.PatternMatching);
+
+            UI18nConfig config = new UI18nConfig();
+            config.PatternMatching = false;
+            Assert.False(config.PatternMatching);
+        }
+
         [Fact]
         public void Config_IsSealedPoco_WithoutStaticsHoldingState()
         {

@@ -3,6 +3,8 @@
 {"h":"1f4d1cbf70e4ee8e","n":"Flight Time (days)","s":"Flight Time (days)","t":"飞行时间 (天)","mod":"LunarTransferPlanner"}
 {"h":"2810e0defaaf6989","n":"Launch at this time for an Easterly launch to Lunar parking orbit","s":"Launch at this time for an Easterly launch to Lunar parking orbit","t":"在此时间向东发射进入月球停泊轨道","mod":"LunarTransferPlanner"}
 {"h":"61b510c1d5acfee0","n":"Launch at this time for a low inclination launch to Lunar parking orbit","s":"Launch at this time for a low inclination launch to Lunar parking orbit","t":"在此时间发射以低倾角进入月球停泊轨道","mod":"LunarTransferPlanner"}
+{"h":"72b5f5c1a92294ae","n":"Lunar Transfer","s":"Lunar Transfer","t":"月球转移","mod":"LunarTransferPlanner"}
+{"h":"88c7ac022d5ab30f","n":"Warp","s":"Warp","t":"加速","mod":"LunarTransferPlanner"}
 {"h":"909d1cc5c14beb17","n":"Warp Margin (sec)","s":"Warp Margin (sec)","t":"时间加速余量 (秒)","mod":"LunarTransferPlanner"}
 {"h":"aab69dc76719fb41","n":"Stop Warp","s":"Stop Warp","t":"停止时间加速","mod":"LunarTransferPlanner"}
 {"h":"b54bad09fad1a477","n":"Second Window","s":"Second Window","t":"第二发射窗口","mod":"LunarTransferPlanner"}

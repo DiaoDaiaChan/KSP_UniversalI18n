@@ -134,6 +134,9 @@ namespace UI18n.Runtime
                 config.CaptureMaxTemplateEntries =
                     ReadInt(node, "CaptureMaxTemplateEntries", config.CaptureMaxTemplateEntries);
 
+                // 数字骨架通道（v1.3）：默认 True。关掉 = 完全回到 v1.2 的精确匹配行为。
+                config.PatternMatching = ReadBool(node, "PatternMatching", config.PatternMatching);
+
                 // 实验开关（task-31）：默认 False。关闭时零 patch、零日志、零开销。
                 config.ShadowStyleDraw = ReadBool(node, "ShadowStyleDraw", config.ShadowStyleDraw);
 

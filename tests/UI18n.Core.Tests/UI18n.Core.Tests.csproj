@@ -58,6 +58,12 @@
       packs/pool.jsonl 本身是 3 MB 生成物、不入库，所以测试必须能只靠这份夹具跑起来。
     -->
     <None Update="Data\pool-sample.jsonl" CopyToOutputDirectory="PreserveNewest" />
+
+    <!--
+      数字骨架门禁语料（task-44）：331 条 (t, sk, nums)，由 tools/i18n_tools/skeleton.py 的 golden 子命令生成。
+      C# 侧 TextSkeletonTests 逐条断言同口径 —— 改骨化规则必须两边同时改并重跑生成。
+    -->
+    <None Update="Data\skeleton-golden.jsonl" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -958,7 +958,9 @@ class Cache:
         self.rows[key] = row
         if self._handle is None:
             self.path.parent.mkdir(parents=True, exist_ok=True)
-            self._handle = self.path.open("a", encoding="utf-8")
+            # newline="\n"：Windows 上默认会把 \n 写成 \r\n，而本仓库所有文本产物都钉死 LF
+            # （selftest「只有 LF」检查 + git 归一化都会因此产生无意义 diff）。
+            self._handle = self.path.open("a", encoding="utf-8", newline="\n")
         self._handle.write(json.dumps(row, ensure_ascii=False) + "\n")
         self._handle.flush()
         self.written += 1

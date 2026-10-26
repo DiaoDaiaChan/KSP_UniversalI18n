@@ -19,7 +19,7 @@
 
 | 目的 | 命令 | 期望 |
 | --- | --- | --- |
-| 自测（79 项断言） | `python -m i18n_tools.selftest` | 退出码 0，末行 `[selftest] 全部通过（79 项）` |
+| 自测（280 项断言） | `python -m i18n_tools.selftest` | 退出码 0，末行 `[selftest] 全部通过（280 项）` |
 | 抽候选池 | `python -m i18n_tools.harvest` | 写 `..\packs\pool.jsonl` + `..\packs\inventory.json`，退出码 0 |
 | 抽池并逐行校验既有真值 | `python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl` | 末行 `[verify] 我的 12792 行 / 对照 12792 行 → 完全一致`，退出码 0 |
 | 双语术语表 | `python -m i18n_tools.glossary` | 写 `..\packs\glossary.jsonl`，2,126 行，退出码 0 |
@@ -222,7 +222,7 @@ title = #autoLOC_500460 //#autoLOC_500460 = S1 SRB-KD25k "Kickback" Solid Fuel B
 
 ```
 cd C:\Users\43701\Documents\github\UniversalI18n\tools
-python -m i18n_tools.selftest                      # 240 项全绿，退出码 0，约 0.4 s
+python -m i18n_tools.selftest                      # 280 项全绿，退出码 0，约 0.4 s
 python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl   # 完全一致，退出码 0，约 3 s
 python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节，退出码 0
 ```
@@ -231,13 +231,13 @@ python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节�
 
 ```
 cd tools
-python -m i18n_tools.selftest            # 工具链自检 240 项
+python -m i18n_tools.selftest            # 工具链自检 280 项
 python -m i18n_tools.audit --selftest    # 审计器自检 12 项（1 正例 + 8 负例）
 python -m i18n_tools.audit               # 真审计 packs/zh-cn：h 契约 / 占位符 / 富文本 / 格式串 / 跨文件同 h 同 t
 python -m i18n_tools.packindex --check   # packs/index.json 与磁盘逐文件 sha256 一致
 ```
 
-四条的期望输出末尾分别是 `[selftest] 全部通过（240 项）`、`[audit] selftest: 12 检查，失败 0 项`、
+四条的期望输出末尾分别是 `[selftest] 全部通过（280 项）`、`[audit] selftest: 12 检查，失败 0 项`、
 `VERDICT: PASS (bad_total=0)`、`[check] mod 数 74（cfg 41 + IL 48），全部 mod 都能从 file 推导`，退出码全 0。
 **任何一条红都表示字典被改坏了，不要当环境问题跳过。**
 
@@ -269,19 +269,26 @@ tools/
     resolve_keyrefs.py      键引用解析 + --prefer-official + --drop-keyrefs（+--ambiguous-guard）
     translate.py            主翻译流水线（缓存/门禁/断点续跑）
     audit.py                产物审计（h 契约 / 占位符 / 富文本 / 格式串 / 跨文件一致性），CI 门禁与本地都用它
-    selftest.py             240 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
+    selftest.py             280 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
 packs/
   pool.jsonl                12,792 行候选池（sha256 FEF515EA…D4C）
   inventory.json            统计清单
   glossary.jsonl            2,126 行双语术语表
-  index.json                分发清单（schema 1：89 个包 / 11,089 行 / 3,685,087 字节；74 个 mod 身份）
+  index.json                分发清单（schema 1：96 个包 / 11,561 行 / 3,794,336 字节；81 个 mod 身份）
   conventions.jsonl         12 条专有约定（G6 长度比下界豁免的唯一依据）
-  overrides.jsonl           人工覆盖（4 条，模型之前生效、零 token）
+  overrides.jsonl           人工覆盖（283 条，模型之前生效、零 token）
   il-candidates.jsonl       DLL IL 字面量候选（2,285 行）
   il-translatable.jsonl     送译清单（1,746 行：translate 1,145 / short_label 429 / template 172）
-  capture-candidates.jsonl  运行时捕获候选 **v2 跨会话合并**（23 个会话 → 49,658 行 / 19.6 MB：
-                            candidate 492 + template 49,166；v1.1 不进包）
-                            生成：python -m i18n_tools.capture_ingest --all <捕获目录> --report reports/capture-triage.md
+  capture-candidates.jsonl  运行时捕获候选 **v3 骨架塌缩**（29 个会话 / 60,379 distinct 原文 → 1,206 行 /
+                            534 KB：candidate 714 = 原样 558 + 判不出骨架降级 156，pattern 492 = 58,475 条
+                            template 实例塌成 492 个数字骨架，覆盖 55,609 条实例；纯符号骨架 3 个 / 2,710 条
+                            实例按卫生门丢弃；产物里**没有 raw template 行**；v1.1 不进包）
+                            生成：python -m i18n_tools.capture_ingest --all <捕获目录> --report reports/capture-triage.md --patterns reports/capture-patterns.md
+                            pattern 行字段：n == s == 骨架、h = fnv.hash_text(normalize(骨架))、count = 实例 count
+                            之和、exact = 该骨架下 count 最大的真实原文；译文照骨架翻，运行时按骨架查表填数字
+                            行的 mods = 归属 mod id：dll 名优先（MechJeb2.dll → MechJeb2，与 *.il.jsonl 建文件同一口径），反查不出
+                            （unknown caller / 我们的补丁帧 / 截断的程序集名 / ambiguous）统一 UI18n-Unattributed，不再是 caller 类型名根
+                            （GuiUtils / ConfigurationGUI / unknown 这类假 mod），出包时落共享包
 reports/
   coverage.md               zh-cn 覆盖报告（三节：pool 覆盖率 70.93% / IL 覆盖率 95.98% / 捕获通道现状）
 ```
@@ -331,7 +338,7 @@ python -m i18n_tools.packindex --packs-dir <dir> --index <file> --coverage <file
 - **分子** = 这 12,792 行里 `h` 能在 `packs/zh-cn/*.jsonl` 精确命中的行数（9,073）
 - **覆盖率 = 9,073 / 12,792 = 70.93%**（按来源：`loc` 2,646/2,948 = 89.76%、`cfg` 6,427/9,844 = 65.29%）
 - 两个**失真**数字列在报告里防止误引：`11,089 / 12,792 = 86.69%`（分子混进 2,016 条池外条目，含全部 IL 包）、`8,985 / 12,792 = 70.24%`（剔除 88 行直通；全库 92 行直通里有 4 行在 IL 包里、不在 pool 交集内）
-- **报告是三节，三节的分母互不相加**：① pool 口径（cfg 包覆盖多少待译串，9,073 / 12,792）；② DLL 字面量口径（`il-translatable.jsonl` 的 `translate` 桶 1,145 条 → IL 包 1,099 条 = 95.98%，与 ① 的 `h` 交集 0，对 ① 贡献 0）；③ 运行时捕获通道现状（`capture-candidates.jsonl` **v2 = 49,658 行 = candidate 492 + template 49,166**，来自 23 个游戏会话 / 125 个 caller，41,757 行能反查宿主 mod（62 个）、7,901 行仍是 `unknown`，与 ①② 的 `h` 交集合计仅 22 条 = 0.04%，v1.1 不进包）
+- **报告是三节，三节的分母互不相加**：① pool 口径（cfg 包覆盖多少待译串，9,073 / 12,792）；② DLL 字面量口径（`il-translatable.jsonl` 的 `translate` 桶 1,145 条 → IL 包 1,099 条 = 95.98%，与 ① 的 `h` 交集 0，对 ① 贡献 0）；③ 运行时捕获通道现状（`capture-candidates.jsonl` **v3 骨架塌缩 = 1,206 行 = candidate 714 + pattern 492**，来自 29 个游戏会话 / 60,379 条 distinct 原文，58,475 条 template 实例塌成 492 个骨架并覆盖其中 55,609 条，与 ①② 的 `h` 交集 24 条 = 1.99%，其余 1,182 条只有运行时看得到，v1.1 不进包；**这一节的数字随 capture 产物变，改完产物要重跑 `packindex` 才会跟进**）
 - 三节数字**全部由 `packindex` 现算**（`_section_il` / `_section_capture` 读 `il-translatable.jsonl` / `capture-candidates.jsonl`），报告里没有任何硬编码的候选清单数字：换一版 capture 产物只要重跑一次 `packindex`，③ 就会自动跟着变；`il-translatable.jsonl` 或 `capture-candidates.jsonl` 不存在时那一节打「无法计算」，不编造数字
 
 改动 `packs/zh-cn/**` 之后**必须重跑 `python -m i18n_tools.packindex`**：`selftest` 的 [8] 会拿清单与现场扫描逐项比对，
