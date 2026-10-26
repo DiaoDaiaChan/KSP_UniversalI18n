@@ -34,10 +34,11 @@ text.text = "All Input Locks Cleared";
 |---|---|
 | 拦截点（hook 目标） | **17** 个：`UI.Text.set_text`、`TMP_Text.set_text`、`GUILayout.DoLabel/DoButton/DoRepeatButton/DoToggle/DoWindow`、`GUI.Label/Box/Button/RepeatButton/Toggle(4 参)/Toggle(5 参)/DoWindow(title)/DoModalWindow/DoButtonGrid`、`ScreenMessages.PostMessage` |
 | 字典 | **97** 个包 / **14,954** 条（cfg 级 41 包 9,990 条 + DLL/配置缓存级 56 包 4,964 条；其中 **486** 行是数字骨架） |
-| 配置文本覆盖率（`packs/pool.jsonl` 口径） | 待译 12,792 条里 **9,397** 条已覆盖 = **73.46%**（v1.3.0 是 70.93%） |
+| 配置文本覆盖率（`packs/pool.jsonl` 口径） | 待译 12,792 条里 **9,397** 条已覆盖 = **73.46%**（v1.3.0 是 70.93%）。**这是源侧待译串口径，v1.5 起不再当验收数字**（见下面 render 一行） |
 | 屏幕覆盖率（29 局实测） | 该翻的 3,129 条里 **265** 条已中文 = **8.47%**（v1.2 出包那一代是 14 条 / 0.45%）；全量口径 2.53%——这一指标要等下一轮游戏内实测才会更新 |
+| render 覆盖率（v1.5 真相层口径，**唯一承诺**） | 运行时自报 `[UI18n] render coverage: hit=… miss=… distinct=… ratio=…`。**尚未有 1.5 出包的实测值** —— 要装 1.5 真跑一局；明细落 `<KSP>/PluginData/UI18n/render-<UTC stamp>.json`，报告由 `python -m i18n_tools.render_coverage` 出 |
 | 人工译文表 | `packs/overrides.jsonl` **3,736** 条（v1.4 一夜之间从 283 条涨上来，覆盖零件标题 / 零件描述 / 制造商 / 捕获到的屏幕标签） |
-| 单测 | C# **637** 例全绿；python 工具链 selftest **286** 项全绿 |
+| 单测 | C# **647** 例全绿；python 工具链 selftest **297** 项全绿 |
 | 游戏内验证 | round 10（2026-10-24，v1.1.0 那对 DLL）：`installed 17/17 patches`、`parseErrors=0`、`entries=11089`、`error lines: 0` |
 
 ## 安装
@@ -129,9 +130,12 @@ harvest_cfgcache（本地，读 ModuleManager.ConfigCache，v1.4）
         │  所以这条通道按字段（title/description/displayName/manufacturer）直读补丁结果，
         │  与上面的原定义口径互为补充，不重复（已覆盖的 h 直接剔除）
         ▼
-capture_ingest（把玩家会话的缺命中 capture 归并：去重 → 分档 never/template/candidate → 抽骨架）
-        │  纯数字模板进 pattern 档，塌缩成骨架后和静态串一起进包（v1.3）
-        │  时间戳开头的日志行判 never（v1.4：屏幕上的 KSP.log 转储不是 UI 文案）
+capture_ingest（把玩家会话的缺命中 capture 归并：去重 → 抽骨架 → **只打优先级标签，不再丢正文**，v1.5）
+        │  `bucket` 是优先级 candidate > template > never，三档**都留档**：判错的串还捞得回来复查
+        │  纯数字模板塌缩成骨架后和静态串一起进包（v1.3）；时间戳开头的日志行标 never（v1.4 的判据）
+        ▼
+packs/candidates.jsonl（v1.5：五条通道并成**一张**候选表 —— 静态四路 + 运行时捕获都往这里写）
+        │  行 schema 固定、排序确定（`bucket` 序 → `h`），同输入同字节；`covered` 标出「字典里已有译文」
         ▼
 packs/overrides.jsonl（人工译文表，v1.4 扩到 3,736 条）
         │  命中即直出、永不联网：术语一致的短标签（Instructions: / Destination:）、
@@ -150,19 +154,44 @@ packs/<lang>/<mod>.jsonl  ──►  GitHub Actions 四道门禁 ──►  发�
 
 CI 见 `.github/workflows/i18n.yml`（`gates` 四道门禁每次 push 都跑，不联网不写仓库；`translate` 只在手动触发时跑）。
 
-## 能力边界
+## 为什么还会看到英文
 
-**能翻**：配置文件文本、官方语言包里已有的键、DLL 里能静态回溯到 UI 调用点的字面量；再加一级**骨架** —— 把 `"Mass: 12.5 t"` 这类数字模板塌缩成骨架后翻译、运行时回填数字（v1.3）。
+**能翻的**：配置文件文本、官方语言包已有的键、DLL 里能静态回溯到 UI 调用点的字面量，以及一级**骨架** —— 把 `"Mass: 12.5 t"` 这类数字模板塌缩成骨架后翻译、运行时回填数字（v1.3）。
 
-**翻不了（机制上不可达，不是没做）**：
+装了这个包还看到英文，先分清是哪一类：一类是我们以前真漏了（v1.5 已改到不再静默丢失），一类是机制上碰不到（产品范围，不算遗漏）。
 
-1. **枚举成员名** —— `Enum.GetNames(typeof(Toolbar))` 得到的是元数据里的名字，字节码堆里根本没有这几条字符串，任何静态扫描都看不见，运行时才知道（实测 KSP 调试工具栏 11 个页签里 9 个属于此类）。
-2. **运行时拼接** —— `"Reload " + noun` 这类在调用点才成句的文本，任何一端单独拿出来都不是屏幕上那句话。
-3. **贴图/网格/音频里的文字**，以及玩家自己起的名字（飞船名、存档名）。
+### A. 以前会漏的三种情况：v1.5 已改为「不再静默丢失」
+
+| 结构性来源 | 以前是怎么漏的 | v1.5 的改法 |
+|---|---|---|
+| 字典键对不上屏幕上的串 | 字典键是**源文件原文**的哈希，屏幕上是 ModuleManager 打完补丁后的**合成文本** —— 一句被 `@description` 改写过就查不到 | 以「渲染出口真实出现过的串」为准收集，静态抽取降级为预热 |
+| 判错就永久消失 | 捕获端一串「像噪声就丢」的布尔判决，判错的串连正文都不留，只留一个计数器 | 捕获端只打**优先级标签**（candidate / template / never），正文一律留档 |
+| 五条通道各自为政 | cfg / loc / IL / ConfigCache / capture 各有分母，没人答得出「这台机器上还剩多少英文」 | 并成**一张** `packs/candidates.jsonl`，覆盖率只认运行时自报的 render 口径 |
+
+这一类正是以前被写成「翻不了」的东西 —— **枚举成员名**（`Enum.GetNames(typeof(Toolbar))` 拿到的是元数据里的名字，静态扫描一个字节都看不见）和**运行时拼接**（`"Reload " + noun` 在调用点才成句）：现在它们由运行时捕获兜住，兜不住也能在候选表里查到。
+
+自己就能查的判据是启动日志那一行：
+
+```text
+[UI18n] render coverage: hit=<n> miss=<n> distinct=<n> ratio=<0.0000>
+```
+
+`ratio` = 这次渲染过的 distinct 文本里命中译文的占比。它只统计**渲染出口真实交出、长度 ≥ 2 的文本**，所以是唯一对得上的数字；`packs/pool.jsonl` 的 73.46% 是**源侧待译串**口径，两者不能互相换算。明细落 `<KSP>/PluginData/UI18n/render-<UTC stamp>.json`，`pwsh tools/collect-diagnostics.ps1` 会一起带走。
+
+### B. 机制上碰不到的：产品范围，不进 render 覆盖率的分母
+
+| 机制 | 为什么翻不到 |
+|---|---|
+| **TMP 逐段拼接** | TMP 的显示文本常由多段（不同字体 / 材质 / 富文本节点）拼成，一次 `set_text` 只拿到其中一段，段与段之间没有可译的整句；拼出来的完整句子在源码里不存在 |
+| **纹理内文字** | 零件贴图、界面图标、行星贴图上的字是**像素**，不经过任何字符串通道 |
+| **逐帧程序化读数** | 每帧用数值拼出来的读数（`Mass Flow: 2.2 ton/s`）在源码里没有「一句话」；只有骨架通道能覆盖其中模板化的那部分，骨架都没命中时保留英文 —— 这是取舍 |
+| 玩家自己起的名字 | 飞船名、存档名：翻了会改到玩家的数据 |
+
+这三类**不进 render 覆盖率的分母**，所以它们不会把 ratio 压低到看起来像「还在漏」。一句话判断法：这句英文**能完整复制出来、下次出现还一模一样** → 属于 A，值得报；**是多段拼的 / 印在贴图里的 / 每帧都在变的** → 属于 B，不在修的范围。
 
 **已知降级**：KSP 1.12 的 TMP 是位图图集版，运行时无法从 .ttf 造字 —— 找不到含汉字的 TMP 字体资产时，`TmpMode=Auto` 会让那部分文本**保留英文**而不是显示方框。uGUI 走系统字体注入（`FontMode=OsFont`），正常出中文。
 
-## 从源码构建
+## 从源码构建## 从源码构建
 
 需要 .NET SDK 10 与 KSP 的托管程序集（路径在 `src/UI18n.Runtime/UI18n.Runtime.csproj` 的 `KspManagedDir`）。
 
@@ -181,11 +210,12 @@ pwsh src\UI18n.Runtime\build-release.ps1 -Version 1.1.0   # 出包到 dist/（11
 |---|---|
 | `src/UI18n.Core/` | 纯 .NET 逻辑：哈希、归一化、字典、语言门禁、包发现、缺命中捕获、数字骨架塌缩（`Text/TextSkeleton.cs`，v1.3）（无 Unity 依赖，可单测） |
 | `src/UI18n.Runtime/` | KSP 插件本体：Harmony patch、字体注入、配置读取、联网更新 |
-| `packs/` | 字典源：`pool.jsonl`（候选池）、`glossary.jsonl`（官方译文记忆）、`zh-cn/*.jsonl`（成品包，含 `"p":1` 骨架行）、`index.json`（清单）、`capture-candidates.jsonl`（会话捕获归并出的骨架候选，v1.3） |
-| `tools/i18n_tools/` | 采集 / 翻译 / 解析 / 审计 / 清单的 python 工具链；v1.3 加 `capture_ingest`（会话捕获归并）、`skeleton`（骨架抽取）、`screen_coverage`（屏幕覆盖率） |
+| `packs/` | 字典源：`pool.jsonl`（候选池）、`glossary.jsonl`（官方译文记忆）、`zh-cn/*.jsonl`（成品包，含 `"p":1` 骨架行）、`index.json`（清单）、`capture-candidates.jsonl`（会话捕获归并出的骨架候选，v1.3）、`candidates.jsonl`（**v1.5：五条通道唯一的候选表**，只打优先级标签、不丢正文） |
+| `tools/i18n_tools/` | 采集 / 翻译 / 解析 / 审计 / 清单的 python 工具链；v1.3 加 `capture_ingest`（会话捕获归并）、`skeleton`（骨架抽取）、`screen_coverage`（屏幕覆盖率）；v1.5 加 `candidates`（候选单一表）、`golden_gate`（golden set 门禁）、`render_coverage`（render 覆盖率报告） |
 | `tools/collect-diagnostics.ps1` | 排障一把梭：把一个玩家的现场收成单个 zip（v1.3） |
-| `tests/UI18n.Core.Tests/` | xunit v3 单测：18 个测试类 / **637** 例；夹具在 `Data/`（`pool-sample.jsonl`、`skeleton-golden.jsonl` 331 行） |
-| `docs/` | 设计文档：总体设计、翻译流水线、原生性与性能、工程骨架与构建、进度追踪 |
+| `tests/UI18n.Core.Tests/` | xunit v3 单测：19 个测试类 / **647** 例；夹具在 `Data/`（`pool-sample.jsonl`、`skeleton-golden.jsonl` 331 行） |
+| `tests/golden/` | golden set：`rendered-strings.txt` 一行一条**用户报过的英文原文**（现 19 条）。过滤器或阈值一改，任一条被丢掉 / 没进候选表 / 没有译文就直接红（v1.5，见 `tools/i18n_tools/golden_gate.py`） |
+| `docs/` | 设计文档：总体设计（00）、缺陷审查（01）、探针（02）、进度追踪（03）、翻译流水线（04）、原生性与性能（05）、工程骨架与构建（06）、真相层设计契约（08）与实现说明（09） |
 
 ## 许可
 
