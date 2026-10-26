@@ -33,6 +33,12 @@ on:
       - "tests/golden/**"
       - "tools/i18n_tools/**"
       - ".github/workflows/i18n.yml"
+      # 代码改动必须也触发门禁：以前 src/ 与 tests/ 不在 paths 里，改了 C# 一次 CI 都不跑。
+      - "src/**"
+      - "tests/**"
+      - "docs/**"
+      - "README.md"
+      - "tools/**"
   schedule:
     - cron: "0 3 * * 1"
 
@@ -128,9 +134,44 @@ jobs:
             echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
           } >> "$GITHUB_STEP_SUMMARY"
 
+  # Core 与单测能进 CI；Runtime 不能 —— 它引用真实 KSP 安装的 Managed/*.dll
+  # （Assembly-CSharp.dll / UnityEngine.*.dll），CI 里没有那份 10.8 MB 的程序集，
+  # 也没有 .NET Framework 4.7.2 目标包（Runtime 只 net472）。所以这里只校验
+  # 「能进 CI 的那半」：Core（net10.0）+ 811 例单测。Runtime 的编译门禁只能在本地跑
+  # （docs/06 §构建契约）。这不是遗漏，是 KSP mod 的物理约束。
+  code:
+    name: 代码门禁（Core net10.0 + 单测；Runtime 需真实 KSP，见注释）
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Core（net10.0）
+        run: dotnet build src/UI18n.Core/UI18n.Core.csproj -c Release -f net10.0
+
+      - name: 单测工程
+        run: dotnet build tests/UI18n.Core.Tests/UI18n.Core.Tests.csproj -c Release
+
+      # 不许用 dotnet test：testhost 在容器里起不来（本地实测 Win32Exception(5)），
+      # 工程里有 error UI18N001 拦住它。直接跑生成的 dll 是唯一稳定路径。
+      - name: 跑单测（直接执行 dll）
+        run: dotnet tests/UI18n.Core.Tests/bin/Release/net10.0/UI18n.Core.Tests.dll
+
+      - name: 汇总
+        if: always()
+        run: |
+          {
+            echo "### 代码门禁"
+            echo ""
+            echo "Core（net10.0）+ xunit 单测。Runtime 只 net472 且引用真实 KSP 的 Managed 程序集，CI 里不可能构建——它的编译门禁在本地（cw dotnet build UI18n.sln -c Release）。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   translate:
     name: 翻译并回写（LLM）
-    needs: gates
+    needs: [gates, code]
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.translate }}
     runs-on: ubuntu-latest
     timeout-minutes: 150
