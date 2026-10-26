@@ -1066,6 +1066,19 @@ update 分支
 
 **发布一个新通道** = 跑一次 §12.1 的脚本，把 `<OutDir>/<Channel>` 整个目录提交到 `update` 分支的同名目录。`update` 分支由人手动推，CI 不写它（CI 只守 `main` 上的字典）。
 
+实际上不需要手动做这一步，一条命令够了（它把出包、整目录替换、有差异才 commit、push、线上自检串起来）：
+
+```powershell
+pwsh tools\publish-update.ps1 -Version 1.2.1 -Channel beta
+# [publish] no content change, nothing to push
+# [publish] online ok: version=1.2.1, zip=1037891 B, files=89
+```
+
+- 内容没变就**不制造空提交**（§12.1 的可复现性保证同输入同字节，所以重跑同一版本必然是空跑）。
+- 通道目录是**整目录替换**：删掉的包也会从线上消失，不会留旧文件。
+- 最后一步会 GET 一次 `<RawBase>/<Channel>/manifest.json` 与 zip 的 HEAD，比对 `version` 与 `zip.bytes` —— 推上去但线上没生效（CDN 缓存、分支写错）会当场红，不用等到游戏里才发现。
+
+
 ### 12.3 硬断言（全部收进 `$problems`，一次报完再 throw；失败时 `OutDir` 一个字节都不写）
 
 | 原因码 | 触发条件 | 为什么必须拦 |
