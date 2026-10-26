@@ -28,7 +28,9 @@ text.text = "All Input Locks Cleared";
 | 需要作者配合 | 是（要作者把文本抽成键） | 否 |
 | 出问题时的形态 | 词条错位、错翻译被写进存档 | 未命中即原文，永不产生「翻错但改不回来」的状态 |
 
-## 当前状态（v1.4.0 出包）
+## 当前状态（开发快照 1.5.0 · **尚无发行版**）
+
+> **发行状态：GitHub 上没有任何 Release，也没有任何版本 tag。** 2026-10-26 按维护者判断，删除了 v1.0.0–v1.5.0 的全部 Release 与 tag —— 现阶段完成度还不够称为「发行版」，版本号只描述内部开发快照，不代表可发布质量。要装请按下一节从仓库取文件，**不要找 release 下载链接**（已经不存在）。
 
 | 项目 | 数字 |
 |---|---|
@@ -38,13 +40,13 @@ text.text = "All Input Locks Cleared";
 | 屏幕覆盖率（29 局实测） | 该翻的 3,129 条里 **265** 条已中文 = **8.47%**（v1.2 出包那一代是 14 条 / 0.45%）；全量口径 2.53%——这一指标要等下一轮游戏内实测才会更新 |
 | render 覆盖率（v1.5 真相层口径，**唯一承诺**） | 运行时自报 `[UI18n] render coverage: hit=… miss=… distinct=… ratio=…`。**尚未有 1.5 出包的实测值** —— 要装 1.5 真跑一局；明细落 `<KSP>/PluginData/UI18n/render-<UTC stamp>.json`，报告由 `python -m i18n_tools.render_coverage` 出 |
 | 人工译文表 | `packs/overrides.jsonl` **3,736** 条（v1.4 一夜之间从 283 条涨上来，覆盖零件标题 / 零件描述 / 制造商 / 捕获到的屏幕标签） |
-| 单测 | C# **647** 例全绿；python 工具链 selftest **297** 项全绿 |
+| 单测 | C# **658** 例全绿；python 工具链 selftest **298** 项全绿 |
 | 游戏内验证 | round 10（2026-10-24，v1.1.0 那对 DLL）：`installed 17/17 patches`、`parseErrors=0`、`entries=11089`、`error lines: 0` |
 
 ## 安装
 
 1. 确保已装 Harmony2 与 ModuleManager。
-2. 把发行包里的 `GameData/UI18n/` 整个复制进 `<KSP>/GameData/`。
+2. 把 `src/UI18n.Runtime/GameData/UI18n/` 整个复制进 `<KSP>/GameData/`，再把构建出的两个 DLL 放进 `<KSP>/GameData/UI18n/Plugins/`（构建见文末；`dist/UI18n-<ver>.zip` 是本地出包产物，不对外发布）。
 3. 启动游戏。日志里应出现：
 
 ```

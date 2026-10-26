@@ -29,11 +29,13 @@ hit / miss / bySink / byCaller 都是**相加**（它们本来就是互不重叠
 ----
     cd tools
     python -m i18n_tools.render_coverage --all "D:/Kerbal Space Program_newmod/PluginData/UI18n"
-    python -m i18n_tools.render_coverage --all <dir> --out ../reports/render-coverage.md --top 20
+    python -m i18n_tools.render_coverage --all <dir> --out reports/render-coverage.md --top 20
     python -m i18n_tools.render_coverage <单个 render-*.json> --quiet
     python -m i18n_tools.render_coverage --selftest
 
 只读：不写任何 packs，只写 --out 指定的报告（--out "" 则只打印一行摘要）。
+`--out` 的**相对路径相对仓库根**（不是当前目录），且必须落在仓库内，否则直接 exit 2 拒写；
+绝对路径按原样写（自检的临时目录就靠这条）。
 """
 from __future__ import annotations
 
@@ -432,6 +434,10 @@ def build_report(sessions, errors, duplicates, total, pool, top, generated_at=No
         + _c("reports/loading-screen-coverage.md") + "）一局就能贡献几百条 distinct，"
         "所以整局 ratio 会被拉低；只统计主菜单/飞行阶段才是玩家实际体感。"
         "这也是同一版本不同会话 ratio 能从 0.35 跳到 0.99 的原因，别把某一次的 ratio 当成版本结论。")
+    add("7. 未命中里有一大类是**动态文本**：每帧刷新的数字/进度/调试行（如进度条上的 " + _c("1950/5740")
+        + "、HUD 性能面板的读数行、调试 GUI 的数值格）。本工具把它们照实算进 miss，"
+        "但它们不是「缺译文」——静态字典按定义覆盖不了，要靠模板/模式通道（同 capture 通道的 template 桶）。"
+        "所以本表 top 调用点里排在前面的一长串数字类调用点，先看是不是动态文本，再决定要不要补字典。")
     add("")
     if errors:
         add("## 无法解析的文件")
@@ -595,6 +601,14 @@ def selftest():
         rc = main(["--glob", os.path.join(tmp, "empty", "*.json"), "--out", "", "--quiet"])
         check("没有文件时 exit 2", rc == 2)
 
+        escaped = os.path.abspath(os.path.join(repo_root(), "..", "escape-render-coverage.md"))
+        if os.path.exists(escaped):
+            os.remove(escaped)
+        rc = main(["--dir", tmp, "--out", os.path.join("..", "escape-render-coverage.md"), "--quiet"])
+        check("--out 相对路径想写到仓库外时 exit 2", rc == 2)
+        check("--out 相对路径想写到仓库外时不落盘", not os.path.exists(escaped))
+        check("--out 绝对路径照写（自检临时目录）", os.path.exists(out))
+
         check("空计数不除零", ratio_of(0, 0) == 0.0)
         check("ratio_of 正常", "%.4f" % ratio_of(3, 1) == "0.7500")
     finally:
@@ -625,7 +639,8 @@ def main(argv=None):
     parser.add_argument("--dir", action="append", default=[], help="render-*.json 所在目录（可重复）")
     parser.add_argument("--all", action="append", default=[], help="同 --dir（可重复）")
     parser.add_argument("--glob", default="", help="自定义 glob（一般不用）")
-    parser.add_argument("--out", default=DEFAULT_OUT, help="报告输出路径（默认 reports/render-coverage.md，空字符串=不写）")
+    parser.add_argument("--out", default=DEFAULT_OUT,
+                        help="报告输出路径（相对路径按仓库根解析且必须落在仓库内，绝对路径照写；默认 reports/render-coverage.md，空字符串=不写）")
     parser.add_argument("--coverage", default="", help="pool 口径来源（默认 reports/coverage.md）")
     parser.add_argument("--top", type=int, default=20, help="未命中调用点表长度（默认 20）")
     parser.add_argument("--selftest", action="store_true", help="自检")
@@ -661,7 +676,15 @@ def main(argv=None):
 
     if args.out:
         out = args.out if os.path.isabs(args.out) else os.path.join(repo_root(), args.out)
-        os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+        root = os.path.abspath(repo_root())
+        out_abs = os.path.abspath(out)
+        if not os.path.isabs(args.out) and out_abs != root and not out_abs.startswith(root + os.sep):
+            # 相对路径写成 ../reports/x.md 时会被拼到仓库外（真踩过：写进了上级目录的 reports/），直接拒写。
+            print("--out 必须落在仓库内：%s（相对路径按仓库根解析，写 reports/render-coverage.md 即可）" % out_abs,
+                  file=sys.stderr)
+            return 2
+        out = out_abs
+        os.makedirs(os.path.dirname(out), exist_ok=True)
         with open(out, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(md + "\n")
         if not args.quiet:

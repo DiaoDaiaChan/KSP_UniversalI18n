@@ -208,6 +208,8 @@ $manifestPath = Join-Path $distOut 'manifest.json'
 # 6) netkan（从模板生成，填版本 / sha256 / download；depends 的 identifier 已按本机 CKAN 元数据核对：Harmony2 / ModuleManager）
 $netkanTemplate = Join-Path $scriptDir 'ckan\UI18n.netkan.template'
 if (-not (Test-Path $netkanTemplate)) { throw "[release] 缺少模板: $netkanTemplate" }
+# 注意：这个 download 指向 GitHub Release 资产。仓库当前**没有任何 Release**（2026-10-26 按维护者判断删除了 v1.0.0–v1.5.0 全部 Release/tag），
+# 所以 .netkan 只有在真的发了对应 tag 的 Release 之后才可用，别在没发版时提交给 CKAN。
 $downloadUrl = 'https://github.com/{0}/releases/download/v{1}/UI18n-{1}.zip' -f $RepoSlug, $Version
 $netkan = Get-Content -LiteralPath $netkanTemplate -Raw -Encoding UTF8
 $netkan = $netkan.Replace('@VERSION@', $Version)
@@ -220,6 +222,15 @@ $netkan = $netkan.Replace('@HOMEPAGE@', ('https://github.com/' + $RepoSlug))
 $netkan = $netkan.Replace('@REPOSITORY@', ('https://github.com/' + $RepoSlug))
 $netkanPath = Join-Path $distOut 'UI18n.netkan'
 Set-Content -LiteralPath $netkanPath -Value $netkan -Encoding UTF8
+$ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+if ($null -eq $ghCmd) {
+    Write-Warning "[release] 未找到 gh，跳过校验：.netkan 的 download 指向 Release 资产（仓库当前无任何 Release）。"
+} else {
+    & gh release view ('v' + $Version) --json url *> $null
+    if (-not $?) {
+        Write-Warning ("[release] 没有 v{0} 的 GitHub Release ⇒ .netkan 的 download 现在就是 404，先发版再交给 CKAN。" -f $Version)
+    }
+}
 
 # 7) 汇总
 Write-Host ''

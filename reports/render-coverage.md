@@ -2,18 +2,18 @@
 
 本文件由 `python -m i18n_tools.render_coverage` 生成，**不要手改**。
 
-生成时间：2026-10-26 17:09:26
+生成时间：2026-10-26 17:21:24
 数据来源：`<KSP 根>/PluginData/UI18n/render-*.json`（每份 = 一次游戏会话）
-本次读到 **4** 份会话文件（另有 0 份无法解析、0 份因 stamp 重复被丢弃）。
+本次读到 **5** 份会话文件（另有 0 份无法解析、0 份因 stamp 重复被丢弃）。
 
 ## 结论
 
-**本次会话期间，玩家屏幕上出现的 5,494 条不同英文文本中，有 4,550 条当场变成了中文，render 覆盖率 0.8282（82.82%）。**
+**本次会话期间，玩家屏幕上出现的 9,686 条不同英文文本中，有 5,089 条当场变成了中文，render 覆盖率 0.5254（52.54%）。**
 
-- hit = 4,550（首次见到就有译文）
-- miss = 944（首次见到没译文，进未命中捕获通道）
-- distinct = hit + miss = 5,494
-- ratio = hit / distinct = 4,550 / 5,494 = 0.8282
+- hit = 5,089（首次见到就有译文）
+- miss = 4,597（首次见到没译文，进未命中捕获通道）
+- distinct = hit + miss = 9,686
+- ratio = hit / distinct = 5,089 / 9,686 = 0.5254
 
 > 跨会话合并：distinct 是各会话 distinct **之和**（不是去重并集）—— 文件里只有计数没有哈希，跨会话无法去重。所以上面的 ratio 是按 total distinct 加权的平均，不是某一局的读数。
 
@@ -23,7 +23,7 @@
 |---|---|---|---|---|
 | pool 覆盖率 | 12,792 | 9,397 | 73.46% | reports\coverage.md（抽出来的候选池） |
 | 屏幕覆盖率 | 捕获里可译的 distinct | 字典能接住的 | 见报告 | reports/screen-coverage.md（依赖捕获开关） |
-| render 覆盖率 | 5,494 | 4,550 | 82.82% | 本报告（运行时自己数，唯一可对玩家承诺的口径） |
+| render 覆盖率 | 9,686 | 5,089 | 52.54% | 本报告（运行时自己数，唯一可对玩家承诺的口径） |
 
 三个分母**不一样，不能相加也不能互相除**：
 
@@ -39,32 +39,53 @@
 | 20261026-085157 | 1.0.0+093d02a232a535840ddc1e0460bf024863dcd3f6 | 3,033 | 442 | 3,475 | 0.8728 | render-20261026-085157.json |
 | 20261026-085826 | 1.0.0+093d02a232a535840ddc1e0460bf024863dcd3f6 | 263 | 486 | 749 | 0.3511 | render-20261026-085826.json |
 | 20261026-090049 | 1.0.0+093d02a232a535840ddc1e0460bf024863dcd3f6 | 245 | 4 | 249 | 0.9839 | render-20261026-090049.json |
+| 20261026-091111 | 1.0.0+093d02a232a535840ddc1e0460bf024863dcd3f6 | 539 | 3,653 | 4,192 | 0.1286 | render-20261026-091111.json |
 
 ## 按渲染出口（bySink）
 
 | sink | hit | miss | distinct | ratio | 覆盖率 |
 |---|---|---|---|---|---|
-| TMPro.TMP_Text.set_text | 4,550 | 940 | 5,490 | 0.8288 | 82.88% |
-| ScreenMessages.PostMessage | 0 | 4 | 4 | 0.0000 | 0.00% |
+| TMPro.TMP_Text.set_text | 4,995 | 1,705 | 6,700 | 0.7455 | 74.55% |
+| UnityEngine.UI.Text.set_text | 43 | 1,943 | 1,986 | 0.0217 | 2.17% |
+| GUILayout.DoLabel | 23 | 586 | 609 | 0.0378 | 3.78% |
+| GUILayout.DoToggle | 17 | 102 | 119 | 0.1429 | 14.29% |
+| GUI.Box | 0 | 112 | 112 | 0.0000 | 0.00% |
+| GUILayout.DoButton | 8 | 71 | 79 | 0.1013 | 10.13% |
+| GUI.Label | 0 | 23 | 23 | 0.0000 | 0.00% |
+| GUI.Toggle | 0 | 17 | 17 | 0.0000 | 0.00% |
+| ScreenMessages.PostMessage | 0 | 12 | 12 | 0.0000 | 0.00% |
+| GUI.Button | 0 | 11 | 11 | 0.0000 | 0.00% |
+| GUILayout.DoWindow | 3 | 6 | 9 | 0.3333 | 33.33% |
+| GUI.DoButtonGrid(GUIContent[]) | 0 | 4 | 4 | 0.0000 | 0.00% |
+| GUI.DoWindow(title) | 0 | 4 | 4 | 0.0000 | 0.00% |
+| GUILayout.DoRepeatButton | 0 | 1 | 1 | 0.0000 | 0.00% |
 
 `(none)` = 补丁没带 sink 名的旧路径；`(other)` = byCaller 超出上限后的合并桶。
 
-## 未命中 top 12（按调用点）
+## 未命中 top 20（按调用点）
 
 | # | 调用点 | miss | 占全部未命中 |
 |---|---|---|---|
-| 1 | `LoadingScreen.UpdateProgressBar` | 894 | 94.7% |
-| 2 | `LoadingScreen.SetTip` | 34 | 3.6% |
-| 3 | `ScreenMessages.PostMessage` | 4 | 0.4% |
-| 4 | `unknown` | 3 | 0.3% |
-| 5 | `KSPTextureLoader.UI.DebugUIManager.CreateButton` | 2 | 0.2% |
-| 6 | `BurstPQS.UI.DebugUI.DebugUIManager.CreateHelpButton` | 1 | 0.1% |
-| 7 | `BurstPQS.UI.DebugUI.TextureExporterScreen.Build` | 1 | 0.1% |
-| 8 | `KSP.UI.MessageSystemAppFrame.Awake` | 1 | 0.1% |
-| 9 | `KSP.UI.Screens.MessageSystem.UpdateLauncherButtonCount` | 1 | 0.1% |
-| 10 | `KSPTextureLoader.UI.DebugUIManager.ClonePrefab` | 1 | 0.1% |
-| 11 | `KSPTextureLoader.UI.Screens.LoadTexture.LoadTextureScreenContent.BuildUI` | 1 | 0.1% |
-| 12 | `VersionReadout.Start` | 1 | 0.1% |
+| 1 | `LoadingScreen.UpdateProgressBar` | 1,402 | 30.5% |
+| 2 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.RefreshOverviewTab` | 1,069 | 23.3% |
+| 3 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.RefreshOverlayData` | 478 | 10.4% |
+| 4 | `RealisticLaunchVisuals.RLVDebugGUI.Row` | 381 | 8.3% |
+| 5 | `KERBALISM.KsmGui.KsmGuiText..ctor` | 120 | 2.6% |
+| 6 | `LunarTransferPlanner.LunarTransferPlanner.MakeMainWindow` | 119 | 2.6% |
+| 7 | `ModularFlightPanel.UI.UIFactory.CreateText` | 98 | 2.1% |
+| 8 | `ModularFlightPanel.UI.Workbench.WorkbenchControls.CreateWidgetThumbnailCard` | 92 | 2.0% |
+| 9 | `ModularFlightPanel.UI.BaseFlightWidget.SetTextIfChanged` | 83 | 1.8% |
+| 10 | `TUFX.TUFXWidgets.ParamSlider` | 59 | 1.3% |
+| 11 | `ModularFlightPanel.UI.Framework.SmartUIExtensions.SetTextSafe` | 58 | 1.3% |
+| 12 | `LoadingScreen.SetTip` | 39 | 0.8% |
+| 13 | `TUFX.TUFXHelper.DrawTooltipWindowContent` | 34 | 0.7% |
+| 14 | `MuMech.GuiUtils.SimpleTextBox` | 32 | 0.7% |
+| 15 | `MuMech.MechJebStageStatsHelper.DrawStageStatsColumn` | 31 | 0.7% |
+| 16 | `KSP.UI.Screens.EditorActionGroup.Setup` | 24 | 0.5% |
+| 17 | `ModularFlightPanel.UI.HUD.HUDProfilerOverlay.CreateCrispText` | 22 | 0.5% |
+| 18 | `TUFX.ConfigurationGUI.renderSelectionWindow` | 20 | 0.4% |
+| 19 | `ModularFlightPanel.UI.Workbench.WorkbenchControls.CreateButton` | 18 | 0.4% |
+| 20 | `TUFX.TUFXWidgets.Toggle` | 16 | 0.3% |
 
 这些调用点就是下一轮最该补的字典条目来源（配合 `reports/screen-coverage.md` 的原文列表一起看）。
 
@@ -76,6 +97,7 @@
 4. 上限：distinct 65,536 条、byCaller 200 个；到顶时运行时会打一行 `[UI18n] render coverage: ... 已达上限` 的警告，之后的读数仍然有效但不再增长。
 5. 跨会话 distinct 是相加，不是并集（见上）。
 6. 读数与「补丁装上的时刻」有关：本表里有会话在加载屏阶段就结束，加载屏的进度串（`Loading texture asset 1950/5740 (buffer=45MB)` 这类，见 `reports/loading-screen-coverage.md`）一局就能贡献几百条 distinct，所以整局 ratio 会被拉低；只统计主菜单/飞行阶段才是玩家实际体感。这也是同一版本不同会话 ratio 能从 0.35 跳到 0.99 的原因，别把某一次的 ratio 当成版本结论。
+7. 未命中里有一大类是**动态文本**：每帧刷新的数字/进度/调试行（如进度条上的 `1950/5740`、HUD 性能面板的读数行、调试 GUI 的数值格）。本工具把它们照实算进 miss，但它们不是「缺译文」——静态字典按定义覆盖不了，要靠模板/模式通道（同 capture 通道的 template 桶）。所以本表 top 调用点里排在前面的一长串数字类调用点，先看是不是动态文本，再决定要不要补字典。
 
 ## 自洽检查
 
