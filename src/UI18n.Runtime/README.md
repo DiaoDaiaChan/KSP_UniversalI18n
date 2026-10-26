@@ -998,6 +998,94 @@ KSP 1.12 的运行环境里**没有 `System.IO.Compression`**：`KSP_x64_Data/Ma
 3. 「玩家从 v1.1 升到 v1.2」的版本比较只做了单元测试（`ReleaseVersion`），没有真机升过一次；
 4. KSP 里 `PluginData` 的创建权限、`File.Replace` 在 FAT32/ExFAT 上的行为未实机验证（代码里有 `Delete + Move` 兜底）。
 
+## 12. 两种产物：发行包 vs 更新包（`build-update-package.ps1`，task-42）
+
+先记住一句话，这一节剩下的都是它的展开：
+
+**`build-release.ps1` 出的是「发行包（mod zip）」——一个能直接解压进 KSP 根的完整 mod；`build-update-package.ps1` 出的是「更新包（packs-only zip）」——只有当前这一种语言的 `Packs/<lang>/*.jsonl`，给 §11 的联网更新流程当增量用。两个 zip 不能互换。**
+
+互换的后果不是「难看」而是直接坏：发行包里的 `Plugins/` 正是更新流程明令禁止写的东西（§11.3 第 3 条，`ZipSafety` 会把带 `Plugins/` 的条目判成 `not-a-pack-file`）；反过来把更新包当发行包解压，游戏目录里就只有几个 `.jsonl`——没有 DLL、没有 `Config.cfg`、没有 `.version`，mod 根本不会被加载。
+
+| | 发行包（§10，`build-release.ps1`） | 更新包（本节，`build-update-package.ps1`） |
+| --- | --- | --- |
+| 给谁 | 新玩家首次安装 / 手动更新 | 已装玩家的语言包增量（联网，走 §11） |
+| 产物 | `dist/UI18n-<ver>.zip` + `dist/manifest.json` + `.netkan` | `<OutDir>/<Channel>/UI18n-<ver>-<lang>-packs.zip` + `<OutDir>/<Channel>/manifest.json` |
+| zip 内布局 | 解压即得 `GameData/UI18n/{Plugins, Config.cfg, UI18n.version, Packs/*}` 全套 | 只有 `GameData/UI18n/Packs/<lang>/<file>.jsonl`，别的东西一个条目都没有 |
+| manifest | §10.4 的发行包清单 | `version` + `channel` + `language` + `kspVersion` + `zip{name,bytes,sha256}` + `files[{path,bytes,sha256}]` + 统计字段（`packFiles`/`packRows`/`packBytes`）；`path` 带 `GameData/UI18n/` 前缀，与 zip 条目名逐字相同，运行时用 `ManifestFile.ModRelativePath` 换成 `Packs/<lang>/<file>.jsonl` |
+| 谁消费 | 人（解压进 KSP 根）/ CKAN | `src/UI18n.Runtime/Update/*`（§11），不经过人手 |
+| 会碰 `Plugins/`、`Config.cfg` 吗 | 就是它的主要内容 | 硬断言禁止（`forbidden-entry`），`$problems` 非空就**一个字节都不写** |
+
+### 12.1 用法与产物
+
+```powershell
+# 默认：stable 通道、zh-cn、输出到 dist\update\stable\
+pwsh src\UI18n.Runtime\build-update-package.ps1 -Version 1.2.0
+
+# beta 通道；相对路径一律按仓库根解析（不跟当前 cwd 走）
+pwsh src\UI18n.Runtime\build-update-package.ps1 -Version 1.2.0 -Channel beta -OutDir dist\update
+```
+
+| 参数 | 默认 | 说明 |
+| --- | --- | --- |
+| `-Version` | **必填** | 必须 `x.y.z`（`^([0-9]+)\.([0-9]+)\.([0-9]+)$`），缺了或写错直接 throw；进 manifest 的 `version`，也进 zip 文件名 |
+| `-Lang` | `zh-cn` | 归一化（`_`→`-`、转小写）后必须是合法语言 tag（2~16 字符、字母开头、只字母数字与连字符），且 `<PacksDir>\<lang>` 必须存在 |
+| `-Channel` | `stable` | 只能是 `stable` / `beta`，决定落 `<OutDir>\<Channel>\` |
+| `-OutDir` | `dist\update` | 产物根目录 |
+| `-PacksDir` | `packs` | 语言包源目录（`<PacksDir>\<lang>\*.jsonl`） |
+| `-WorkDir` | `build\update-package` | 中间目录，每次清空；并发跑时用它错开 |
+
+```
+dist\update\<Channel>\manifest.json
+dist\update\<Channel>\UI18n-<version>-<lang>-packs.zip     # 目录里只该有这两个文件
+```
+
+成功时最后一行是 `[update] OK`，前面按 `zip` / `zip bytes` / `zip sha256` / `entries` / `manifest`（大小 + sha256）/ `reproducible` / `contents` 逐行打印——和 `build-release.ps1`（§10.1）同一个格式，方便一次 grep 完。
+
+### 12.2 清单地址约定（与 §9.3 的 `UpdateBaseUrl` / `UpdateChannel` 对齐）
+
+运行时请求的地址固定是：
+
+```
+<UpdateBaseUrl>/<UpdateChannel>/manifest.json
+```
+
+所以发布一个通道就是把本节产物整个目录放上去：`<UpdateBaseUrl>/stable/manifest.json` 与同目录下 manifest 里 `zip.name` 指名的那个 zip。`-Channel` 与配置里的 `UpdateChannel` 必须是同一个字符串（`stable` / `beta`）。
+
+**当前模板里 `UpdateBaseUrl` 保持空 = 完全不联网**（§9.3、§11.1 第 1 行）：不填就一个 socket 都不开，行为与 v1.1 一致。填什么地址由 Lead 在发布时决定，脚本和代码都不预设主机名（`dist`、`dist\update` 都只在 `.gitignore` 里，不进仓库、不进产物）。
+
+### 12.3 硬断言（全部收进 `$problems`，一次报完再 throw；失败时 `OutDir` 一个字节都不写）
+
+| 原因码 | 触发条件 | 为什么必须拦 |
+| --- | --- | --- |
+| `reserved-name` | 文件名以下划线开头（如 `_smoke.jsonl`） | 开发期冒烟包混进正式更新包，玩家会被装上测试数据 |
+| `bad-file-name` | 不满足 `.jsonl` / 总长 7~128 / 主干只含字母数字`._-` / 不以 `.` 开头 / 不含 `..` | 与 `ZipSafety.IsValidPackFileName` 同口径；装不进去的包出不出去 |
+| `empty-packs` | `<PacksDir>\<lang>` 下没有可发布的 `*.jsonl` | 空包会让玩家把语言包换成「什么都没有」 |
+| `forbidden-entry` | zip 条目命中 `Plugins/`、`PluginData/` 或后缀 `.dll`/`.pdb`/`.cfg`/`.version` | §11.3 第 3 条：更新包永远不碰代码与配置 |
+| `entry-outside-packs` | 条目不以 `GameData/UI18n/Packs/<lang>/` 开头 | 同上，防以后改脚本时把别的东西塞进来 |
+| `entry-without-source` | zip 里有条目，但源目录没有同名文件 | 说明打包逻辑和枚举逻辑不一致 |
+| `entry-size-mismatch` / `entry-sha256-mismatch` | 用 `ZipFile::OpenRead` 复读 zip，与源文件字节数 / sha256 不符 | 打包器出错时 zip 看着正常、内容是坏的 |
+| `entry-count` | zip 条目数 ≠ 源包数 | 漏包 / 多包 |
+| `manifest-version` / `manifest-zip-name` / `manifest-zip-bytes` / `manifest-zip-sha256` / `manifest-file-count` | `ConvertFrom-Json` 复读 manifest 后与本次构建的期望值不符 | manifest 是运行时的唯一依据，写错等于全部文件校验失败 |
+| `not-reproducible` | 同输入重建的 zip sha256 或 manifest 文本不同 | 见 §12.4 |
+
+### 12.4 可复现（同一份输入跑两次 → 字节完全一致）
+
+做法只有三条，但少一条就不成立：
+
+1. **条目顺序**：文件名先按 `[System.StringComparer]::Ordinal` 排序再依次写入，不看文件系统返回顺序（`Get-ChildItem` 的顺序在不同机器/文件系统上不一样）；
+2. **条目时间戳**：每条固定 `1980-01-01T00:00:00+00:00`（zip 能表示的最早时间，避开 1980 之前的坑）；
+3. **manifest 不写时间戳**：由 `StringBuilder` 手写，字段顺序固定、LF 换行、UTF-8 无 BOM，**故意没有 `builtAt`**——只要有构建时间，同输入两次的 sha256 必然不同。
+
+脚本自己会验一遍：把 zip 重建到 `<WorkDir>\repro\`，比 sha256 与 manifest 文本，不等就 `not-reproducible`。
+
+### 12.5 自检结果（实跑，不是设计意图）
+
+- **契约测试**：`tests/UI18n.Core.Tests/UpdatePackageScriptTests.cs`，9 条用例，全部真跑（`Skipped: 0`）。校验走的是真源码——`UpdateManifest.TryParse` 解析生成的 manifest（`parseErrors` 必须 0）、`UpdateVerify.CheckZip` / `CheckEntry` 逐条核 bytes + sha256、`ZipSafety.TryMapToModRelative` + `TryGetPackTarget` 核路径能落地；**没有另写一套校验**。
+- **门禁**：`pwsh tools\run-tests.ps1` → `UI18n.Core.Tests  Total: 578, Errors: 0, Failed: 0`（其中 9 条是本节新增）；`dotnet build UI18n.sln -c Release` → 0 警告 0 错误。
+- **真实语言包实跑一次**（`-Version 9.9.9`，只为验证脚本）：89 个 `*.jsonl`、11,089 非空行、解压后 3,685,087 B → zip 1,037,891 B、sha256 `4E2C05F277BA2F15357AB03B1E0D4522761557C0F27013F2B8E789C3ABFD0033`，manifest 14,660 B、sha256 `9F9B3BF64A2E7312440077AA5B6B5AB9918E17DB7973C286C74F1013B83ADC74`；重建一次同值（`reproducible` 通过）。
+- **覆盖到的反例**：`_smoke.jsonl`（`reserved-name`）、`bad name.jsonl`（`bad-file-name`）、空语言包目录（`empty-packs`）、`-Version 1.2` / 缺 `-Version` / `-Lang "zh cn"`——全部非 0 退出，且产物目录里 zip 与 manifest 都没有落地。
+- **还没验的**：公网 https 主机与 CDN（同 §11.8）。本节只保证「包能出、能被加载器原样吃下、字节可复现」，不保证「放到真实主机上能下载」。
+
 ---
 
 配置键总数：18（§9.3）。其中 4 个是本功能新增，默认值让 mod 在**不配地址**时行为与 v1.1 完全一致：不发一个请求、不打多余日志（只有第 1 行 `update: disabled (UpdateBaseUrl empty)`）。
