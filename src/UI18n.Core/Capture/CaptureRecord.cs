@@ -8,6 +8,8 @@ namespace UI18n.Core.Capture
     /// 落盘格式见 <see cref="CaptureJson"/>：
     /// <c>{h, n, s, sink, caller, count, firstSeen, template, reason, bucket}</c>
     /// （task-34 起后三个字段是新增的分类标记，老字段顺序与语义不变）。
+    /// v1.5（task-59）只在<b>末尾</b>追加可选的 <c>"truncated": true</c>：正文被
+    /// <see cref="CaptureOptions.MaxTextLength"/> 截断时才写这个字段，为 false 时整行字节与旧版完全一致。
     /// </para>
     /// </summary>
     public sealed class CaptureRecord
@@ -48,6 +50,12 @@ namespace UI18n.Core.Capture
         /// </summary>
         public string Bucket { get; private set; }
 
+        /// <summary>
+        /// 正文是否被 <see cref="CaptureOptions.MaxTextLength"/> 截断过（v1.5）。
+        /// 落盘时只有 true 才在行尾追加 <c>"truncated": true</c>，false 时不写字段。
+        /// </summary>
+        public bool Truncated { get; private set; }
+
         /// <summary><see cref="Hash"/> 的 16 位小写 hex（与字典的 <c>h</c> 字段同一格式）。</summary>
         public string HashHex
         {
@@ -63,9 +71,23 @@ namespace UI18n.Core.Capture
         {
         }
 
+        /// <summary>建一条记录，标记正文是否被截断（v1.5：不丢正文，超长只截断留痕）。</summary>
+        public CaptureRecord(ulong hash, string source, string normalized, string sink, string caller, string firstSeen,
+                             bool truncated)
+            : this(hash, source, normalized, sink, caller, firstSeen, null, truncated)
+        {
+        }
+
         /// <summary>建一条记录，分类由调用方给定（单测用）。</summary>
         public CaptureRecord(ulong hash, string source, string normalized, string sink, string caller, string firstSeen,
                              CaptureClassification classification)
+            : this(hash, source, normalized, sink, caller, firstSeen, classification, false)
+        {
+        }
+
+        /// <summary>建一条记录（分类与截断标记都由调用方给定）。</summary>
+        public CaptureRecord(ulong hash, string source, string normalized, string sink, string caller, string firstSeen,
+                             CaptureClassification classification, bool truncated)
         {
             Hash = hash;
             Source = source ?? string.Empty;
@@ -74,6 +96,7 @@ namespace UI18n.Core.Capture
             Caller = caller ?? string.Empty;
             FirstSeen = firstSeen ?? string.Empty;
             Count = 1;
+            Truncated = truncated;
 
             CaptureClassification c = classification ?? ClassifyOf(Normalized, Source);
             Template = c.Template;

@@ -6,17 +6,17 @@ using Xunit;
 namespace UI18n.Core.Tests
 {
     /// <summary>
-    /// v1.3：<b>单个调用者</b>的捕获配额（<see cref="CaptureOptions.MaxPerCaller"/>）回归用例。
+    /// v1.5（docs/08 D-T2）：<b>单调用者配额退役</b>后的回归用例。
     /// <para>
     /// 缺陷由来（round 11 实测）：模板档单独限额之后，噪声从「进度条」挪到了「某个大窗口」——
-    /// <c>ProfilerUI.DrawPluginsContent</c> 一个 caller 独占 130 条、
-    /// <c>LoadingScreen</c> 系列合计 3,028 条，候选档 5,000 条额度被几个调用者吃光，
-    /// 而采集本来要回答的是「<b>哪些界面</b>缺翻译」。所以按 caller 再分一层额度，
-    /// 让每个界面都有份，单个界面不能垄断。
+    /// <c>ProfilerUI.DrawPluginsContent</c> 一个 caller 独占 130 条、<c>LoadingScreen</c> 系列合计 3,028 条。
+    /// v1.3 的修法是按 caller 再分一层额度（<see cref="CaptureOptions.MaxPerCaller"/>，默认 60），
+    /// 但那是同一种病：为了「公平」把正文丢掉，等于主动放弃「还剩多少英文」这个唯一要回答的问题。
     /// </para>
     /// <para>
-    /// 两条边界必须钉住：<b>取不到栈的 caller 豁免</b>（那些记录本来就少，且是唯一线索），
-    /// 以及 <c>0</c> / 负数 = 不限制（关掉这层额度不用改代码）。
+    /// v1.5 的口径：<b>任何 caller 都一条不丢</b>（<c>CallerSkipped</c> 恒 0），
+    /// 强弱只体现在 candidates.jsonl 的 bucket 与 count 上，不体现在「录不录」上。
+    /// 字段本身保留，只为老配置仍能解析。
     /// </para>
     /// </summary>
     public class CaptureCallerQuotaTests
@@ -26,11 +26,12 @@ namespace UI18n.Core.Tests
         private const string Caller = "LoadingScreen.UpdateProgressBar";
         private const string OtherCaller = "AJE.AJEAtmTools:UpdateInfo";
 
+        /// <summary>刻意把三个退役上限压到很小，用来证明它们<b>不再</b>影响取舍。</summary>
         private static CaptureStore Store(int maxPerCaller)
         {
             var options = CaptureOptions.Default;
             options.MaxEntries = 5000;
-            options.MaxTemplateEntries = -1;                 // 本组用例只管 caller 额度：先关掉模板档
+            options.MaxTemplateEntries = -1;
             options.MaxPerCaller = maxPerCaller;
             return new CaptureStore(options);
         }
@@ -51,47 +52,51 @@ namespace UI18n.Core.Tests
             return sb.Append(letters).ToString();
         }
 
-        /// <summary>到顶后同一 caller 的新文本被丢，计 callerSkipped；已有的 distinct 数不变。</summary>
+        /// <summary>配额设成 2：同一 caller 的第 3 条照样留档，<c>CallerSkipped</c> 恒 0。</summary>
         [Fact]
-        public void Quota_DropsBeyondCap_AndCountsSkips()
+        public void QuotaRetired_SameCallerIsNotThrottled()
         {
             CaptureStore store = Store(2);
 
             Assert.True(store.Record(1UL, Text(1), Text(1), Sink, Caller, Seen));
             Assert.True(store.Record(2UL, Text(2), Text(2), Sink, Caller, Seen));
-            Assert.False(store.Record(3UL, Text(3), Text(3), Sink, Caller, Seen));
 
-            Assert.Equal(2, store.Distinct);
-            Assert.Equal(1L, store.CallerSkipped);
-            Assert.Contains("callerSkipped=1", store.Describe(), StringComparison.Ordinal);
+            // v1.3 这里返回 false；v1.5 必须收。
+            Assert.True(store.Record(3UL, Text(3), Text(3), Sink, Caller, Seen));
 
-            // 被丢的那条不建记录：再报一次还是 false，但只有第一次计入 skipped
+            Assert.Equal(3, store.Distinct);
+            Assert.Equal(0L, store.CallerSkipped);
+            Assert.DoesNotContain("callerSkipped", store.Describe(), StringComparison.Ordinal);
+
+            // 重复上报仍然只累加 count（不是新建桶），也不许把 skipped 拉起来。
             Assert.False(store.Record(3UL, Text(3), Text(3), Sink, Caller, Seen));
-            Assert.Equal(1L, store.CallerSkipped);
+            Assert.Equal(3, store.Distinct);
+            Assert.Equal(2, store.ToArray()[2].Count);
+            Assert.Equal(0L, store.CallerSkipped);
         }
 
-        /// <summary>额度是<b>按 caller</b> 的：一个界面吃满不影响另一个界面。</summary>
+        /// <summary>多个 caller 之间也不再互相影响：两个界面各 3 条，全部留档。</summary>
         [Fact]
-        public void Quota_IsPerCaller()
+        public void QuotaRetired_EveryCallerIsRecorded()
         {
             CaptureStore store = Store(2);
 
             Assert.True(store.Record(1UL, Text(1), Text(1), Sink, Caller, Seen));
             Assert.True(store.Record(2UL, Text(2), Text(2), Sink, Caller, Seen));
-            Assert.False(store.Record(3UL, Text(3), Text(3), Sink, Caller, Seen));
+            Assert.True(store.Record(3UL, Text(3), Text(3), Sink, Caller, Seen));
 
             Assert.True(store.Record(4UL, Text(4), Text(4), Sink, OtherCaller, Seen));
             Assert.True(store.Record(5UL, Text(5), Text(5), Sink, OtherCaller, Seen));
-            Assert.False(store.Record(6UL, Text(6), Text(6), Sink, OtherCaller, Seen));
+            Assert.True(store.Record(6UL, Text(6), Text(6), Sink, OtherCaller, Seen));
 
-            Assert.Equal(4, store.Distinct);
-            Assert.Equal(2L, store.CallerSkipped);
+            Assert.Equal(6, store.Distinct);
+            Assert.Equal(0L, store.CallerSkipped);
             Assert.Equal(2, store.DistinctCallers);
         }
 
-        /// <summary>取不到调用栈（<see cref="CaptureCaller.Unknown"/> / 空串）一律豁免 —— 不许因为限额丢掉唯一的线索。</summary>
+        /// <summary>取不到调用栈（<see cref="CaptureCaller.Unknown"/> / 空串）的串照样留档，计入 unknown。</summary>
         [Fact]
-        public void UnknownCaller_IsExemptFromQuota()
+        public void UnknownCaller_IsRecordedToo()
         {
             CaptureStore store = Store(1);
 
@@ -106,13 +111,14 @@ namespace UI18n.Core.Tests
             }
 
             Assert.Equal(10, store.Distinct);
+            Assert.Equal(10, store.UnknownCallers);
             Assert.Equal(0L, store.CallerSkipped);
             Assert.DoesNotContain("callerSkipped", store.Describe(), StringComparison.Ordinal);
         }
 
-        /// <summary><c>0</c> 与负数都表示「不限制」（口径与 <see cref="CaptureOptions.MaxEntries"/> 一致）。</summary>
+        /// <summary><c>0</c> 与负数在退役后没有语义差别：都只是「字段值」，怎么设都全收。</summary>
         [Fact]
-        public void ZeroAndNegativeMeanUnlimited()
+        public void ZeroAndNegative_HaveNoEffectAnyMore()
         {
             CaptureStore zero = Store(0);
             CaptureStore negative = Store(-1);
@@ -129,25 +135,42 @@ namespace UI18n.Core.Tests
             Assert.Equal(0L, negative.CallerSkipped);
         }
 
-        /// <summary>默认额度 60：第 61 条被挡（实测单 caller 上百条就已明显垄断采集结果）。</summary>
+        /// <summary>默认值 60 仍然钉住（配置兼容），但第 61 条照收。</summary>
         [Fact]
-        public void Default_IsSixty()
+        public void Default_IsSixty_ButNoLongerThrottles()
         {
             Assert.Equal(60, CaptureOptions.Default.MaxPerCaller);
 
             CaptureStore store = new CaptureStore(CaptureOptions.Default);
 
-            for (int i = 1; i <= 60; i++)
+            for (int i = 1; i <= 61; i++)
             {
                 Assert.True(store.Record((ulong)i, Text(i), Text(i), Sink, Caller, Seen));
             }
 
-            Assert.False(store.Record(61UL, Text(61), Text(61), Sink, Caller, Seen));
-            Assert.Equal(60, store.Distinct);
-            Assert.Equal(1L, store.CallerSkipped);
+            Assert.Equal(61, store.Distinct);
+            Assert.Equal(0L, store.CallerSkipped);
         }
 
-        /// <summary>Clone() 必须带上新字段（漏了会让「按界面调额度」静默失效）。</summary>
+        /// <summary>实测形态：一个窗口一次吐出 5,000 条，照样一条不丢。</summary>
+        [Fact]
+        public void SingleCallerBurst_IsFullyRecorded()
+        {
+            CaptureStore store = Store(2);
+
+            for (int i = 1; i <= 5000; i++)
+            {
+                Assert.True(store.Record((ulong)i, Text(i), Text(i), Sink, Caller, Seen));
+            }
+
+            Assert.Equal(5000, store.Distinct);
+            Assert.Equal(0L, store.CallerSkipped);
+
+            // 5,000 条全挂在同一个 caller 上：caller 聚合照旧工作（配额退役不影响统计）。
+            Assert.Equal("LoadingScreen.UpdateProgressBar x5000", store.TopCallers(1)[0]);
+        }
+
+        /// <summary>Clone() 必须带上字段（老调用点仍按它调参，漏了会静默改变配置语义）。</summary>
         [Fact]
         public void Clone_CopiesMaxPerCaller()
         {

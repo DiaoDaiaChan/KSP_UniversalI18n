@@ -131,8 +131,16 @@ namespace UI18n.Runtime
                 config.CaptureMaxEntries = captureMax < 0 ? 0 : captureMax;
 
                 // 模板档单独限额（v1.3）：口径与上面不同，0 = 一条都不录、负数 = 不限制，所以这里不夹负数。
+                // v1.5（docs/08 D-T2）起捕获端不再因为条数丢正文，这两个键只解析、不生效（老配置照读）。
                 config.CaptureMaxTemplateEntries =
                     ReadInt(node, "CaptureMaxTemplateEntries", config.CaptureMaxTemplateEntries);
+
+                // v1.5：单条文本上限（超长只截断不丢；0 = 不限制）+ 会话字节预算（0 = 不限制）。
+                int maxTextLength = ReadInt(node, "CaptureMaxTextLength", config.CaptureMaxTextLength);
+                config.CaptureMaxTextLength = maxTextLength < 0 ? 0 : maxTextLength;
+
+                long maxSessionBytes = ReadLong(node, "CaptureMaxSessionBytes", config.CaptureMaxSessionBytes);
+                config.CaptureMaxSessionBytes = maxSessionBytes < 0 ? 0 : maxSessionBytes;
 
                 // 数字骨架通道（v1.3）：默认 True。关掉 = 完全回到 v1.2 的精确匹配行为。
                 config.PatternMatching = ReadBool(node, "PatternMatching", config.PatternMatching);
@@ -330,6 +338,25 @@ namespace UI18n.Runtime
 
             string value = raw.Trim();
             return value.Length == 0 ? fallback : value;
+        }
+
+        /// <summary>读 long（字节预算这类可能上万的值用；负数照原样返回，由调用方决定夹不夹）。</summary>
+        internal static long ReadLong(ConfigNode node, string key, long fallback)
+        {
+            if (node == null || !node.HasValue(key))
+            {
+                return fallback;
+            }
+
+            string raw = node.GetValue(key);
+            long value;
+            if (long.TryParse(raw == null ? string.Empty : raw.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out value))
+            {
+                return value;
+            }
+
+            Log.Warn("config key " + key + "=\"" + raw + "\" is not a long, using " + fallback);
+            return fallback;
         }
 
         internal static int ReadInt(ConfigNode node, string key, int fallback)

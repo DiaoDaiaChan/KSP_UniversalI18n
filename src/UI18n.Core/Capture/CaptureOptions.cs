@@ -13,48 +13,58 @@ namespace UI18n.Core.Capture
         /// <summary>捕获总开关。关闭时 <see cref="CaptureStore.Record"/> 立即返回 false（零分配、无字典查询）。</summary>
         public bool Enabled { get; set; } = true;
 
-        /// <summary>单次会话最多记录多少条<b>不同</b>原文（去重键 = FNV-1a 64）。达到上限后停止捕获。</summary>
+        /// <summary>
+        /// <b>v1.5 退役</b>（task-59 / docs/08 D-T2）：捕获端不再因为总条数丢弃任何正文，这个上限<b>不再生效</b>。
+        /// 字段保留只为两个原因：① 老 <c>UI18n.cfg</c> 里还有 <c>CaptureMaxEntries</c>，配置解析不能炸；
+        /// ② <c>src/UI18n.Runtime/Capture/MissCapture.cs</c> 仍在读它打日志。
+        /// 想限制磁盘占用请用 <see cref="MaxSessionBytes"/>。
+        /// </summary>
         public int MaxEntries { get; set; } = 5000;
 
         /// <summary>
-        /// 单次会话最多记录多少条<b>模板档</b>（<c>bucket=template</c>：含数字的计数器 / 进度串，如
-        /// <c>Loading sound asset 0/234</c>）。<b>这个额度与 <see cref="MaxEntries"/> 分开算</b>，
-        /// 所以噪声再也不能把整局配额吃光（v1.3 修的缺陷，实测见 <c>reports/capture-triage.md</c>）。
+        /// <b>v1.5 退役</b>：模板档（<c>Loading sound asset 0/234</c> 这类含数字的计数器）也照收不丢，
+        /// 这个额度<b>不再生效</b>。字段保留同样只为老配置解析（<c>CaptureMaxTemplateEntries</c>）与运行时日志。
         /// <para>
-        /// 取值口径<b>与 <see cref="MaxEntries"/> 不同，故意如此</b>：
-        /// <c>&gt; 0</c> 限额、<c>0</c> 完全不录模板档、<c>&lt; 0</c> 不限制。
-        /// 原因：模板档是唯一「用户最可能想彻底关掉」的一档（它是噪声源，翻译价值最低），
-        /// 若沿用 <c>0 = 不限制</c> 就没法表达「一条都别录」。
+        /// 退役理由（docs/08 D-T2）：模板档<b>是</b>候选 —— 「Loading sound asset #/#」照样能翻成
+        /// 「正在加载音效 #/#」；旧策略把它当噪声丢掉，等于让最常见的用户可见英文永远翻不出来。
         /// </para>
         /// </summary>
         public int MaxTemplateEntries { get; set; } = 200;
 
         /// <summary>
-        /// 单个调用者最多贡献多少条 distinct 记录（默认 <c>60</c>；<c>0</c> 与 <c>&lt; 0</c> 都<b>不限制</b>，
-        /// 口径与 <see cref="MaxEntries"/> 一致）。
-        /// <para>
-        /// 为什么需要（v1.3 实测）：<c>ProfilerUI.DrawPluginsContent</c> 一个 caller 独占 130 条、
-        /// <c>LoadingScreen</c> 独占 3,028 条 —— 一两个渲染循环就能把整局配额（以及候选档）挤掉。
-        /// </para>
-        /// <para>
-        /// 只对<b>已知 caller</b> 生效：<see cref="CaptureCaller.Unknown"/> 与空串一律豁免
-        /// （取不到栈的那些本来就该照收，否则丢掉的是唯一线索）。
-        /// </para>
+        /// <b>v1.5 退役</b>：单个调用者配额<b>不再生效</b>（<c>ProfilerUI.DrawPluginsContent</c> 独占 130 条、
+        /// <c>LoadingScreen</c> 3,028 条的观测仍然有效，但那不再是丢弃理由 —— caller 现在只影响
+        /// <c>capture callers:</c> 的优先级排序）。字段保留只为老配置解析（<c>CaptureMaxPerCaller</c>）。
         /// </summary>
         public int MaxPerCaller { get; set; } = 60;
 
         /// <summary>
-        /// 单条文本上限：超过这个长度的串不录（不是截断）。
+        /// 单条文本上限。v1.5 起<b>超长只截断、不丢弃</b>（截断的记录带 <see cref="CaptureRecord.Truncated"/>，
+        /// 落盘追加 <c>"truncated": true</c>）。
         /// <para>
-        /// v1.4 由 <c>400</c> 提到 <c>2000</c>：零件 description 的长度 p99=577 / max=1577，
-        /// 400 会把「零件悬浮提示的整段描述」直接丢掉（实测 ROTanks 电池罐那条 300 字符描述
-        /// 一个会话只被悬停到 1 次，丢了就再也不会出现）。
+        /// 默认 <c>8000</c>：零件 description 的 p99=577 / max=1577，2000 本来够用；
+        /// 提到 8000 是为了让「整段长描述 / 长 changelog / 帮助文本」这类真正有翻译价值的长串也能整条留档，
+        /// 同时给单条记录一个硬上界（防止某个 mod 把整篇 cfg dump 到一个 label 里）。
         /// </para>
         /// </summary>
-        public int MaxTextLength { get; set; } = 2000;
+        public int MaxTextLength { get; set; } = 8000;
 
-        /// <summary>单条文本下限：比它短的串不录（单个字符的串没有翻译价值）。</summary>
+        /// <summary>
+        /// 单条文本下限（v1.5 起<b>只影响优先级/统计口径，不再丢弃</b>；<see cref="CaptureFilter"/> 仍在用）。
+        /// </summary>
         public int MinTextLength { get; set; } = 2;
+
+        /// <summary>
+        /// 单次会话写出的字节预算（默认 64 MiB；<c>0</c> 与 <c>&lt; 0</c> 表示不限制）。
+        /// <para>
+        /// 这是 v1.5 唯一还允许「不留正文」的闸门（docs/08 D-T2）：用尽后
+        /// <see cref="CaptureStore"/> 停止写正文、只累加计数，并由
+        /// <see cref="CaptureStore.ConsumeBudgetNotice"/> 保证日志只通报一次。
+        /// 与旧上限的区别：<b>它是字节而不是条数</b> —— 一条 8,000 字符的长描述和一条 20 字符的按钮，
+        /// 对磁盘的压力差 400 倍，用条数计既挡不住长文本也不会误伤短文本。
+        /// </para>
+        /// </summary>
+        public long MaxSessionBytes { get; set; } = 64L * 1024 * 1024;
 
         /// <summary>一份默认参数。<b>每次访问返回新实例</b>（与 <c>UI18nConfig.Default</c> 同一约定，避免共享可变状态）。</summary>
         public static CaptureOptions Default
@@ -72,6 +82,7 @@ namespace UI18n.Core.Capture
             copy.MaxPerCaller = MaxPerCaller;
             copy.MaxTextLength = MaxTextLength;
             copy.MinTextLength = MinTextLength;
+            copy.MaxSessionBytes = MaxSessionBytes;
             return copy;
         }
     }

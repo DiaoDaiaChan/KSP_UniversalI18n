@@ -77,20 +77,28 @@ namespace UI18n.Core.Config
         public bool CaptureMisses { get; set; } = true;
 
         /// <summary>
-        /// 单局最多捕获多少条 distinct 缺命中（配置键 <c>CaptureMaxEntries</c>，默认 5000；0 = 不限制）。
-        /// 触顶后只计 overflow，不再新建记录（避免无限增长）。
+        /// <b>v1.5 退役</b>（docs/08 D-T2）：配置键 <c>CaptureMaxEntries</c> 仍然解析（老配置照读），
+        /// 但捕获端<b>不再因为条数丢弃任何正文</b>。想限制磁盘占用请用 <see cref="CaptureMaxSessionBytes"/>。
         /// </summary>
         public int CaptureMaxEntries { get; set; } = 5000;
 
         /// <summary>
-        /// 单局最多捕获多少条<b>模板档</b>（含数字的计数器 / 进度串，如 <c>Loading sound asset 0/234</c>）。
-        /// 配置键 <c>CaptureMaxTemplateEntries</c>，默认 <c>200</c>；<c>0</c> = 一条都不录、<c>&lt; 0</c> = 不限制。
-        /// <para>
-        /// 这个额度与 <see cref="CaptureMaxEntries"/> <b>分开算</b>：round 11 实测一局 5,000 条里 4,323 条是
-        /// 加载屏计数器，真正的 UI 文本只抢到 109 条配额就满了（见 <c>reports/capture-triage.md</c>）。
-        /// </para>
+        /// <b>v1.5 退役</b>：配置键 <c>CaptureMaxTemplateEntries</c> 仍然解析（老配置照读），
+        /// 但模板档也照收不丢 —— 「Loading sound asset #/#」本身就是可翻的候选（D-T2）。
         /// </summary>
         public int CaptureMaxTemplateEntries { get; set; } = 200;
+
+        /// <summary>
+        /// 单条捕获文本的上限（配置键 <c>CaptureMaxTextLength</c>，默认 <c>8000</c>）。
+        /// v1.5 起超长<b>只截断、不丢弃</b>：截断的记录落盘追加 <c>"truncated": true</c>。
+        /// </summary>
+        public int CaptureMaxTextLength { get; set; } = 8000;
+
+        /// <summary>
+        /// 单次会话写出的字节预算（配置键 <c>CaptureMaxSessionBytes</c>，默认 67108864 = 64 MiB；0 = 不限制）。
+        /// v1.5 唯一还允许「不留正文」的闸门：用尽后停止写正文、只累加计数，日志只通报一次。
+        /// </summary>
+        public long CaptureMaxSessionBytes { get; set; } = 64L * 1024 * 1024;
 
         /// <summary>
         /// 数字骨架（pattern）通道开关（配置键 <c>PatternMatching</c>，默认 <c>true</c>；v1.3）。

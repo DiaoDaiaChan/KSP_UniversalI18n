@@ -238,9 +238,13 @@ namespace UI18n.Core.Tests
             }
         }
 
-        /// <summary>捕获器按桶计数，<c>Describe()</c> 里能看到分布；<c>already-cjk</c> 计入 filtered 不建记录。</summary>
+        /// <summary>
+        /// 捕获器按桶计数，<c>Describe()</c> 里能看到分布。
+        /// v1.5（docs/08 D-T2）：桶只表示<b>优先级</b>，不表示要不要留 —— 连中文串（<c>already-cjk</c>）
+        /// 也照样建记录，<c>Filtered</c> 恒为 0。
+        /// </summary>
         [Fact]
-        public void Store_CountsBuckets_AndFiltersCjk()
+        public void Store_CountsBuckets_AndRecordsEveryString()
         {
             var store = new CaptureStore();
             string seen = "2026-10-23T06:01:28Z";
@@ -250,19 +254,21 @@ namespace UI18n.Core.Tests
                                      "TMPro.TMP_Text.set_text", "A.B", seen));
             Assert.True(store.Record(3UL, "ReStockPlus/Parts/Control/RCS/x", "ReStockPlus/Parts/Control/RCS/x",
                                      "TMPro.TMP_Text.set_text", "A.B", seen));
-            Assert.False(store.Record(4UL, "设置", "设置", "TMPro.TMP_Text.set_text", "A.B", seen));
 
-            Assert.Equal(3, store.Distinct);
-            Assert.Equal(1, store.Candidates);
-            Assert.Equal(1, store.Templates);
-            Assert.Equal(1, store.Never);
-            Assert.Equal(1L, store.Filtered);
+            // v1.5 之前这条返回 false（CaptureFilter 判 already-cjk 直接拒收）；现在必须留档。
+            Assert.True(store.Record(4UL, "设置", "设置", "TMPro.TMP_Text.set_text", "A.B", seen));
+
+            Assert.Equal(4, store.Distinct);
+            Assert.Equal(2, store.Candidates);   // "Vessel mass" + "设置"（CaptureClassify 不看语种）
+            Assert.Equal(1, store.Templates);    // 带数字的 patch 计数器
+            Assert.Equal(1, store.Never);         // 路径形态
+            Assert.Equal(0L, store.Filtered);
 
             string describe = store.Describe();
-            Assert.Contains("candidate=1", describe, StringComparison.Ordinal);
+            Assert.Contains("candidate=2", describe, StringComparison.Ordinal);
             Assert.Contains("template=1", describe, StringComparison.Ordinal);
             Assert.Contains("never=1", describe, StringComparison.Ordinal);
-            Assert.Contains("filtered=1", describe, StringComparison.Ordinal);
+            Assert.DoesNotContain("filtered", describe, StringComparison.Ordinal);
         }
 
         /// <summary>重复未命中只累加计数，不会重复建桶（分桶是 distinct 口径）。</summary>

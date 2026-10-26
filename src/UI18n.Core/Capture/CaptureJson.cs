@@ -19,6 +19,10 @@ namespace UI18n.Core.Capture
     /// task-34：后三个字段是<b>追加</b>的，老字段的名字、顺序、语义一个字没改 —— 已有解析器
     /// （data-engineer 的 capture_ingest）不受影响，新字段按需读。
     /// </para>
+    /// <para>
+    /// v1.5（task-59）：正文被截断时在最末尾追加 <c>"truncated": true</c>；<b>不截断时整行字节与旧版逐字节一致</b>
+    /// （不写 <c>"truncated": false</c>）—— 让「没截断」这条路径的产物与老版本可混排、可比对。
+    /// </para>
     /// </summary>
     public static class CaptureJson
     {
@@ -31,7 +35,7 @@ namespace UI18n.Core.Capture
             }
 
             return ToJsonLine(record.Hash, record.Source, record.Normalized, record.Sink, record.Caller, record.Count,
-                              record.FirstSeen, record.Template, record.Reason, record.Bucket);
+                              record.FirstSeen, record.Template, record.Reason, record.Bucket, record.Truncated);
         }
 
         /// <summary>
@@ -50,6 +54,16 @@ namespace UI18n.Core.Capture
         public static string ToJsonLine(ulong hash, string source, string normalized, string sink, string caller, int count,
                                         string firstSeen, bool template, string reason, string bucket)
         {
+            return ToJsonLine(hash, source, normalized, sink, caller, count, firstSeen, template, reason, bucket, false);
+        }
+
+        /// <summary>
+        /// 一行（<b>不含</b>结尾换行），分类字段与截断标记都由调用方给定。
+        /// <paramref name="truncated"/> 为 true 时在行尾追加 <c>,"truncated":true</c>；false 时不写该字段。
+        /// </summary>
+        public static string ToJsonLine(ulong hash, string source, string normalized, string sink, string caller, int count,
+                                        string firstSeen, bool template, string reason, string bucket, bool truncated)
+        {
             StringBuilder sb = new StringBuilder(288);
             sb.Append('{');
             AppendField(sb, "h", hash.ToString("x16", CultureInfo.InvariantCulture), true);
@@ -63,6 +77,11 @@ namespace UI18n.Core.Capture
             sb.Append(",\"template\":").Append(template ? "true" : "false");
             AppendField(sb, "reason", reason ?? string.Empty, false);
             AppendField(sb, "bucket", string.IsNullOrEmpty(bucket) ? CaptureClassify.BucketCandidate : bucket, false);
+            if (truncated)
+            {
+                sb.Append(",\"truncated\":true");
+            }
+
             sb.Append('}');
             return sb.ToString();
         }

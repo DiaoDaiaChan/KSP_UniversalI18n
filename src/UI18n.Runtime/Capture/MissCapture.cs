@@ -71,6 +71,13 @@ namespace UI18n.Runtime
             {
                 CaptureOptions options = CaptureOptions.Default;
                 options.Enabled = true;
+
+                // D-T2（docs/08-真相层-设计.md）：捕获端只允许两种「丢」，且都留痕 ——
+                // ① 单条超长 → 截断写，行尾 truncated:true；② 本会话写出超预算 → 停写正文只计数。
+                // MaxEntries / MaxTemplateEntries / MaxPerCaller 三个丢弃型上限已退役（字段仍在，语义=不限制），
+                // 这里继续赋值只为兼容玩家旧 Config.cfg 的键，不再影响任何取舍。
+                options.MaxTextLength = config.CaptureMaxTextLength;
+                options.MaxSessionBytes = config.CaptureMaxSessionBytes;
                 options.MaxEntries = config.CaptureMaxEntries < 0 ? 0 : config.CaptureMaxEntries;
                 options.MaxTemplateEntries = config.CaptureMaxTemplateEntries;
 
@@ -80,8 +87,10 @@ namespace UI18n.Runtime
                 _nextFlushAt = Time.realtimeSinceStartup + FlushIntervalSeconds;
                 _configured = true;
 
-                Log.Info("capture: enabled, max=" + options.MaxEntries
-                         + ", maxTemplate=" + (options.MaxTemplateEntries < 0 ? "off" : options.MaxTemplateEntries.ToString())
+                Log.Info("capture: enabled, maxTextLength=" + options.MaxTextLength
+                         + ", maxSessionBytes=" + (options.MaxSessionBytes <= 0 ? "off" : options.MaxSessionBytes.ToString())
+                         + ", count caps retired (max=" + options.MaxEntries
+                         + ", maxTemplate=" + (options.MaxTemplateEntries < 0 ? "off" : options.MaxTemplateEntries.ToString()) + ")"
                          + ", flush every " + (int)FlushIntervalSeconds + " s, file=" + _path);
             }
             catch (Exception ex)
@@ -123,10 +132,17 @@ namespace UI18n.Runtime
 
             try
             {
+                if (store.ConsumeBudgetNotice())
+                {
+                    Log.Warn("capture: session byte budget exhausted (CaptureMaxSessionBytes=" + store.Options.MaxSessionBytes
+                             + "), further distinct misses are counted only (budgetSkipped=" + store.BudgetSkipped
+                             + "); 正文不再写盘，翻译不受影响");
+                }
+
                 if (store.ConsumeCapNotice())
                 {
-                    Log.Warn("capture: cap reached (CaptureMaxEntries=" + store.Options.MaxEntries
-                             + "), further distinct misses are counted only (overflow=" + store.Overflow + ")");
+                    Log.Warn("capture: cap notice (CaptureMaxEntries=" + store.Options.MaxEntries
+                             + " 已退役，仅计数), overflow=" + store.Overflow);
                 }
 
                 int written = store.WritePending(_path);

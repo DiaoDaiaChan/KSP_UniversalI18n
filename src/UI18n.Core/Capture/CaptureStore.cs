@@ -10,6 +10,20 @@ namespace UI18n.Core.Capture
     /// 「缺命中」聚合器：按 FNV-1a 64 去重，重复未命中只累加 <see cref="CaptureRecord.Count"/>，
     /// 落盘时把还没写过的记录按 JSONL 追加到文件（见 <see cref="CaptureJson"/>）。
     /// <para>
+    /// <b>v1.5 起不丢正文</b>（docs/08 D-T2）：本类只在两种情况下不留正文，两种都必须留痕 ——
+    /// ① 文本长度超 <see cref="CaptureOptions.MaxTextLength"/> 时截断写入并给记录打 <see cref="CaptureRecord.Truncated"/>；
+    /// ② 本会话写入字节超 <see cref="CaptureOptions.MaxSessionBytes"/> 后停止写正文、只累加计数，
+    /// 日志由 <see cref="ConsumeBudgetNotice"/> 保证只打一次。
+    /// <see cref="CaptureOptions.MaxEntries"/> / <see cref="CaptureOptions.MaxTemplateEntries"/> /
+    /// <see cref="CaptureOptions.MaxPerCaller"/> 已退役（字段保留只为配置解析不炸），
+    /// <see cref="Filtered"/> / <see cref="Overflow"/> / <see cref="TemplateSkipped"/> / <see cref="CallerSkipped"/>
+    /// 四个计数在 v1.5 恒为 0。
+    /// </para>
+    /// <para>
+    /// <b>内存有界</b>：<see cref="_index"/> 只留「hash → 待写缓冲下标 / 已落盘」的索引，正文只活在
+    /// <see cref="_pending"/> 里，<see cref="WritePending"/> 成功后立即清空 —— 会话越长不会把全部正文压在内存里。
+    /// </para>
+    /// <para>
     /// <b>性能契约</b>（task-30）：重复未命中的热路径只有「一次字典查表 + 一次整数自增」，
     /// 绝不在热路径上做归一化、算哈希、取调用栈或分配字符串。取调用栈（约 2 µs）只发生在
     /// 某条原文<b>首次</b>进入捕获时；重复命中走 <see cref="CountMiss"/>，O(1) 且零分配。
@@ -24,30 +38,36 @@ namespace UI18n.Core.Capture
     /// </summary>
     public sealed class CaptureStore
     {
-        private const int IndexFiltered = -1;
-        private const int IndexOverflow = -2;
+        /// <summary><see cref="_index"/> 里表示「这条的正文已经落盘」的值（&gt;= 0 表示待写缓冲下标）。</summary>
+        private const int IndexWritten = -1;
 
         private static readonly UTF8Encoding Utf8NoBom = new UTF8Encoding(false);
         private static readonly string[] NoLines = new string[0];
 
         private readonly CaptureOptions _options;
+
+        // hash → (待写缓冲下标, >= 0) 或 IndexWritten（正文已落盘）。这是去重索引，条目数 = distinct 条数。
         private readonly Dictionary<ulong, int> _index;
-        private readonly List<CaptureRecord> _records;
+
+        // 还没写盘的记录；WritePending 成功后清空，所以正文内存只跟「两次写盘之间的新增」成正比。
+        private readonly List<CaptureRecord> _pending;
 
         // task-35：按 caller 聚合（只统计 distinct 记录，重复 miss 不会增加权重 —— 权重就是「有多少条不同文本来自它」）
         private readonly Dictionary<string, int> _callers;
         private int _unknownCallers;
 
-        private long _filtered;
-        private long _overflow;
-        private long _templateSkipped;
-        private long _callerSkipped;
+        // v1.5：Filtered / Overflow / TemplateSkipped / CallerSkipped 四个计数已退役（恒 0），
+        // 不再是字段 —— 见下面四个属性的注释，保留它们只为外部调用点（MissCapture 的日志与老测试）不炸。
+
+        private long _budgetSkipped;    // 字节预算用尽后只计数、不留正文的条数（D-T2 允许的唯一「不留正文」之一）
+        private long _lateRepeats;      // 正文已落盘的 hash 之后又 miss 的次数（只累加，不改已写出的行）
+        private long _sessionBytes;     // 本会话已写出的字节数（按 UTF-8 行字节 + 换行计）
+        private int _truncated;         // 截断写入的条数
         private int _candidates;
         private int _templates;
         private int _never;
-        private bool _capReached;
-        private bool _capNoticePending;
-        private int _written;
+        private int _written;           // 正文已落盘的 distinct 条数
+        private bool _budgetNoticePending;
         private string _lastWriteError;
 
         /// <summary>用 <see cref="CaptureOptions.Default"/> 建一个聚合器。</summary>
@@ -60,14 +80,9 @@ namespace UI18n.Core.Capture
         public CaptureStore(CaptureOptions options)
         {
             _options = (options ?? CaptureOptions.Default).Clone();
-            if (_options.MaxEntries < 0)
-            {
-                _options.MaxEntries = 0;
-            }
-
             if (_options.MaxTextLength <= 0)
             {
-                _options.MaxTextLength = 2000;
+                _options.MaxTextLength = 8000;
             }
 
             if (_options.MinTextLength < 0)
@@ -75,9 +90,14 @@ namespace UI18n.Core.Capture
                 _options.MinTextLength = 0;
             }
 
-            int capacity = _options.MaxEntries > 0 ? Math.Min(_options.MaxEntries, 1024) : 16;
-            _index = new Dictionary<ulong, int>(capacity);
-            _records = new List<CaptureRecord>(capacity);
+            if (_options.MaxSessionBytes < 0)
+            {
+                _options.MaxSessionBytes = 0;
+            }
+
+            // v1.5：MaxEntries 已退役（不再丢弃任何内容），初值只用来给字典一个不太离谱的起始容量。
+            _index = new Dictionary<ulong, int>(256);
+            _pending = new List<CaptureRecord>(256);
             _callers = new Dictionary<string, int>(16, StringComparer.Ordinal);
         }
 
@@ -87,28 +107,37 @@ namespace UI18n.Core.Capture
             get { return _options; }
         }
 
-        /// <summary>已记录的 distinct 条数。</summary>
+        /// <summary>见过的 distinct 条数（= 去重索引条目数；含正文因预算用尽而没留的条目）。</summary>
         public int Distinct
         {
-            get { return _records.Count; }
+            get { return _index.Count; }
         }
 
-        /// <summary>已成功写盘的条数。</summary>
+        /// <summary>正文已成功落盘的 distinct 条数。</summary>
         public int Written
         {
             get { return _written; }
         }
 
-        /// <summary>还没写盘的条数。</summary>
+        /// <summary>还没写盘、正压在内存缓冲里的条数。</summary>
         public int Pending
         {
-            get { return _records.Count - _written; }
+            get { return _pending.Count; }
         }
 
-        /// <summary>被过滤规则拒掉的次数（含重复被拒）。</summary>
+        /// <summary>本会话已写出的字节数（UTF-8，含换行）。</summary>
+        public long SessionBytes
+        {
+            get { return _sessionBytes; }
+        }
+
+        /// <summary>
+        /// v1.5 退役：恒为 0（以前是「被过滤规则拒掉的次数」）。
+        /// 过滤器（<see cref="CaptureFilter"/>）仍然保留，但只作为分流/统计口径，不再拒绝任何串。
+        /// </summary>
         public long Filtered
         {
-            get { return _filtered; }
+            get { return 0L; }
         }
 
         /// <summary>已记录的条数里，<c>candidate</c> 桶（静态文本，可直接翻）的条数。</summary>
@@ -129,34 +158,46 @@ namespace UI18n.Core.Capture
             get { return _never; }
         }
 
-        /// <summary>
-        /// 因为 <see cref="CaptureOptions.MaxTemplateEntries"/> 额度用尽而被丢弃的<b>模板档</b>条数
-        /// （不含 <c>&lt; 0</c> 不限制的情形，那种情况永远是 0）。用来回答「模板限额是不是真的在起作用」。
-        /// </summary>
+        /// <summary>v1.5 退役：恒为 0（以前是「模板档限额用尽被丢弃」的条数）。</summary>
         public long TemplateSkipped
         {
-            get { return _templateSkipped; }
+            get { return 0L; }
         }
 
-        /// <summary>超过 <see cref="CaptureOptions.MaxEntries"/> 后被丢弃的次数。</summary>
+        /// <summary>v1.5 退役：恒为 0（以前是「超过 MaxEntries 被丢弃」的次数）。</summary>
         public long Overflow
         {
-            get { return _overflow; }
+            get { return 0L; }
         }
 
-        /// <summary>
-        /// 因为单个调用者配额（<see cref="CaptureOptions.MaxPerCaller"/>）用尽而被丢弃的条数（v1.3）。
-        /// 取不到调用栈的记录（<see cref="CaptureCaller.Unknown"/> / 空串）<b>豁免</b>，永远不会记到这里。
-        /// </summary>
+        /// <summary>v1.5 退役：恒为 0（以前是「单个 caller 配额用尽被丢弃」的条数）。</summary>
         public long CallerSkipped
         {
-            get { return _callerSkipped; }
+            get { return 0L; }
         }
 
-        /// <summary>是否已触顶（触顶后新原文一律丢弃，只计 <see cref="Overflow"/>）。</summary>
+        /// <summary>正文因会话字节预算用尽而没留的条数（D-T2 允许的第二类丢弃，会被日志通报一次）。</summary>
+        public long BudgetSkipped
+        {
+            get { return _budgetSkipped; }
+        }
+
+        /// <summary>正文已落盘的 hash 之后又被 miss 的次数（只累加计数；不改已写出的行）。</summary>
+        public long LateRepeats
+        {
+            get { return _lateRepeats; }
+        }
+
+        /// <summary>截断写入（<see cref="CaptureRecord.Truncated"/>）的条数。</summary>
+        public int TruncatedCount
+        {
+            get { return _truncated; }
+        }
+
+        /// <summary>v1.5 退役：恒为 false（以前表示「已触顶，新原文一律丢弃」）。</summary>
         public bool CapReached
         {
-            get { return _capReached; }
+            get { return false; }
         }
 
         /// <summary>最近一次写盘失败的原因（成功后清空）。</summary>
@@ -167,7 +208,8 @@ namespace UI18n.Core.Capture
 
         /// <summary>
         /// 记一次未命中：首次出现时建记录并取调用栈，重复出现时只累加计数。
-        /// 返回 true 表示新建了一条 distinct 记录。
+        /// 返回 true 表示新建了一条带正文的 distinct 记录；<b>只有</b>
+        /// <see cref="CaptureOptions.Enabled"/> 关掉或正文因字节预算用尽而没留时才返回 false。
         /// </summary>
         public bool Record(ulong hash, string source, string normalized, string sink)
         {
@@ -183,59 +225,59 @@ namespace UI18n.Core.Capture
         }
 
         /// <summary>
-        /// 重复未命中计数（缓存里已知的 miss 走这条，零分配）：不认识或已被过滤/丢弃的 hash 一律忽略。
+        /// 重复未命中计数（缓存里已知的 miss 走这条，零分配）：不认识的 hash 一律忽略。
+        /// 正文还在待写缓冲里的，直接改记录的 <see cref="CaptureRecord.Count"/>；
+        /// 正文已经落盘的，只累加 <see cref="LateRepeats"/>（不回改文件）。
         /// </summary>
         public void CountMiss(ulong hash)
         {
-            int index;
-            if (!_index.TryGetValue(hash, out index))
+            int slot;
+            if (!_index.TryGetValue(hash, out slot))
             {
                 return;
             }
 
-            if (index >= 0)
+            if (slot >= 0)
             {
-                _records[index].Count++;
+                _pending[slot].Count++;
                 return;
             }
 
-            if (index == IndexOverflow)
-            {
-                _overflow++;
-            }
-            else
-            {
-                _filtered++;
-            }
+            _lateRepeats++;
+        }
+
+        /// <summary>v1.5 退役：恒返回 false（不再有「触顶」这回事）。保留方法只为外部调用点不炸。</summary>
+        public bool ConsumeCapNotice()
+        {
+            return false;
         }
 
         /// <summary>
-        /// 触顶后只允许日志打一次：第一次调用返回 true，之后返回 false。
+        /// 字节预算用尽后只允许日志打一次：第一次调用返回 true，之后返回 false。
         /// </summary>
-        public bool ConsumeCapNotice()
+        public bool ConsumeBudgetNotice()
         {
-            if (!_capNoticePending)
+            if (!_budgetNoticePending)
             {
                 return false;
             }
 
-            _capNoticePending = false;
+            _budgetNoticePending = false;
             return true;
         }
 
         /// <summary>把还没写过的记录序列化成 JSONL 行（不含换行；供单测与写盘共用）。</summary>
         public string[] PendingJsonLines()
         {
-            int pending = _records.Count - _written;
-            if (pending <= 0)
+            if (_pending.Count == 0)
             {
                 return NoLines;
             }
 
-            string[] lines = new string[pending];
-            for (int i = 0; i < pending; i++)
+            string[] lines = new string[_pending.Count];
+            for (int i = 0; i < _pending.Count; i++)
             {
-                lines[i] = CaptureJson.ToJsonLine(_records[_written + i]);
+                lines[i] = CaptureJson.ToJsonLine(_pending[i]);
             }
 
             return lines;
@@ -243,13 +285,12 @@ namespace UI18n.Core.Capture
 
         /// <summary>
         /// 把还没写过的记录追加到 <paramref name="path"/>（LF 结尾、无 BOM；目录不存在会建）。
-        /// 返回写入的条数；失败返回 0 并记 <see cref="LastWriteError"/>，<b>绝不抛</b>。
-        /// 只有真正写成功才推进 <see cref="Written"/>，所以失败后下次会重试同一批。
+        /// 返回本批「消化掉」的条数（写出的 + 因字节预算丢弃的）；失败返回 0 并记 <see cref="LastWriteError"/>，<b>绝不抛</b>。
+        /// 只有真正写成功才清空待写缓冲，所以失败后下次会重试同一批。
         /// </summary>
         public int WritePending(string path)
         {
-            int pending = _records.Count - _written;
-            if (pending <= 0)
+            if (_pending.Count == 0)
             {
                 return 0;
             }
@@ -260,24 +301,64 @@ namespace UI18n.Core.Capture
                 return 0;
             }
 
+            long budget = _options.MaxSessionBytes;
+            int writtenNow = 0;
+            int droppedByBudget = 0;
+            long bytesNow = 0;
+
             try
             {
-                string dir = Path.GetDirectoryName(path);
-                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                StringBuilder sb = new StringBuilder(_pending.Count * 192);
+                var flushed = new List<ulong>(_pending.Count);
+                for (int i = 0; i < _pending.Count; i++)
                 {
-                    Directory.CreateDirectory(dir);
+                    CaptureRecord record = _pending[i];
+                    string line = CaptureJson.ToJsonLine(record);
+                    int bytes = Utf8NoBom.GetByteCount(line) + 1;
+
+                    if (budget > 0 && _sessionBytes + bytesNow + bytes > budget)
+                    {
+                        // D-T2 允许的第二类丢弃：停止写正文，只留计数 + 一次性日志。
+                        _index[record.Hash] = IndexWritten;
+                        droppedByBudget++;
+                        continue;
+                    }
+
+                    sb.Append(line).Append('\n');
+                    flushed.Add(record.Hash);
+                    bytesNow += bytes;
+                    writtenNow++;
                 }
 
-                StringBuilder sb = new StringBuilder(pending * 192);
-                for (int i = 0; i < pending; i++)
+                if (writtenNow > 0)
                 {
-                    sb.Append(CaptureJson.ToJsonLine(_records[_written + i])).Append('\n');
+                    string dir = Path.GetDirectoryName(path);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+
+                    File.AppendAllText(path, sb.ToString(), Utf8NoBom);
                 }
 
-                File.AppendAllText(path, sb.ToString(), Utf8NoBom);
-                _written = _records.Count;
+                // 写出去的 hash 必须改标记成「正文已落盘」：否则 _pending.Clear() 之后
+                // 旧下标还留在 _index 里，下一次 CountMiss 会拿越界下标去索引新的缓冲。
+                for (int i = 0; i < flushed.Count; i++)
+                {
+                    _index[flushed[i]] = IndexWritten;
+                }
+
+                _sessionBytes += bytesNow;
+                _written += writtenNow;
+                if (droppedByBudget > 0)
+                {
+                    _budgetSkipped += droppedByBudget;
+                    _budgetNoticePending = true;
+                }
+
+                _pending.Clear();
                 _lastWriteError = null;
-                return pending;
+                return writtenNow + droppedByBudget;
             }
             catch (Exception ex)
             {
@@ -286,51 +367,52 @@ namespace UI18n.Core.Capture
             }
         }
 
-        /// <summary>已记录的副本（单测用；按首次出现顺序）。</summary>
+        /// <summary>待写缓冲的副本（单测用；按首次出现顺序）。</summary>
         public CaptureRecord[] ToArray()
         {
-            return _records.ToArray();
+            return _pending.ToArray();
         }
 
-        /// <summary>统计行，形如 <c>capture: distinct=812, written=812</c>（有过滤/丢弃/触顶时追加后缀）。</summary>
+        /// <summary>
+        /// 统计行，形如 <c>capture: distinct=812, written=812</c>。
+        /// v1.5 里 filtered / tmplSkipped / callerSkipped / overflow 恒为 0，所以不会出现；
+        /// 有截断、预算丢弃、落盘后重复 miss 或已写出字节时追加对应后缀。
+        /// </summary>
         public string Describe()
         {
             StringBuilder sb = new StringBuilder(64);
-            sb.Append("capture: distinct=").Append(_records.Count.ToString(CultureInfo.InvariantCulture));
+            sb.Append("capture: distinct=").Append(_index.Count.ToString(CultureInfo.InvariantCulture));
             sb.Append(", written=").Append(_written.ToString(CultureInfo.InvariantCulture));
 
-            if (_records.Count > 0)
+            if (_index.Count > 0)
             {
                 sb.Append(", candidate=").Append(_candidates.ToString(CultureInfo.InvariantCulture));
                 sb.Append(", template=").Append(_templates.ToString(CultureInfo.InvariantCulture));
                 sb.Append(", never=").Append(_never.ToString(CultureInfo.InvariantCulture));
             }
 
-            if (_filtered > 0)
+            if (_truncated > 0)
             {
-                sb.Append(", filtered=").Append(_filtered.ToString(CultureInfo.InvariantCulture));
+                sb.Append(", truncated=").Append(_truncated.ToString(CultureInfo.InvariantCulture));
             }
 
-            if (_templateSkipped > 0)
+            if (_budgetSkipped > 0)
             {
-                sb.Append(", tmplSkipped=").Append(_templateSkipped.ToString(CultureInfo.InvariantCulture));
+                sb.Append(", budgetSkipped=").Append(_budgetSkipped.ToString(CultureInfo.InvariantCulture));
             }
 
-            if (_callerSkipped > 0)
+            if (_lateRepeats > 0)
             {
-                sb.Append(", callerSkipped=").Append(_callerSkipped.ToString(CultureInfo.InvariantCulture));
+                sb.Append(", laterRepeats=").Append(_lateRepeats.ToString(CultureInfo.InvariantCulture));
             }
 
-            if (_overflow > 0)
+            if (_sessionBytes > 0)
             {
-                sb.Append(", overflow=").Append(_overflow.ToString(CultureInfo.InvariantCulture));
+                sb.Append(", bytes=").Append(_sessionBytes.ToString(CultureInfo.InvariantCulture));
             }
 
-            if (_capReached)
-            {
-                sb.Append(", cap=reached");
-            }
-
+            // v1.5：filtered / tmplSkipped / callerSkipped / overflow 四个计数已退役（恒 0），
+            // 所以这一行里永远不会出现这四个后缀（老日志解析器按「有就显示」的写法仍然兼容）。
             return sb.ToString();
         }
 
@@ -425,6 +507,53 @@ namespace UI18n.Core.Capture
             return string.Equals(caller, CaptureCaller.Unknown, StringComparison.OrdinalIgnoreCase);
         }
 
+        private bool IsBudgetExhausted()
+        {
+            long budget = _options.MaxSessionBytes;
+            return budget > 0 && _sessionBytes >= budget;
+        }
+
+        /// <summary>
+        /// 按 <see cref="CaptureOptions.MaxTextLength"/> 截断；<paramref name="truncated"/> 标明是否真的截了。
+        /// 不切在代理对中间（否则写出去是半个字符，下游 JSON 还能圆回来但文本已经废了）。
+        /// </summary>
+        private string Truncate(string text, out bool truncated)
+        {
+            truncated = false;
+            if (text == null)
+            {
+                return string.Empty;
+            }
+
+            int max = _options.MaxTextLength;
+            if (max <= 0 || text.Length <= max)
+            {
+                return text;
+            }
+
+            int cut = max;
+            if (cut > 0 && char.IsHighSurrogate(text[cut - 1]))
+            {
+                cut--;
+            }
+
+            truncated = true;
+            return cut <= 0 ? string.Empty : text.Substring(0, cut);
+        }
+
+        private void TrackCaller(string callerValue)
+        {
+            if (IsUnknownCaller(callerValue))
+            {
+                _unknownCallers++;
+                return;
+            }
+
+            int times;
+            _callers.TryGetValue(callerValue, out times);
+            _callers[callerValue] = times + 1;
+        }
+
         private bool RecordCore(ulong hash, string source, string normalized, string sink, string caller, string firstSeen, bool captureCaller)
         {
             if (!_options.Enabled)
@@ -432,58 +561,16 @@ namespace UI18n.Core.Capture
                 return false;
             }
 
-            int index;
-            if (_index.TryGetValue(hash, out index))
+            int slot;
+            if (_index.TryGetValue(hash, out slot))
             {
-                if (index >= 0)
+                if (slot >= 0)
                 {
-                    _records[index].Count++;
-                }
-                else if (index == IndexOverflow)
-                {
-                    _overflow++;
+                    _pending[slot].Count++;
                 }
                 else
                 {
-                    _filtered++;
-                }
-
-                return false;
-            }
-
-            string reason = CaptureFilter.RejectReason(normalized, source, _options);
-            if (reason != null)
-            {
-                _index[hash] = IndexFiltered;
-                _filtered++;
-                return false;
-            }
-
-            // v1.3：模板档单独限额（round 11 实测：一局 5000 条里 4,323 条是加载屏计数器，
-            // 真正的 UI 文本只抢到 109 条就被挤满）。判据放在 MaxEntries 之前 —— 模板档不许吃总配额。
-            int templateCap = _options.MaxTemplateEntries;
-            if (templateCap >= 0)
-            {
-                bool template;
-                string classifyReason;
-                string bucket;
-                CaptureClassify.Classify(normalized, out template, out classifyReason, out bucket);
-                if (bucket == CaptureClassify.BucketTemplate && (templateCap == 0 || _templates >= templateCap))
-                {
-                    _index[hash] = IndexFiltered;
-                    _templateSkipped++;
-                    return false;
-                }
-            }
-
-            if (_options.MaxEntries > 0 && _records.Count >= _options.MaxEntries)
-            {
-                _index[hash] = IndexOverflow;
-                _overflow++;
-                if (!_capReached)
-                {
-                    _capReached = true;
-                    _capNoticePending = true;
+                    _lateRepeats++;
                 }
 
                 return false;
@@ -492,34 +579,32 @@ namespace UI18n.Core.Capture
             string callerValue = captureCaller ? CaptureCaller.FromStack(2) : (caller ?? string.Empty);
             string seen = firstSeen ?? DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 
-            // v1.3：每个 caller 的配额（实测 ProfilerUI.DrawPluginsContent 独占 130 条、LoadingScreen 独占 3,028 条）。
-            // 取不到栈的 caller 豁免 —— 那些记录本来就少，而且丢掉的是唯一线索。
-            int perCallerCap = _options.MaxPerCaller;
-            if (perCallerCap > 0 && !IsUnknownCaller(callerValue))
+            bool truncatedSource;
+            bool truncatedNormalized;
+            string keptSource = Truncate(source, out truncatedSource);
+            string keptNormalized = Truncate(normalized, out truncatedNormalized);
+            bool truncated = truncatedSource || truncatedNormalized;
+
+            // D-T2 的第二类丢弃：预算用尽后不再留正文，只记「见过这条」+ 计数，日志由 ConsumeBudgetNotice 通报一次。
+            if (IsBudgetExhausted())
             {
-                int fromCaller;
-                if (_callers.TryGetValue(callerValue, out fromCaller) && fromCaller >= perCallerCap)
-                {
-                    _index[hash] = IndexFiltered;          // 与别的丢弃同口径：不建记录、重复 miss 只计 filtered
-                    _callerSkipped++;
-                    return false;
-                }
+                _index[hash] = IndexWritten;
+                _budgetSkipped++;
+                _budgetNoticePending = true;
+                TrackCaller(callerValue);
+                return false;
             }
 
-            CaptureRecord record = new CaptureRecord(hash, source, normalized, sink, callerValue, seen);
-            _index[hash] = _records.Count;
-            _records.Add(record);
+            CaptureRecord record = new CaptureRecord(hash, keptSource, keptNormalized, sink, callerValue, seen, truncated);
+            _index[hash] = _pending.Count;
+            _pending.Add(record);
 
             // task-35：caller 聚合（每个 distinct 文本只加一次，重复 miss 不重复计权）
-            if (IsUnknownCaller(callerValue))
+            TrackCaller(callerValue);
+
+            if (truncated)
             {
-                _unknownCallers++;
-            }
-            else
-            {
-                int times;
-                _callers.TryGetValue(callerValue, out times);
-                _callers[callerValue] = times + 1;
+                _truncated++;
             }
 
             // task-34 缺陷 3：分桶计数（数据一条不丢，只是给下游一个可读的分布）
