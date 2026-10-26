@@ -26,7 +26,9 @@ on:
       - "packs/conventions.jsonl"
       - "packs/overrides.jsonl"
       - "packs/il-translatable.jsonl"
+      - "packs/candidates.jsonl"
       - "packs/zh-cn/**"
+      - "tests/golden/**"
       - "tools/i18n_tools/**"
       - ".github/workflows/i18n.yml"
   schedule:
@@ -54,7 +56,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: 工具自检（279 项）
+      - name: 工具自检（python -m i18n_tools.selftest）
         working-directory: tools
         run: python -m i18n_tools.selftest
 
@@ -70,13 +72,32 @@ jobs:
         working-directory: tools
         run: python -m i18n_tools.packindex --check
 
+      # 用户报过的每一条原文（tests/golden/rendered-strings.txt）都要过三步：
+      #   ① capture_ingest 判出的 bucket 可留档（candidate/template/never，被丢才算挂）
+      #   ② packs/candidates.jsonl 里有它的 h
+      #   ③ packs/zh-cn 里有非空译文（keep 直通 t == 原文也算）
+      # 纪律（docs/08 D-T5）：任何过滤器/阈值改动让这里变红 → 改过滤器，不改清单。
+      # exit 2 = 跳过：候选单一表还没落地时 ② 无法判定，播报 skip 而不是判红。
+      - name: golden 门禁（用户报过的串不许再被静默丢掉）
+        working-directory: tools
+        run: |
+          set +e
+          python -m i18n_tools.golden_gate
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ]; then
+            echo "::notice::golden_gate SKIP：packs/candidates.jsonl 不存在（候选单一表未落地），第 2 步未判定；这不是通过。"
+            exit 0
+          fi
+          exit "$code"
+
       - name: 汇总
         if: always()
         run: |
           {
             echo "### i18n 门禁"
             echo ""
-            echo "四道门按顺序执行：selftest（279 项）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）。"
+            echo "五道门按顺序执行：selftest（含 golden_gate 自检）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）→ golden（用户报过的原文三步判定；缺 packs/candidates.jsonl 时记 SKIP，不算红）。"
             echo ""
             echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
           } >> "$GITHUB_STEP_SUMMARY"

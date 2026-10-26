@@ -91,6 +91,10 @@ DECLARED_FIELDS = ("template", "reason", "bucket")
 OUT_FIELDS = ("h", "n", "s", "sink", "caller", "count", "firstSeen",
               "lastSeen", "sessions", "callers", "bucket", "reason", "mods",
               "exact")
+# 1.5 追加字段（设计契约 docs/08 真相层 §2：**省略即为 false、不写字段**）。
+# 只有真的被截断（超 MaxTextLength，默认 8000）的行才在行尾多一个 "truncated": true，
+# 其余行逐字节与 1.4 产物相同 —— 这样老产物不需要为「加一个字段」整体重写。
+TRUNC_KEY = "truncated"
 
 PATTERN = "pattern"      # 产物侧派生档：一条数字骨架一行（见 collapse_templates）
 BUCKETS = ("candidate", "pattern", "template", "never")
@@ -100,8 +104,18 @@ BUCKET_ORDER = {"candidate": 0, "pattern": 1, "template": 2, "never": 3}
 # 表达的正是「这条还带数字」），只是为了让 CONSERVATIVE 覆盖 BUCKETS 全集。
 CONSERVATIVE = {"never": 0, "template": 1, "pattern": 1, "candidate": 2}
 MAX_CALLERS = 5          # 每个 h 最多保留几个 caller（够定位宿主，又不让行变胖）
-# 允许进产物的档：template 先塌缩成 pattern（或 --raw-templates 时原样保留）；never 一律不进
+
+# 产物口径分两种，别混：
+#   OUTPUT_BUCKETS     -- **送翻产物**（packs/capture-candidates.jsonl，translate_il 的输入）：
+#                         template 先塌缩成 pattern（--raw-templates 时原样保留），never 不进。
+#   ALL_INPUT_BUCKETS  -- **真相层总表**（packs/candidates.jsonl，candidates.py 用）：
+#                         candidate/template/never 三档原样各一行，**一条都不丢**。
+# bucket 在 1.5 里是**优先级**（candidate > template > never），不再是「去留开关」：
+# classify_capture 的每个 ("never", reason) 仍然是一个 reason 标签（path / logline /
+# already-cjk / …），保留这些标签是为了在总表里能回答「这条为什么没送翻」；要不要落进
+# 送翻产物，由 allowed 集合决定，不是把它从统计里抹掉。
 OUTPUT_BUCKETS = ("candidate", "pattern")
+ALL_INPUT_BUCKETS = ("candidate", "template", "never")
 
 # 没归属的行的 mods 取值（唯一兜底值，不再用 caller 的类型名根、也不再写 "unknown"）。
 # 出包时这些行统一落 UI18n-Unattributed.il.jsonl 一个文件，不会把配置界面类名
@@ -232,7 +246,7 @@ def new_stats():
         "pattern": 0, "pattern_instances": 0, "pattern_none": 0,
         "pattern_sym": 0, "pattern_sym_instances": 0,
         "declared_used": 0, "computed": 0, "offline_veto": 0,
-        "sessions": 0, "multi_session": 0,
+        "sessions": 0, "multi_session": 0, "truncated": 0,
         "out_rows": 0, "out_bytes": 0,
         "reasons": {},
         "per_file": [],
@@ -316,6 +330,17 @@ def effective_bucket(rec):
     return bucket, final_reason(rec, bucket)
 
 
+def _truthy(value):
+    """捕获文件里 "truncated" 的真值判定（C# 侧只写 true；容忍 "true"/1 之类的写法）。"""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        return value.strip().lower() in ("true", "1", "yes")
+    return False
+
+
 def merge_rows(rows, stats):
     """按 h 合并（跨会话）：count 求和、firstSeen 最早、lastSeen 最晚、sessions 计数、
     sink/caller 取众数、n/s 取首见、bucket 取保守、reason 跟着最终 bucket 走。
@@ -330,7 +355,12 @@ def merge_rows(rows, stats):
             rec = agg[h] = {"h": h, "n": row["n"], "s": row.get("s") or row["n"],
                             "sinks": {}, "callers": {}, "count": 0,
                             "firstSeen": "", "lastSeen": "",
-                            "sessions": set(), "pairs": {}, "declared_n": 0}
+                            "sessions": set(), "pairs": {}, "declared_n": 0,
+                            "truncated": False}
+        if _truthy(row.get(TRUNC_KEY)):
+            # 任意一次出现被采集器截断过（超 MaxTextLength），这一 h 就记 true：
+            # 我们手里最长的原文也只是截断版，译文不要按它写满。
+            rec["truncated"] = True
         try:
             rec["count"] += int(row.get("count") or 0)
         except (TypeError, ValueError):
@@ -358,6 +388,7 @@ def merge_rows(rows, stats):
     stats["distinct"] = len(agg)
     stats["multi_session"] = sum(1 for r in agg.values() if len(r["sessions"]) >= 2)
     stats["sessions"] = len({s for r in agg.values() for s in r["sessions"]})
+    stats["truncated"] = sum(1 for r in agg.values() if r.get("truncated"))
     return agg
 
 
@@ -570,8 +601,13 @@ def load_covered(packs_dir, pool_path):
 # 产物
 # ---------------------------------------------------------------------------
 def build_rows(agg, pack_h, pool_h, stats, buckets=None, raw_templates=False,
-               attrib=None):
+               attrib=None, skip_covered=True):
     """agg -> 产物行。buckets 是允许进产物的档（默认 candidate + pattern）。
+
+    skip_covered=False 时**不剔已覆盖的 h**（已在 packs/zh-cn 里的、已在 pool 里的照样出行，
+    由调用方自己在行上打 covered 标记）—— 真相层总表 packs/candidates.jsonl 就是这么用的，
+    它的 covered 是一列而不是一条跳过规则（见 candidates.py）。
+    buckets 里显式点名 never 时 never 行也照样出行：never 是**优先级最低的档**，不是丢弃。
 
     template 档**默认不原样落盘**：先按数字骨架塌缩成 bucket="pattern" 的行（见
     collapse_templates），判不出骨架的降级成 candidate，一条都不丢。
@@ -593,21 +629,25 @@ def build_rows(agg, pack_h, pool_h, stats, buckets=None, raw_templates=False,
         rec = agg[h]
         if h in pack_h:
             stats["covered_pack"] += 1
-            continue
+            if skip_covered:
+                continue
         if h in pool_h:
             stats["covered_pool"] += 1
-            continue
+            if skip_covered:
+                continue
         declared = final_bucket(rec)
         bucket, reason = effective_bucket(rec)
         if rec["declared_n"]:
             stats["declared_used"] += 1
         else:
             stats["computed"] += 1
-        # 离线重算判 never 的串一律不进产物（保守；也是 selftest.py:669 的口径）
+        # offline_veto：采集器声明的档被离线重算推翻（只往保守方向翻），这里记账；
+        # 行要不要进产物仍由 allowed 决定（never 档在送翻产物里不进，在真相层总表里进）。
         if bucket != declared:
             stats["offline_veto"] += 1
         stats[bucket] = stats.get(bucket, 0) + 1
         reasons[reason] = reasons.get(reason, 0) + 1
+        # never 档在这里**不是**无条件丢弃：buckets 里点名 never 时它照样出行。
         if bucket not in allowed and not (bucket == "template" and collapse):
             continue
         row = {"h": h, "n": rec["n"], "s": rec["s"],
@@ -616,7 +656,8 @@ def build_rows(agg, pack_h, pool_h, stats, buckets=None, raw_templates=False,
                "lastSeen": rec["lastSeen"], "sessions": len(rec["sessions"]),
                "callers": callers_list(rec["callers"]),
                "bucket": bucket, "reason": reason,
-               "mods": mods_of(rec["callers"], attrib), "exact": ""}
+               "mods": mods_of(rec["callers"], attrib), "exact": "",
+               TRUNC_KEY: bool(rec.get("truncated"))}
         if bucket == "template" and collapse:
             pending.append((row, rec))
         else:
@@ -633,11 +674,19 @@ def build_rows(agg, pack_h, pool_h, stats, buckets=None, raw_templates=False,
     return rows
 
 
+def rows_as_json(row):
+    """一行 -> 落盘用的 dict（字段顺序 = OUT_FIELDS；truncated 只在为真时追加在行尾）。"""
+    out = {k: row.get(k, "") for k in OUT_FIELDS}
+    if row.get(TRUNC_KEY):
+        out[TRUNC_KEY] = True
+    return out
+
+
 def write_rows(path, rows):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", encoding="utf-8", newline="\n") as fh:
         for r in rows:
-            fh.write(json.dumps({k: r.get(k, "") for k in OUT_FIELDS},
+            fh.write(json.dumps(rows_as_json(r),
                                 ensure_ascii=False, separators=(",", ":")) + "\n")
     return len(rows)
 
@@ -710,8 +759,13 @@ def file_inventory(path, rows):
 
 
 def ingest(files, packs_dir=None, pool_path=None, out_path=None, buckets=None,
-           raw_templates=False, gamedata="", managed="", do_attrib=True):
+           raw_templates=False, gamedata="", managed="", do_attrib=True,
+           skip_covered=True):
     """读 files -> 跨会话合并 -> 剔已覆盖 -> 分桶 -> （塌缩 template）-> 落盘。
+
+    skip_covered=False + buckets=ALL_INPUT_BUCKETS 是「真相层总表」的取数口径：
+    每条 distinct h 恰好一行、一条不丢（含 never、含已覆盖的），covered 交给调用方打标
+    （packs/candidates.jsonl 由 candidates.py 生成）。
 
     返回 (stats, rows)。每个文件的清单（行数/distinct/首末时间）记在 stats["per_file"]，
     供 --report 用；raw_templates 只在排障时用（保留未塌缩的 template 行）。
@@ -739,7 +793,8 @@ def ingest(files, packs_dir=None, pool_path=None, out_path=None, buckets=None,
     attrib, dll_info = build_attrib(agg, gamedata, managed, do_attrib)
     stats["_attrib"] = attrib
     stats["_dll_info"] = dll_info
-    rows = build_rows(agg, pack_h, pool_h, stats, buckets, raw_templates, attrib)
+    rows = build_rows(agg, pack_h, pool_h, stats, buckets, raw_templates, attrib,
+                      skip_covered=skip_covered)
     stats["_agg"] = agg                       # 报告要用完整合并结果（含 never 档）
     stats["_pack_h"] = pack_h
     if out_path:
@@ -1618,9 +1673,14 @@ def main(argv=None):
     parser.add_argument("--selftest", action="store_true", help="跑本模块的断言")
     parser.add_argument("--buckets", default=None,
                         help="只保留这些档（逗号分隔，默认 candidate,pattern；"
-                             "template 会塌缩成 pattern，never 永远不进产物）")
+                             "template 会塌缩成 pattern；never 只有显式点名时才落进送翻产物"
+                             " —— 真相层总表 packs/candidates.jsonl 见 candidates.py）")
     parser.add_argument("--raw-templates", dest="raw_templates", action="store_true",
                         help="排障用：保留未塌缩的 template 行（产物会回到几十 MB）")
+    parser.add_argument("--keep-covered", dest="skip_covered", action="store_false",
+                        default=True,
+                        help="不剔已覆盖的 h（真相层总表口径：每条 distinct h 恰好一行，"
+                             "covered 由调用方自己打标）")
     parser.add_argument("--report", default=None,
                         help="写分诊报告 markdown（如 ..\\reports\\capture-triage.md）")
     parser.add_argument("--patterns", default=None,
@@ -1686,7 +1746,8 @@ def main(argv=None):
             gamedata = None
     managed = args.managed or (default_managed(gamedata) if gamedata else "")
     stats, rows = ingest(files, args.packs_dir, args.pool, out_path, buckets,
-                         args.raw_templates, gamedata or "", managed, args.attrib)
+                         args.raw_templates, gamedata or "", managed, args.attrib,
+                         skip_covered=args.skip_covered)
     print("[capture] 文件 %d 个（缺失 %d）/ 读入 %d 行（坏行 %d / 坏记录 %d / h 不一致 %d）"
           % (stats["files"], stats["missing_files"], stats["rows_in"],
              stats["bad_lines"], stats["bad_rows"], stats["h_mismatch"]))
@@ -1696,6 +1757,9 @@ def main(argv=None):
     print("[capture] 分桶 never %d / template %d / candidate %d（声明字段采信 %d / 自算 %d）"
           % (stats["never"], stats["template"], stats["candidate"],
              stats["declared_used"], stats["computed"]))
+    if stats.get("truncated"):
+        print("[capture] 被截断过的 h %d 个（原文超 MaxTextLength，行尾带 \"truncated\": true）"
+              % stats["truncated"])
     if stats.get("pattern") or stats.get("pattern_none") or stats.get("pattern_sym"):
         print("[capture] 骨架塌缩：template %d 条 -> %d 个骨架（覆盖 %d 条实例）；"
               "判不出骨架降级 candidate %d 条；纯符号骨架丢弃 %d 个 / %d 条实例"
@@ -1900,7 +1964,8 @@ def selftest_cases(base):
       (by_n.get("ModuleManager: # patches applied") or {}).get("bucket") == PATTERN
       and "ModuleManager: 8448 patches applied" not in by_n
       and stats["reasons"].get("counter", 0) >= 1)
-    a("输出字段顺序固定", bool(rows) and list(rows[0]) == list(OUT_FIELDS),
+    a("输出字段顺序固定（14 个老字段 + 末尾 truncated）",
+      bool(rows) and list(rows[0]) == list(OUT_FIELDS) + [TRUNC_KEY],
       "got=%r" % (list(rows[0]) if rows else None))
     a("排序 = (bucket 序, h)",
       [r["bucket"] for r in rows] == sorted([r["bucket"] for r in rows],
@@ -2252,6 +2317,71 @@ def selftest_cases(base):
     tri4c = build_triage(st4c, rows4c, set(), "", "", False)
     a("报告: 没做反查时小节说明退回 caller 类型名根",
       "退回 caller 类型名根" in render_triage(st4c, rows4c, tri4c, argv_note="x"))
+
+    # --- 真相层口径：truncated 透传 / 一条不丢（ALL_INPUT_BUCKETS + skip_covered=False）---
+    d5 = os.path.join(base, "cap-trunc")
+    p5 = os.path.join(base, "packs-trunc")
+    n_tr = "Gauge calibration data"
+    h_tr = fnv.hash_text(textnorm.normalize(n_tr))
+    _write(os.path.join(d5, "capture-c.jsonl"), _jsonl([
+        {"h": h_tr, "n": n_tr, "s": n_tr, "sink": "GUI.Label",
+         "caller": "AJE.X.y", "count": 2, "firstSeen": "2026-10-23T08:00:00Z",
+         "truncated": True},
+        {"h": fnv.hash_text(textnorm.normalize("Plain row")), "n": "Plain row",
+         "s": "Plain row", "sink": "GUI.Label", "caller": "AJE.X.y", "count": 1,
+         "firstSeen": "2026-10-23T08:01:00Z"},
+    ]))
+    os.makedirs(os.path.join(p5, "zh-cn"), exist_ok=True)
+    out5 = os.path.join(base, "capture-trunc.jsonl")
+    st5, rows5 = ingest([os.path.join(d5, "capture-c.jsonl")], p5,
+                        os.path.join(p5, "pool.jsonl"), out5)
+    by5 = {r["n"]: r for r in rows5}
+    a("truncated 透传：捕获行带 true -> 产物行也带 true",
+      (by5.get(n_tr) or {}).get(TRUNC_KEY) is True
+      and (by5.get("Plain row") or {}).get(TRUNC_KEY) is False,
+      "got=%r/%r" % ((by5.get(n_tr) or {}).get(TRUNC_KEY),
+                     (by5.get("Plain row") or {}).get(TRUNC_KEY)))
+    a("truncated 计数现算", st5.get("truncated") == 1,
+      "got=%r" % (st5.get("truncated"),))
+    j_plain = json.dumps(rows_as_json(by5["Plain row"]), ensure_ascii=False,
+                         separators=(",", ":"))
+    j_tr = json.dumps(rows_as_json(by5[n_tr]), ensure_ascii=False,
+                      separators=(",", ":"))
+    a("落盘行：未截断的 h 不带 truncated 键（老产物逐字节不变）",
+      "truncated" not in j_plain
+      and list(json.loads(j_plain)) == list(OUT_FIELDS),
+      "got=%r" % (list(json.loads(j_plain))[-1],))
+    a("落盘行：截断的 h 末尾多一个 truncated:true",
+      json.loads(j_tr).get(TRUNC_KEY) is True
+      and list(json.loads(j_tr)) == list(OUT_FIELDS) + [TRUNC_KEY],
+      "got=%r" % (list(json.loads(j_tr))[-1],))
+    with open(out5, "rb") as fh:
+        raw5 = fh.read().decode("utf-8")
+    a("落盘文件里 truncated 只出现在被截断的那一行",
+      raw5.count('"truncated":true') == 1
+      and [ln for ln in raw5.splitlines() if '"truncated":true' in ln][0].count(
+          '"truncated"') == 1,
+      "got=%d" % raw5.count('"truncated":true'))
+    out6 = os.path.join(base, "capture-all.jsonl")
+    st6, rows6 = ingest(files, packs, os.path.join(packs, "pool.jsonl"), out6,
+                        list(ALL_INPUT_BUCKETS), skip_covered=False)
+    b6 = {r["n"]: r for r in rows6}
+    a("真相层口径：每条 distinct h 恰好一行（含 never、含已覆盖的 h）",
+      len(rows6) == st6["distinct"] and len({r["h"] for r in rows6}) == len(rows6),
+      "rows=%d distinct=%d" % (len(rows6), st6["distinct"]))
+    a("真相层口径：never 档不再被丢（桶里数得到，产物里也在）",
+      sum(1 for r in rows6 if r["bucket"] == "never") == st6["never"] == 3,
+      "got=%d/%d" % (sum(1 for r in rows6 if r["bucket"] == "never"),
+                     st6["never"]))
+    a("真相层口径：已被包/pool 覆盖的 h 仍出行（covered 由调用方打标）",
+      "Covered text" in b6 and "Pool text" in b6,
+      "got=%r" % ([k for k in ("Covered text", "Pool text") if k not in b6],))
+    a("真相层口径：点名 template 时不塌缩、也不产 pattern 行",
+      not [r for r in rows6 if r["bucket"] == PATTERN]
+      and len([r for r in rows6 if r["bucket"] == "template"]) == 2,
+      "got template=%d pattern=%d" % (
+          len([r for r in rows6 if r["bucket"] == "template"]),
+          len([r for r in rows6 if r["bucket"] == PATTERN])))
 
     return out
 

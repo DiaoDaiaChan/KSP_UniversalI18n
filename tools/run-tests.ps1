@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     UI18n.Core 单元测试执行入口（本机唯一可靠路径）。
 
@@ -103,7 +103,33 @@ if ($flatRunnerArgs.Count -gt 0) {
 & dotnet $dll @flatRunnerArgs
 $code = $LASTEXITCODE
 
-# ---- 4. 退出码原样返回（0=全过；1=有失败/有错，已用故意失败的临时用例验证过） ----
+# ---- 4. golden 门禁（docs/08 D-T5）：用户报过的英文一条都不许静默丢 ----
+#         退出码语义：0 全过 / 1 有挂（被过滤器丢、没进候选表、字典没译文）/ 2 跳过。
+#         2 的来由是 packs/candidates.jsonl 还不存在（候选单一表未落地）：这里只打 skip 原因、不判红，
+#         否则在数据侧还没就绪时测试入口永远红着，红惯了就没人看。exit 1 才是真红。
+$goldenCode = 0
+$python = Get-Command python -ErrorAction SilentlyContinue
+if (-not $python) {
+    Write-Host '[run-tests] golden : SKIP（找不到 python，跳过 golden 门禁）' -ForegroundColor Yellow
+} else {
+    Push-Location -LiteralPath (Join-Path $root 'tools')
+    try {
+        & python -m i18n_tools.golden_gate
+        $goldenCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($goldenCode -eq 0) {
+        Write-Host '[run-tests] golden : PASS (exit 0)'
+    } elseif ($goldenCode -eq 2) {
+        Write-Host '[run-tests] golden : SKIP —— packs/candidates.jsonl 不存在（候选单一表未落地），第 2 步未判定；这不是通过' -ForegroundColor Yellow
+    } else {
+        Write-Host "[run-tests] golden : FAIL (exit $goldenCode) —— 用户报过的串被丢掉/没进候选表/字典没译文；纪律是改过滤器，不改清单" -ForegroundColor Red
+        if ($code -eq 0) { $code = $goldenCode }
+    }
+}
+
+# ---- 5. 退出码原样返回（0=全过；1=有失败/有错，已用故意失败的临时用例验证过） ----
 if ($code -eq 0) {
     Write-Host '[run-tests] PASS (exit 0)'
 } else {

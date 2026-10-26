@@ -32,9 +32,9 @@ import shutil
 import sys
 import tempfile
 
-from . import (capture_ingest, cfgparse, check_overrides, ensure_stdout, fnv, glossary,
-                harvest, harvest_cfgcache, ilmeta, ilstrings, merge_overrides, packindex,
-                textnorm)
+from . import (candidates, capture_ingest, cfgparse, check_overrides, ensure_stdout,
+                fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta, ilstrings,
+                merge_overrides, packindex, render_coverage, textnorm)
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -682,18 +682,22 @@ def test_capture_real():
 
 
 def test_extra_tools():
-    """把三个后加的 python 工具的 selftest 并进门禁（check_overrides / harvest_cfgcache / merge_overrides）。
+    """把后加的 python 工具的 selftest 并进门禁（check_overrides / harvest_cfgcache / merge_overrides / golden_gate / candidates / render_coverage）。
 
     为什么放在这里：CI 只跑 `python -m i18n_tools.selftest`。新工具各自的 --selftest 若没人调用，
     逻辑坏了也永远绿着——v1.4 的译文门禁（check_overrides）与 ConfigCache 通道（harvest_cfgcache）
-    正是这样进仓库的，合并器（merge_overrides）也走同一条路。
+    正是这样进仓库的，合并器（merge_overrides）也走同一条路；golden 门禁（golden_gate，docs/08 D-T5）
+    更严重——它是「用户报过的串有没有被再丢掉」的唯一证据，自己坏掉就等于门禁形同不存在。
     """
     import contextlib
     import io
 
     runners = (("check_overrides", check_overrides.selftest),
                ("harvest_cfgcache", harvest_cfgcache.selftest),
-               ("merge_overrides", merge_overrides.selftest))
+               ("merge_overrides", merge_overrides.selftest),
+               ("golden_gate", golden_gate.selftest),
+               ("candidates", candidates.selftest),
+               ("render_coverage", render_coverage.selftest))
     for name, runner in runners:
         buffer = io.StringIO()
         try:

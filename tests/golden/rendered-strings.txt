@@ -1,0 +1,37 @@
+# golden set —— 用户报过的英文原文（docs/08 D-T5 真相层门禁）
+#
+# 规则：
+#   1. 一行一条**原文逐字**（含 TMP 富文本标签、引号、Δ 等特殊字符），不要手打、不要预归一化；
+#      加新用例 = 在文件末尾追加一行，或把用户报的原文原样粘进来。
+#   2. 以 # 开头的行为注释，空行忽略；重复行只保留第一次出现的。
+#   3. **不要在这份文件里写 h** —— h 由 tools/i18n_tools/golden_gate.py 现算。
+#      这样有人改了 normalize 口径时门禁会响，而不是照着旧 h 继续通过。
+#   4. 纪律（docs/08 §1 D-T5）：任何过滤器/阈值改动使这份清单变红，**改过滤器，不改清单**。
+#
+# 门禁三步（任一条挂 = exit 1；谁挂的打在状态表里）：
+#   ① capture_ingest.classify_capture(原文) 判出的 bucket 必须是可留档档（candidate/template/never）
+#   ② packs/candidates.jsonl（五条通道唯一候选表）里有这个 h
+#   ③ packs/zh-cn/*.jsonl 里这个 h 有非空 t（keep 直通 t == 原文 也算有译文）
+#
+# 分组：TWP = TransferWindowPlanner 的说明段（用户最先报的那屏）；ROTanks = 电池贮箱描述；
+#       制造商 = General 选项卡的 manufacturer tooltip；其余为 packs/overrides.jsonl 里的真实长描述。
+
+Instructions:
+Select the celestial body you will be departing from.
+Select the celestial body you wish to travel to.
+Enter the altitude and inclination of your parking orbit around that body. This is assumed to be a circular orbit. Depending on the selected transfer, the actual inclination of the parking orbit may have to be higher than this; make sure to check this in the full details.
+Click the "Plot it!" button. After a few seconds a plot will appear showing how much Δv is required to reach your destination for different departure dates and times of flight. Click on any point on this plot to see full details of the selected transfer.
+Specialized tanks for batteries. There are different levels of batteries that you can unlock. Each tank type has a different base mass, different cost, and different amounts of utilization it can have. <b><color=green>From ROTanks mod</color></b>
+Tetragon Projects
+Alphadyne Construction Group
+Rookies Inc.
+Enter the earliest departure date to include in the plot. Generally this should be your current game time, which you can find in the tracking station in the game.
+Guam is a United States territory, home to Andersen Air Force Base. Due to its relative isolation and large size, it's ideal as a pacific staging area for both military aircraft and potential spaceflight companies.
+Later production variant for Redstone missile featuring slightly higher performance, also used on Mercury-Redstone with stretched propellant tanks and extra HTP.
+The Filament-Wound Casing (FWC) boosters were developed to allow the shuttle to launch into polar orbits from Vandenberg. Two sets of flight hardware existed when the FWC boosters were cancelled after the Challenger disaster.
+<b>(DEPRECATED BY RO)</b> Apollo Ascent Module. Contains two astronauts. <b><color=green>From SXT mod</color></b>
+<b>(DEPRECATED BY RO)</b> A retractable, short range parabolic antenna for high speed telecommunications. <b><color=green>From Stock (RO Config) mod</color></b>
+<b>(DEPRECATED BY RO)</b> A generic RCS quad. Use this for attitude control or translation/ullage for rather small spacecraft or kick stages. <b><color=red> RCS requires High-Pressure tanks to function.</color></b> <b><color=green>From Realism Overhaul mod</color></b> <i>Plume and sound from Waterfall.</i>
+3 m nose cone with built in separation motors for the UA1204. <b><color=green>From ROEngines mod</color></b> Plume configured by RealPlume.
+A 1980s medium TWR engine for atmospheric and vacuum use. The RD-0120 is a fuel-rich staged combustion engine developed to power the core stage of the Energia launcher. <b><color=green>From ROEngines mod</color></b> <i>Plume and sound from Waterfall.</i>
+<b>(DEPRECATED BY RO)</b> A Wasserfall derivative engine developed by German and French engineers after WW2 for the sounding rocket of the same name. It was the first French high altitude sounding rocket. <b><color=green>From ROEngines mod</color></b> <i>Plume and sound from Waterfall.</i>
