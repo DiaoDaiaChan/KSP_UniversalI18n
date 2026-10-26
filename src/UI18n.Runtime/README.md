@@ -375,7 +375,7 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `CaptureMisses` | `True` | 缺命中捕获总开关（§9.8）：把「字典里没有、但真的被渲染层看到」的字符串去重后落到 `PluginData/UI18n/capture-*.jsonl`。**只写本地文件，不上传任何东西** |
 | `CaptureMaxEntries` | `5000` | 捕获的去重条数上限，触顶后只计数不再记录（日志 `capture: cap reached`）。负数按 `0` 处理 |
 | `ShadowStyleDraw` | `False` | **实验开关，正常玩家不要开**（§9.9）：额外给 `GUIStyle.Internal_Draw` / `Internal_Draw2` 装两个只读影子 prefix，只统计、绝不改文本。round 8 实测零收益，已归档，代码保留只作取证工具 |
-| `UpdateBaseUrl` | 空 | **空 = 完全不联网**（默认）：一个 socket 都不开（§11）。非空时只接受 `https://` 任意主机或 `http://127.0.0.1` / `http://localhost`，其它写法一律直接拒绝并 warn |
+| `UpdateBaseUrl` | `https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/update` | 起点地址（§11、§12.2）。**空 = 完全不联网**：一个 socket 都不开，行为与 v1.1 一致。非空时只接受 `https://` 任意主机或 `http://127.0.0.1` / `http://localhost`，其它写法一律直接拒绝并 warn |
 | `UpdateChannel` | `stable` | 发布通道目录名，manifest 地址 = `<UpdateBaseUrl>/<UpdateChannel>/manifest.json` |
 | `UpdateTimeoutSeconds` | `10` | 单次 HTTP 请求超时秒数（`<=0` 按 `10`）；到点强制 `Abort()`，绝不挂在后台 |
 | `UpdateCheckDays` | `7` | 两次自动检查的最小间隔天数（`0` = 每次启动都查）。上次检查时间记在 `PluginData/UI18n/update-state.json` |
@@ -904,7 +904,7 @@ Select-String -Path build\release\UI18n-1.0.0\GameData\UI18n\UI18n.cfg -Pattern 
 
 ## 11. 联网分发骨架（task-40，v1.2）
 
-目标：让语言包能远程更新，**但没配地址时完全不联网**。仓库/发布地址尚未确定，所以这一版是「骨架 + 可离线端到端验证」，不是「已经接上公网」。
+目标：让语言包能远程更新，**但没配地址时完全不联网**。v1.2 已接上公网：官方通道托管在仓库的 `update` 分支（`stable/` 与 `beta/` 两个目录），地址即 `UpdateBaseUrl` 的默认值；本地测试仍可用 `http://127.0.0.1`。
 
 ### 11.1 门禁顺序（每一步都有固定日志，按它排查）
 
@@ -1051,7 +1051,20 @@ dist\update\<Channel>\UI18n-<version>-<lang>-packs.zip     # 目录里只该有�
 
 所以发布一个通道就是把本节产物整个目录放上去：`<UpdateBaseUrl>/stable/manifest.json` 与同目录下 manifest 里 `zip.name` 指名的那个 zip。`-Channel` 与配置里的 `UpdateChannel` 必须是同一个字符串（`stable` / `beta`）。
 
-**当前模板里 `UpdateBaseUrl` 保持空 = 完全不联网**（§9.3、§11.1 第 1 行）：不填就一个 socket 都不开，行为与 v1.1 一致。填什么地址由 Lead 在发布时决定，脚本和代码都不预设主机名（`dist`、`dist\update` 都只在 `.gitignore` 里，不进仓库、不进产物）。
+**官方托管位置**：仓库的 `update` 分支（孤儿内容分支，只放发布物、不放源码），目录结构就是 `<UpdateBaseUrl>/<UpdateChannel>/`：
+
+```
+update 分支
+├── stable/manifest.json
+├── stable/UI18n-1.2.0-zh-cn-packs.zip
+└── beta/manifest.json + beta/UI18n-1.2.1-zh-cn-packs.zip   （测试通道）
+```
+
+对应配置里的默认值 `UpdateBaseUrl = https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/update`，于是运行时会请求
+`https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/update/stable/manifest.json`（实测 200，zip 下载后 sha256 与 manifest 逐字节一致）。
+清空 `UpdateBaseUrl` 即回到「一个 socket 都不开」；换自建主机只需改这一行（脚本与代码都不预设主机名，`dist`、`dist\update` 都只在 `.gitignore` 里，不进仓库、不进产物）。
+
+**发布一个新通道** = 跑一次 §12.1 的脚本，把 `<OutDir>/<Channel>` 整个目录提交到 `update` 分支的同名目录。`update` 分支由人手动推，CI 不写它（CI 只守 `main` 上的字典）。
 
 ### 12.3 硬断言（全部收进 `$problems`，一次报完再 throw；失败时 `OutDir` 一个字节都不写）
 
@@ -1088,6 +1101,6 @@ dist\update\<Channel>\UI18n-<version>-<lang>-packs.zip     # 目录里只该有�
 
 ---
 
-配置键总数：18（§9.3）。其中 4 个是本功能新增，默认值让 mod 在**不配地址**时行为与 v1.1 完全一致：不发一个请求、不打多余日志（只有第 1 行 `update: disabled (UpdateBaseUrl empty)`）。
+配置键总数：18（§9.3）。其中 4 个是本功能新增（`UpdateBaseUrl` / `UpdateChannel` / `UpdateTimeoutSeconds` / `UpdateCheckDays`）。模板里 `UpdateBaseUrl` 默认填官方通道，因此**默认会做一次只读清单检查**；把它留空则行为与 v1.1 完全一致（不发一个请求，只有一行 `update: disabled (UpdateBaseUrl empty)`）。`AutoDownload` 默认 `False`：只提示不落盘。
 
 
