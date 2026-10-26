@@ -1,9 +1,10 @@
 {
-  "version": "1.6.0",
+  "readerContract": "ui18n-manifest-reader/2",
+  "version": "1.7.0",
   "channel": "stable",
   "language": "zh-cn",
   "kspVersion": "1.12.5",
-  "zip": { "name": "UI18n-1.6.0-zh-cn-packs.zip", "bytes": 1408313, "sha256": "782FB130365553B826F43E37A2A618025C5CF341004733D318711ABEAA2CD2CC" },
+  "zip": { "name": "UI18n-1.7.0-zh-cn-packs.zip", "bytes": 1408313, "sha256": "782FB130365553B826F43E37A2A618025C5CF341004733D318711ABEAA2CD2CC" },
   "files": [
     { "path": "GameData/UI18n/Packs/zh-cn/000_TexturesUnlimited.jsonl", "bytes": 2970, "sha256": "3CEA280C56090D7D4A142FB0678E03979F75746E9288A0934677712D860C94D3", "rows": 24 },
     { "path": "GameData/UI18n/Packs/zh-cn/001_ToolbarControl.jsonl", "bytes": 1216, "sha256": "D10E39CCA4624805F876EBF13C478E47CFF2EDFC304BB9FC5D2DCA9D1F3C0944", "rows": 8 },
