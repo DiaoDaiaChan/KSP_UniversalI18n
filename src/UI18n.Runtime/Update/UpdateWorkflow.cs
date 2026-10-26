@@ -77,7 +77,9 @@ namespace UI18n.Runtime.Update
             string urlReason;
             if (!UpdateUrlGate.IsAllowedBaseUrl(env.BaseUrl, out urlReason))
             {
-                UpdateLog.Warn("update: disabled (" + urlReason + "), only https:// or http://127.0.0.1/localhost are accepted; nothing was requested");
+                // 把地址原样打出来：v1.5 之前只打原因码，遇到「地址明明合法却 invalid-url」时无从下手
+                UpdateLog.Warn("update: disabled (" + urlReason + ", UpdateBaseUrl=\"" + (env.BaseUrl ?? "(null)")
+                               + "\"), only https:// or http://127.0.0.1/localhost are accepted; nothing was requested");
                 return new UpdateResult { Ok = false, Outcome = "disabled", FailureReason = urlReason };
             }
 

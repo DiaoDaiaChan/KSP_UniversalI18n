@@ -268,6 +268,12 @@ namespace UI18n.Core.Tests
         [InlineData("https://cdn.example.com/a/b/")]
         [InlineData("http://127.0.0.1:8099")]
         [InlineData("http://localhost:8099/")]
+        // 官方通道的真实地址：v1.5 之前在 Mono 上被 Uri.TryCreate 判成 invalid-url，永久不联网
+        [InlineData("https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/update")]
+        [InlineData("HTTPS://EXAMPLE.COM/x")]
+        [InlineData("http://LOCALHOST:8099")]
+        [InlineData("http://[::1]:8099")]
+        [InlineData("  https://example.com/x  ")]
         public void IsAllowedBaseUrl_AcceptsHttpsAndLoopback(string url)
         {
             string reason;
@@ -283,6 +289,12 @@ namespace UI18n.Core.Tests
         [InlineData("", UpdateUrlGate.ReasonEmpty)]
         [InlineData("   ", UpdateUrlGate.ReasonEmpty)]
         [InlineData("not a url", UpdateUrlGate.ReasonBadUrl)]
+        [InlineData("https://", UpdateUrlGate.ReasonBadUrl)]
+        [InlineData("https:///path", UpdateUrlGate.ReasonBadUrl)]
+        [InlineData("//example.com/x", UpdateUrlGate.ReasonBadUrl)]
+        [InlineData("mailto:someone@example.com", UpdateUrlGate.ReasonBadUrl)]
+        [InlineData("http://192.168.1.5/ui18n", UpdateUrlGate.ReasonHost)]
+        [InlineData("http://raw.githubusercontent.com/x", UpdateUrlGate.ReasonHost)]
         public void IsAllowedBaseUrl_RejectsEverythingElse(string url, string expectedReason)
         {
             string reason;
