@@ -249,7 +249,9 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 | M3 | 采集端 bundle + 同意 UI + Issue 模板 + `api submission accept` | 一次真实投稿从 bundle 到 `candidates` 行数对得上 |
 | M4 | 中继端点（可选）自动开 PR | 端到端无人值守 |
 
-## 12. 待拍板（有默认方案，不回即按默认执行）
+## 12. 已拍板（2026-10-26，m07292「默认执行」：六条全部按默认值）
+
+下表由「提议」转为「决定」。改动其中任何一条都要走新的决策记录，不要在实现里悄悄偏离。
 
 | # | 问题 | 默认 |
 |---|---|---|
@@ -259,3 +261,7 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 | D4 | 匿名与去重 | 不收集玩家标识；重复投稿只累加 `hits` |
 | D5 | API 形态 | Python CLI + JSON envelope + CI journal 门禁；不上 HTTP（M4 视情况） |
 | D6 | 手工修译文的入口 | `api entry put --actor human:*`（覆盖模型结果）或 `override put`；两者都要 journal |
+
+**D3 的代价已知并接受**：按 `modId` 关包只能保证「这个 mod 不再提供译文」。若同一个 `h` 被别的包（`UI18n-Unattributed`、`Squad` 或另一个 mod）也提供，那句话仍然是中文。玩家问「我关掉了怎么还是中文」时，答复固定为这条语义，不要承诺调用点级屏蔽——那要求每个调用点带 mod 归属、字典体积与查表成本都会上去，v1.6 不做。
+
+**因此游戏内面板的自述文案必须写清**：开关的作用是「不再从该 mod 的包里取译文」，不是「该 mod 的界面全部回到英文」。
