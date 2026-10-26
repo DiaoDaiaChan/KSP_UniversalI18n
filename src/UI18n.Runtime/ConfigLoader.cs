@@ -157,6 +157,25 @@ namespace UI18n.Runtime
 
                 config.UpdateBaseUrl = config.UpdateBaseUrl.Trim();
 
+                // KSP 的 ConfigNode 在预处理阶段把 "//" 之后的内容整段砍掉（PreFormatConfig，反编译证据见 docs/09 §6.5.1），
+                // 所以任何带 :// 的 URL 到这里的值都是残的（https: / http:）。加引号也救不了：截断发生在引号处理之前。
+                // 发现残值就从文件原文补读一遍 —— 一条被吃掉两个斜杠的配置不该把整条联网链路静默关掉（v1.5 现场事故）。
+                if (IsTruncatedUrl(config.UpdateBaseUrl))
+                {
+                    string rawUrl = ConfigText.ReadValue(path, "UpdateBaseUrl");
+                    if (!string.IsNullOrEmpty(rawUrl))
+                    {
+                        Log.Info("config: UpdateBaseUrl \"" + config.UpdateBaseUrl
+                                 + "\" was truncated by KSP's // comment rule, re-read \"" + rawUrl + "\" from the raw text");
+                        config.UpdateBaseUrl = rawUrl.Trim();
+                    }
+                    else
+                    {
+                        Log.Warn("config: UpdateBaseUrl \"" + config.UpdateBaseUrl
+                                 + "\" was truncated by KSP's // comment rule and no intact value was found in the raw text; put the URL on its own line");
+                    }
+                }
+
                 string channel = ReadString(node, "UpdateChannel", null);
                 if (!string.IsNullOrEmpty(channel))
                 {
@@ -338,6 +357,14 @@ namespace UI18n.Runtime
 
             string value = raw.Trim();
             return value.Length == 0 ? fallback : value;
+        }
+
+        /// <summary>
+        /// 值看起来被 ConfigNode 的 <c>//</c> 注释规则砍过：以 ':' 结尾且不含 '/'（<c>https:</c> / <c>http:</c>）。
+        /// </summary>
+        private static bool IsTruncatedUrl(string value)
+        {
+            return !string.IsNullOrEmpty(value) && value[value.Length - 1] == ':' && value.IndexOf('/') < 0;
         }
 
         /// <summary>读 long（字节预算这类可能上万的值用；负数照原样返回，由调用方决定夹不夹）。</summary>
