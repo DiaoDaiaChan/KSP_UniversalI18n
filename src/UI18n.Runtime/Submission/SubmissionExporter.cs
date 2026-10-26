@@ -6,8 +6,8 @@ using UI18n.Core.Capture;
 using UI18n.Core.Dict;
 using UI18n.Core.Settings;
 using UI18n.Core.Submission;
+using UI18n.Runtime.Diagnostics;
 using UI18n.Runtime.Settings;
-using UnityEngine;
 
 namespace UI18n.Runtime
 {
@@ -442,16 +442,13 @@ namespace UI18n.Runtime
             values.Add(SubmissionPrivateValue.Of(kind, value));
         }
 
+        /// <summary>
+        /// <c>actor.kspVersion</c>：取权威源（<c>Versioning</c>），不是 <c>Application.version</c>
+        /// —— 服务端 meta.json 会照抄这个数，记录值必须真（bundleVersion 在本机 1.12.5 里是 1.12.4）。
+        /// </summary>
         private static string SafeKspVersion()
         {
-            try
-            {
-                return Application.version ?? string.Empty;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
+            return KspVersionInfo.Authoritative();
         }
 
         private static string SafeUi18nVersion()

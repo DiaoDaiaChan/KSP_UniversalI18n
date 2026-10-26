@@ -118,7 +118,7 @@ namespace UI18n.Core.Tests
             int disabledCount;
             string[] kept = PackFilter.SelectEnabled(files, prefs, out disabledCount);
 
-            Assert.Equal(1, kept.Length);
+            Assert.Single(kept);
             Assert.Equal("Squad.jsonl", kept[0]);
             Assert.Equal(2, disabledCount);
         }

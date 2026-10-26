@@ -17,7 +17,16 @@ namespace UI18n.Core.Submission
         /// <summary>UI18n 版本串（<c>AssemblyInformationalVersion</c>，形如 <c>1.6.0+abc1234</c>）。</summary>
         public string Ui18nVersion { get; set; } = string.Empty;
 
-        /// <summary>KSP 版本串（<c>Application.version</c>，形如 <c>1.12.5</c>）。</summary>
+        /// <summary>
+        /// KSP 版本串（形如 <c>1.12.5</c>），由调用方从 Assembly-CSharp 的
+        /// <c>Versioning.version_major</c> / <c>.version_minor</c> / <c>.Revision</c> 拼出
+        /// （<c>UI18n.Core.Diagnostics.KspVersionFormat.FromParts</c>）。
+        /// <para>
+        /// <b>不要用 <c>UnityEngine.Application.version</c></b>：那是 Unity 的
+        /// <c>PlayerSettings.bundleVersion</c>，实测本机 KSP 1.12.5 的安装里它仍写着 1.12.4
+        /// （Squad 出 1.12.5 时没 bump），照抄会让投稿记录与服务端 meta.json 都记错版本。
+        /// </para>
+        /// </summary>
         public string KspVersion { get; set; } = string.Empty;
 
         /// <summary>游戏语言（<c>zh-cn</c>）。</summary>

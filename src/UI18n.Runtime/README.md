@@ -126,12 +126,13 @@ content.text = ...
 一行在`ready:`之后。前者是唯一在「装了但没翻译」时也会出现的自检行：
 
 ```
-[UI18n] diag: session=20261026-022917, version=1.3.0+…, ksp=1.12.5.3190, unity=2019.4.18f1, os=Windows 11  (10.0.26300) 64bit,
+[UI18n] diag: session=20261026-022917, version=1.3.0+…, ksp=1.12.5, bundle=1.12.4, unity=2019.4.18f1, os=Windows 11  (10.0.26300) 64bit,
         lang=zh-cn, logLevel=Info, enabled=true, forceOverride=false, font=OsFont, tmp=Auto, capture=5000, update=stable
 [UI18n] diag: session=20261026-022917, patches=17/17, dict=11089, parse=0, shadow=false
 ```
 
 > 实际日志是**一行**（上面为了可读换了行）；字段顺序固定，键名固定，脚本可按 `session=` / `patches=` 直接切。
+> `ksp=` 取 KSP 自己的 `Versioning.version_major/.version_minor/.Revision`（三段）；`bundle=` 是 Unity 的 `Application.version`（Squad 在 1.12.5 里没 bump，仍写 1.12.4）—— 两个都留，是为了区分「装错版本」与「bundleVersion 没跟上」。
 > `session` 与 `PluginData/UI18n/capture-<UTC>.jsonl` 的时间戳同源，能把「日志里的这一局」和「捕获文件的这一局」对上。
 > 这两行走 `Log.Always`，**任何 `LogLevel` 下都会打** —— 玩家把日志设成 `Error` 恰恰说明他在报障，
 > 此时若连自检行都被自己静音，收上来的日志就只剩错误，无从判断版本与安装状态（§9.10）。

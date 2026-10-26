@@ -317,6 +317,7 @@ namespace UI18n.Runtime
             return "diag: session=" + SessionId
                      + ", version=" + Version
                      + ", ksp=" + SafeKspVersion()
+                     + ", bundle=" + SafeBundleVersion()
                      + ", unity=" + SafeUnityVersion()
                      + ", os=" + SafeOs()
                      + ", lang=" + Printable(language)
@@ -344,9 +345,21 @@ namespace UI18n.Runtime
             return value ? "true" : "false";
         }
 
+        /// <summary>
+        /// 权威 KSP 版本（<c>Versioning.version_major</c> / <c>.version_minor</c> / <c>.Revision</c>）。
+        /// <b>不要改回 <c>Application.version</c></b>：那是 Unity 的 bundleVersion，
+        /// 本机 1.12.5 的安装里它仍写着 "1.12.4"（Squad 没 bump），见 <see cref="KspVersionInfo"/>。
+        /// </summary>
         private static string SafeKspVersion()
         {
-            try { return Application.version ?? "?"; } catch (Exception) { return "?"; }
+            return KspVersionInfo.Authoritative();
+        }
+
+        /// <summary>Unity bundleVersion（仅供对照：区分「装错版本」与「Squad 没 bump bundleVersion」）。</summary>
+        private static string SafeBundleVersion()
+        {
+            string bundle = KspVersionInfo.BundleVersion();
+            return string.IsNullOrEmpty(bundle) ? "?" : bundle;
         }
 
         private static string SafeUnityVersion()
