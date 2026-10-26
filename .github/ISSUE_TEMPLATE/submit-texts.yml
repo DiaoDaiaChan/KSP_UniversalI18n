@@ -1,7 +1,6 @@
 name: 投稿翻译文本
 description: 把游戏内导出的 ui18n-submission-*.json 交给我们，收进候选表后排队翻译
 title: "[投稿] "
-labels: []
 body:
   - type: markdown
     attributes:
