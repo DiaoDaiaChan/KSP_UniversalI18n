@@ -4,9 +4,12 @@ using HarmonyLib;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
 using UI18n.Core.Policy;
+using UI18n.Core.Settings;
 using UI18n.Runtime.Diagnostics;
 using UI18n.Runtime.Fonts;
 using UI18n.Runtime.Patches;
+using UI18n.Runtime.Settings;
+using UI18n.Runtime.UI;
 using UI18n.Runtime.Update;
 using UnityEngine;
 
@@ -212,6 +215,12 @@ namespace UI18n.Runtime
             Language = language;
             Log.Info("language=" + Printable(language) + ", enabled=" + config.Enabled + ", forceOverride=" + config.ForceOverride);
 
+            // 3b) 按 mod 开关（v1.6 M2，docs/10 §9/§10）：先读玩家状态 prefs.json（缺失 = 全开），再挂游戏内面板。
+            //     位置刻意在 Enabled 与语言门禁**之前**：面板不装任何 patch（红线 5 与它无关），
+            //     而「本 mod 整体关掉」或「英文环境」时玩家恰恰更需要一个能改回去的入口。
+            Prefs prefs = PrefsRuntime.Current;
+            AttachPrefsPanel(config, language);
+
             // 6a) 启动自检行（task-44）：一行 key=value，人工可读、脚本可 grep。
             //     刻意放在语言门禁**之前** —— 「装了但没翻译」是最常见的报障，而那种情况下 ready 行根本不会出现。
             Log.Always(DiagLine(config, language));
@@ -231,7 +240,7 @@ namespace UI18n.Runtime
             }
 
             // 5) 字典
-            DictPack pack = ConfigLoader.LoadPacks(config, language);
+            DictPack pack = ConfigLoader.LoadPacks(config, language, prefs);
             Translator.Initialize(config, pack);
             Log.Info("dictionary: entries=" + pack.Entries + ", parseErrors=" + pack.ParseErrors);
 
@@ -374,12 +383,42 @@ namespace UI18n.Runtime
                 string pluginDataRoot = System.IO.Path.Combine(
                     System.IO.Path.Combine(KSPUtil.ApplicationRootPath, "PluginData"), "UI18n");
 
-                UpdateRunner.ConfigureAndStart(config, modRoot, pluginDataRoot, Version, language);
+                // 被 prefs.json 关掉的包不参与安装（更新不该把玩家关掉的东西装回来）。
+                UpdateRunner.ConfigureAndStart(config, modRoot, pluginDataRoot, Version, language, PrefsRuntime.DisabledModIds());
             }
             catch (Exception ex)
             {
                 // 更新是可选功能：起不来也绝不影响翻译
                 Log.Warn("update: could not start (" + ex.GetType().Name + ": " + ex.Message + ")");
+            }
+        }
+
+        /// <summary>
+        /// 挂游戏内开关面板（v1.6 M2）。失败只 Warn —— 一个 UI 异常绝不影响翻译主流程（红线 6）。
+        /// <para>
+        /// 挂在 <c>this.gameObject</c> 上：本对象已 <c>DontDestroyOnLoad</c>，所以面板跨场景存活，
+        /// 从主菜单到飞行场景都能打开。
+        /// </para>
+        /// </summary>
+        private void AttachPrefsPanel(UI18nConfig config, string language)
+        {
+            try
+            {
+                PrefsPanel panel = gameObject.AddComponent<PrefsPanel>();
+                if (panel == null)
+                {
+                    Log.Warn("panel: AddComponent returned null, in-game switch panel unavailable");
+                    return;
+                }
+
+                panel.Configure(config, language);
+                Log.Info("panel: ready (mods=" + PrefsRuntime.Current.ModCount
+                         + ", disabled=" + PrefsRuntime.Current.DisabledCount
+                         + ", prefs=" + PrefsRuntime.FilePath + ")");
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("panel: could not attach (" + ex.GetType().Name + ": " + ex.Message + ")");
             }
         }
 

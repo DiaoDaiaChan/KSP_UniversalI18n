@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using UI18n.Core.Config;
 using UI18n.Core.Dict;
+using UI18n.Core.Settings;
 
 namespace UI18n.Runtime
 {
@@ -216,7 +217,22 @@ namespace UI18n.Runtime
         /// </summary>
         internal static DictPack LoadPacks(UI18nConfig config, string language)
         {
+            return LoadPacks(config, language, null);
+        }
+
+        /// <summary>
+        /// 同 <see cref="LoadPacks(UI18nConfig, string)"/>，但按玩家状态 <paramref name="prefs"/> 过滤包文件：
+        /// <b>被关掉的 mod 的包连解析都不做</b>（不读文件、不进内存字典）。
+        /// <para>
+        /// 为什么过滤放在加载期而不是查表期（docs/10 §10）：运行期查表每秒几十万次，
+        /// 加一次 prefs 判定就是给热路径加分支；而包数量在启动期就固定了，这里过滤一次，运行期零成本。
+        /// </para>
+        /// <para><paramref name="prefs"/> 为 <c>null</c> = 全开（老调用方与自检路径）。</para>
+        /// </summary>
+        internal static DictPack LoadPacks(UI18nConfig config, string language, Prefs prefs)
+        {
             var pack = new DictPack();
+            PackStats.Reset();
 
             try
             {
@@ -242,8 +258,24 @@ namespace UI18n.Runtime
                     return pack;
                 }
 
+                int disabledCount;
+                string[] files = PackFilter.SelectEnabled(packs.Files, prefs, out disabledCount);
+
+                // 一行里同时给出总数 / 启用 / 关闭：装错 prefs 时一眼能对账（task-71 验收要求）。
                 Log.Info("packs: lang=" + PrintableLanguage(language) + ", dir=" + packs.SelectedLanguage
-                         + ", files=" + packs.Files.Length);
+                         + ", files=" + packs.Files.Length + ", enabled=" + files.Length + ", disabled=" + disabledCount);
+
+                if (disabledCount > 0)
+                {
+                    Log.Info("packs: disabled by prefs: [" + JoinDisabledModIds(packs.Files, prefs) + "]");
+                }
+
+                if (files.Length == 0)
+                {
+                    Log.Warn("all packs disabled by prefs.json (" + disabledCount
+                             + " file(s)), dictionary is empty; edit " + PrefsFile.FileName + " to re-enable");
+                    return pack;
+                }
 
                 int limit = config != null && config.MaxEntries > 0 ? config.MaxEntries : UI18nConfig.Default.MaxEntries;
                 string langFolder = packs.SelectedLanguage;
@@ -252,13 +284,13 @@ namespace UI18n.Runtime
                 var totalWatch = Stopwatch.StartNew();
                 int loadedFiles = 0;
 
-                for (int i = 0; i < packs.Files.Length; i++)
+                for (int i = 0; i < files.Length; i++)
                 {
-                    string file = packs.Files[i];
+                    string file = files[i];
                     if (pack.Entries >= limit)
                     {
                         Log.Warn("MaxEntries=" + limit + " reached, remaining pack files ignored ("
-                                 + (packs.Files.Length - i) + " file(s) skipped, e.g. " + langFolder + "/" + Path.GetFileName(file) + ")");
+                                 + (files.Length - i) + " file(s) skipped, e.g. " + langFolder + "/" + Path.GetFileName(file) + ")");
                         break;
                     }
 
@@ -277,6 +309,7 @@ namespace UI18n.Runtime
 
                     fileWatch.Stop();
                     loadedFiles++;
+                    PackStats.Add(PackFilter.ModIdFromPath(file), pack.Entries - before);
                     Log.Info("pack loaded: " + langFolder + "/" + Path.GetFileName(file) + ", entries=+" + (pack.Entries - before)
                              + ", " + fileWatch.ElapsedMilliseconds + " ms");
                 }
@@ -296,6 +329,52 @@ namespace UI18n.Runtime
         private static string PrintableLanguage(string language)
         {
             return string.IsNullOrEmpty(language) ? "<null>" : language;
+        }
+
+        /// <summary>
+        /// 被关掉的 modId 列表（ordinal 去重排序，最多 8 个 + <c>…</c>）。
+        /// 玩家报「我关的那个 mod 没生效」时，日志里必须能直接看到运行时认为关掉了谁。
+        /// </summary>
+        private static string JoinDisabledModIds(string[] files, Prefs prefs)
+        {
+            if (files == null || files.Length == 0 || prefs == null)
+            {
+                return string.Empty;
+            }
+
+            var seen = new System.Collections.Generic.Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            var ids = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < files.Length; i++)
+            {
+                string modId = PackFilter.ModIdFromPath(files[i]);
+                if (modId.Length == 0 || prefs.IsEnabled(modId) || seen.ContainsKey(modId))
+                {
+                    continue;
+                }
+
+                seen[modId] = true;
+                ids.Add(modId);
+            }
+
+            ids.Sort(StringComparer.Ordinal);
+            var sb = new System.Text.StringBuilder(96);
+            int shown = ids.Count > 8 ? 8 : ids.Count;
+            for (int i = 0; i < shown; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+
+                sb.Append(ids[i]);
+            }
+
+            if (ids.Count > shown)
+            {
+                sb.Append(", …(+").Append(ids.Count - shown).Append(')');
+            }
+
+            return sb.ToString();
         }
 
         internal static ConfigNode FindUi18nNode(ConfigNode root)

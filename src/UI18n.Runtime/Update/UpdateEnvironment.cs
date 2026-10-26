@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
@@ -23,7 +24,8 @@ namespace UI18n.Runtime.Update
             int timeoutSeconds,
             int checkDays,
             bool checkForUpdates,
-            bool autoDownload)
+            bool autoDownload,
+            IList<string> disabledModIds)
         {
             BaseUrl = baseUrl ?? string.Empty;
             Channel = channel ?? string.Empty;
@@ -35,7 +37,11 @@ namespace UI18n.Runtime.Update
             CheckDays = checkDays;
             CheckForUpdates = checkForUpdates;
             AutoDownload = autoDownload;
+            DisabledModIds = BuildDisabledList(disabledModIds);
+            _disabledLookup = new HashSet<string>(DisabledModIds, StringComparer.OrdinalIgnoreCase);
         }
+
+        private readonly HashSet<string> _disabledLookup;
 
         /// <summary>更新源根地址（空 = 不联网）。</summary>
         internal string BaseUrl { get; private set; }
@@ -67,6 +73,19 @@ namespace UI18n.Runtime.Update
         /// <summary>是否允许自动下载安装。</summary>
         internal bool AutoDownload { get; private set; }
 
+        /// <summary>
+        /// 被玩家在 <c>prefs.json</c> 里关掉的 modId（已排序、已去重的副本）。
+        /// <b>意图：更新不该把玩家关掉的东西装回来</b> —— 关掉的包这一局根本没加载，
+        /// 若更新仍把它写进 Packs 目录，下次打开时它又"活着"，玩家的选择等于没生效。
+        /// </summary>
+        internal IList<string> DisabledModIds { get; private set; }
+
+        /// <summary>这个 modId 是否被关掉（大小写不敏感；空 id = 未关）。</summary>
+        internal bool IsPackDisabled(string modId)
+        {
+            return !string.IsNullOrEmpty(modId) && _disabledLookup.Contains(modId);
+        }
+
         /// <summary>下载缓存目录（zip 落这里，只作证据，安装从内存装）。</summary>
         internal string DownloadsDirectory
         {
@@ -94,7 +113,32 @@ namespace UI18n.Runtime.Update
                 + ", lang=" + (Language.Length == 0 ? "(unknown)" : Language)
                 + ", timeout=" + TimeoutSeconds.ToString(CultureInfo.InvariantCulture) + "s"
                 + ", everyDays=" + CheckDays.ToString(CultureInfo.InvariantCulture)
-                + ", autoDownload=" + (AutoDownload ? "True" : "False");
+                + ", autoDownload=" + (AutoDownload ? "True" : "False")
+                + (DisabledModIds != null && DisabledModIds.Count > 0
+                    ? ", packsDisabled=" + DisabledModIds.Count.ToString(CultureInfo.InvariantCulture)
+                    : string.Empty);
+        }
+
+        /// <summary>把外部传进来的禁用名单做成有序去重的副本（外部之后改它也不影响后台线程）。</summary>
+        private static List<string> BuildDisabledList(IList<string> disabledModIds)
+        {
+            List<string> copy = new List<string>(disabledModIds == null ? 0 : disabledModIds.Count);
+            if (disabledModIds == null)
+            {
+                return copy;
+            }
+
+            for (int i = 0; i < disabledModIds.Count; i++)
+            {
+                string modId = disabledModIds[i];
+                if (!string.IsNullOrEmpty(modId) && !copy.Contains(modId))
+                {
+                    copy.Add(modId);
+                }
+            }
+
+            copy.Sort(StringComparer.Ordinal);
+            return copy;
         }
     }
 }

@@ -186,7 +186,10 @@ namespace UI18n.Runtime.Update
             }
 
             // ---- 先全量校验，一个字节都不写 ----
+            // v1.6 M2：玩家在 prefs.json 里关掉的 mod 一律不装（非包文件不受影响，它们不在 files[] 里）。
+            // 只影响「装哪些」，不影响「校验」：进 planned 的每一条仍然逐条验 bytes + sha256。
             List<PlannedFile> planned = new List<PlannedFile>();
+            int disabledPacks = 0;
             for (int i = 0; i < manifest.Files.Count; i++)
             {
                 ManifestFile file = manifest.Files[i];
@@ -201,6 +204,13 @@ namespace UI18n.Runtime.Update
                 if (!LanguageMatches(language, targetLanguage))
                 {
                     continue; // 别的语言
+                }
+
+                // v1.6 M2：玩家关掉的 mod 不装回来（否则关掉的东西下次更新又"活"了，选择等于没生效）。
+                if (env.IsPackDisabled(PackInstallFilter.ResolveModId(manifest, file)))
+                {
+                    disabledPacks++;
+                    continue;
                 }
 
                 byte[] content;
@@ -221,9 +231,26 @@ namespace UI18n.Runtime.Update
                 planned.Add(new PlannedFile { FileName = fileName, Language = language, Content = content, Bytes = file.Bytes });
             }
 
+            if (disabledPacks > 0)
+            {
+                // 固定 token，便于 grep 验证「只装启用的包」真的生效：
+                // update: installing 93 pack(s), 4 disabled by prefs (UI18n packs skipped)
+                UpdateLog.Info(PackInstallFilter.DescribeInstall(planned.Count, disabledPacks));
+            }
+
             if (planned.Count == 0)
             {
-                UpdateLog.Warn("update: nothing to install (manifest has no Packs/<lang>/*.jsonl for lang=" + targetLanguage + ")");
+                if (disabledPacks > 0)
+                {
+                    UpdateLog.Warn("update: nothing to install (all " + disabledPacks.ToString(CultureInfo.InvariantCulture)
+                                   + " pack(s) for lang=" + targetLanguage
+                                   + " are disabled by prefs.json; re-enable them in the in-game panel)");
+                }
+                else
+                {
+                    UpdateLog.Warn("update: nothing to install (manifest has no Packs/<lang>/*.jsonl for lang=" + targetLanguage + ")");
+                }
+
                 SaveState(env, manifest.Version, UpdateState.ResultFailed, nowUtc);
                 return new UpdateResult { Ok = false, Outcome = "nothing-to-install", Version = manifest.Version, FailureReason = "no-pack-files" };
             }

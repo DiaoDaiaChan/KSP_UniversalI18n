@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using UI18n.Core.Config;
@@ -62,6 +63,21 @@ namespace UI18n.Runtime.Update
         /// </summary>
         internal static void ConfigureAndStart(UI18nConfig config, string modRoot, string pluginDataRoot, string localVersion, string language)
         {
+            ConfigureAndStart(config, modRoot, pluginDataRoot, localVersion, language, null);
+        }
+
+        /// <summary>
+        /// 同上一个重载，额外带上「玩家在 prefs.json 里关掉的 modId」：
+        /// 更新只安装启用的包（<see cref="UpdateWorkflow"/> 里按名单过滤）。
+        /// </summary>
+        internal static void ConfigureAndStart(
+            UI18nConfig config,
+            string modRoot,
+            string pluginDataRoot,
+            string localVersion,
+            string language,
+            IList<string> disabledModIds)
+        {
             if (config == null)
             {
                 return;
@@ -88,7 +104,8 @@ namespace UI18n.Runtime.Update
                 config.UpdateTimeoutSeconds,
                 config.UpdateCheckDays,
                 config.CheckForUpdates,
-                config.AutoDownload);
+                config.AutoDownload,
+                disabledModIds);
 
             Thread thread = new Thread(delegate()
             {

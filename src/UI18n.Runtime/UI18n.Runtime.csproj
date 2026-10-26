@@ -63,6 +63,15 @@
       <HintPath>$(KspManagedDir)\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!--
+      v1.6 M2：ApplicationLauncher.AddModApplication 有两个重载（一个收 Texture 图标、一个收 Animator），
+      编译器要为重载决议加载 Animator 所在的程序集，否则报 CS0012「类型 Animator 在未引用的程序集中定义」。
+      我们只用 Texture 那个重载，这里仅补引用，运行期不会碰动画模块。
+    -->
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(KspManagedDir)\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="0Harmony">
       <HintPath>$(HarmonyDir)\0Harmony.dll</HintPath>
       <Private>false</Private>

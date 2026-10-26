@@ -557,6 +557,28 @@ namespace UI18n.Runtime
             }
         }
 
+        /// <summary>
+        /// 把 byCaller 的未命中快照复制出来（游戏内开关面板用，v1.6 M2）。
+        /// <para>
+        /// 只复制、不排序、不过滤 —— 加工是调用方的事。之所以要复制而不是直接暴露字典：
+        /// 面板是在 OnGUI 里遍历，而 <see cref="Record"/> 随时可能插入新键，直接遍历原字典会踩
+        /// 「集合被修改」异常；复制一次只有几十个元素，代价可以忽略。
+        /// </para>
+        /// </summary>
+        internal static void CopyCallerMiss(List<KeyValuePair<string, long>> into)
+        {
+            if (into == null)
+            {
+                return;
+            }
+
+            into.Clear();
+            foreach (KeyValuePair<string, long> pair in CallerMiss)
+            {
+                into.Add(pair);
+            }
+        }
+
         /// <summary>由 Translator.Initialize 调用：换包/换语言 = 新的一局统计。</summary>
         internal static void Reset()
         {

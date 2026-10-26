@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using UI18n.Core.Dict;
 
 namespace UI18n.Core.Update
 {
@@ -39,6 +40,72 @@ namespace UI18n.Core.Update
     }
 
     /// <summary>
+    /// 更新清单 v2 里的一条 <b>按 mod</b> 的记录（<c>mods[]</c>，契约见 docs/10 §9）。
+    /// <para>
+    /// 为什么要按 mod 一条：v1 的整包 zip 只能"全装"，而玩家状态里是可以关掉某些 mod 的
+    /// （<c>prefs.json</c>），装一个被关掉的包等于白下几 MB。v2 有了这张表，
+    /// 安装阶段就能<see cref="PackInstallFilter"/>先过滤再解压校验。
+    /// </para>
+    /// <para>
+    /// 向后兼容硬约束：<c>mods[]</c> 是<b>可选</b>的，只有 <c>files[]</c> 的旧清单必须继续能装
+    /// （老版本 <c>build-update-package.ps1</c> 产出的 manifest 就是那种形状）。
+    /// </para>
+    /// </summary>
+    public sealed class ManifestMod
+    {
+        internal ManifestMod(
+            string modId,
+            string displayName,
+            string file,
+            string modRelativePath,
+            long bytes,
+            string sha256,
+            long rows,
+            string updatedAt)
+        {
+            ModId = modId;
+            DisplayName = string.IsNullOrEmpty(displayName) ? modId : displayName;
+            File = file;
+            ModRelativePath = modRelativePath;
+            Bytes = bytes;
+            Sha256 = sha256;
+            Rows = rows;
+            UpdatedAt = updatedAt ?? string.Empty;
+        }
+
+        /// <summary>稳定键（包文件名派生，见 <see cref="PackFilter"/>）；一旦发布不许改名。</summary>
+        public string ModId { get; private set; }
+
+        /// <summary>给玩家看的名字（缺省回退 <see cref="ModId"/>）。</summary>
+        public string DisplayName { get; private set; }
+
+        /// <summary>清单里的原始 <c>file</c> 字段（已归一化 <c>/</c> 分隔）。</summary>
+        public string File { get; private set; }
+
+        /// <summary>相对 mod 根的路径，例如 <c>Packs/zh-cn/TUFX.il.jsonl</c>。</summary>
+        public string ModRelativePath { get; private set; }
+
+        /// <summary>解压后的字节数。</summary>
+        public long Bytes { get; private set; }
+
+        /// <summary>解压后内容的 sha256（大写 64 位 hex）。</summary>
+        public string Sha256 { get; private set; }
+
+        /// <summary>行数（0 = 清单没写；仅用于展示与报告，不参与校验）。</summary>
+        public long Rows { get; private set; }
+
+        /// <summary>该 mod 包的更新时间（清单没写则为空串）。</summary>
+        public string UpdatedAt { get; private set; }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return ModId + " -> " + ModRelativePath + " (" + Sha256Hex.DescribeBytes(Bytes) + ", rows="
+                + Rows.ToString(CultureInfo.InvariantCulture) + ")";
+        }
+    }
+
+    /// <summary>
     /// 更新清单 <c>manifest.json</c> 的只读视图。
     /// <para>
     /// 兼容 <c>dist/manifest.json</c>（docs/06 §6.7）：顶层 <c>version</c> / <c>zip{name,bytes,sha256}</c> /
@@ -53,6 +120,8 @@ namespace UI18n.Core.Update
     public sealed class UpdateManifest
     {
         private readonly Dictionary<string, ManifestFile> _byModRelative;
+        private readonly Dictionary<string, ManifestMod> _byModId;
+        private readonly Dictionary<string, string> _modIdByFile;
 
         private UpdateManifest(
             string version,
@@ -62,7 +131,8 @@ namespace UI18n.Core.Update
             string zipName,
             long zipBytes,
             string zipSha256,
-            IList<ManifestFile> files)
+            IList<ManifestFile> files,
+            IList<ManifestMod> mods)
         {
             Version = version;
             ParsedVersion = parsedVersion;
@@ -73,10 +143,21 @@ namespace UI18n.Core.Update
             ZipSha256 = zipSha256;
             Files = files;
 
+            Mods = mods ?? new List<ManifestMod>();
+
             _byModRelative = new Dictionary<string, ManifestFile>(StringComparer.OrdinalIgnoreCase);
             for (int i = 0; i < files.Count; i++)
             {
                 _byModRelative[files[i].ModRelativePath] = files[i];
+            }
+
+            _byModId = new Dictionary<string, ManifestMod>(StringComparer.OrdinalIgnoreCase);
+            _modIdByFile = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < Mods.Count; i++)
+            {
+                ManifestMod mod = Mods[i];
+                _byModId[mod.ModId] = mod;
+                _modIdByFile[mod.ModRelativePath] = mod.ModId;
             }
         }
 
@@ -107,6 +188,41 @@ namespace UI18n.Core.Update
         /// <summary>文件条数。</summary>
         public int FileCount { get { return Files.Count; } }
 
+        /// <summary>按 mod 的记录（v2；旧清单为空列表，永不返回 <c>null</c>）。</summary>
+        public IList<ManifestMod> Mods { get; private set; }
+
+        /// <summary>按 mod 的记录条数。</summary>
+        public int ModCount { get { return Mods.Count; } }
+
+        /// <summary>清单是否带 <c>mods[]</c>（false = v1 旧清单，安装阶段退回"全装"）。</summary>
+        public bool HasMods { get { return Mods.Count > 0; } }
+
+        /// <summary>按 modId 查一条记录（忽略大小写）；没有返回 <c>null</c>。</summary>
+        public ManifestMod FindMod(string modId)
+        {
+            if (string.IsNullOrEmpty(modId))
+            {
+                return null;
+            }
+
+            ManifestMod mod;
+            return _byModId.TryGetValue(modId, out mod) ? mod : null;
+        }
+
+        /// <summary>
+        /// 由包文件的 mod 相对路径反查 modId（<c>mods[]</c> 里有才会命中）；没有返回 <c>null</c>。
+        /// </summary>
+        public string ModIdOfFile(string modRelativePath)
+        {
+            if (string.IsNullOrEmpty(modRelativePath))
+            {
+                return null;
+            }
+
+            string modId;
+            return _modIdByFile.TryGetValue(modRelativePath, out modId) ? modId : null;
+        }
+
         /// <summary>按 mod 相对路径查一条记录（忽略大小写）；没有返回 <c>null</c>。</summary>
         public ManifestFile Find(string modRelativePath)
         {
@@ -122,9 +238,15 @@ namespace UI18n.Core.Update
         /// <summary>一行摘要（用于日志）。</summary>
         public string Describe()
         {
-            return "manifest: version=" + Version
+            string text = "manifest: version=" + Version
                 + ", zip=" + ZipName + " (" + Sha256Hex.DescribeBytes(ZipBytes) + ", sha256 " + ZipSha256 + ")"
                 + ", files=" + FileCount.ToString(CultureInfo.InvariantCulture);
+            if (HasMods)
+            {
+                text += ", mods=" + ModCount.ToString(CultureInfo.InvariantCulture);
+            }
+
+            return text;
         }
 
         /// <summary>
@@ -219,6 +341,14 @@ namespace UI18n.Core.Update
                 }
             }
 
+            List<ManifestMod> mods;
+            string modsError;
+            if (!TryParseMods(root, out mods, out modsError))
+            {
+                error = modsError;
+                return false;
+            }
+
             manifest = new UpdateManifest(
                 version,
                 parsedVersion,
@@ -227,7 +357,8 @@ namespace UI18n.Core.Update
                 zipName,
                 zipBytes,
                 Sha256Hex.Normalize(zipSha),
-                files);
+                files,
+                mods);
             return true;
         }
 
@@ -278,6 +409,141 @@ namespace UI18n.Core.Update
             }
 
             return new ManifestFile(path, modRelative, bytes, Sha256Hex.Normalize(sha256));
+        }
+
+        /// <summary>
+        /// 解析可选的 <c>mods[]</c>（v2）。缺字段 = 空列表（旧清单，合法）；形状不对一律整份拒绝。
+        /// </summary>
+        private static bool TryParseMods(JsonValue root, out List<ManifestMod> mods, out string error)
+        {
+            mods = new List<ManifestMod>();
+            error = null;
+
+            JsonValue node = root.Get("mods");
+            if (node == null || node.IsNull)
+            {
+                return true;
+            }
+
+            if (node.Kind != JsonKind.Array)
+            {
+                error = "mods-not-array";
+                return false;
+            }
+
+            HashSet<string> seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> seenFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            IList<JsonValue> items = node.Items;
+            for (int i = 0; i < items.Count; i++)
+            {
+                string entryError;
+                ManifestMod mod = ParseMod(items[i], i, out entryError);
+                if (mod == null)
+                {
+                    error = entryError;
+                    return false;
+                }
+
+                if (!seenIds.Add(mod.ModId))
+                {
+                    error = "duplicate-mod-id: " + mod.ModId;
+                    return false;
+                }
+
+                if (!seenFiles.Add(mod.ModRelativePath))
+                {
+                    error = "duplicate-mod-file: " + mod.ModRelativePath;
+                    return false;
+                }
+
+                mods.Add(mod);
+            }
+
+            return true;
+        }
+
+        private static ManifestMod ParseMod(JsonValue item, int index, out string error)
+        {
+            error = null;
+            string prefix = "bad-mod-entry:" + index.ToString(CultureInfo.InvariantCulture);
+
+            if (item == null || item.Kind != JsonKind.Object)
+            {
+                error = prefix;
+                return null;
+            }
+
+            string modId = item.GetString("modId", null);
+            if (string.IsNullOrEmpty(modId))
+            {
+                error = prefix + ": missing-mod-id";
+                return null;
+            }
+
+            if (!PackFilter.IsValidModId(modId))
+            {
+                error = prefix + ": bad-mod-id";
+                return null;
+            }
+
+            string file = item.GetString("file", null);
+            if (string.IsNullOrEmpty(file))
+            {
+                error = prefix + ": missing-file";
+                return null;
+            }
+
+            string modRelative;
+            string reason;
+            if (!ZipSafety.TryMapToModRelative(file, out modRelative, out reason))
+            {
+                error = prefix + ": unsafe-file:" + file + ":" + reason;
+                return null;
+            }
+
+            string packLanguage;
+            string packFileName;
+            string packReason;
+            if (!ZipSafety.TryGetPackTarget(modRelative, out packLanguage, out packFileName, out packReason))
+            {
+                error = prefix + ": not-a-pack-file";
+                return null;
+            }
+
+            long bytes;
+            if (!item.TryGetLong("bytes", out bytes) || bytes < 0)
+            {
+                error = prefix + ": bad-bytes";
+                return null;
+            }
+
+            string sha256 = item.GetString("sha256", null);
+            if (!Sha256Hex.IsHex64(sha256))
+            {
+                error = prefix + ": bad-sha256";
+                return null;
+            }
+
+            long rows = 0;
+            JsonValue rowsNode = item.Get("rows");
+            if (rowsNode != null && !rowsNode.IsNull)
+            {
+                if (!item.TryGetLong("rows", out rows) || rows < 0)
+                {
+                    error = prefix + ": bad-rows";
+                    return null;
+                }
+            }
+
+            return new ManifestMod(
+                modId,
+                item.GetString("displayName", null),
+                file,
+                modRelative,
+                bytes,
+                Sha256Hex.Normalize(sha256),
+                rows,
+                item.GetString("updatedAt", string.Empty));
         }
 
         private static string CheckZipName(string name)
