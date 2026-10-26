@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.Json;
 using UI18n.Core.Capture;
 using UI18n.Core.Diagnostics;
@@ -392,6 +393,228 @@ namespace UI18n.Core.Tests
             Assert.Equal(5, store.TopCallers(5).Length);
             Assert.Equal(7, store.TopCallers(100).Length);
             Assert.Equal("Mod.Caller0 x1", store.TopCallers(5)[0]);
+        }
+
+        // ================= task-42 (a)：富文本标签先剥再判路径 =================
+
+        /// <summary>白名单与 python <c>tools/i18n_tools/resolve_keyrefs.py::_TMP_TAG_RE</c> 同口径（大小写敏感）。</summary>
+        [Theory]
+        [InlineData("<b>bold</b>", "bold")]
+        [InlineData("<b><color=#79C0FF>Cinematic</color></b>", "Cinematic")]
+        [InlineData("<size=20>Title</size>", "Title")]
+        [InlineData("<material=foo>x</material>", "x")]
+        [InlineData("<link=bar>Go</link>", "Go")]
+        [InlineData("<s>gone</s>", "gone")]
+        [InlineData("<u>under</u>", "under")]
+        [InlineData("<i>ital</i>", "ital")]
+        [InlineData("<sprite=icon>", "")]
+        [InlineData("plain text", "plain text")]
+        [InlineData("", "")]
+        public void StripRichText_RemovesWhitelistedTags(string text, string expected)
+        {
+            Assert.Equal(expected, CaptureClassify.StripRichText(text));
+        }
+
+        /// <summary>null 安全；大小写敏感 + 白名单外的尖括号原样保留（与 python 正则一致）。</summary>
+        [Fact]
+        public void StripRichText_NullIsEmpty_AndUnknownTagsSurvive()
+        {
+            Assert.Equal(string.Empty, CaptureClassify.StripRichText(null));
+            Assert.Equal("<COLOR=red>x</COLOR>", CaptureClassify.StripRichText("<COLOR=red>x</COLOR>"));
+            Assert.Equal("a<br>b", CaptureClassify.StripRichText("a<br>b"));
+        }
+
+        /// <summary>
+        /// 空格形式的<b>开标签</b>（<c>&lt;quad width=2&gt;</c>、<c>&lt;sprite name=icon&gt;</c>）两侧白名单都不匹配 ——
+        /// 这是<b>刻意的口径一致</b>：python <c>_TMP_TAG_RE</c> 只认 <c>&lt;tag&gt;</c> 与 <c>&lt;tag=value&gt;</c>，
+        /// 我们自己改宽会让离线重算与运行时分类给出不同结论。要改必须两边同时改。
+        /// </summary>
+        [Theory]
+        [InlineData("<quad width=2>x", "<quad width=2>x")]
+        [InlineData("<sprite name=icon>", "<sprite name=icon>")]
+        [InlineData("x < sprite > y", "x < sprite > y")]
+        public void StripRichText_SpaceFormOpenerIsLeftAlone_LikePython(string text, string expected)
+        {
+            Assert.Equal(expected, CaptureClassify.StripRichText(text));
+        }
+
+        /// <summary>
+        /// 同一个串里「开标签带空格、闭标签不带空格」时只剥闭标签 —— 期望值不是我推的，
+        /// 是<b>跑 python 拿到的实测值</b>：
+        /// <code>
+        /// &gt;&gt;&gt; _TMP_TAG_RE.sub('', '&lt;quad width=2&gt;x&lt;/quad&gt;')
+        /// '&lt;quad width=2&gt;x'
+        /// </code>
+        /// 这条断言的作用是把「C# 与 python 会给出同一个结果」钉死：哪天有人把 C# 正则改宽到接受空格，
+        /// 这条会先红，而不是等到 reports/coverage.md 与运行时 reason 分布自相矛盾才发现。
+        /// </summary>
+        [Fact]
+        public void StripRichText_SpaceFormOpener_ButBareCloserStillMatches()
+        {
+            Assert.Equal("<quad width=2>x", CaptureClassify.StripRichText("<quad width=2>x</quad>"));
+        }
+
+        /// <summary>标签白名单是与 python 的跨语言契约：改这里必须同时改 <c>resolve_keyrefs.py</c>。</summary>
+        [Fact]
+        public void TmpTagPattern_EqualsPythonRegex()
+        {
+            Assert.Equal("</?(?:b|i|u|s|color|size|material|quad|sprite|link)(?:=[^>]*)?>", CaptureClassify.TmpTagPattern);
+        }
+
+        [Fact]
+        public void HasVisibleText_IgnoresTagsAndWhitespaceOnly()
+        {
+            Assert.False(CaptureClassify.HasVisibleText(null));
+            Assert.False(CaptureClassify.HasVisibleText("<b></b>"));
+            Assert.False(CaptureClassify.HasVisibleText("<b>   </b>"));
+            Assert.False(CaptureClassify.HasVisibleText("   "));
+            Assert.True(CaptureClassify.HasVisibleText("<b>x</b>"));
+        }
+
+        /// <summary>task-42 的回归本体：富文本曾被 <c>&lt;/color&gt;</c> 的斜杠判成 path（23 个会话 35 个 h）。</summary>
+        [Theory]
+        [InlineData("<b><color=#79C0FF>Cinematic</color></b>", false)]
+        [InlineData("<b>Cinematic</b>", false)]
+        [InlineData("<size=20>a/b</size>", false)]
+        [InlineData("<link=foo>bar</link>", false)]
+        [InlineData("<color=red>one/two</color>", false)]
+        [InlineData("<color=red>ReStockPlus/Parts/RCS/foo</color>", true)]
+        [InlineData("<b><color=#fff>GameData/Squad/Parts/x</color></b>", true)]
+        [InlineData("ReStockPlus/Parts/Control/RCS/restock-rcs-5way", true)]
+        [InlineData("GameData/Squad/Parts/Command/mk1pod", true)]
+        [InlineData("a/b", false)]
+        [InlineData("1/2/3", false)]
+        public void IsPathLike_StripsTagsFirst(string text, bool expected)
+        {
+            Assert.Equal(expected, CaptureClassify.IsPathLike(text));
+        }
+
+        /// <summary>剥完为空/纯空白 → <c>empty</c>/<c>never</c>（不是 path）；剥完是正常文案 → candidate 且 template 不受标签里数字影响。</summary>
+        [Theory]
+        [InlineData("<b><color=#79C0FF>Cinematic</color></b>", false, "", "candidate")]
+        [InlineData("<b>Cinematic</b>", false, "", "candidate")]
+        [InlineData("<b>ReStockPlus/Parts/RCS/foo</b>", false, "path", "never")]
+        [InlineData("<b></b>", false, "empty", "never")]
+        [InlineData("</color>", false, "empty", "never")]
+        [InlineData("<b>   </b>", false, "empty", "never")]
+        [InlineData("<color=#79C0FF>ModuleManager: 8448 patches applied</color>", true, "counter", "template")]
+        public void Classify_RichText_StripsBeforeJudging(string text, bool template, string reason, string bucket)
+        {
+            bool actualTemplate;
+            string actualReason;
+            string actualBucket;
+            CaptureClassify.Classify(text, out actualTemplate, out actualReason, out actualBucket);
+
+            Assert.Equal(template, actualTemplate);
+            Assert.Equal(reason, actualReason);
+            Assert.Equal(bucket, actualBucket);
+        }
+
+        /// <summary><c>empty</c> 是新原因码：取值与 <c>CaptureFilter.ReasonEmpty</c> 一致，但判定点是「剥完标签才空」。</summary>
+        [Fact]
+        public void Classify_ReasonEmpty_MatchesFilterConstant()
+        {
+            Assert.Equal("empty", CaptureClassify.ReasonEmpty);
+            Assert.Equal(CaptureFilter.ReasonEmpty, CaptureClassify.ReasonEmpty);
+        }
+
+        // ================= task-42 (b)：caller 用 DeclaringType 反射拼名 =================
+
+        /// <summary>已构造泛型类型：结果不带程序集限定名、逗号、方括号、arity 反引号。</summary>
+        [Fact]
+        public void CleanTypeName_ConstructedGeneric_HasNoAssemblyInfo()
+        {
+            string name = CaptureCaller.CleanTypeName(typeof(Dictionary<string, int>));
+
+            Assert.Equal("System.Collections.Generic.Dictionary", name);
+            Assert.DoesNotContain(",", name, StringComparison.Ordinal);
+            Assert.DoesNotContain("]", name, StringComparison.Ordinal);
+            Assert.DoesNotContain("[", name, StringComparison.Ordinal);
+            Assert.DoesNotContain("Culture=", name, StringComparison.Ordinal);
+            Assert.DoesNotContain("Version=", name, StringComparison.Ordinal);
+            Assert.DoesNotContain("`", name, StringComparison.Ordinal);
+        }
+
+        /// <summary>反证：v1.1 走的是 <c>Type.FullName</c>，它确实带程序集限定名（那 5 条残片的来源）。</summary>
+        [Fact]
+        public void FullName_OfConstructedGeneric_DoesCarryAssemblyInfo()
+        {
+            string fullName = typeof(Dictionary<string, int>).FullName;
+
+            Assert.Contains("Culture=", fullName, StringComparison.Ordinal);
+            Assert.Contains("`2", fullName, StringComparison.Ordinal);
+        }
+
+        /// <summary>嵌套泛型：<c>Ns.Outer.Inner</c>（用点连接，不用反射的 <c>+</c>；外层 arity 去掉）。</summary>
+        [Fact]
+        public void CleanTypeName_NestedGeneric_KeepsOuterChainWithoutArity()
+        {
+            string name = CaptureCaller.CleanTypeName(typeof(OuterGeneric<int>.Inner));
+
+            Assert.Equal("UI18n.Core.Tests.CaptureQualityTests.OuterGeneric.Inner", name);
+            Assert.DoesNotContain("`", name, StringComparison.Ordinal);
+            Assert.DoesNotContain("+", name, StringComparison.Ordinal);
+        }
+
+        [Fact]
+        public void CleanTypeName_NullAndPlainType()
+        {
+            Assert.Equal(string.Empty, CaptureCaller.CleanTypeName(null));
+            Assert.Equal("UI18n.Core.Tests.CaptureQualityTests", CaptureCaller.CleanTypeName(typeof(CaptureQualityTests)));
+        }
+
+        [Fact]
+        public void StripArity_RemovesGenericSuffix()
+        {
+            Assert.Equal("List", CaptureCaller.StripArity("List`1"));
+            Assert.Equal("Dictionary", CaptureCaller.StripArity("Dictionary`2"));
+            Assert.Equal("Plain", CaptureCaller.StripArity("Plain"));
+            Assert.Equal(string.Empty, CaptureCaller.StripArity(null));
+        }
+
+        [Fact]
+        public void DescribeMethod_JoinsCleanTypeAndMethod()
+        {
+            MethodInfo method = typeof(Dictionary<string, int>).GetMethod("Add", new[] { typeof(string), typeof(int) });
+
+            Assert.Equal("System.Collections.Generic.Dictionary.Add", CaptureCaller.DescribeMethod(method));
+            Assert.Equal(string.Empty, CaptureCaller.DescribeMethod(null));
+        }
+
+        /// <summary>导出格式是 <c>Namespace.Type.Method</c>：python 侧 <c>infer_mods()</c> 拿第一段当 mod 名。</summary>
+        [Fact]
+        public void PickCaller_ExportsFullTypeName()
+        {
+            var frames = new List<CaptureFrame>
+            {
+                new CaptureFrame("UI18n.Runtime.Translator", "Translate"),
+                new CaptureFrame("KSPWheel.KSPWheelGUI", "OnWindow")
+            };
+
+            Assert.Equal("KSPWheel.KSPWheelGUI.OnWindow", CaptureCaller.PickCaller(frames));
+            Assert.Equal("KSPWheel.KSPWheelGUI.OnWindow", frames[1].ToString());
+        }
+
+        /// <summary>真栈结果里不许出现程序集限定名的任何特征（v1.1 实测 5 条 <c>…PublicKeyToken=null]].X</c>）。</summary>
+        [Fact]
+        public void FromStack_HasNoAssemblyQualifiedFragments()
+        {
+            string caller = CaptureCaller.FromStack(0);
+
+            Assert.False(string.IsNullOrEmpty(caller));
+            Assert.DoesNotContain(",", caller, StringComparison.Ordinal);
+            Assert.DoesNotContain("]", caller, StringComparison.Ordinal);
+            Assert.DoesNotContain("`", caller, StringComparison.Ordinal);
+            Assert.DoesNotContain("Culture=", caller, StringComparison.Ordinal);
+            Assert.DoesNotContain("Version=", caller, StringComparison.Ordinal);
+        }
+
+        /// <summary>嵌套泛型类型（<c>OuterGeneric&lt;T&gt;.Inner</c>）—— 只为 <see cref="CleanTypeName_NestedGeneric_KeepsOuterChainWithoutArity"/> 存在。</summary>
+        private class OuterGeneric<T>
+        {
+            internal class Inner
+            {
+            }
         }
     }
 }

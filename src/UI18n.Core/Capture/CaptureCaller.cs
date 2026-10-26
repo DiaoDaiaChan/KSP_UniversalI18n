@@ -23,10 +23,10 @@ namespace UI18n.Core.Capture
             MethodName = methodName ?? string.Empty;
         }
 
-        /// <summary><c>Type.Method</c>（类型取简单名，与历史格式一致）。</summary>
+        /// <summary><c>Type.Method</c>（类型用完整名 <see cref="TypeFullName"/>，task-42 起不再截成简单名）。</summary>
         public override string ToString()
         {
-            return CaptureCaller.SimpleTypeName(TypeFullName) + "." + MethodName;
+            return TypeFullName + "." + MethodName;
         }
     }
 
@@ -101,7 +101,7 @@ namespace UI18n.Core.Capture
                     }
 
                     Type declaringType = method.DeclaringType;
-                    frames.Add(new CaptureFrame(declaringType == null ? null : declaringType.FullName, method.Name));
+                    frames.Add(new CaptureFrame(declaringType == null ? null : CleanTypeName(declaringType), method.Name));
                 }
 
                 return PickCaller(frames);
@@ -113,7 +113,12 @@ namespace UI18n.Core.Capture
         }
 
         /// <summary>
-        /// 按 <see cref="ShouldSkipFrame"/> 过滤后取第一帧的 <c>Type.Method</c>；没有则 <see cref="Unknown"/>。
+        /// 按 <see cref="ShouldSkipFrame"/> 过滤后取第一帧的 <c>Namespace.Type.Method</c>；没有则 <see cref="Unknown"/>。
+        /// <para>
+        /// <b>task-42</b>：导出用<b>完整</b>类型名而不是简单名 —— 下游 <c>tools/i18n_tools/capture_ingest.py</c>
+        /// 的 <c>infer_mods()</c> 拿 caller 的第一段当 mod 名、<c>attribute_callers()</c> 用 <c>rpartition(".")</c>
+        /// 把 base 与 method 拆开，两边都按「Namespace.Type.Method」设计；只留简单名会让 mod 名退化成类型名。
+        /// </para>
         /// </summary>
         public static string PickCaller(IList<CaptureFrame> frames)
         {
@@ -135,7 +140,7 @@ namespace UI18n.Core.Capture
                     continue;
                 }
 
-                return SimpleTypeName(frame.TypeFullName) + "." + frame.MethodName;
+                return frame.TypeFullName + "." + frame.MethodName;
             }
 
             return Unknown;
@@ -185,7 +190,70 @@ namespace UI18n.Core.Capture
             return false;
         }
 
-        /// <summary>类型的简单名（去掉命名空间；嵌套类型保留 <c>+</c>）。</summary>
+        /// <summary>
+        /// 从反射拿到的类型拼出<b>干净</b>的完整名：<c>命名空间.外层类型.自身</c>，泛型去掉 arity（<c>`1</c>）。
+        /// <para>
+        /// <b>为什么不用 <see cref="Type.FullName"/></b>：对已构造的泛型类型它返回程序集限定名，
+        /// 例如 <c>Dictionary`2[[System.String, mscorlib, Version=…, Culture=neutral, PublicKeyToken=…]]</c>，
+        /// 再被截断就留下 <c>…PublicKeyToken=null]].X</c> 这种残片（v1.1 实测 5 条）。
+        /// 这里只用 <see cref="Type.Name"/> 与 <see cref="Type.DeclaringType"/> 逐段拼，
+        /// 结构上不可能带出程序集信息、逗号、方括号或反引号。
+        /// </para>
+        /// <para>嵌套类型用 <c>.</c> 连接（不是反射的 <c>+</c>），与下游 python 的 <c>rpartition(".")</c> 口径一致。</para>
+        /// </summary>
+        public static string CleanTypeName(Type type)
+        {
+            if (type == null)
+            {
+                return string.Empty;
+            }
+
+            string simple = StripArity(type.Name);
+            Type declaring = type.DeclaringType;
+            if (declaring != null)
+            {
+                string outer = CleanTypeName(declaring);
+                return outer.Length == 0 ? simple : outer + "." + simple;
+            }
+
+            string ns = type.Namespace;
+            return string.IsNullOrEmpty(ns) ? simple : ns + "." + simple;
+        }
+
+        /// <summary>去掉泛型 arity 后缀（<c>List`1</c> → <c>List</c>、<c>Outer`2</c> → <c>Outer</c>）。</summary>
+        public static string StripArity(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return string.Empty;
+            }
+
+            int tick = name.IndexOf('`');
+            return tick < 0 ? name : name.Substring(0, tick);
+        }
+
+        /// <summary>
+        /// 一个方法的「类型.方法」描述（<see cref="CleanTypeName"/> + 方法名）；取不到时返回空串。
+        /// <para>这是 <see cref="FromStack"/> 内部投影栈帧用的同一套命名，单测可直接断言它不含程序集信息。</para>
+        /// </summary>
+        public static string DescribeMethod(MethodBase method)
+        {
+            if (method == null)
+            {
+                return string.Empty;
+            }
+
+            string type = CleanTypeName(method.DeclaringType);
+            return type.Length == 0 ? method.Name : type + "." + method.Name;
+        }
+
+        /// <summary>
+        /// 类型的简单名（只取最后一个 <c>.</c> 之后那一段）。
+        /// <para>
+        /// <b>task-42 起导出 caller 不再用它</b>（见 <see cref="PickCaller"/> 的说明）：保留是因为它仍是
+        /// 「这段全名里哪部分是类型」的常用小工具，删掉会让外部调用点编译不过。
+        /// </para>
+        /// </summary>
         public static string SimpleTypeName(string typeFullName)
         {
             if (string.IsNullOrEmpty(typeFullName))

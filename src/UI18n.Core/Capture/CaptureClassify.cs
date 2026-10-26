@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 
 namespace UI18n.Core.Capture
 {
@@ -17,7 +18,12 @@ namespace UI18n.Core.Capture
     /// <item>空 —— 不含数字的静态文本，正常候选（<see cref="BucketCandidate"/>）。</item>
     /// </list>
     /// <para>
-    /// 判定全部手写（无正则、无分配）：只在某条串<b>首次</b>进捕获时跑一次。
+    /// <b>task-42 修复</b>：判定前先剥掉 TMP 富文本标签（<see cref="TmpTagPattern"/>），否则
+    /// `</color>` 里的斜杠会让 <c>&lt;b&gt;&lt;color=#79C0FF&gt;Cinematic&lt;/color&gt;&lt;/b&gt;</c>
+    /// 被当成路径（真实的 35 个 h 因此被判 never）。剥完为空/纯空白 → <see cref="ReasonEmpty"/>。
+    /// </para>
+    /// <para>
+    /// 除了一次标签剥离用的静态正则，其余判定仍然手写（无分配）：只在某条串<b>首次</b>进捕获时跑一次。
     /// </para>
     /// </summary>
     public static class CaptureClassify
@@ -33,6 +39,58 @@ namespace UI18n.Core.Capture
 
         /// <summary>含数字的其它文本（每次运行都可能不同）。</summary>
         public const string ReasonCounter = "counter";
+
+        /// <summary>
+        /// 剥掉富文本标签后没有可显示文本（例如只有 `&lt;b&gt;&lt;/b&gt;` 或孤立的 `&lt;/color&gt;`）。
+        /// <para>
+        /// task-42 之前这种串会被判成 <see cref="ReasonPath"/>（因为 `&lt;/color&gt;` 带斜杠），现在是独立的空原因。
+        /// 取值与 <see cref="CaptureFilter.ReasonEmpty"/> 一致（都是 `empty`），但两者的判定点不同：
+        /// 那个是原文就空/全空白，这个是「剥完标签才空」。
+        /// </para>
+        /// </summary>
+        public const string ReasonEmpty = "empty";
+
+        /// <summary>
+        /// TMP 富文本标签白名单（与 python 侧 <c>tools/i18n_tools/resolve_keyrefs.py::_TMP_TAG_RE</c> <b>同口径</b>：
+        /// 同一个正则、同样大小写敏感 —— <c>&lt;COLOR=red&gt;</c> 不算标签）。
+        /// <para>
+        /// <b>改一处必须改两处</b>：这里与 python 侧任意一边改了白名单，捕获分类与离线重算就会给出不同结论，
+        /// 下游报告里的 reason 分布会自相矛盾。
+        /// </para>
+        /// </summary>
+        public const string TmpTagPattern = "</?(?:b|i|u|s|color|size|material|quad|sprite|link)(?:=[^>]*)?>";
+
+        /// <summary>标签剥离用的正则（静态编译一次，捕获路径上每条串只跑一次）。</summary>
+        private static readonly Regex TmpTagRegex = new Regex(TmpTagPattern, RegexOptions.CultureInvariant);
+
+        /// <summary>
+        /// 剥掉 TMP 富文本标签，只留用户真正看到的文字；<paramref name="text"/> 为 null 时返回空串。
+        /// <para>只剥 <see cref="TmpTagPattern"/> 白名单里的标签（与 python 侧同口径），未知的尖括号内容原样保留。</para>
+        /// </summary>
+        public static string StripRichText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            return TmpTagRegex.Replace(text, string.Empty);
+        }
+
+        /// <summary>剥掉标签后有没有非空白字符（只有空白 / 只有标签 → false）。</summary>
+        public static bool HasVisibleText(string text)
+        {
+            string visible = StripRichText(text);
+            for (int i = 0; i < visible.Length; i++)
+            {
+                if (!char.IsWhiteSpace(visible[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>可直接当翻译候选的静态文本。</summary>
         public const string BucketCandidate = "candidate";
@@ -63,14 +121,24 @@ namespace UI18n.Core.Capture
         }
 
         /// <summary>
-        /// 路径样：按 <c>/</c> 切成 ≥3 段、每段非空、整串无空白、且至少有一个 ASCII 字母。
+        /// 路径样：<b>先剥掉富文本标签</b>，再按 <c>/</c> 切成 ≥3 段、每段非空、整串无空白、且至少有一个 ASCII 字母。
         /// <para>
         /// 「至少一个字母」是为了不把 <c>1/2/3</c> 这类纯数字三段式误判成路径（那是进度/比例）。
+        /// </para>
+        /// <para>
+        /// task-42：标签必须先剥 —— <c>&lt;/color&gt;</c> 里的斜杠曾被当成分隔符，
+        /// 于是 <c>&lt;b&gt;&lt;color=#79C0FF&gt;Cinematic&lt;/color&gt;&lt;/b&gt;</c> 被判成路径（真实 35 个 h 因此 never）。
         /// </para>
         /// </summary>
         public static bool IsPathLike(string text)
         {
             if (string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            text = StripRichText(text);
+            if (text.Length == 0)
             {
                 return false;
             }
@@ -157,16 +225,27 @@ namespace UI18n.Core.Capture
         /// </summary>
         public static void Classify(string text, out bool template, out string reason, out string bucket)
         {
-            template = ContainsDigit(text);
+            // task-42：分类只看「用户真正看到的文字」。剥完标签什么都没剩（例如 <b></b> 或孤立 </color>）
+            // 就没有可翻的东西：reason=empty、bucket=never（不是 path，也不是 candidate）。
+            string visible = StripRichText(text);
+            if (!HasNonSpace(visible))
+            {
+                template = false;
+                reason = ReasonEmpty;
+                bucket = BucketNever;
+                return;
+            }
 
-            if (IsPathLike(text))
+            template = ContainsDigit(visible);
+
+            if (IsPathLike(visible))
             {
                 reason = ReasonPath;
                 bucket = BucketNever;
                 return;
             }
 
-            if (IsProgressLike(text))
+            if (IsProgressLike(visible))
             {
                 reason = ReasonProgress;
                 bucket = BucketTemplate;
@@ -182,6 +261,25 @@ namespace UI18n.Core.Capture
 
             reason = ReasonNone;
             bucket = BucketCandidate;
+        }
+
+        /// <summary>有非空白可见字符吗（<see cref="HasVisibleText"/> 的内部版，输入已剥过标签）。</summary>
+        private static bool HasNonSpace(string visible)
+        {
+            if (visible == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < visible.Length; i++)
+            {
+                if (!char.IsWhiteSpace(visible[i]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>桶名是否合法（<see cref="BucketCandidate"/> / <see cref="BucketTemplate"/> / <see cref="BucketNever"/>）。</summary>
