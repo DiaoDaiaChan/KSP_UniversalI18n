@@ -1,8 +1,8 @@
 # zh-cn 翻译包覆盖报告
 
-- 生成时间：`2026-10-28T00:19:45Z`
-- 包目录：`packs/zh-cn/`：97 个文件 / 14,991 行 / 5,176,942 字节
-  - cfg 包（`<mod>.jsonl`，GameData/**/*.cfg 抽取）：41 个 / 10,015 行 / 3,507,752 字节
+- 生成时间：`2026-10-28T00:56:46Z`
+- 包目录：`packs/zh-cn/`：97 个文件 / 14,991 行 / 5,176,956 字节
+  - cfg 包（`<mod>.jsonl`，GameData/**/*.cfg 抽取）：41 个 / 10,015 行 / 3,507,766 字节
   - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：56 个 / 4,976 行 / 1,669,190 字节
   - 合计 82 个 mod（同一 mod 的 cfg 包与 IL 包各占一行清单，按 `mod` 聚合成一行表格）
 - 清单：`packs/index.json`（schema 1，字段口径见 `tools/i18n_tools/packindex.py` 模块 docstring）
@@ -80,7 +80,7 @@
 | RP0 | IL | 299 | 48797 | 0 | 0 | unknown |
 | ROEngines | cfg | 268 | 109891 | 3 | 35 | cfg 303 |
 | UI18n-Unattributed | IL | 251 | 62915 | 6 | 0 | unknown |
-| VenStockRevamp | cfg | 229 | 80146 | 1 | 173 | cfg 170 + loc 232 |
+| VenStockRevamp | cfg | 229 | 80160 | 1 | 173 | cfg 170 + loc 232 |
 | KSPPerformanceProfiler | IL | 213 | 44321 | 178 | 0 | unknown |
 | ROSolar | cfg | 181 | 35834 | 3 | 25 | cfg 206 |
 | MechJeb2 | cfg+IL | 176 | 57846 | 16 | 10 | cfg 10 + loc 6 |
@@ -150,7 +150,7 @@
 | Renamer | IL | 1 | 133 | 0 | 0 | unknown |
 | TestFlight | IL | 1 | 118 | 0 | 0 | unknown |
 | SquadExpansion | - | 0 | 0 | 0 | 177 | cfg 177 |
-| **合计** | **97 个包**（cfg 41 + IL 56） | **14991** | **5176942** | **1434** | **3395** | 83 个 mod |
+| **合计** | **97 个包**（cfg 41 + IL 56） | **14991** | **5176956** | **1434** | **3395** | 83 个 mod |
 
 ## 池外条目（packs 有、pool 没有）
 
@@ -230,7 +230,7 @@
 | 包文件数 | 97（cfg 41 + IL 56） |
 | mod 数 | 82（同 mod 的 cfg 包与 IL 包算一个） |
 | 包总行数 | 14991 |
-| 包总字节数 | 5176942 |
+| 包总字节数 | 5176956 |
 | `t == s` 直通行 | 1434 |
 | pool 待译串 | 12792 |
 | 已覆盖 pool 行 | 9397 |

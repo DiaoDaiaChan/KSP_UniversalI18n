@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "lang": "zh-cn",
-  "generatedAt": "2026-10-28T00:19:45Z",
+  "generatedAt": "2026-10-28T00:56:46Z",
   "totalRows": 14991,
-  "totalBytes": 5176942,
+  "totalBytes": 5176956,
   "packCount": 97,
   "packs": [
     {
@@ -651,7 +651,7 @@
       "file": "zh-cn/Squad.jsonl",
       "rows": 930,
       "bytes": 360369,
-      "sha256": "50eb9248eccee415855d1bb6d2732217011fad3e75ead299cf3eebe66bb483eb",
+      "sha256": "0d80b6f77058836799da4092f29340edf662e325d564f1e4840c61c076da3aac",
       "keepRows": 0
     },
     {
@@ -754,8 +754,8 @@
       "mod": "VenStockRevamp",
       "file": "zh-cn/VenStockRevamp.jsonl",
       "rows": 229,
-      "bytes": 80146,
-      "sha256": "1e859149b21ce583e84aa704f45107d443f83d161aa6feed9658718efefa67b3",
+      "bytes": 80160,
+      "sha256": "9d70112e089b72324e03234d3032fb55fe1a70eeb3065d0617a577765c101df7",
       "keepRows": 1
     },
     {

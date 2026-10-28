@@ -368,6 +368,11 @@ class FileBase:
         self.existed = self.path.exists()
         self.raw = self.path.read_bytes() if self.existed else b""
         self.style = detect_style(self.raw)
+        # 末尾换行习惯按文件自身保留：packs/zh-cn/*.jsonl、overrides、mods.json 末尾带换行，
+        # 而 packs/glossary.jsonl 历史上不带（`selftest` 的「glossary 末尾无换行」就是在钉这条）。
+        # 新文件默认带换行。不这么做的话，一次 glossary put 就会把文件改成带换行，
+        # 让产物自检直接红（2026-10-28 实测）。
+        self.trailing_newline = (not self.existed) or self.raw.endswith(b"\n")
         self.events = []
 
     @property
@@ -408,7 +413,10 @@ class LinesFile(FileBase):
         self.rows = rows_of_bytes(self.raw, label or ctx.rel(self.path))
 
     def data(self):
-        return render_rows(self.rows, self.style)
+        data = render_rows(self.rows, self.style)
+        if data and not self.trailing_newline and data.endswith(b"\n"):
+            data = data[:-1]
+        return data
 
 
 class PackFile(LinesFile):

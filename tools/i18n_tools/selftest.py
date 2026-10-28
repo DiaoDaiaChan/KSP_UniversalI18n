@@ -533,7 +533,9 @@ def test_packindex_real():
     # 2026-10-27 入包 il-translatable 缺失的 31 条 IL：14960 -> 14991, 5172848 -> 5176936
     # 2026-10-28 术语裁决修 4 条译文（Spinup stage / RealChute arm / TWP Insertion Burn /
     #   Burn position）：5176936 -> 5176942，行数不变
-    eq("真实 totalBytes == 5176942", doc["totalBytes"], 5176942)
+    # 2026-10-28 G7 清零（7 条译文贴合官方串 + Monopropellant/Delta-V 补译 +
+    #   Illuminator Mk 编号纠正）：5176942 -> 5176956，行数不变
+    eq("真实 totalBytes == 5176956", doc["totalBytes"], 5176956)
     eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
     entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
     eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)

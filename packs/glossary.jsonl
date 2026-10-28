@@ -953,10 +953,10 @@
 {"key":"#autoLOC_500951","en":"Service Bay (2.5m)","zh":"服务舱(2.5米)","short":true}
 {"key":"#autoLOC_500952","en":"A heat resistant service bay, ideal for protecting delicate instruments or stowing small service components such as RCS tanks, batteries, etc.","zh":"带热防护的服务舱，非常适合保护精密仪器或存放小型维护组件，如RCS燃料箱、电池等。","short":false}
 {"key":"#autoLOC_500953","en":"bus contain heat hollow protect (stor therm","zh":"摆渡 容器 热量 中空 保护 (存 热","short":false}
-{"key":"#autoLOC_500954","en":"Illuminator Mk1","zh":"照明装置Mk2","short":true}
+{"key":"#autoLOC_500954","en":"Illuminator Mk1","zh":"照明装置Mk1","short":true}
 {"key":"#autoLOC_500955","en":"The Illuminator Mk1 from RKEA projects a strong beam of photons in its prograde direction, increasing the brightness of surfaces exposed to the beam (it's a big flashlight).","zh":"RKEA研发的照明装置Mk1能够向其指向的方向投射强大的光束，增强光照范围内的表面亮度（说白了就是一个大型手电筒）。","short":false}
 {"key":"#autoLOC_500956","en":"moar (more bulb candle dark flash (lamp (light shine spot torch","zh":"加油 (更多 灯泡 蜡烛 黑暗 闪光 (灯 (轻 闪光 斑点 火炬","short":false}
-{"key":"#autoLOC_500957","en":"Illuminator Mk2","zh":"照明装置Mk3","short":true}
+{"key":"#autoLOC_500957","en":"Illuminator Mk2","zh":"照明装置Mk2","short":true}
 {"key":"#autoLOC_500958","en":"The Illuminator Mk2 is an extra-wide beam, low-power Illuminator, for lighting up large swaths of whatever you wish. However, its beam does not shine very far.","zh":"照明装置Mk2的光束很粗，功率较低，能够为您照亮一大片区域。但是，光柱的照射距离并不是很远。","short":false}
 {"key":"#autoLOC_500959","en":"moar (more bulb candle dark flash flood (lamp (light shine torch","zh":"加油 (更多 灯泡 蜡烛 黑暗 闪光 洪水 (灯 (轻 闪光 火炬","short":false}
 {"key":"#autoLOC_500960","en":"TVR-200 Stack Bi-Coupler","zh":"TVR-200双向连接器","short":true}
