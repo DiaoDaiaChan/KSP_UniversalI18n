@@ -15,7 +15,8 @@ r"""journal_gate.py -- packs 里的写操作必须留下 journal 事件（docs/1
 受管范围（WATCHED）就是 docs/10 §5 列的四个位置：packs/zh-cn/**、packs/overrides.jsonl、
 packs/glossary.jsonl、packs/mods.json，**再加上 packs/submission/**（M3 投稿目录：meta.json、
 index.json、每个 mod 的 .jsonl 都算）** —— 不改这条，投稿目录就是唯一能手改不留痕的地方。
-除此之外的文件不管（tools/、src/、docs/ 随便改）。
+**另加 packs/terms.jsonl（v1.6 受管消歧术语库）** —— 它同样是「有写入口的受管资源」，
+不纳入就没有任何机制能拦住手改术语库。除此之外的文件不管（tools/、src/、docs/ 随便改）。
 
 M3 的事件形状与别的写操作不同（docs/10 §6.7）：**一笔投稿只写一条事件**，事件顶层没有 file 字段，
 文件清单在 files[] 里、候选表记在 candidates 里。所以认账时这三个位置都要查
@@ -60,7 +61,8 @@ WATCHED_DIRS = ("packs/zh-cn/",)
 #: 整棵子树都受管（不分后缀）：投稿目录里的 meta.json / index.json 也必须留痕
 WATCHED_ANY = ("packs/submission/",)
 #: 受管单文件
-WATCHED_FILES = ("packs/overrides.jsonl", "packs/glossary.jsonl", "packs/mods.json")
+WATCHED_FILES = ("packs/overrides.jsonl", "packs/glossary.jsonl", "packs/mods.json",
+                 "packs/terms.jsonl")
 #: journal 目录（只追加）
 JOURNAL_DIR = "packs/journal/"
 
@@ -75,6 +77,9 @@ HINTS = (
      'python -m i18n_tools.api glossary put --en "<英文>" --zh "<中文>" --actor human:<你>'),
     ("packs/mods.json",
      "python -m i18n_tools.api mod put --mod <modId> --display <名字> --actor human:<你>"),
+    ("packs/terms.jsonl",
+     'python -m i18n_tools.api term put --term "<英文>" --zh "<中文>" '
+     '--domain <领域> --actor human:<你>'),
     ("packs/zh-cn/",
      'python -m i18n_tools.api entry put --mod <modId> --lang zh-cn --text "<英文>" '
      '--t "<中文>" --actor human:<你>'),

@@ -235,6 +235,10 @@ class Ctx:
         return self.packs_dir / "conventions.jsonl"
 
     @property
+    def terms_path(self):
+        return self.packs_dir / "terms.jsonl"
+
+    @property
     def mods_path(self):
         return self.packs_dir / "mods.json"
 
@@ -1462,6 +1466,133 @@ def cmd_glossary_put(ctx, args):
     return payload, _put_lines(payload, result)
 
 
+def cmd_term_list(ctx, args):
+    """查询受管消歧术语库（packs/terms.jsonl）。可按 --term 或 --domain 过滤。"""
+    res = LinesFile(ctx.terms_path, ctx, "packs/terms.jsonl")
+    rows = list(res.rows)
+    term_filter = getattr(args, "term", None)
+    domain_filter = getattr(args, "domain", None)
+    if term_filter:
+        rows = [r for r in rows if r.get("term", "").lower() == term_filter.lower()]
+    if domain_filter:
+        rows = [r for r in rows
+                if any(domain_filter.lower() in str(d).lower() for d in r.get("domain", []))]
+    payload = {
+        "op": "term.list", "ok": True,
+        "count": len(rows),
+        "terms": rows,
+    }
+    lines = ["%-16s %-12s %-25s %s" % (
+        r.get("term", ""), r.get("zh", ""),
+        ",".join(r.get("domain", []))[:24],
+        ("禁: " + ",".join(r.get("forbidden", []))) if r.get("forbidden") else ""
+    ) for r in rows]
+    lines.append("共 %d 条消歧术语" % len(rows))
+    return payload, lines
+
+
+def cmd_term_put(ctx, args):
+    """登记 / 更新受管消歧术语（packs/terms.jsonl）。同 term + 同 domain 重合即替换。"""
+    actor = need_actor(args)
+    term = need_value(getattr(args, "term", None), "--term")
+    zh = need_value(getattr(args, "zh", None), "--zh")
+    raw_domains = getattr(args, "domains", None) or []
+    if isinstance(raw_domains, str):
+        raw_domains = [raw_domains]
+    domains = []
+    for item in raw_domains:
+        for piece in str(item).split(","):
+            piece = piece.strip()
+            if piece and piece not in domains:
+                domains.append(piece)
+    if not domains:
+        domains = ["General"]
+
+    raw_forbidden = getattr(args, "forbidden", None) or []
+    if isinstance(raw_forbidden, str):
+        raw_forbidden = [raw_forbidden]
+    forbidden = []
+    for item in raw_forbidden:
+        for piece in str(item).split(","):
+            piece = piece.strip()
+            if piece and piece not in forbidden:
+                forbidden.append(piece)
+    pos = getattr(args, "pos", None) or "noun"
+    note = getattr(args, "note", "") or ""
+
+    gates = gate_check(ctx, term, zh, subset=MANUAL_GATES)
+    res = LinesFile(ctx.terms_path, ctx, "packs/terms.jsonl")
+    revision_check(res, getattr(args, "expect_revision", None))
+
+    # 查找是否存在同 term 且 domains 有交集的项
+    target_idx = None
+    for idx, row in enumerate(res.rows):
+        if row.get("term", "").lower() == term.lower():
+            row_domains = set(d.lower() for d in row.get("domain", []))
+            if any(d.lower() in row_domains for d in domains):
+                target_idx = idx
+                break
+
+    entry_data = {
+        "term": term,
+        "zh": zh,
+        "domain": domains,
+        "pos": pos,
+        "forbidden": forbidden,
+        "note": note
+    }
+    if target_idx is None:
+        res.rows.append(entry_data)
+        action = "insert"
+    else:
+        res.rows[target_idx] = entry_data
+        action = "replace"
+
+    res.add_event(action, gates=gates, note="domain=%s" % ",".join(domains))
+    result = commit(ctx, [res], actor, "term.put",
+                    dry_run=bool(getattr(args, "dry_run", False)))
+    payload = envelope(ctx, "term.put", result, lang=ctx.lang, mod=None)
+    return payload, _put_lines(payload, result)
+
+
+def cmd_term_audit(ctx, args):
+    """全库扫描所有已翻译包，检测是否违反 packs/terms.jsonl 中的消歧约束或禁译词。
+
+    判定逻辑只有一份：委托 audit.check_row_terms（与 CI 的 python -m i18n_tools.audit 同源），
+    这里只负责把结果包成 API envelope，避免两套实现各自漂移。
+    """
+    from . import audit as audit_mod
+
+    res = LinesFile(ctx.terms_path, ctx, "packs/terms.jsonl")
+    terms_list = list(res.rows)
+    lang = getattr(args, "lang", None) or ctx.lang
+    violations = audit_mod.collect_term_violations(str(ctx.lang_dir(lang)), terms_list)
+    counts = {name: 0 for name in audit_mod.TERM_CHECK_NAMES}
+    for item in violations:
+        counts[item["violation"]] = counts.get(item["violation"], 0) + 1
+
+    payload = {
+        "op": "term.audit", "ok": len(violations) == 0,
+        "violations_count": len(violations),
+        "counts": counts,
+        "violations": violations[:100],
+    }
+    lines = []
+    for v in violations[:50]:
+        if v["violation"] == "term_forbidden":
+            detail = "禁译词=%s" % v["word"]
+        else:
+            detail = "期望含=%s" % v["expected"]
+        lines.append("%-18s %-10s %-10s %-14s %s  s=%s" % (
+            v["mod"][:17], v["term"], str(v.get("h") or "")[:10], detail,
+            v["violation"], v["source"][:30]))
+    if len(violations) > 50:
+        lines.append("... 还有 %d 处未展示" % (len(violations) - 50))
+    lines.append("审计完成：禁译词 %d 处，未按标准译法 %d 处，共 %d 处消歧违规" % (
+        counts.get("term_forbidden", 0), counts.get("term_mismatch", 0), len(violations)))
+    return payload, lines
+
+
 def cmd_mod_put(ctx, args):
     """登记 / 更新一个 mod 身份（mods.json）。modId 是稳定键，永不改名。"""
     actor = need_actor(args)
@@ -1991,6 +2122,27 @@ def build_parser():
     item.add_argument("--dry-run", dest="dry_run", action="store_true")
     item.set_defaults(func=cmd_glossary_put)
 
+    term = sub.add_parser("term", parents=[parent], help="受管消歧术语表")
+    term_sub = term.add_subparsers(dest="action")
+    item = term_sub.add_parser("list", parents=[parent], help="列出受管消歧术语")
+    item.add_argument("--term", default=None, help="按英文术语筛选")
+    item.add_argument("--domain", default=None, help="按适用领域/Mod筛选")
+    item.set_defaults(func=cmd_term_list)
+    item = term_sub.add_parser("put", parents=[parent], help="登记 / 更新受管消歧术语")
+    item.add_argument("--term", required=True, help="英文术语")
+    item.add_argument("--zh", required=True, help="标准中文译法")
+    item.add_argument("--domain", dest="domains", action="append", default=None, help="适用领域/Mod（可多次传入或逗号分隔）")
+    item.add_argument("--forbidden", dest="forbidden", action="append", default=None, help="禁译词/歧义词（可多次传入或逗号分隔）")
+    item.add_argument("--pos", default="noun", help="词性（noun/verb/adj）")
+    item.add_argument("--note", default=None, help="术语背景与消歧依据")
+    item.add_argument("--expect-revision", dest="expect_revision", default=None)
+    item.add_argument("--dry-run", dest="dry_run", action="store_true")
+    item.set_defaults(func=cmd_term_put)
+    item = term_sub.add_parser("audit", parents=[parent], help="全库审计消歧与禁译词违规")
+    item.add_argument("--lang", default=None)
+    item.set_defaults(func=cmd_term_audit)
+
+
     mod = sub.add_parser("mod", parents=[parent], help="mod 身份表")
     mod_sub = mod.add_subparsers(dest="action")
     item = mod_sub.add_parser("list", parents=[parent], help="列出已登记 mod")
@@ -2451,6 +2603,59 @@ def selftest():
         check("glossary 新条目 short 标记保留",
               [row for row in glossary_rows if row["en"] == "Throttle"][0]["short"] is True,
               glossary_rows)
+
+        # ---- 12b) terms.jsonl：list / put / audit ----
+        code, payload, _err = _call(root, ["term", "put", "--term", "Arm", "--zh", "解除保险",
+                                           "--domain", "Parachute,RealChute", "--forbidden", "机械臂,手臂",
+                                           "--actor", "human:selftest"])
+        check("term put 新条目 exit 0", code == 0, code)
+        terms_rows = rows_of_bytes((packs / "terms.jsonl").read_bytes())
+        check("terms.jsonl 写入 1 条", len(terms_rows) == 1 and terms_rows[0]["term"] == "Arm", terms_rows)
+        check("terms.jsonl domain 解析为列表", terms_rows[0]["domain"] == ["Parachute", "RealChute"], terms_rows)
+        check("terms.jsonl forbidden 解析为列表", terms_rows[0]["forbidden"] == ["机械臂", "手臂"], terms_rows)
+
+        # 替换测试：同 term + 同 domain
+        code, payload, _err = _call(root, ["term", "put", "--term", "Arm", "--zh", "解保",
+                                           "--domain", "Parachute", "--forbidden", "机械臂",
+                                           "--actor", "human:selftest"])
+        check("term put 替换已有 term exit 0", code == 0, code)
+        terms_rows = rows_of_bytes((packs / "terms.jsonl").read_bytes())
+        check("term put 是替换而不是追加（仍 1 条）", len(terms_rows) == 1 and terms_rows[0]["zh"] == "解保", terms_rows)
+
+        # 写入契约：每次 term put 都必须落 journal（actor / file / revision / 写后 sha256）
+        terms_sha = sha256_hex((packs / "terms.jsonl").read_bytes())
+        term_events = [event for event in journal_events(ctx) if event.get("op") == "term.put"]
+        check("term put 每次写都落 journal 事件（insert + replace）",
+              len(term_events) == 2, term_events)
+        check("term.put 事件带 actor / file / revision / file_sha256_after",
+              bool(term_events)
+              and term_events[-1].get("actor") == "human:selftest"
+              and term_events[-1].get("file") == "packs/terms.jsonl"
+              and bool(term_events[-1].get("revision_before"))
+              and bool(term_events[-1].get("revision_after"))
+              and term_events[-1].get("file_sha256_after") == terms_sha,
+              term_events[-1] if term_events else None)
+
+        # revision 校验：--expect-revision 不符 exit 3，命中才写
+        rev = revision_of((packs / "terms.jsonl").read_bytes())
+        code, _payload, _err = _call(root, ["term", "put", "--term", "Arm", "--zh", "解保",
+                                            "--domain", "Parachute", "--forbidden", "机械臂",
+                                            "--expect-revision", "deadbeefdead@9",
+                                            "--actor", "human:selftest"])
+        check("term put revision 冲突 exit 3", code == 3, code)
+        code, _payload, _err = _call(root, ["term", "put", "--term", "Arm", "--zh", "解保",
+                                            "--domain", "Parachute", "--forbidden", "机械臂",
+                                            "--expect-revision", rev,
+                                            "--actor", "human:selftest"])
+        check("term put --expect-revision 命中 exit 0", code == 0, code)
+
+        # term list 检查
+        code, payload, _err = _call(root, ["term", "list"])
+        check("term list exit 0 且 count 为 1", code == 0 and payload["count"] == 1, (code, payload))
+
+        # term audit 检查（无违规）
+        code, payload, _err = _call(root, ["term", "audit"])
+        check("term audit exit 0 且 ok 为 True", code == 0 and payload["ok"] is True, (code, payload))
 
         # ---- 13) mods.json：put / list / resolve ----
         _call(root, ["mod", "put", "--mod", "TUFX", "--display", "TexturesUnlimited",

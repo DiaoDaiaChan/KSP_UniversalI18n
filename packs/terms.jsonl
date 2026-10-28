@@ -1,0 +1,8 @@
+{"term":"Arm","zh":"解除保险","domain":["Parachute","Weapon","RealChute"],"pos":"verb","forbidden":["机械臂","手臂","武装"],"note":"降落伞与触发系统预备状态，NASA/CCSDS标准"}
+{"term":"Arm","zh":"机械臂","domain":["Robotics","Station","InfernalRobotics"],"pos":"noun","forbidden":["解除保险","武装"],"note":"空间站机械臂/机器人臂结构件"}
+{"term":"Forward","zh":"前向","domain":["Rendering","Shader","Graphics","Parallax"],"pos":"adj","forbidden":["前进","向前"],"note":"前向渲染管线术语 (Forward Rendering)"}
+{"term":"Forward","zh":"前进","domain":["Flight","Control","NavBall","MechJeb2"],"pos":"verb","forbidden":["前向"],"note":"飞行与姿态控制前进指令"}
+{"term":"Trim","zh":"配平","domain":["Aerodynamics","Control","FAR","AtmosphereAutopilot"],"pos":"noun","forbidden":["修剪","整理"],"note":"空气动力与气动翼面配平"}
+{"term":"Stage","zh":"分级","domain":["Propulsion","Staging","MechJeb2"],"pos":"noun","forbidden":["舞台","阶段"],"note":"火箭多级分离与时序"}
+{"term":"Burn","zh":"变轨点火","domain":["Maneuver","Orbital","TransferWindowPlanner","MechJeb2"],"pos":"noun","forbidden":["燃烧","烧伤"],"note":"轨道机动变轨执行"}
+{"term":"Gimbal","zh":"万向节","domain":["Engine","Propulsion","RealFuels"],"pos":"noun","forbidden":["云台","转盘"],"note":"火箭发动机喷管推力矢量偏转"}

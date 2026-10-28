@@ -28,19 +28,19 @@ text.text = "All Input Locks Cleared";
 | 需要作者配合 | 是（要作者把文本抽成键） | 否 |
 | 出问题时的形态 | 词条错位、错翻译被写进存档 | 未命中即原文，永不产生「翻错但改不回来」的状态 |
 
-## 当前状态（开发快照 1.5.0 · **尚无发行版**）
+## 当前状态（开发快照 1.7.0 · **尚无发行版**）
 
 > **发行状态：GitHub 上没有任何 Release，也没有任何版本 tag。** 2026-10-26 按维护者判断，删除了 v1.0.0–v1.5.0 的全部 Release 与 tag —— 现阶段完成度还不够称为「发行版」，版本号只描述内部开发快照，不代表可发布质量。要装请按下一节从仓库取文件，**不要找 release 下载链接**（已经不存在）。
 
 | 项目 | 数字 |
 |---|---|
 | 拦截点（hook 目标） | **17** 个：`UI.Text.set_text`、`TMP_Text.set_text`、`GUILayout.DoLabel/DoButton/DoRepeatButton/DoToggle/DoWindow`、`GUI.Label/Box/Button/RepeatButton/Toggle(4 参)/Toggle(5 参)/DoWindow(title)/DoModalWindow/DoButtonGrid`、`ScreenMessages.PostMessage` |
-| 字典 | **97** 个包 / **14,954** 条（cfg 级 41 包 9,990 条 + DLL/配置缓存级 56 包 4,964 条；其中 **486** 行是数字骨架） |
+| 字典 | **97** 个包 / **14,991** 条（cfg 级 41 包 10,015 条 + DLL/配置缓存级 56 包 4,976 条；其中 **492** 行是数字骨架） |
 | 配置文本覆盖率（`packs/pool.jsonl` 口径） | 待译 12,792 条里 **9,397** 条已覆盖 = **73.46%**（v1.3.0 是 70.93%）。**这是源侧待译串口径，v1.5 起不再当验收数字**（见下面 render 一行） |
 | 屏幕覆盖率（29 局实测） | 该翻的 3,129 条里 **265** 条已中文 = **8.47%**（v1.2 出包那一代是 14 条 / 0.45%）；全量口径 2.53%——这一指标要等下一轮游戏内实测才会更新 |
-| render 覆盖率（v1.5 真相层口径，**唯一承诺**） | 运行时自报 `[UI18n] render coverage: hit=… miss=… distinct=… ratio=…`。**尚未有 1.5 出包的实测值** —— 要装 1.5 真跑一局；明细落 `<KSP>/PluginData/UI18n/render-<UTC stamp>.json`，报告由 `python -m i18n_tools.render_coverage` 出 |
+| render 覆盖率（v1.5 真相层口径，**唯一承诺**） | 运行时自报 `[UI18n] render coverage: hit=… miss=… distinct=… ratio=…`。**已有单局真读数 hit=245 / miss=4 / distinct=249 / ratio=0.9839（2026-10-26，落盘 `render-20261026-090049.json`；单局样本，不可与 8.47% 换算）**；明细落 `<KSP>/PluginData/UI18n/render-<UTC stamp>.json`，报告由 `python -m i18n_tools.render_coverage` 出 |
 | 人工译文表 | `packs/overrides.jsonl` **3,736** 条（v1.4 一夜之间从 283 条涨上来，覆盖零件标题 / 零件描述 / 制造商 / 捕获到的屏幕标签） |
-| 单测 | C# **658** 例全绿；python 工具链 selftest **298** 项全绿 |
+| 单测 | C# **897** 例全绿（2026-10-26 本地实测，本次未复跑；Runtime 需真实 KSP 程序集）；python 工具链 selftest **318** 项（本次实跑通过） |
 | 游戏内验证 | round 10（2026-10-24，v1.1.0 那对 DLL）：`installed 17/17 patches`、`parseErrors=0`、`entries=11089`、`error lines: 0` |
 
 ## 安装
@@ -149,12 +149,12 @@ translate（CI，LLM 批量翻译 + 断点续跑缓存）
         ▼
 resolve_keyrefs（把 #autoLOC_* 键引用解析成官方中英对照行，带歧义守卫与长度比门禁）
         ▼
-drop/packindex/audit（删冗余键行、生成清单与覆盖率、审计 89 个包）
+drop/packindex/audit（删冗余键行、生成清单与覆盖率、审计 97 个包）
         ▼
 packs/<lang>/<mod>.jsonl  ──►  GitHub Actions 六道门禁 ──►  发行包
 ```
 
-CI 见 `.github/workflows/i18n.yml`，每次 push 跑三个 job：`gates`（python 侧六道门禁：单测 + golden + journal + packindex + audit + selftest，不联网不写仓库）、`code`（Core 编译 + 811 例单测；Runtime 要真实 KSP 安装，进不了 CI）、`translate`（只在手动触发时跑）。
+CI 见 `.github/workflows/i18n.yml`：push / 每周 schedule 跑 `gates`（python 侧六道门禁：selftest + audit --selftest + audit + packindex + golden + journal，不联网不写仓库）与 `code`（Core 编译 + 897 例单测；Runtime 要真实 KSP 安装，进不了 CI）两个 job；`translate`（LLM 批量翻译 + 回写）只在 `workflow_dispatch` 且勾选 translate 时跑。
 
 ## 你也可以投稿（把你这台机器上的英文串交回来）
 
@@ -215,7 +215,7 @@ CI 见 `.github/workflows/i18n.yml`，每次 push 跑三个 job：`gates`（pyth
 dotnet build UI18n.sln -c Release          # Core 双目标（net472 + net10.0）+ Runtime（net472）
 pwsh tools\run-tests.ps1                    # C# 单测（本机 dotnet test 的 testhost 会崩，见 docs/06 §4.2）
 cd tools; python -m i18n_tools.selftest     # python 工具链自检
-python -m i18n_tools.audit                  # 字典审计（89 个包）
+python -m i18n_tools.audit                  # 字典审计（97 个包）
 pwsh src\UI18n.Runtime\deploy.ps1 -Install  # 装进本机 KSP（会逐文件校验 sha256）
 pwsh src\UI18n.Runtime\build-release.ps1 -Version 1.1.0   # 出包到 dist/（11 条硬断言 + 来源标记）
 ```
@@ -229,7 +229,7 @@ pwsh src\UI18n.Runtime\build-release.ps1 -Version 1.1.0   # 出包到 dist/（11
 | `packs/` | 字典源：`pool.jsonl`（候选池）、`glossary.jsonl`（官方译文记忆）、`zh-cn/*.jsonl`（成品包，含 `"p":1` 骨架行）、`index.json`（清单）、`capture-candidates.jsonl`（会话捕获归并出的骨架候选，v1.3）、`candidates.jsonl`（**v1.5：五条通道唯一的候选表**，只打优先级标签、不丢正文） |
 | `tools/i18n_tools/` | 采集 / 翻译 / 解析 / 审计 / 清单的 python 工具链；v1.3 加 `capture_ingest`（会话捕获归并）、`skeleton`（骨架抽取）、`screen_coverage`（屏幕覆盖率）；v1.5 加 `candidates`（候选单一表）、`golden_gate`（golden set 门禁）、`render_coverage`（render 覆盖率报告） |
 | `tools/collect-diagnostics.ps1` | 排障一把梭：把一个玩家的现场收成单个 zip（v1.3） |
-| `tests/UI18n.Core.Tests/` | xunit v3 单测：19 个测试类 / **647** 例；夹具在 `Data/`（`pool-sample.jsonl`、`skeleton-golden.jsonl` 331 行） |
+| `tests/UI18n.Core.Tests/` | xunit v3 单测：31 个测试类 / **897** 例（2026-10-26 本地实测，本次未复跑）；夹具在 `Data/`（`pool-sample.jsonl`、`skeleton-golden.jsonl` 331 行） |
 | `tests/golden/` | golden set：`rendered-strings.txt` 一行一条**用户报过的英文原文**（现 19 条）。过滤器或阈值一改，任一条被丢掉 / 没进候选表 / 没有译文就直接红（v1.5，见 `tools/i18n_tools/golden_gate.py`） |
 | `docs/` | 设计文档：总体设计（00）、缺陷审查（01）、探针（02）、进度追踪（03）、翻译流水线（04）、原生性与性能（05）、工程骨架与构建（06）、真相层设计契约（08）与实现说明（09） |
 

@@ -42,6 +42,7 @@
 | pack | `packs/<lang>/<modId>[.<ch>].jsonl` | 只有 api | 译文主载体，按 mod 分文件 |
 | override | `packs/overrides.jsonl` | 只有 api | `{en,zh,note}`；人工译文，优先于模型 |
 | glossary | `packs/glossary.jsonl` | 只有 api | `{key,en,zh,short}`；G7 术语来源 |
+| terms | `packs/terms.jsonl` | 只有 api | `{term,zh,domain[],pos,forbidden[],note}`；受管消歧术语库 —— 同一个英文词在不同 domain 下各有标准译法与禁译词。`audit` 读它出 `term_forbidden` / `term_mismatch` 两类 notice |
 | conventions | `packs/conventions.jsonl` | 只有 api | 12 条专有约定 |
 | candidates | `packs/candidates.jsonl` | 只有 api / 采集器 | 待译清单（五通道合并），**只读消费** |
 | mods | `packs/mods.json` | 只有 api | modId ↔ 程序集/文件夹/显示名/CKAN id |
@@ -81,6 +82,10 @@ entry put-batch  必需 —（读 stdin） 可选 --lang --note --expect-revisio
 entry delete     必需 --mod --h    可选 --lang --reason "<why>" --expect-revision --dry-run
 override put     必需 --en --zh    可选 --note --dry-run
 glossary put     必需 --en --zh    可选 --short --dry-run
+term put         必需 --term --zh  可选 --domain --forbidden --pos --note --expect-revision --dry-run
+                                   # 同 term + domain 重合即替换（幂等），落 journal op=term.put
+term list        必需 —            可选 --term --domain
+term audit       必需 —            可选 --lang   # 全库扫禁译词与未按 domain 译法，输出计数
 mod put          必需 --mod        可选 --display --assembly --folder --alias --ckan --note --dry-run
 apply            必需 —            可选 --lang --normalize-p --dry-run
                                    # 重算 packs/index.json 与报告，跑全量门禁
@@ -151,7 +156,7 @@ api 额外三条**自身**约束（不属于 G 编号，属于 schema）：
  "gates":["G2","G4","G6","G7","G8"],"note":"术语表命中：Diffraction→衍射"}
 ```
 
-- **CI 硬门禁 `journal_gate.py`**：一个提交只要动了 `packs/zh-cn/**`、`packs/overrides.jsonl`、`packs/glossary.jsonl`、`packs/mods.json`，就必须同时有 journal 事件，且**每个被改文件的 `file_sha256_after` 必须等于提交后文件的 sha256**。手改 JSON 的提交会在这里红掉，报错文案直接给出应该跑的那条 `api` 命令。
+- **CI 硬门禁 `journal_gate.py`**：一个提交只要动了 `packs/zh-cn/**`、`packs/overrides.jsonl`、`packs/glossary.jsonl`、`packs/mods.json`、`packs/terms.jsonl`，就必须同时有 journal 事件，且**每个被改文件的 `file_sha256_after` 必须等于提交后文件的 sha256**。手改 JSON 的提交会在这里红掉，报错文案直接给出应该跑的那条 `api` 命令。
 - **journal 只许追加**：`journal_gate` 同时校验「历史行未被改写」（比对被删/被改行的 hash），想伪造就得整段删日期文件——那也会红。
 
 ## 6. 玩家投稿契约（bundle）
@@ -367,6 +372,8 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 | M2 | manifest v2（每 mod 一条）+ 只装启用 mod + `prefs.json` + 游戏内开关面板 | 装机后关掉一个 mod，该 mod 的串回到英文，其余不变 |
 | M3 | 采集端 bundle + 同意 UI + Issue 模板 + `api submit accept`（契约见 §6，已冻结） | 一次真实 bundle → accept → `packs/submission/<id>/` 落盘 + candidates 行数/累加对得上 + `validate` 与 `journal_gate` 仍绿 |
 | M4 | 中继端点（可选）自动开 PR | 端到端无人值守 |
+
+**状态（2026-10-28 复核）**：M1、M2 **已交付**；M3 **代码已落地、尚未跑过真实投稿**（服务端 `api submit accept` + 客户端 bundle/脱敏/同意 UI 都在，但仓库里没有 `packs/submission/`、journal 里也没有任何 `submit.accept` 事件 —— M3 的验收条件「一次真实 bundle → accept」未满足，不计为已交付）；M4 未开始。消歧术语门禁已并入 `audit`（读 `packs/terms.jsonl`），但存量译法分歧暂以 notice 输出、不阻断 CI——升为 error 需人工逐条裁决后另行拍板。
 
 ## 12. 已拍板（2026-10-26，m07292「默认执行」：六条全部按默认值）
 

@@ -13,13 +13,21 @@
   跨文件同 h 必须同 t               # 运行时只按 h 查表，同 h 不同 t = 输出不确定
   s 不含 CJK（键引用行 s 以 # 开头，允许）
 
+另外读 packs/terms.jsonl 做**消歧术语**检查（docs/10 的受管术语库）：
+  domain 命中的包里，原文命中 term 的行：
+    - 译文含 forbidden 禁译词       → term_forbidden
+    - 译文不含该 domain 的标准 zh   → term_mismatch
+  这两类默认只报 **notice**，不计入 bad_total、不 exit 1：存量包里的译法是否真的错，
+  需要人工逐条裁决；裁决完再统一用 --strict-terms 升为 error。
+
 用法:
-    python -m i18n_tools.audit                 # 审计 packs/zh-cn
+    python -m i18n_tools.audit                 # 审计 packs/zh-cn（含术语 notice）
     python -m i18n_tools.audit --lang en-us
     python -m i18n_tools.audit --packs-dir <dir> --quiet
+    python -m i18n_tools.audit --terms <file> --strict-terms
     python -m i18n_tools.audit --selftest      # 自检（含 8 条负例）
 
-退出码: 0 = PASS，1 = 有违规（CI 用它当门禁）。
+退出码: 0 = PASS，1 = 有违规（CI 用它当门禁；术语 notice 默认不阻断）。
 """
 from __future__ import annotations
 
@@ -43,15 +51,205 @@ CHECK_NAMES = (
     "bad_format", "cjk_in_source", "dup_h_diff_t", "bad_row",
 )
 
+#: 术语检查的两类 notice（不进 CHECK_NAMES：存量包变红要人工裁决，不能直接阻断）
+TERM_CHECK_NAMES = ("term_forbidden", "term_mismatch")
+
+#: term → 预编译正则。术语只有十几条，缓存一次即可，避免每行都 re.compile。
+_TERM_PATTERN_CACHE = {}
+
 
 def _multiset(text: str, pattern) -> collections.Counter:
     return collections.Counter(pattern.findall(text))
 
 
-def audit_dir(packs_dir: str) -> dict:
-    """审计一个语言目录，返回结果字典（不打印、不退出）。"""
+def _pack_mod(name: str) -> str:
+    """包文件名 → modId，规则与 api.pack_mod / packindex._mod_of_name 同源。
+
+    先剥 .jsonl，再剥精确后缀 .il / .cfg；其余原样（modId 本身可以带点号）。
+    """
+    base = os.path.basename(str(name).replace("\\", "/"))
+    for suffix in (".jsonl", ".il", ".cfg"):
+        if base.endswith(suffix):
+            base = base[: -len(suffix)]
+    return base
+
+
+def default_terms_path(packs_dir: str):
+    """<packs>/zh-cn → <packs>/terms.jsonl；非 zh-cn 目录不套用中文术语库。"""
+    lang = os.path.basename(os.path.normpath(packs_dir))
+    candidate = os.path.join(os.path.dirname(os.path.abspath(packs_dir)), "terms.jsonl")
+    if lang == "zh-cn" and os.path.isfile(candidate):
+        return candidate
+    return None
+
+
+def load_terms(path):
+    """读 packs/terms.jsonl，返回 (规则列表, 错误列表)。
+
+    坏行只记错误、不抛异常：术语库坏了不该让整个 audit 自爆；错误会在报告里单列。
+    """
+    rules = []
+    errors = []
+    if not path or not os.path.isfile(path):
+        return rules, errors
+    with open(path, "r", encoding="utf-8") as handle:
+        for line_no, line in enumerate(handle, 1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError as exc:
+                errors.append("%s 第 %d 行不是合法 JSON：%s" % (path, line_no, exc))
+                continue
+            if not isinstance(row, dict):
+                errors.append("%s 第 %d 行不是 JSON 对象" % (path, line_no))
+                continue
+            if not isinstance(row.get("term"), str) or not row.get("term").strip():
+                errors.append("%s 第 %d 行缺 term 字段" % (path, line_no))
+                continue
+            rules.append(row)
+    return rules, errors
+
+
+def _domain_matches(rule: dict, mod: str) -> bool:
+    """术语规则是否覆盖这个 mod。
+
+    domain 里可以写概念领域（Parachute / Rendering）或具体 modId（RealChute / MechJeb2）。
+    包行里没有领域字段，唯一可靠的归属信号就是包文件名推出的 modId，所以这里按
+    「domain 与 modId 互相包含」匹配；domain 缺省或写 General 表示对所有包生效。
+    """
+    domains = rule.get("domain") or []
+    if isinstance(domains, str):
+        domains = [domains]
+    names = [str(item).strip().lower() for item in domains if str(item).strip()]
+    if not names or "general" in names:
+        return True
+    current = str(mod).lower()
+    return any(name == current or name in current or current in name for name in names)
+
+
+def _term_pattern(term: str):
+    """整词匹配（Arm 不命中 Arming / Armed），术语里允许连字符等非单词字符。"""
+    pattern = _TERM_PATTERN_CACHE.get(term)
+    if pattern is None:
+        pattern = re.compile(
+            r"(?<![A-Za-z0-9_])" + re.escape(term) + r"(?![A-Za-z0-9_])",
+            re.IGNORECASE)
+        _TERM_PATTERN_CACHE[term] = pattern
+    return pattern
+
+
+def check_row_terms(row: dict, terms, mod: str, file_name: str, line_no: int) -> list:
+    """检查一行译文是否违反消歧术语规则，返回违规列表（可能为空）。
+
+    判定顺序（一条行最多报一类，避免同一处既报禁词又报不匹配）：
+      1. 原文整词命中某个 term，且该规则的 domain 覆盖这个 mod；
+      2. 译文含任一命中规则的 forbidden → term_forbidden（禁译词优先）；
+      3. 否则译文不含任一命中规则的标准 zh → term_mismatch。
+    """
+    source = row.get("s")
+    target = row.get("t")
+    if not isinstance(source, str) or not isinstance(target, str) or not source or not target:
+        return []
+
+    applicable = []
+    for rule in terms:
+        term = rule.get("term")
+        if not isinstance(term, str) or not term:
+            continue
+        if not _domain_matches(rule, mod):
+            continue
+        if not _term_pattern(term).search(source):
+            continue
+        applicable.append(rule)
+    if not applicable:
+        return []
+
+    hits = []
+    forbidden_seen = False
+    for rule in applicable:
+        forbidden = rule.get("forbidden") or []
+        if isinstance(forbidden, str):
+            forbidden = [forbidden]
+        for word in forbidden:
+            word = str(word)
+            if not word or word not in target:
+                continue
+            forbidden_seen = True
+            hits.append({
+                "file": file_name,
+                "line": line_no,
+                "mod": mod,
+                "h": row.get("h") or "",
+                "term": rule.get("term"),
+                "source": source,
+                "target": target,
+                "violation": "term_forbidden",
+                "word": word,
+                "expected": rule.get("zh"),
+            })
+    if forbidden_seen:
+        return hits
+
+    expected = [rule["zh"] for rule in applicable
+                if isinstance(rule.get("zh"), str) and rule.get("zh")]
+    if not expected:
+        return hits
+    if any(item in target for item in expected):
+        return hits
+    hits.append({
+        "file": file_name,
+        "line": line_no,
+        "mod": mod,
+        "h": row.get("h") or "",
+        "term": applicable[0].get("term"),
+        "source": source,
+        "target": target,
+        "violation": "term_mismatch",
+        "word": "",
+        "expected": " / ".join(expected),
+    })
+    return hits
+
+
+def collect_term_violations(packs_dir: str, terms) -> list:
+    """扫描一个语言目录，返回全部术语违规（给 api term audit 复用同一套判定）。"""
+    if not terms or not os.path.isdir(packs_dir):
+        return []
+    violations = []
+    names = sorted(name for name in os.listdir(packs_dir) if name.endswith(".jsonl"))
+    for name in names:
+        path = os.path.join(packs_dir, name)
+        mod = _pack_mod(name)
+        with open(path, "r", encoding="utf-8") as handle:
+            for line_no, line in enumerate(handle, 1):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                if not isinstance(row, dict):
+                    continue
+                violations.extend(check_row_terms(row, terms, mod, name, line_no))
+    return violations
+
+
+def audit_dir(packs_dir: str, terms_path=None, strict_terms: bool = False) -> dict:
+    """审计一个语言目录，返回结果字典（不打印、不退出）。
+
+    术语违规默认只进 term_violations / term_counts，不参与 verdict 与退出码；
+    只有 strict_terms=True 时才把 term_verdict 判为 FAIL。
+    """
     files = sorted(f for f in os.listdir(packs_dir) if f.endswith(".jsonl"))
     counts = dict.fromkeys(CHECK_NAMES, 0)
+    term_counts = dict.fromkeys(TERM_CHECK_NAMES, 0)
+    term_violations = []
+    if terms_path is None:
+        terms_path = default_terms_path(packs_dir)
+    terms, term_errors = load_terms(terms_path)
     total_rows = 0
     keep_rows = 0
     total_bytes = 0
@@ -105,6 +303,9 @@ def audit_dir(packs_dir: str) -> dict:
                     note("bad_format", where, "s=%s  t=%s" % (s[:40], t[:40]))
                 if _CJK_RE.search(s) and not is_key_ref(s):
                     note("cjk_in_source", where, "s=%s" % s[:40])
+                for violation in check_row_terms(row, terms, _pack_mod(name), name, line_no):
+                    term_counts[violation["violation"]] += 1
+                    term_violations.append(violation)
                 hmap.setdefault(h, []).append((name, line_no, t, s))
         total_bytes += os.path.getsize(path)
         by_file.append((name, rows, os.path.getsize(path)))
@@ -125,6 +326,13 @@ def audit_dir(packs_dir: str) -> dict:
                     ))
 
     bad_total = sum(counts[name] for name in CHECK_NAMES)
+    term_total = sum(term_counts[name] for name in TERM_CHECK_NAMES)
+    if strict_terms and (term_total or term_errors):
+        term_verdict = "FAIL"
+    elif term_total or term_errors:
+        term_verdict = "NOTICE"
+    else:
+        term_verdict = "PASS"
     return {
         "packs_dir": packs_dir,
         "files": len(files),
@@ -138,6 +346,14 @@ def audit_dir(packs_dir: str) -> dict:
         "problems": problems,
         "bad_total": bad_total,
         "verdict": "PASS" if bad_total == 0 else "FAIL",
+        "terms_path": terms_path,
+        "terms_count": len(terms),
+        "term_counts": term_counts,
+        "term_total": term_total,
+        "term_violations": term_violations,
+        "term_errors": term_errors,
+        "term_verdict": term_verdict,
+        "strict_terms": bool(strict_terms),
     }
 
 
@@ -155,12 +371,37 @@ def format_report(result: dict, quiet: bool = False, limit: int = 60) -> str:
             result["counts"]["bad_placeholder"], result["counts"]["bad_richtext"],
             result["counts"]["bad_format"], result["counts"]["cjk_in_source"],
             result["counts"]["bad_row"]),
+        "term_rules=%d  term_forbidden=%d  term_mismatch=%d  term_errors=%d  (%s)" % (
+            result.get("terms_count", 0),
+            result.get("term_counts", {}).get("term_forbidden", 0),
+            result.get("term_counts", {}).get("term_mismatch", 0),
+            len(result.get("term_errors") or []),
+            "术语违规计入 error" if result.get("strict_terms") else "术语违规仅 notice，不阻断"),
     ]
     if result["problems"] and not quiet:
         lines.append("--- problems (%d shown) ---" % min(len(result["problems"]), limit))
         for file_name, line_no, kind, detail in result["problems"][:limit]:
             lines.append("  %s:%d [%s] %s" % (file_name, line_no, kind, detail))
-    lines.append("VERDICT: %s (bad_total=%d)" % (result["verdict"], result["bad_total"]))
+    term_violations = result.get("term_violations") or []
+    if term_violations and not quiet:
+        lines.append("--- term notices (%d shown) ---" % min(len(term_violations), limit))
+        for item in term_violations[:limit]:
+            if item["violation"] == "term_forbidden":
+                detail = "禁译词=%s" % item["word"]
+            else:
+                detail = "期望含=%s" % item["expected"]
+            lines.append("  %s:%d [%s] %s  %s  s=%s  t=%s" % (
+                item["file"], item["line"], item["violation"], item["term"], detail,
+                item["source"][:40], item["target"][:40]))
+    for message in result.get("term_errors") or []:
+        lines.append("  [term_rule] " + message)
+    verdict_note = ""
+    if result.get("term_verdict") == "FAIL":
+        verdict_note = "  term strict=FAIL（--strict-terms）"
+    elif result.get("term_total") or result.get("term_errors"):
+        verdict_note = "  term notices=%d（需人工裁决后才能升为 error）" % result.get("term_total", 0)
+    lines.append("VERDICT: %s (bad_total=%d)%s" % (
+        result["verdict"], result["bad_total"], verdict_note))
     return "\n".join(lines)
 
 
@@ -273,6 +514,10 @@ def main(argv=None) -> int:
     parser.add_argument("--lang", default="zh-cn", help="语言目录名（默认 zh-cn）")
     parser.add_argument("--quiet", action="store_true", help="只打汇总，不打前 60 条明细")
     parser.add_argument("--json", dest="as_json", action="store_true", help="输出 JSON 结果")
+    parser.add_argument("--terms", default=None,
+                        help="术语库路径（默认 <packs>/terms.jsonl；不存在则跳过术语检查）")
+    parser.add_argument("--strict-terms", dest="strict_terms", action="store_true",
+                        help="把术语违规升为 error（默认只报 notice，不 exit 1）")
     parser.add_argument("--selftest", action="store_true", help="跑自检（1 正例 + 8 负例）")
     args = parser.parse_args(argv)
 
@@ -287,12 +532,16 @@ def main(argv=None) -> int:
         print("[audit] 目录不存在: %s" % packs_dir, file=sys.stderr)
         return 1
 
-    result = audit_dir(packs_dir)
+    result = audit_dir(packs_dir, terms_path=args.terms, strict_terms=args.strict_terms)
     if args.as_json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         print(format_report(result, quiet=args.quiet))
-    return 0 if result["bad_total"] == 0 else 1
+    if result["verdict"] != "PASS":
+        return 1
+    if result["term_verdict"] == "FAIL":
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

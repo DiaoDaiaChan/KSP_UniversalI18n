@@ -32,9 +32,10 @@ import shutil
 import sys
 import tempfile
 
-from . import (api, candidates, capture_ingest, cfgparse, check_overrides, ensure_stdout,
-                fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta, ilstrings,
-                journal_gate, merge_overrides, packindex, render_coverage, submission, textnorm)
+from . import (api, audit, backend, candidates, capture_ingest, cfgparse, check_overrides, engine,
+                ensure_stdout, fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta,
+                ilstrings, journal_gate, merge_overrides, packindex, render_coverage, submission,
+                textnorm)
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -248,6 +249,110 @@ def test_glossary(base):
 
 
 # ---------------------------------------------------------------------------
+# 13. 消歧术语门禁（packs/terms.jsonl → audit notice）
+# ---------------------------------------------------------------------------
+def test_terms(base):
+    print("[13] 消歧术语门禁（packs/terms.jsonl → audit notice）")
+    root = os.path.join(base, "terms")
+    packs = os.path.join(root, "packs")
+    lang = os.path.join(packs, "zh-cn")
+    terms_path = os.path.join(packs, "terms.jsonl")
+    rules = [
+        {"term": "Arm", "zh": "解除保险", "domain": ["Parachute", "RealChute"],
+         "pos": "verb", "forbidden": ["机械臂", "手臂"], "note": ""},
+        {"term": "Arm", "zh": "机械臂", "domain": ["Robotics", "InfernalRobotics"],
+         "pos": "noun", "forbidden": ["解除保险"], "note": ""},
+    ]
+    _write(terms_path, "\n".join(json.dumps(row, ensure_ascii=False) for row in rules) + "\n")
+
+    def pack(name, rows):
+        _write(os.path.join(lang, name),
+               "\n".join(_pack_row(text, text, zh, mod) for text, zh, mod in rows) + "\n")
+
+    # 正例：两个 domain 各用各的译法；整词边界不误吃 Arming；未命中的 mod 不套规则
+    # 原文必须各不相同 —— 同一 h 有多种译文会被 dup_h_diff_t 拦住（那是另一条规则）
+    pack("Clean.jsonl", [
+        ("Arm the chute", "解除保险", "RealChute"),
+        ("Robot Arm", "机械臂", "InfernalRobotics"),
+        ("Arming sequence", "解除保险流程", "RealChute"),
+        ("Arm lock", "降落伞解除保险锁定", "RealChute"),
+        ("Robotic Arm mount", "机械臂基座", "SomeOtherMod"),
+    ])
+    clean = audit.audit_dir(lang)
+    eq("term 正例：加载 2 条规则", clean["terms_count"], 2)
+    eq("term 正例：无违规", clean["term_total"], 0)
+    eq("term 正例：term_verdict PASS", clean["term_verdict"], "PASS")
+    eq("term 正例：总 verdict 仍是 PASS", clean["verdict"], "PASS")
+
+    # 负例 1：Parachute/RealChute 用了 Robotics 的「机械臂」→ 禁译词
+    bad = os.path.join(base, "terms_forbidden")
+    bad_packs = os.path.join(bad, "packs")
+    bad_lang = os.path.join(bad_packs, "zh-cn")
+    _write(os.path.join(bad_packs, "terms.jsonl"),
+           "\n".join(json.dumps(row, ensure_ascii=False) for row in rules) + "\n")
+    _write(os.path.join(bad_lang, "RealChute.jsonl"),
+           _pack_row("Arm", "Arm", "机械臂", "RealChute") + "\n")
+    result = audit.audit_dir(bad_lang)
+    eq("term 禁译词被抓", result["term_counts"]["term_forbidden"], 1)
+    eq("term 禁译词：exit 判定仍是 PASS（notice 不阻断）", result["verdict"], "PASS")
+    eq("term 禁译词：term_verdict NOTICE", result["term_verdict"], "NOTICE")
+    strict = audit.audit_dir(bad_lang, strict_terms=True)
+    eq("term --strict-terms 才升为 FAIL", strict["term_verdict"], "FAIL")
+
+    # 负例 2：domain 内没按标准 zh 译
+    bad2 = os.path.join(base, "terms_mismatch")
+    bad2_packs = os.path.join(bad2, "packs")
+    bad2_lang = os.path.join(bad2_packs, "zh-cn")
+    _write(os.path.join(bad2_packs, "terms.jsonl"),
+           "\n".join(json.dumps(row, ensure_ascii=False) for row in rules) + "\n")
+    _write(os.path.join(bad2_lang, "RealChute.jsonl"),
+           _pack_row("Arm", "Arm", "布防", "RealChute") + "\n")
+    result = audit.audit_dir(bad2_lang)
+    eq("term 未按标准译法被抓", result["term_counts"]["term_mismatch"], 1)
+    eq("term 未按标准译法：word 为空", result["term_violations"][0]["word"], "")
+
+    # 负例 3：两个 domain 的规则不能串味（Robotics 包里用「解除保险」也是禁译词）
+    bad3 = os.path.join(base, "terms_cross")
+    bad3_packs = os.path.join(bad3, "packs")
+    bad3_lang = os.path.join(bad3_packs, "zh-cn")
+    _write(os.path.join(bad3_packs, "terms.jsonl"),
+           "\n".join(json.dumps(row, ensure_ascii=False) for row in rules) + "\n")
+    _write(os.path.join(bad3_lang, "InfernalRobotics.jsonl"),
+           _pack_row("Arm", "Arm", "解除保险", "InfernalRobotics") + "\n")
+    result = audit.audit_dir(bad3_lang)
+    eq("跨 domain 禁译词被抓", result["term_counts"]["term_forbidden"], 1)
+
+    # 负例 4：禁译词优先于「译法不匹配」，同一行只报一条
+    bad4 = os.path.join(base, "terms_precedence")
+    bad4_packs = os.path.join(bad4, "packs")
+    bad4_lang = os.path.join(bad4_packs, "zh-cn")
+    _write(os.path.join(bad4_packs, "terms.jsonl"),
+           "\n".join(json.dumps(row, ensure_ascii=False) for row in rules) + "\n")
+    _write(os.path.join(bad4_lang, "RealChute.jsonl"),
+           _pack_row("Arm", "Arm", "机械臂（解除保险）", "RealChute") + "\n")
+    result = audit.audit_dir(bad4_lang)
+    eq("禁译词优先：term_forbidden=1", result["term_counts"]["term_forbidden"], 1)
+    eq("禁译词优先：不再重复报 mismatch", result["term_counts"]["term_mismatch"], 0)
+
+    # API 侧：term audit 与 audit.py 复用同一套判定
+    api_root = os.path.join(base, "terms_api")
+    api_packs = os.path.join(api_root, "packs")
+    api_lang = os.path.join(api_packs, "zh-cn")
+    _write(os.path.join(api_packs, "terms.jsonl"),
+           "\n".join(json.dumps(row, ensure_ascii=False) for row in rules) + "\n")
+    _write(os.path.join(api_lang, "RealChute.jsonl"), "\n".join([
+        _pack_row("Arm", "Arm", "机械臂", "RealChute"),
+        _pack_row("Arm", "Arm", "布防", "RealChute"),
+    ]) + "\n")
+    code, payload, _err = api._call(api_root, ["term", "audit"])
+    eq("api term audit exit 0", code, 0)
+    check("api term audit 检出 2 条（禁译词 + 不匹配）",
+          payload and payload["violations_count"] == 2
+          and payload["counts"]["term_forbidden"] == 1
+          and payload["counts"]["term_mismatch"] == 1, payload)
+
+
+# ---------------------------------------------------------------------------
 # 7. 包索引 packs/index.json（假 packs：顺序即契约 / 幂等 / --check 正负例）
 # ---------------------------------------------------------------------------
 def _pack_row(text_n, text_s, text_t, mod):
@@ -424,10 +529,9 @@ def test_packindex_real():
     # 1.3 出包后（capture → 骨架 → 入包，含 overrides 人工通道）的真值。
     # 每次重跑 translate_il / packindex 之后都要同步这三行 —— 失败时把 got 抄回来，别改断言方向。
     eq("真实 packCount == 97", doc["packCount"], 97)
-    eq("真实 totalRows == 14954", doc["totalRows"], 14954)
-    # 2026-10-26 p 归一（486 行 "p":1 → "p":true，14 个 .il.jsonl）使 totalBytes +1458 = 486×3：
-    # 5170859 → 5172317，行数与包数不变。这是唯一一次「字节变了但语义没变」的重算。
-    eq("真实 totalBytes == 5172317", doc["totalBytes"], 5172317)
+    eq("真实 totalRows == 14991", doc["totalRows"], 14991)
+    # 2026-10-27 入包 il-translatable 缺失的 31 条 IL：14960 -> 14991, 5172848 -> 5176936
+    eq("真实 totalBytes == 5176936", doc["totalBytes"], 5176936)
     eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
     entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
     eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)
@@ -700,6 +804,8 @@ def test_extra_tools():
                ("golden_gate", golden_gate.selftest),
                ("candidates", candidates.selftest),
                ("render_coverage", render_coverage.selftest),
+               ("engine", engine.selftest),
+               ("backend", backend.selftest),
                ("api", api.selftest),
                ("journal_gate", journal_gate.selftest),
                ("submission", submission.selftest))
@@ -733,6 +839,7 @@ def main(argv=None) -> int:
         test_packindex(os.path.join(base, "packindex"))
         test_ilstrings(os.path.join(base, "ilstrings"))
         test_capture_ingest(os.path.join(base, "capture_ingest"))
+        test_terms(os.path.join(base, "terms_selftest"))
     finally:
         shutil.rmtree(base, ignore_errors=True)
     test_extra_tools()
