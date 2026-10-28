@@ -1443,8 +1443,19 @@ def safe_mod_name(mod: str) -> str:
     return name or "unknown"
 
 
-def write_packs(results, out_dir=None, dry_run=False):
-    """按 mod 分文件写 packs/zh-cn/<modId>.jsonl。keep/failed 不写（运行时按 miss 处理）。"""
+def write_packs(results, out_dir=None, dry_run=False, prune=False, pool_hs=None,
+                via_api=None):
+    """按 mod 分文件写 packs/zh-cn/<modId>.jsonl。keep/failed 不写（运行时按 miss 处理）。
+
+    写盘语义（2026-10-28 定，此前是整文件重写）：
+    * 目标是仓库默认包目录 → 走 `backend.UI18nPackBackend.sync_pack` → `api entry put-batch`：
+      按 h **合并**，默认一行不删；写入带 journal 事件与 G2–G9 门禁。
+      整文件重写会静默吃掉两类行：人类用 api 手写的条目、以及本次没产出的行——
+      后者包含 LLM 偶发失败的条目，删了就是把好译文丢掉。
+    * `prune=True` 才删行，判据是「原文已从 pool 消失」（`h not in pool_hs`），
+      不是「本次没产出」。所以部分跑法（`--limit/--sample/--mods/--only-bucket`）下别开。
+    * 目标是别的目录（selftest / 预览）→ 保留整文件重写的旧行为，不碰仓库。
+    """
     out_dir = Path(out_dir or OUT_DIR)
     files = {}
     for result in results:
@@ -1457,6 +1468,26 @@ def write_packs(results, out_dir=None, dry_run=False):
         return {"files": {mod: len(rows) for mod, rows in sorted(files.items())},
                 "total": sum(len(rows) for rows in files.values()), "written": False}
 
+    target = (REPO / "packs" / "zh-cn").resolve()
+    use_api = (out_dir.resolve() == target) if via_api is None else bool(via_api)
+    if use_api:
+        from .backend import UI18nPackBackend
+
+        backend = UI18nPackBackend(root=REPO)
+        written, pruned, rejected = {}, 0, []
+        for mod, rows in sorted(files.items()):
+            rows.sort(key=lambda row: row["h"])
+            payload = backend.sync_pack(mod, rows, prune=prune, pool_hs=pool_hs,
+                                        actor="pipeline:translate")
+            sync = payload.get("sync") or {}
+            written[mod] = sync.get("rows", len(rows))
+            pruned += sync.get("pruned", 0)
+            rejected.extend(sync.get("rejected_rows") or [])
+        return {"files": dict(sorted(written.items())),
+                "total": sum(written.values()), "written": True,
+                "via": "api", "pruned": pruned,
+                "rejected": len(rejected), "rejected_rows": rejected}
+
     out_dir.mkdir(parents=True, exist_ok=True)
     total = 0
     for mod, rows in sorted(files.items()):
@@ -1467,7 +1498,7 @@ def write_packs(results, out_dir=None, dry_run=False):
                 handle.write(json.dumps(row, ensure_ascii=False) + "\n")
                 total += 1
     return {"files": {mod: len(rows) for mod, rows in sorted(files.items())},
-            "total": total, "written": True}
+            "total": total, "written": True, "via": "file"}
 
 
 # ---------------------------------------------------------------------------
@@ -1697,6 +1728,9 @@ def main(argv=None):
     parser.add_argument("--jobs", type=int, default=4, help="并发批数（默认 4）")
     parser.add_argument("--max-chars", type=int, default=DEFAULT_MAX_CHARS, help="单批字符预算")
     parser.add_argument("--dry-run", action="store_true", help="真调 API 但不写 packs/zh-cn")
+    parser.add_argument("--prune", action="store_true",
+                        help="同步时删掉「原文已从 pool 消失」的旧行（全量跑才可用，"
+                             "与 --limit/--mods/--only-ids/--single/--only-bucket 互斥）")
     parser.add_argument("--plan", action="store_true", help="只统计分批，不联网")
     parser.add_argument("--selftest", action="store_true", help="全池遮蔽往返 + 门禁自测，不联网")
     parser.add_argument("--no-cache", action="store_true", help="不读也不写缓存")
@@ -1843,7 +1877,21 @@ def main(argv=None):
     finally:
         cache.close()
 
-    written = write_packs(results, args.out, dry_run=args.dry_run)
+    if args.prune and (args.limit or args.mods or args.only_ids or args.single
+                       or args.only_bucket or args.sample_out):
+        print("[translate] --prune 只能在全量跑时用：本次带了取样/过滤参数，"
+              "按「原文已从 pool 消失」删行会把没跑到的行一起误伤。"
+              "去掉 --prune，或去掉过滤参数。")
+        return 2
+    pool_hs = {hash_text(normalize(row["text"])) for row in pool_rows}
+    written = write_packs(results, args.out, dry_run=args.dry_run,
+                          prune=args.prune, pool_hs=pool_hs)
+    if written.get("rejected"):
+        print("[translate] 同步被门禁拒收 {} 行（保留包内旧行，本次新译文未写盘）：".format(
+            written["rejected"]))
+        for item in written.get("rejected_rows", [])[:5]:
+            print("  - {}  {}".format(str(item.get("s", ""))[:48],
+                                      str(item.get("reason", ""))[:96]))
     un_path, un_count, un_gates = write_untranslated(results)
     payload = {
         "kind": "translation",

@@ -114,6 +114,83 @@ class UI18nPackBackend(StorageBackend):
         hits = payload.get("hits") or []
         return hits[0] if hits else None
 
+    def _cfg_packs(self, mod: str):
+        """该 mod 的 cfg 通道包（`<modId>.jsonl`）。IL 包（`*.il.jsonl`）不归本方法管。"""
+        from . import api
+        packs = []
+        for path in api.iter_pack_files(self.ctx, self.lang):
+            if api.pack_mod(path.name) != mod:
+                continue
+            if api.pack_channel(path.name) != "cfg":
+                continue
+            packs.append(api.PackFile(path, self.ctx))
+        return packs
+
+    def sync_pack(self, mod: str, rows, prune: bool = False, pool_hs=None,
+                  actor: str = "pipeline:translate", dry_run: bool = False) -> Dict[str, Any]:
+        """把一次翻译产出的整包行同步进 `packs/<lang>/<mod>.jsonl`（只动 cfg 通道）。
+
+        **merge（默认）**：走 put-batch 按 h 插入/替换，一行都不删。失败行（translate
+        里 `entry=None`）与本次没跑到的行原样留在包里 —— 一次 LLM 抖动不该清掉已有译文。
+
+        **prune=True**：额外删掉「原文已经从 pool 消失」的行。判据是
+        `h not in 本次结果 and h not in pool_hs`，**不是**「本次没产出就删」：
+        后者会把 failed 行和缓存未命中的行一起删掉。所以 prune 必须传 pool_hs，
+        调用方也不能在 `--limit / --sample / --mods / --only-bucket` 这类部分跑法下用它。
+        """
+        from . import api
+
+        entries: List[Dict[str, Any]] = []
+        result_hs = set()
+        rejected: List[Dict[str, Any]] = []
+        for index, row in enumerate(rows, 1):
+            if not isinstance(row, dict):
+                raise api.ApiError("schema", "rows 第 %d 项不是 JSON 对象" % index)
+            h = row.get("h")
+            if not h:
+                raise api.ApiError("schema", "rows 第 %d 项缺 h" % index)
+            # n 是派生字段，put-batch 的 schema 不收；s 缺席时用原文兜底。
+            entry = {"mod": mod, "h": h, "t": row.get("t", "")}
+            if row.get("s") is not None:
+                entry["s"] = row["s"]
+            if row.get("ctx"):
+                entry["ctx"] = row["ctx"]
+            if row.get("p"):
+                entry["p"] = row["p"]
+
+            # 逐行预检 G2–G9：仓库里已有 3 个 cfg 包的行过不了 G7（历史上直接写文件，
+            # 绕过了门禁）。整批拒会让这 3 个包永远同步不了，所以这里把不合格行挑出来：
+            # 不写它、保留包里旧行、在报告里点名。merge 语义下这不丢数据。
+            try:
+                if entry.get("s") is not None:
+                    api.gate_check(self.ctx, entry["s"], entry["t"],
+                                   pattern=bool(entry.get("p")))
+            except api.ApiError as exc:
+                if exc.kind != "gate":
+                    raise
+                rejected.append({"h": h, "s": entry.get("s"), "reason": str(exc)})
+                result_hs.add(h)          # 拒收 ≠ 该删：prune 不许碰它
+                continue
+
+            entries.append(entry)
+            result_hs.add(h)
+
+        stale: List[Dict[str, Any]] = []
+        if prune:
+            if pool_hs is None:
+                raise api.ApiError("usage", "prune 必须给 pool_hs（否则无法区分「原文消失」与「本次没跑到」）")
+            for pack in self._cfg_packs(mod):
+                for row in pack.rows:
+                    h = row.get("h")
+                    if h and h not in result_hs and h not in pool_hs:
+                        stale.append({"mod": mod, "h": h, "t": ""})
+
+        payload = self.save_entries(entries + stale, actor=actor, dry_run=dry_run)
+        payload["sync"] = {"mod": mod, "rows": len(entries), "pruned": len(stale),
+                           "rejected": len(rejected), "rejected_rows": rejected,
+                           "pack": "%s.jsonl" % mod}
+        return payload
+
 
 _SAFE_NAME_RE = re.compile(r"[^A-Za-z0-9._\-]+")
 
@@ -318,5 +395,66 @@ def selftest() -> Tuple[List[str], int]:
               and not (root / "escape.ckan-zh.jsonl").exists())
         eq("Ckan dry_run 不写", CkanModBackend(root / "ckan-dry").save_entries(
             [{"mod": "X", "summary": "y"}], dry_run=True).get("written"), 0)
+
+        # ---- 9) sync_pack：默认合并，「本次没跑到」绝不删行 ----
+        sync_backend = UI18nPackBackend(root=root)
+        sync_path = lang_dir / "SYNCMOD.jsonl"
+        sync_backend.save_entries([
+            {"mod": "SYNCMOD", "s": "Alpha", "t": "阿尔法"},
+            {"mod": "SYNCMOD", "s": "Bravo", "t": "布拉沃"},
+        ], actor="pipeline:test")
+        il_path = lang_dir / "SYNCMOD.il.jsonl"
+        il_path.write_text(json.dumps({"h": api.hash_of("Charlie"), "n": "Charlie",
+                                       "s": "Charlie", "t": "查理", "mod": "SYNCMOD"},
+                                      ensure_ascii=False) + "\n", encoding="utf-8")
+        il_before = il_path.read_bytes()
+
+        merged = sync_backend.sync_pack(
+            "SYNCMOD", [{"h": api.hash_of("Alpha"), "s": "Alpha", "t": "阿尔法（改）"}],
+            actor="pipeline:test")
+        eq("sync merge 只报本次行数", merged["sync"]["rows"], 1)
+        eq("sync merge 不删行", merged["sync"]["pruned"], 0)
+        after = {r["s"]: r["t"] for r in api.rows_of_bytes(sync_path.read_bytes())}
+        eq("sync merge 更新命中行", after.get("Alpha"), "阿尔法（改）")
+        eq("sync merge 保留没跑到的行", after.get("Bravo"), "布拉沃")
+        eq("sync 不碰 IL 包", il_path.read_bytes(), il_before)
+
+        # prune 的判据是「原文已从 pool 消失」：Bravo 还在 pool 里就必须活下来
+        keep = sync_backend.sync_pack(
+            "SYNCMOD", [{"h": api.hash_of("Alpha"), "s": "Alpha", "t": "阿尔法"}],
+            prune=True, pool_hs={api.hash_of("Alpha"), api.hash_of("Bravo")},
+            actor="pipeline:test")
+        eq("sync prune 不删 pool 里还存在的行", keep["sync"]["pruned"], 0)
+        eq("sync prune 后 Bravo 仍在",
+           "Bravo" in {r["s"] for r in api.rows_of_bytes(sync_path.read_bytes())}, True)
+
+        gone = sync_backend.sync_pack(
+            "SYNCMOD", [{"h": api.hash_of("Alpha"), "s": "Alpha", "t": "阿尔法"}],
+            prune=True, pool_hs={api.hash_of("Alpha")}, actor="pipeline:test")
+        eq("sync prune 删掉 pool 里消失的行", gone["sync"]["pruned"], 1)
+        eq("sync prune 后只剩 Alpha",
+           {r["s"] for r in api.rows_of_bytes(sync_path.read_bytes())}, {"Alpha"})
+
+        raises("prune 缺 pool_hs 拒绝", "usage", lambda: sync_backend.sync_pack(
+            "SYNCMOD", [{"h": api.hash_of("Alpha"), "s": "Alpha", "t": "阿尔法"}],
+            prune=True, actor="pipeline:test"))
+
+        # ---- 10) 单行过不了门禁 → 拒收该行、保留包里旧行，整批照常写 ----
+        before_reject = sync_path.read_bytes()
+        mixed = sync_backend.sync_pack("SYNCMOD", [
+            {"h": api.hash_of("Alpha"), "s": "Alpha", "t": "阿尔法二"},
+            {"h": api.hash_of("Apoapsis: <<1>> m"), "s": "Apoapsis: <<1>> m",
+             "t": "远地点: <<1>> <<2>> m"},
+        ], actor="pipeline:test")
+        eq("被门禁拒收的行数", mixed["sync"]["rejected"], 1)
+        eq("同批里合格行仍然写入", mixed["sync"]["rows"], 1)
+        got = {r["s"]: r["t"] for r in api.rows_of_bytes(sync_path.read_bytes())}
+        eq("合格行已更新", got.get("Alpha"), "阿尔法二")
+        eq("被拒行不写盘（占位符仍与原文一致）",
+           any("<<1>>" in r["t"] and "<<2>>" not in r["t"]
+               for r in api.rows_of_bytes(sync_path.read_bytes()) if r["s"].startswith("Apoapsis")),
+           False)
+        check("拒收不破坏原文件里的其它行", len(api.rows_of_bytes(sync_path.read_bytes())) >= 1,
+              str(before_reject[:40]))
 
     return failures, total
