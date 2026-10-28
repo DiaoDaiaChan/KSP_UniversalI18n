@@ -86,45 +86,22 @@ CONVENTIONS = (
 #: 被译成"富氧分级燃烧发动机"（航天界标准译法），但 G7 只看"氧化剂"三个字 → 判死 →
 #: 单条重试再烧一次 token，模型原样再答一遍。这类假失败必须靠白名单消掉。
 #:
-#: 2026-10-28：白名单从 12 条约定扩到**短语级术语**。起因是 translate 改走 api 写入口后，
-#: 全仓 36 行被 G7 拒收 —— 逐条看下来，绝大多数不是译错，而是 G7 只认「译文里逐字包含
-#: 官方串」，插一个「的」「斜向」或把「专家组」写成「专家小组」就判死（例：官方
-#: 「运动部件专家组」vs 译文「运动部件专家小组」、官方「Mk3对2.5米转接器」vs 译文
-#: 「Mk3对2.5米斜向转接器」）。这些是中文里合法的同义写法，不该烧 token 重试。
-#: 注："Mk3 to 2.5m Adapter"、"Kerbodyne ADTP-2-3" 这类改成贴合官方串更自然，走改译文，
-#: 不在这里加过于宽泛的别名（例如光加「转接器」会把任何带转接器的译文都放过去）。
+#: 这张表只收 12 条约定，**不要为某条短语级术语单独加别名**：那样每遇到一个新术语
+#: 就要补一条，本质是把门禁的错误编码成白名单（2026-10-28 试过一轮，36 行里 25 行
+#: 都能靠加别名"修好"，然后发现还要继续加）。短语级术语的 G7 漂移改由 backend.sync_pack
+#: 记 `term_drift` 放行（见那里的注释），门禁只对 12 条约定硬拦。
 CONVENTION_ALIASES = {
     "Booster": ("助推",),
     "Oxidizer": ("富氧", "氧化"),
     "Throttle": ("节流", "油门"),
-    "Gimbal": ("万向", "矢量调节"),
+    "Gimbal": ("万向",),
     "Apoapsis": ("远拱点",),
-    "Periapsis": ("近拱点", "近点"),
+    "Periapsis": ("近拱点",),
     "Delta-V": ("ΔV", "速度增量"),
     "Center of Mass": ("重心",),
     "Center of Pressure": ("压力中心",),
     "Reaction Wheel": ("反作用轮",),
-    "Monopropellant": ("单组元", "单元推进剂", "单组元推进剂"),
-    # ---- 短语级术语（2026-10-28 扩）----
-    "EAS-1 External Command Seat": ("外部指挥座椅",),
-    "EAS-4 Strut Connector": ("EAS-4支柱连接器",),
-    "Truss Structure": ("桁架",),
-    "Rockomax Brand Adapter": ("极限火箭牌",),
-    "Rockomax HubMax Multi-Point Connector": ("超级中枢", "多向连接器"),
-    "EVA Jetpack": ("EVA喷气背包",),
-    "C7 Aerospace Division": ("C7航天部",),
-    "Mk2 Cockpit": ("驾驶舱",),
-    "Mk3 Passenger Module": ("乘客舱",),
-    "Moving Parts Experts Group": ("专家小组",),
-    "Experimental Engineering Group": ("实验工程小组",),
-    "SC-9001 Science Jr.": ("SC-9001小型科学实验室",),
-    "Wing Strake": ("边条",),
-    "Maxo Construction Toys": ("马克索",),
-    "Stamp-O-Tron Ground Anchor": ("压具装置的地面锚定件",),
-    "Heavy Rocketry": ("重型的火箭学",),
-    "Retractable Landing Gear": ("伸缩起落架",),
-    "Landing Gear": ("起落装置",),
-    "Rover Wheel": ("漫游轮", "漫游车"),
+    "Monopropellant": ("单组元", "单元推进剂"),
 }
 
 #: 遮蔽后"只剩不可翻译物"的判定用（04 §5.5：只剩哨兵 → 直接标 keep，不送翻）
@@ -1502,7 +1479,7 @@ def write_packs(results, out_dir=None, dry_run=False, prune=False, pool_hs=None,
         from .backend import UI18nPackBackend
 
         backend = UI18nPackBackend(root=REPO)
-        written, pruned, rejected = {}, 0, []
+        written, pruned, rejected, drift = {}, 0, [], []
         for mod, rows in sorted(files.items()):
             rows.sort(key=lambda row: row["h"])
             payload = backend.sync_pack(mod, rows, prune=prune, pool_hs=pool_hs,
@@ -1511,10 +1488,12 @@ def write_packs(results, out_dir=None, dry_run=False, prune=False, pool_hs=None,
             written[mod] = sync.get("rows", len(rows))
             pruned += sync.get("pruned", 0)
             rejected.extend(sync.get("rejected_rows") or [])
+            drift.extend(sync.get("term_drift_rows") or [])
         return {"files": dict(sorted(written.items())),
                 "total": sum(written.values()), "written": True,
                 "via": "api", "pruned": pruned,
-                "rejected": len(rejected), "rejected_rows": rejected}
+                "rejected": len(rejected), "rejected_rows": rejected,
+                "term_drift": len(drift), "term_drift_rows": drift}
 
     out_dir.mkdir(parents=True, exist_ok=True)
     total = 0
@@ -1918,6 +1897,12 @@ def main(argv=None):
         print("[translate] 同步被门禁拒收 {} 行（保留包内旧行，本次新译文未写盘）：".format(
             written["rejected"]))
         for item in written.get("rejected_rows", [])[:5]:
+            print("  - {}  {}".format(str(item.get("s", ""))[:48],
+                                      str(item.get("reason", ""))[:96]))
+    if written.get("term_drift"):
+        print("[translate] 术语漂移 {} 行已写入（G7 短语级术语未逐字命中，记 term_drift 供复查）：".format(
+            written["term_drift"]))
+        for item in written.get("term_drift_rows", [])[:5]:
             print("  - {}  {}".format(str(item.get("s", ""))[:48],
                                       str(item.get("reason", ""))[:96]))
     un_path, un_count, un_gates = write_untranslated(results)

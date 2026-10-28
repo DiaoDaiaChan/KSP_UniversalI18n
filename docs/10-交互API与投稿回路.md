@@ -77,8 +77,10 @@ validate         必需 —            可选 --lang --mod --strict --strict-p
 ```text
 entry put        必需 --mod        可选 --lang --h <h> --text "<原文>" --s "<用于校验 h 的原文>"
                                    --t "<译文>" --ctx --p --note "<依据>" --expect-revision <rev> --dry-run
-entry put-batch  必需 —（读 stdin） 可选 --lang --note --expect-revision --dry-run
+entry put-batch  必需 —（读 stdin） 可选 --lang --note --expect-revision --dry-run --allow-term-drift
                                    # NDJSON，一文件一笔事务：全过才写，任一不过整批不写
+                                   # --allow-term-drift 只跳过 G7（短语级官方术语未逐字命中），
+                                   # 其余门禁照跑；只给译文流水线用，漂移由调用方记账
 entry delete     必需 --mod --h    可选 --lang --reason "<why>" --expect-revision --dry-run
 override put     必需 --en --zh    可选 --note --dry-run
 glossary put     必需 --en --zh    可选 --short --dry-run

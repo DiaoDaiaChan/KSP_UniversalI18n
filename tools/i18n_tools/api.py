@@ -1221,7 +1221,7 @@ def source_for(ctx, args, lang=None):
     return source, computed
 
 
-def build_row(ctx, mod, source, zh, h, ctx_note=None, pattern=False):
+def build_row(ctx, mod, source, zh, h, ctx_note=None, pattern=False, subset=None):
     """构造一行并跑门禁，返回 (row, keep, gates)；zh 为空串表示删除，返回 row=None。"""
     if zh == "":
         return None, False, []
@@ -1230,7 +1230,7 @@ def build_row(ctx, mod, source, zh, h, ctx_note=None, pattern=False):
         row["ctx"] = ctx_note
     if pattern:
         row["p"] = True
-    gates = gate_check(ctx, source, zh, pattern=pattern)
+    gates = gate_check(ctx, source, zh, pattern=pattern, subset=subset)
     keep = zh.strip() == source.strip() or _translate().echo_keep(source, zh)
     return row, keep, gates
 
@@ -1340,6 +1340,11 @@ def cmd_entry_put_batch(ctx, args):
     if not rows_in:
         raise ApiError("usage", "put-batch 的 stdin 是空的（NDJSON：一行一条）")
     allowed = ("mod", "h", "text", "s", "t", "ctx", "p", "note")
+    # --allow-term-drift：整批跳过 G7（短语级官方术语未逐字命中），其余门禁照跑。
+    # 给的是译文流水线（translate → backend.sync_pack）：G7 的判据来自官方译文记忆，
+    # 那份记忆本身会错、中文同义写法也堵不完，所以术语漂移只记账不拦写。
+    drift_subset = ("G2", "G3", "G4", "G5", "G6", "G8", "G9")
+    subset = drift_subset if getattr(args, "allow_term_drift", False) else None
     cache, primary, prepares = {}, {}, []
     for lineno, line in enumerate(rows_in, 1):
         try:
@@ -1362,7 +1367,8 @@ def cmd_entry_put_batch(ctx, args):
         row, keep, gates = build_row(ctx, mod, source, item["t"], h,
                                      ctx_note=item.get("ctx"),
                                      pattern=coerce_pattern(item.get("p"),
-                                                            "stdin 第 %d 行" % lineno))
+                                                            "stdin 第 %d 行" % lineno),
+                                     subset=subset)
         pack = choose_target_cached(ctx, cache, primary, mod, h, lang)
         note = item.get("note") or ""
         if keep:
@@ -2102,6 +2108,9 @@ def build_parser():
     item.add_argument("--note", default=None)
     item.add_argument("--expect-revision", dest="expect_revision", default=None)
     item.add_argument("--dry-run", dest="dry_run", action="store_true")
+    item.add_argument("--allow-term-drift", dest="allow_term_drift", action="store_true",
+                      help="跳过 G7（短语级官方术语未逐字命中）；只给译文流水线用，"
+                           "其余门禁照跑。调用方负责把漂移记账（backend.sync_pack）")
     item.set_defaults(func=cmd_entry_put_batch)
     item = entry_sub.add_parser("delete", parents=[parent], help="删一条")
     item.add_argument("--mod", required=True)

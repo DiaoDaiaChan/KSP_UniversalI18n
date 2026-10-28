@@ -45,7 +45,8 @@ class StorageBackend:
 
     def save_entries(self, entries: List[Dict[str, Any]], actor: str = "pipeline:translate",
                      expect_revision: Optional[str] = None,
-                     dry_run: bool = False) -> Dict[str, Any]:
+                     dry_run: bool = False,
+                     allow_term_drift: bool = False) -> Dict[str, Any]:
         """写入一批条目，返回 envelope 形状的结果；失败抛 ApiError（UI18n）或 ValueError。"""
         raise NotImplementedError
 
@@ -65,7 +66,8 @@ class UI18nPackBackend(StorageBackend):
 
     def save_entries(self, entries: List[Dict[str, Any]], actor: str = "pipeline:translate",
                      expect_revision: Optional[str] = None,
-                     dry_run: bool = False) -> Dict[str, Any]:
+                     dry_run: bool = False,
+                     allow_term_drift: bool = False) -> Dict[str, Any]:
         """写入一批条目：转成 put-batch NDJSON，交给 api 的写入口（唯一合法的写路径）。
 
         - 空列表是合法 no-op：不建文件、不写 journal，返回 rows=0 的 envelope；
@@ -97,7 +99,8 @@ class UI18nPackBackend(StorageBackend):
         # api 的 cmd_* 只按 getattr 取字段，SimpleNamespace 就够；stdin 用 StringIO 顶上。
         args = SimpleNamespace(stdin=io.StringIO("\n".join(lines) + "\n"),
                                actor=actor, lang=self.lang,
-                               expect_revision=expect_revision, dry_run=dry_run)
+                               expect_revision=expect_revision, dry_run=dry_run,
+                               allow_term_drift=allow_term_drift)
         payload, _lines = api.cmd_entry_put_batch(self.ctx, args)
         return payload
 
@@ -143,6 +146,7 @@ class UI18nPackBackend(StorageBackend):
         entries: List[Dict[str, Any]] = []
         result_hs = set()
         rejected: List[Dict[str, Any]] = []
+        drift: List[Dict[str, Any]] = []
         for index, row in enumerate(rows, 1):
             if not isinstance(row, dict):
                 raise api.ApiError("schema", "rows 第 %d 项不是 JSON 对象" % index)
@@ -158,9 +162,12 @@ class UI18nPackBackend(StorageBackend):
             if row.get("p"):
                 entry["p"] = row["p"]
 
-            # 逐行预检 G2–G9：仓库里已有 3 个 cfg 包的行过不了 G7（历史上直接写文件，
-            # 绕过了门禁）。整批拒会让这 3 个包永远同步不了，所以这里把不合格行挑出来：
-            # 不写它、保留包里旧行、在报告里点名。merge 语义下这不丢数据。
+            # 逐行预检 G2–G9。仓库里有一批历史行过不了 G7（旧路径直接写文件、绕过了门禁）。
+            # 处置是结构性的，不是给每条术语补白名单：
+            #   * **只有 G7 挂** → 照写，记 term_drift。G7 的判据来自官方译文记忆，而那份记忆
+            #     本身会错（2026-10-28 发现 Illuminator Mk1/Mk2 编号整体错位），中文里合法
+            #     同义写法也堵不完（专家组/专家小组、多一个「的」）。把它当硬门禁就是治不完。
+            #   * **还有别的门禁挂** → 真问题（占位符、长度比、富文本等），拒收该行、保留旧行。
             try:
                 if entry.get("s") is not None:
                     api.gate_check(self.ctx, entry["s"], entry["t"],
@@ -168,6 +175,13 @@ class UI18nPackBackend(StorageBackend):
             except api.ApiError as exc:
                 if exc.kind != "gate":
                     raise
+                codes = [str(item).split(" ", 1)[0] for item in (exc.details or [])]
+                if codes and all(code == "G7" for code in codes):
+                    drift.append({"h": h, "s": entry.get("s"), "t": entry.get("t"),
+                                  "reason": str(exc)})
+                    entries.append(entry)
+                    result_hs.add(h)
+                    continue
                 rejected.append({"h": h, "s": entry.get("s"), "reason": str(exc)})
                 result_hs.add(h)          # 拒收 ≠ 该删：prune 不许碰它
                 continue
@@ -185,9 +199,11 @@ class UI18nPackBackend(StorageBackend):
                     if h and h not in result_hs and h not in pool_hs:
                         stale.append({"mod": mod, "h": h, "t": ""})
 
-        payload = self.save_entries(entries + stale, actor=actor, dry_run=dry_run)
+        payload = self.save_entries(entries + stale, actor=actor, dry_run=dry_run,
+                                    allow_term_drift=bool(drift))
         payload["sync"] = {"mod": mod, "rows": len(entries), "pruned": len(stale),
                            "rejected": len(rejected), "rejected_rows": rejected,
+                           "term_drift": len(drift), "term_drift_rows": drift,
                            "pack": "%s.jsonl" % mod}
         return payload
 
@@ -456,5 +472,22 @@ def selftest() -> Tuple[List[str], int]:
            False)
         check("拒收不破坏原文件里的其它行", len(api.rows_of_bytes(sync_path.read_bytes())) >= 1,
               str(before_reject[:40]))
+
+        # ---- 11) 只挂 G7 → 照写并记账（短语级术语漂移不当硬门禁）----
+        # 临时仓库本来没有 glossary，G7 无从触发；先塞一条短语级术语。
+        (root / "packs" / "glossary.jsonl").write_text(
+            json.dumps({"key": "#autoLOC_test", "en": "Truss Structure",
+                        "zh": "结构钢架", "short": True}, ensure_ascii=False),
+            encoding="utf-8")
+        drift_backend = UI18nPackBackend(root=root)
+        drift_res = drift_backend.sync_pack("SYNCMOD", [
+            {"h": api.hash_of("Truss Structure is rigid."),
+             "s": "Truss Structure is rigid.", "t": "桁架结构很坚固。"},
+        ], actor="pipeline:test")
+        eq("G7 漂移不算拒收", drift_res["sync"]["rejected"], 0)
+        eq("G7 漂移被记账", drift_res["sync"]["term_drift"], 1)
+        eq("G7 漂移行照写",
+           "Truss Structure is rigid." in {r["s"] for r in api.rows_of_bytes(sync_path.read_bytes())},
+           True)
 
     return failures, total
