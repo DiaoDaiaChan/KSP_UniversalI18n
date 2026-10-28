@@ -23,6 +23,9 @@ on:
     paths:
       - "packs/pool.jsonl"
       - "packs/glossary.jsonl"
+      # terms.jsonl 是受管消歧术语库，audit --strict-terms 拿它当 error 判据；
+      # 不列在这里的话，只改术语库的提交一次门禁都不会跑（2026-10-28 补）。
+      - "packs/terms.jsonl"
       - "packs/conventions.jsonl"
       - "packs/overrides.jsonl"
       - "packs/il-translatable.jsonl"

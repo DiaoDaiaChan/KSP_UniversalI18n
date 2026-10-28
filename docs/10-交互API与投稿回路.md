@@ -373,7 +373,7 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 | M3 | 采集端 bundle + 同意 UI + Issue 模板 + `api submit accept`（契约见 §6，已冻结） | 一次真实 bundle → accept → `packs/submission/<id>/` 落盘 + candidates 行数/累加对得上 + `validate` 与 `journal_gate` 仍绿 |
 | M4 | 中继端点（可选）自动开 PR | 端到端无人值守 |
 
-**状态（2026-10-28 复核）**：M1、M2 **已交付**；M3 **代码已落地、尚未跑过真实投稿**（服务端 `api submit accept` + 客户端 bundle/脱敏/同意 UI 都在，但仓库里没有 `packs/submission/`、journal 里也没有任何 `submit.accept` 事件 —— M3 的验收条件「一次真实 bundle → accept」未满足，不计为已交付）；M4 未开始。消歧术语门禁已并入 `audit --strict-terms`，并在 CI 两处启用（门禁 job + 翻译回写后复审）。2026-10-28 裁决：存量 14 条里 **10 条是规则本身写错** —— `Stage` 的 zh 被写成动词「分级」（此处全是名词「级」）、`Burn` 被写成子类「变轨点火」（通用义是「点火」），改正后误报清零；另修 **4 条真错译**：`Spinup stage` → 自旋级（无制导级起旋稳定，原译「启动级」）、RealChute `arm` → 解除保险（原译「就绪」丢了动作义）、TWP `Insertion Burn` → 入轨点火（原译「捕获机动」与 MechJeb 不一致）、`Burn position` → 点火位置（原译「机动位置」过度泛化）。现全库 0 条术语违规。
+**状态（2026-10-28 复核）**：M1、M2 **已交付**；M3 **链路已验收（fixture bundle）、真实玩家投稿仍待一次** —— 在临时 git 根上跑通：`submit accept` → `packs/submission/<id>/` 按 mod 拆文件 + `index.json` + `candidates.jsonl` 新增 5 行 + journal `submit.accept`；同一份 bundle 重投幂等（一个字节不写、不写 journal）；`consent.granted=false` 直接拒收（exit 5）；手改投稿文件被 `journal_gate --worktree` 判 `sha-mismatch` 并给出补救命令。仓库内仍没有 `packs/submission/` —— fixture 不入真库。M4 未开始。消歧术语门禁已并入 `audit --strict-terms`，并在 CI 两处启用（门禁 job + 翻译回写后复审）。2026-10-28 裁决：存量 14 条里 **10 条是规则本身写错** —— `Stage` 的 zh 被写成动词「分级」（此处全是名词「级」）、`Burn` 被写成子类「变轨点火」（通用义是「点火」），改正后误报清零；另修 **4 条真错译**：`Spinup stage` → 自旋级（无制导级起旋稳定，原译「启动级」）、RealChute `arm` → 解除保险（原译「就绪」丢了动作义）、TWP `Insertion Burn` → 入轨点火（原译「捕获机动」与 MechJeb 不一致）、`Burn position` → 点火位置（原译「机动位置」过度泛化）。现全库 0 条术语违规。
 
 ## 12. 已拍板（2026-10-26，m07292「默认执行」：六条全部按默认值）
 

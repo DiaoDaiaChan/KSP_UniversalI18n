@@ -336,7 +336,8 @@ def prefer_official_pass(lang_dir, files, glossary, dry_run=False):
         return stats
     for name in files:
         path = Path(lang_dir) / name
-        text = path.read_text(encoding="utf-8", newline="")
+        with open(path, encoding="utf-8", newline="") as handle:   # Path.read_text(newline=) 要 3.13+，CI 是 3.11
+            text = handle.read()
         lines = text.splitlines(keepends=True)
         changed = 0
         for position, line in enumerate(lines, 1):
@@ -415,7 +416,8 @@ def drop_keyrefs_pass(lang_dir, files, glossary, dry_run=False, allow_en_equiv=T
     buffers = {}
     for name in files:
         path = lang_dir / name
-        text = path.read_text(encoding="utf-8", newline="")
+        with open(path, encoding="utf-8", newline="") as handle:   # Path.read_text(newline=) 要 3.13+，CI 是 3.11
+            text = handle.read()
         buffers[name] = {"path": path, "text": text, "lines": text.splitlines(keepends=True), "kept": []}
 
     retain_keys = set(retain_keys or ())
