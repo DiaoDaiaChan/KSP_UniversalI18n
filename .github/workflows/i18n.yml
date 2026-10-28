@@ -75,9 +75,12 @@ jobs:
         working-directory: tools
         run: python -m i18n_tools.audit --selftest
 
-      - name: 包内容审计（h 契约 / 占位符 / 富文本 / 跨文件一致性）
+      - name: 包内容审计 + 术语门禁（h 契约 / 占位符 / 富文本 / 跨文件一致性 / 消歧术语）
         working-directory: tools
-        run: python -m i18n_tools.audit
+        # --strict-terms：packs/terms.jsonl 的消歧规则算 error。
+        # 2026-10-28 前只出 notice，因为存量 14 条多是复合词误报（Stage 的 zh 写成
+        # 动词「分级」、Burn 写成子类「变轨点火」）；规则改成名词「级」/「点火」后清零。
+        run: python -m i18n_tools.audit --strict-terms
 
       - name: 分发清单与磁盘一致（packs/index.json）
         working-directory: tools
@@ -129,7 +132,7 @@ jobs:
           {
             echo "### i18n 门禁"
             echo ""
-            echo "六道门按顺序执行：selftest（含 golden_gate / api / journal_gate 自检）→ audit --selftest（1 正例 + 8 负例）→ audit（包内容）→ packindex --check（清单与磁盘一致）→ golden（用户报过的原文三步判定；缺 packs/candidates.jsonl 时记 SKIP，不算红）→ journal（packs 改动必须有 journal 事件背书；没有父提交时记 SKIP，不算红）。"
+            echo "六道门按顺序执行：selftest（含 golden_gate / api / journal_gate / backend 自检）→ audit --selftest（1 正例 + 8 负例 + 术语负例）→ audit --strict-terms（包内容 + packs/terms.jsonl 消歧术语）→ packindex --check（清单与磁盘一致）→ golden（用户报过的原文三步判定；缺 packs/candidates.jsonl 时记 SKIP，不算红）→ journal（packs 改动必须有 journal 事件背书；没有父提交时记 SKIP，不算红）。"
             echo ""
             echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -207,9 +210,9 @@ jobs:
         working-directory: tools
         run: python -m i18n_tools.packindex
 
-      - name: 回写后复审（必须仍然 PASS）
+      - name: 回写后复审（必须仍然 PASS，含术语门禁）
         working-directory: tools
-        run: python -m i18n_tools.audit
+        run: python -m i18n_tools.audit --strict-terms
 
       - name: 提交回写
         run: |

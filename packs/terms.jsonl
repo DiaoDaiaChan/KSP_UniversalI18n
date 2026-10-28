@@ -3,6 +3,6 @@
 {"term":"Forward","zh":"前向","domain":["Rendering","Shader","Graphics","Parallax"],"pos":"adj","forbidden":["前进","向前"],"note":"前向渲染管线术语 (Forward Rendering)"}
 {"term":"Forward","zh":"前进","domain":["Flight","Control","NavBall","MechJeb2"],"pos":"verb","forbidden":["前向"],"note":"飞行与姿态控制前进指令"}
 {"term":"Trim","zh":"配平","domain":["Aerodynamics","Control","FAR","AtmosphereAutopilot"],"pos":"noun","forbidden":["修剪","整理"],"note":"空气动力与气动翼面配平"}
-{"term":"Stage","zh":"分级","domain":["Propulsion","Staging","MechJeb2"],"pos":"noun","forbidden":["舞台","阶段"],"note":"火箭多级分离与时序"}
-{"term":"Burn","zh":"变轨点火","domain":["Maneuver","Orbital","TransferWindowPlanner","MechJeb2"],"pos":"noun","forbidden":["燃烧","烧伤"],"note":"轨道机动变轨执行"}
+{"term":"Stage","zh":"级","domain":["Propulsion","Staging","MechJeb2"],"pos":"noun","forbidden":["舞台","阶段"],"note":"stage 作名词=级；「分级」是动词 staging 的译法。原 zh 写成分级，导致 Last/Coast/Early Shutoff/Spinup 各级段标签全被误报"}
+{"term":"Burn","zh":"点火","domain":["Maneuver","Orbital","TransferWindowPlanner","MechJeb2"],"pos":"noun","forbidden":["燃烧","烧伤"],"note":"burn=发动机点火；「变轨点火」只是机动点火这一子类，作为通用标准译法过窄"}
 {"term":"Gimbal","zh":"万向节","domain":["Engine","Propulsion","RealFuels"],"pos":"noun","forbidden":["云台","转盘"],"note":"火箭发动机喷管推力矢量偏转"}

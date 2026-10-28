@@ -1,9 +1,9 @@
 # zh-cn 翻译包覆盖报告
 
-- 生成时间：`2026-10-27T02:39:30Z`
-- 包目录：`packs/zh-cn/`：97 个文件 / 14,991 行 / 5,176,936 字节
+- 生成时间：`2026-10-28T00:19:45Z`
+- 包目录：`packs/zh-cn/`：97 个文件 / 14,991 行 / 5,176,942 字节
   - cfg 包（`<mod>.jsonl`，GameData/**/*.cfg 抽取）：41 个 / 10,015 行 / 3,507,752 字节
-  - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：56 个 / 4,976 行 / 1,669,184 字节
+  - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：56 个 / 4,976 行 / 1,669,190 字节
   - 合计 82 个 mod（同一 mod 的 cfg 包与 IL 包各占一行清单，按 `mod` 聚合成一行表格）
 - 清单：`packs/index.json`（schema 1，字段口径见 `tools/i18n_tools/packindex.py` 模块 docstring）
 - 三节口径互不相加：① 是 `packs/pool.jsonl` 口径（cfg 包覆盖多少待译串）、② 是 DLL 字面量口径（IL 包）、③ 是运行时捕获通道现状。
@@ -34,7 +34,7 @@
 口径（分母 / 分子 / 与 ① 的关系）：
 
 1. **分母 = `packs/il-translatable.jsonl` 里 bucket 为 `translate` 的 distinct `h`（1,145 条）。**该文件是 `python -m i18n_tools.ilstrings` 从 GameData 下所有 DLL 的 IL 里采出来的字面量，按 bucket 分流：`translate` 1,145 / `short_label` 429 / `template` 172（合计 1,746 行）。只有 `translate` 桶会送去翻译；`short_label`（按钮/短标签）与 `template`（带占位符的模板）不译。
-2. **分子 = 这 1,145 条里 `h` 能在 `packs/zh-cn/*.il.jsonl` 精确命中的 1,107 条。**IL 包现状：56 个文件 / 4,976 行 / 1,669,184 字节，其中 `t == s` 直通行 1,344 行（与 ① 的 `keep` 同一语义）。
+2. **分子 = 这 1,145 条里 `h` 能在 `packs/zh-cn/*.il.jsonl` 精确命中的 1,107 条。**IL 包现状：56 个文件 / 4,976 行 / 1,669,190 字节，其中 `t == s` 直通行 1,344 行（与 ① 的 `keep` 同一语义）。
 3. **与 cfg 包不重复：** IL 包的 4,967 个 `h` 与 cfg 包的 10,015 个 `h` 交集 **0** 条（`translate_il` 写盘前先按 cfg 包的 `h` 去重，同一条串只落一次）。
 4. **对 ① 的覆盖率贡献 324 条：** IL 包的 `h` 与 `packs/pool.jsonl` 的交集是 324，所以 ① 的分母里没有一条是 IL 包填的。**两个分母不可相加**：IL 包覆盖的是另一批串（DLL 里的字面量），不是 pool 的子集。
 
@@ -90,7 +90,7 @@
 | ProceduralParts | cfg+IL | 146 | 24750 | 1 | 0 | cfg 145 |
 | KerbalismConfig | cfg | 131 | 18337 | 1 | 17 | cfg 145 + loc 3 |
 | ConformalDecals | cfg | 124 | 18459 | 0 | 116 | cfg 113 + loc 127 |
-| RealChute | cfg+IL | 91 | 21806 | 0 | 1 | cfg 45 |
+| RealChute | cfg+IL | 91 | 21812 | 0 | 1 | cfg 45 |
 | Scatterer | IL | 73 | 10717 | 0 | 0 | unknown |
 | ProceduralFairings | cfg+IL | 70 | 13208 | 0 | 6 | cfg 74 |
 | RealAntennas | cfg+IL | 68 | 10819 | 1 | 0 | cfg 37 |
@@ -150,7 +150,7 @@
 | Renamer | IL | 1 | 133 | 0 | 0 | unknown |
 | TestFlight | IL | 1 | 118 | 0 | 0 | unknown |
 | SquadExpansion | - | 0 | 0 | 0 | 177 | cfg 177 |
-| **合计** | **97 个包**（cfg 41 + IL 56） | **14991** | **5176936** | **1434** | **3395** | 83 个 mod |
+| **合计** | **97 个包**（cfg 41 + IL 56） | **14991** | **5176942** | **1434** | **3395** | 83 个 mod |
 
 ## 池外条目（packs 有、pool 没有）
 
@@ -230,7 +230,7 @@
 | 包文件数 | 97（cfg 41 + IL 56） |
 | mod 数 | 82（同 mod 的 cfg 包与 IL 包算一个） |
 | 包总行数 | 14991 |
-| 包总字节数 | 5176936 |
+| 包总字节数 | 5176942 |
 | `t == s` 直通行 | 1434 |
 | pool 待译串 | 12792 |
 | 已覆盖 pool 行 | 9397 |

@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "lang": "zh-cn",
-  "generatedAt": "2026-10-27T02:39:30Z",
+  "generatedAt": "2026-10-28T00:19:45Z",
   "totalRows": 14991,
-  "totalBytes": 5176936,
+  "totalBytes": 5176942,
   "packCount": 97,
   "packs": [
     {
@@ -331,7 +331,7 @@
       "file": "zh-cn/MechJeb2.il.jsonl",
       "rows": 169,
       "bytes": 56877,
-      "sha256": "fd96ba5f63c250e2976636a43f834f6f7d394e4de7749d2bd0678a6941ba757d",
+      "sha256": "d195c695b93baa9cd7d1f73f496fb325d10718959176b6cc554f775b7407cfce",
       "keepRows": 15
     },
     {
@@ -546,8 +546,8 @@
       "mod": "RealChute",
       "file": "zh-cn/RealChute.il.jsonl",
       "rows": 47,
-      "bytes": 6600,
-      "sha256": "f14b94ef619e754b8d22a28b4e762528e9662495d3495b7dc3adc3cc183cec36",
+      "bytes": 6606,
+      "sha256": "42a9f949a45a96fba1b1f546d528dd628dca96138b22a36a16d2e68b31d7ea50",
       "keepRows": 0
     },
     {
@@ -715,7 +715,7 @@
       "file": "zh-cn/TransferWindowPlanner.il.jsonl",
       "rows": 50,
       "bytes": 9097,
-      "sha256": "8db720a2815e650bd973dbb297ae3a6ecf40b70569ec8d234cbf89b669975151",
+      "sha256": "965a7a7e5c0a46858847ac4ab5f29023b120e975c598eb9f20d682dc4e7e0827",
       "keepRows": 1
     },
     {
