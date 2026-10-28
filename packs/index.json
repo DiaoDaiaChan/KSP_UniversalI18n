@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "lang": "zh-cn",
-  "generatedAt": "2026-10-26T10:26:35Z",
-  "totalRows": 14954,
-  "totalBytes": 5172317,
+  "generatedAt": "2026-10-27T02:39:30Z",
+  "totalRows": 14991,
+  "totalBytes": 5176936,
   "packCount": 97,
   "packs": [
     {
@@ -33,25 +33,25 @@
     {
       "mod": "AdvancedPQSTools",
       "file": "zh-cn/AdvancedPQSTools.il.jsonl",
-      "rows": 11,
-      "bytes": 1393,
-      "sha256": "0a2e5a68629d2e006233486ea91563f0ee6fbadebd29bef861316a88f45e261a",
+      "rows": 12,
+      "bytes": 1505,
+      "sha256": "56d71dac10677fed87410e7a81e47a88cb5eb0f03f19759addb255791a6a2c7a",
       "keepRows": 0
     },
     {
       "mod": "Assembly-CSharp",
       "file": "zh-cn/Assembly-CSharp.il.jsonl",
-      "rows": 356,
-      "bytes": 62262,
-      "sha256": "7eeb272cee3e6a233d2f182454ab597e413f460868fde9cb018afd70e0ed43d5",
-      "keepRows": 32
+      "rows": 362,
+      "bytes": 62947,
+      "sha256": "43ad8ed7e18876896c45d06c4363219092d00d95abaac33329b825a11bf70a86",
+      "keepRows": 34
     },
     {
       "mod": "AtmosphereAutopilot",
       "file": "zh-cn/AtmosphereAutopilot.il.jsonl",
-      "rows": 14,
-      "bytes": 1660,
-      "sha256": "d80afaeac62504e5062b29b19c616e810cdfbae558110f2300adc250af2aa548",
+      "rows": 15,
+      "bytes": 1769,
+      "sha256": "fac20857f00ceb45ec3a271daaefdfbb4b65b4e3f4b2b61ab06db3ed98f22632",
       "keepRows": 0
     },
     {
@@ -313,9 +313,9 @@
     {
       "mod": "Kopernicus",
       "file": "zh-cn/Kopernicus.jsonl",
-      "rows": 3,
-      "bytes": 1367,
-      "sha256": "658aab9c13c66f89b6b4a1b16c6f83c2cb065d62433368e80355739c03b6c564",
+      "rows": 5,
+      "bytes": 1789,
+      "sha256": "731d87144699a0ac6f3cfcc40cf1c60a60c802f2c0548ce550f189d39ee3252c",
       "keepRows": 0
     },
     {
@@ -337,18 +337,18 @@
     {
       "mod": "MechJeb2",
       "file": "zh-cn/MechJeb2.jsonl",
-      "rows": 6,
-      "bytes": 880,
-      "sha256": "84e82d4aa69aa360939e6ccc1d2793d1b0466b3b9cedbe2058287a4a2b669b1b",
-      "keepRows": 0
+      "rows": 7,
+      "bytes": 969,
+      "sha256": "14f836025239bcc66a499183ecf9c382c2a8baede9076ff41c6d934fd3b19b1c",
+      "keepRows": 1
     },
     {
       "mod": "ModularFlightPanel",
       "file": "zh-cn/ModularFlightPanel.il.jsonl",
-      "rows": 60,
-      "bytes": 7380,
-      "sha256": "8f0d2766057be4bf726699369c1b8df1769f14bbbcf2fd5607b7ae3ef8f1cb58",
-      "keepRows": 51
+      "rows": 63,
+      "bytes": 7647,
+      "sha256": "bc55d456960b454c5bc24ce2abdf6409baf5c9e89978e7c1a87f8886bf3073e6",
+      "keepRows": 54
     },
     {
       "mod": "ModularLaunchPads",
@@ -505,9 +505,9 @@
     {
       "mod": "RP0",
       "file": "zh-cn/RP0.il.jsonl",
-      "rows": 298,
-      "bytes": 48711,
-      "sha256": "76f087e08aa2c0a4c642fc606e7ac75c961e300ed02be6f365e07799fdf0e697",
+      "rows": 299,
+      "bytes": 48797,
+      "sha256": "686b3808f486cf96a938612c5ed5e9cdda08db877dd1c352b0ea8590a48d3554",
       "keepRows": 0
     },
     {
@@ -569,10 +569,10 @@
     {
       "mod": "RealFuels",
       "file": "zh-cn/RealFuels.jsonl",
-      "rows": 6,
-      "bytes": 1171,
-      "sha256": "2e3934a8db36f9e269b48caf3d3b50b388bb095be78d0a9c3363aaa3b8ca7b2d",
-      "keepRows": 0
+      "rows": 17,
+      "bytes": 2557,
+      "sha256": "fda8b0b190c7023c37a8fc579bf9bdae115253dafcc2f2418f1a0fc027f2b582",
+      "keepRows": 1
     },
     {
       "mod": "RealismOverhaul",
@@ -769,9 +769,9 @@
     {
       "mod": "Waterfall",
       "file": "zh-cn/Waterfall.jsonl",
-      "rows": 53,
-      "bytes": 7953,
-      "sha256": "ccf6d37cfdec7e6d785bd49bfc480172ab7aaeae5b95796aee80f33fe5b48370",
+      "rows": 64,
+      "bytes": 9416,
+      "sha256": "1cdabf132412bf105c5db65a45bc0c41dae6d7666021e064abb0db8276d1700c",
       "keepRows": 27
     },
     {

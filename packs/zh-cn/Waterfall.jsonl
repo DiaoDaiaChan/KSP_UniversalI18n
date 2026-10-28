@@ -51,3 +51,14 @@
 {"h": "e7566bda18d8284e", "n": "Additive volumetric deformation material", "s": "Additive volumetric deformation material", "t": "叠加型体积形变材质", "mod": "Waterfall"}
 {"h": "e7c5a530493e2c3f", "n": "Volumetric shock cones", "s": "Volumetric shock cones", "t": "体积激波锥", "mod": "Waterfall"}
 {"h": "eb7e525f877340c8", "n": "Simple deforming shock with 3 bones", "s": "Simple deforming shock with 3 bones", "t": "3骨骼简单变形激波", "mod": "Waterfall"}
+{"h": "61f8c66c5cc2dbb8", "n": "<b>FX MODULES ON VESSEL</b>", "s": "<b>FX MODULES ON VESSEL</b>", "t": "<b>载具上的特效模块</b>", "mod": "Waterfall"}
+{"h": "96410b6cb685f35b", "n": "<b>LOADED TEXTURES</b>", "s": "<b>LOADED TEXTURES</b>", "t": "<b>已加载纹理</b>", "mod": "Waterfall"}
+{"h": "6213a1452620a66b", "n": "<b>MATERIAL PARAMETERS</b>", "s": "<b>MATERIAL PARAMETERS</b>", "t": "<b>材质参数</b>", "mod": "Waterfall"}
+{"h": "897135dde928076e", "n": "<b>PARTICLE PARAMETERS</b>", "s": "<b>PARTICLE PARAMETERS</b>", "t": "<b>粒子参数</b>", "mod": "Waterfall"}
+{"h": "a0864566e725b8dd", "n": "<b>SELECT MATERIAL</b>", "s": "<b>SELECT MATERIAL</b>", "t": "<b>选择材质</b>", "mod": "Waterfall"}
+{"h": "b2dfc3a5b3a86e91", "n": "<b>SELECT SYSTEM</b>", "s": "<b>SELECT SYSTEM</b>", "t": "<b>选择系统</b>", "mod": "Waterfall"}
+{"h": "09e5d18d010633e5", "n": "<b>SELECT WORKFLOW</b>", "s": "<b>SELECT WORKFLOW</b>", "t": "<b>选择工作流</b>", "mod": "Waterfall"}
+{"h": "3eb3a42af62d5a53", "n": "<b>TEXTURE PARAMETERS</b>", "s": "<b>TEXTURE PARAMETERS</b>", "t": "<b>纹理参数</b>", "mod": "Waterfall"}
+{"h": "f0ee2330f482a6ad", "n": "EDIT LIGHT", "s": "EDIT LIGHT", "t": "编辑光源", "mod": "Waterfall"}
+{"h": "7198cef2909d6a1a", "n": "EDIT MATERIAL", "s": "EDIT MATERIAL", "t": "编辑材质", "mod": "Waterfall"}
+{"h": "7c940cebaffdd66a", "n": "EDIT PARTICLES", "s": "EDIT PARTICLES", "t": "编辑粒子", "mod": "Waterfall"}

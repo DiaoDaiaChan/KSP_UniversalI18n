@@ -58,3 +58,6 @@
 {"h":"ec51d5429d215a78","n":"T+ #y, #d, #:#:#","s":"T+ #y, #d, #:#:#","t":"T+ #y, #d, #:#:#","mod":"ModularFlightPanel","p":true}
 {"h":"f3b5be33d9657aa0","n":"EngineGroupController/ToolbarIcon#","s":"EngineGroupController/ToolbarIcon#","t":"EngineGroupController/ToolbarIcon#","mod":"ModularFlightPanel","p":true}
 {"h":"fd91de7cc4e4d26e","n":"<color=#00E5FF><b># ms</b></color>","s":"<color=#00E5FF><b># ms</b></color>","t":"<color=#00E5FF><b># ms</b></color>","mod":"ModularFlightPanel","p":true}
+{"h":"07c94607b49216be","n":"#x","s":"#x","t":"#x","mod":"ModularFlightPanel","p":true}
+{"h":"07c97107b4925fcf","n":"#G","s":"#G","t":"#G","mod":"ModularFlightPanel","p":true}
+{"h":"cd5fcc17d478c0fa","n":"#ms","s":"#ms","t":"#ms","mod":"ModularFlightPanel","p":true}

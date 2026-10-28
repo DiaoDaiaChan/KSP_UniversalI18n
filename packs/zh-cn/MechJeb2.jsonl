@@ -4,3 +4,4 @@
 {"h": "7995a48bf257568d", "n": "Target time to AN", "s": "Target time to AN", "t": "目标升交点时间", "mod": "MechJeb2"}
 {"h": "79a0428bf260b78c", "n": "Target time to DN", "s": "Target time to DN", "t": "目标降交点时间", "mod": "MechJeb2"}
 {"h": "8fbd0679d03bba0c", "n": "Target mean anomaly", "s": "Target mean anomaly", "t": "目标平近点角", "mod": "MechJeb2"}
+{"h": "07c93d07b4920773", "n": "#s", "s": "#s", "t": "#s", "mod": "MechJeb2", "p": true}

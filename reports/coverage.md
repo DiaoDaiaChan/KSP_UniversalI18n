@@ -1,9 +1,9 @@
 # zh-cn 翻译包覆盖报告
 
-- 生成时间：`2026-10-26T10:26:35Z`
-- 包目录：`packs/zh-cn/`：97 个文件 / 14,954 行 / 5,172,317 字节
-  - cfg 包（`<mod>.jsonl`，GameData/**/*.cfg 抽取）：41 个 / 9,990 行 / 3,504,392 字节
-  - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：56 个 / 4,964 行 / 1,667,925 字节
+- 生成时间：`2026-10-27T02:39:30Z`
+- 包目录：`packs/zh-cn/`：97 个文件 / 14,991 行 / 5,176,936 字节
+  - cfg 包（`<mod>.jsonl`，GameData/**/*.cfg 抽取）：41 个 / 10,015 行 / 3,507,752 字节
+  - IL 包（`<mod>.il.jsonl`，DLL 字面量经 `translate_il` 翻译）：56 个 / 4,976 行 / 1,669,184 字节
   - 合计 82 个 mod（同一 mod 的 cfg 包与 IL 包各占一行清单，按 `mod` 聚合成一行表格）
 - 清单：`packs/index.json`（schema 1，字段口径见 `tools/i18n_tools/packindex.py` 模块 docstring）
 - 三节口径互不相加：① 是 `packs/pool.jsonl` 口径（cfg 包覆盖多少待译串）、② 是 DLL 字面量口径（IL 包）、③ 是运行时捕获通道现状。
@@ -17,28 +17,28 @@
 
 1. **分母 = `packs/pool.jsonl` 的 12,792 行。** 这是抽取阶段（`python -m i18n_tools.harvest`）已经剔除 `empty` / `already-cjk` / `pure-number` / `too-short` / `search-tags` / `url-only` / `dup` 之后的**待译英文串总量**。
    - `already-cjk`（32 条）本来就是中文、`search-tags`（1,597 条）是搜索标签不译、`dup`（4,461 条）是重复文本——它们已经在抽取阶段被排除，**因此不进分母**。把它们算进分母会把覆盖率压低，而且分母不再是"需要译的串"，失去意义。
-2. **分子 = 这 12,792 行里，文本 FNV-1a64 哈希 `h` 能在 `packs/zh-cn/*.jsonl` 精确命中的 9,397 行。** 按哈希精确配对、不做模糊匹配；`h` 在 pool 内与 packs 内都唯一（pool 12,792 行 / 14,954 行各自无重复）。
+2. **分子 = 这 12,792 行里，文本 FNV-1a64 哈希 `h` 能在 `packs/zh-cn/*.jsonl` 精确命中的 9,397 行。** 按哈希精确配对、不做模糊匹配；`h` 在 pool 内与 packs 内都唯一（pool 12,792 行 / 14,991 行各自无重复）。
 3. **覆盖率 = 9,397 / 12,792 = 73.46%。**
 
 不要用下面两个数字当覆盖率（都会失真，列出来是为了防止误引）：
 
-- `14,954 / 12,792 = 116.90%`：分子用了 packs 总行数，但其中 5,557 行的 `h` 不在 pool 里（见下一节），分母口径是 pool，不能把池外条目算成池内覆盖。
+- `14,991 / 12,792 = 117.19%`：分子用了 packs 总行数，但其中 5,594 行的 `h` 不在 pool 里（见下一节），分母口径是 pool，不能把池外条目算成池内覆盖。
 - `8,999 / 12,792 = 70.35%`：分子剔除了 398 行 `t == s` 的直通行（它们有内容但不是译文），可当"纯译文覆盖率"参考。
 
 按来源拆分（`pool.src`）：`loc` 2,785 / 2,948 = 94.47%；`cfg` 6,612 / 9,844 = 67.17%。
 
 ## ② DLL 字面量覆盖率（IL 包）
 
-**DLL 里能译的字符串 1,145 条，已进包 1,099 条，覆盖率 95.98%。**
+**DLL 里能译的字符串 1,145 条，已进包 1,107 条，覆盖率 96.68%。**
 
 口径（分母 / 分子 / 与 ① 的关系）：
 
 1. **分母 = `packs/il-translatable.jsonl` 里 bucket 为 `translate` 的 distinct `h`（1,145 条）。**该文件是 `python -m i18n_tools.ilstrings` 从 GameData 下所有 DLL 的 IL 里采出来的字面量，按 bucket 分流：`translate` 1,145 / `short_label` 429 / `template` 172（合计 1,746 行）。只有 `translate` 桶会送去翻译；`short_label`（按钮/短标签）与 `template`（带占位符的模板）不译。
-2. **分子 = 这 1,145 条里 `h` 能在 `packs/zh-cn/*.il.jsonl` 精确命中的 1,099 条。**IL 包现状：56 个文件 / 4,964 行 / 1,667,925 字节，其中 `t == s` 直通行 1,339 行（与 ① 的 `keep` 同一语义）。
-3. **与 cfg 包不重复：** IL 包的 4,955 个 `h` 与 cfg 包的 9,990 个 `h` 交集 **0** 条（`translate_il` 写盘前先按 cfg 包的 `h` 去重，同一条串只落一次）。
+2. **分子 = 这 1,145 条里 `h` 能在 `packs/zh-cn/*.il.jsonl` 精确命中的 1,107 条。**IL 包现状：56 个文件 / 4,976 行 / 1,669,184 字节，其中 `t == s` 直通行 1,344 行（与 ① 的 `keep` 同一语义）。
+3. **与 cfg 包不重复：** IL 包的 4,967 个 `h` 与 cfg 包的 10,015 个 `h` 交集 **0** 条（`translate_il` 写盘前先按 cfg 包的 `h` 去重，同一条串只落一次）。
 4. **对 ① 的覆盖率贡献 324 条：** IL 包的 `h` 与 `packs/pool.jsonl` 的交集是 324，所以 ① 的分母里没有一条是 IL 包填的。**两个分母不可相加**：IL 包覆盖的是另一批串（DLL 里的字面量），不是 pool 的子集。
 
-还没进包的 46 条 `translate` 桶串：15 条的 `h` 已经在 cfg 包里（同一条串 cfg 包先落了，IL 包不重复落），其余 31 条既不在 cfg 包也不在 IL 包——上一轮被 `no-words` 预筛（去掉标签/占位符后没有可译词）或八门禁拦下，明细见 `reports/run-il-full7.log`。
+还没进包的 38 条 `translate` 桶串：38 条的 `h` 已经在 cfg 包里（同一条串 cfg 包先落了，IL 包不重复落），其余 0 条既不在 cfg 包也不在 IL 包——上一轮被 `no-words` 预筛（去掉标签/占位符后没有可译词）或八门禁拦下，明细见 `reports/run-il-full7.log`。
 
 ## ③ 运行时捕获通道（游戏里真实渲染出来的串）
 
@@ -51,9 +51,9 @@
 - `candidate` 的 426 行里 408 行 `reason` 为空，是真正值得人工看的候选。
 - `mods`：678 / 900 行能反查到宿主 mod（22 个 dll 名），其余 222 行记 `UI18n-Unattributed`——它们的 caller 是我们自己的补丁名或 Unity 类型，`capture_ingest.attrib_mod()` 只按 caller 的宿主程序集名反查 dll，查不出就记 `UI18n-Unattributed`。
 
-**入包口径（1.3 起）**：`candidate` 里真 UI 文案走 `packs/overrides.jsonl` 人工通道先落地；`pattern` 的 474 个骨架走同一条翻译流水线（新门禁 `G9` 保证译文的 `#` 个数与骨架一致，否则填回会错位）。当前语言包里带 `p` 的骨架行：486 条。
+**入包口径（1.3 起）**：`candidate` 里真 UI 文案走 `packs/overrides.jsonl` 人工通道先落地；`pattern` 的 474 个骨架走同一条翻译流水线（新门禁 `G9` 保证译文的 `#` 个数与骨架一致，否则填回会错位）。当前语言包里带 `p` 的骨架行：492 条。
 
-与现有产物的交集（现场算的）：与 `packs/zh-cn/**` 的 `h` 交集 894 条（其中 cfg 包 0 条）；与 `packs/pool.jsonl` 交集 0 条；与 `packs/il-translatable.jsonl` 交集 11 条。取并集看：这 900 条运行时串里只有 894 条静态侧已经采到过（99.33%），其余 6 条**只有运行时才看得到**——这正是要开这条通道的理由。
+与现有产物的交集（现场算的）：与 `packs/zh-cn/**` 的 `h` 交集 900 条（其中 cfg 包 2 条）；与 `packs/pool.jsonl` 交集 0 条；与 `packs/il-translatable.jsonl` 交集 11 条。取并集看：这 900 条运行时串里只有 900 条静态侧已经采到过（100.00%），其余 0 条**只有运行时才看得到**——这正是要开这条通道的理由。
 
 注意「以屏幕覆盖率判成败」：上表的交集分母是**全部**捕获串（含进度条、日志、计数器），所以数字天然很小。真正该看的是 `reports/screen-coverage.md`（`python -m i18n_tools.screen_coverage` 生成）：分母收敛到「该翻的文本」，并同时统计精确命中与骨架命中。
 
@@ -74,29 +74,29 @@
 | SXT | cfg | 526 | 157331 | 0 | 396 | cfg 399 + loc 523 |
 | ModularLaunchPads | cfg | 498 | 296237 | 0 | 11 | cfg 509 |
 | TriggerTech | cfg | 496 | 70030 | 10 | 31 | loc 527 |
+| Assembly-CSharp | IL | 362 | 62947 | 34 | 0 | unknown |
 | ROCapsules | cfg | 362 | 118038 | 1 | 148 | cfg 351 + loc 159 |
-| Assembly-CSharp | IL | 356 | 62262 | 32 | 0 | unknown |
 | ROTanks | cfg | 320 | 46801 | 1 | 98 | cfg 418 |
-| RP0 | IL | 298 | 48711 | 0 | 0 | unknown |
+| RP0 | IL | 299 | 48797 | 0 | 0 | unknown |
 | ROEngines | cfg | 268 | 109891 | 3 | 35 | cfg 303 |
 | UI18n-Unattributed | IL | 251 | 62915 | 6 | 0 | unknown |
 | VenStockRevamp | cfg | 229 | 80146 | 1 | 173 | cfg 170 + loc 232 |
 | KSPPerformanceProfiler | IL | 213 | 44321 | 178 | 0 | unknown |
 | ROSolar | cfg | 181 | 35834 | 3 | 25 | cfg 206 |
-| MechJeb2 | cfg+IL | 175 | 57757 | 15 | 10 | cfg 10 + loc 6 |
+| MechJeb2 | cfg+IL | 176 | 57846 | 16 | 10 | cfg 10 + loc 6 |
 | TUFX | IL | 155 | 32026 | 112 | 0 | unknown |
+| Waterfall | cfg+IL | 154 | 20977 | 27 | 0 | cfg 53 |
 | EditorExtensionsRedux | cfg+IL | 147 | 20503 | 4 | 18 | loc 159 |
 | ProceduralParts | cfg+IL | 146 | 24750 | 1 | 0 | cfg 145 |
-| Waterfall | cfg+IL | 143 | 19514 | 27 | 0 | cfg 53 |
 | KerbalismConfig | cfg | 131 | 18337 | 1 | 17 | cfg 145 + loc 3 |
 | ConformalDecals | cfg | 124 | 18459 | 0 | 116 | cfg 113 + loc 127 |
 | RealChute | cfg+IL | 91 | 21806 | 0 | 1 | cfg 45 |
 | Scatterer | IL | 73 | 10717 | 0 | 0 | unknown |
 | ProceduralFairings | cfg+IL | 70 | 13208 | 0 | 6 | cfg 74 |
 | RealAntennas | cfg+IL | 68 | 10819 | 1 | 0 | cfg 37 |
-| ModularFlightPanel | IL | 60 | 7380 | 51 | 0 | unknown |
+| RealFuels | cfg+IL | 66 | 8764 | 6 | 0 | cfg 6 |
+| ModularFlightPanel | IL | 63 | 7647 | 54 | 0 | unknown |
 | FerramAerospaceResearch | IL | 58 | 8287 | 0 | 0 | unknown |
-| RealFuels | cfg+IL | 55 | 7378 | 5 | 0 | cfg 6 |
 | TransferWindowPlanner | IL | 50 | 9097 | 1 | 0 | unknown |
 | KerbalFoundries | cfg | 49 | 15306 | 0 | 1 | cfg 50 |
 | ksp_plugin_adapter | IL | 48 | 12902 | 2 | 0 | unknown |
@@ -109,7 +109,7 @@
 | ROLib | cfg+IL | 26 | 3181 | 0 | 5 | cfg 19 |
 | 000_TexturesUnlimited | cfg | 24 | 2970 | 0 | 0 | cfg 24 |
 | KSPCommunityFixes | cfg+IL | 23 | 4570 | 7 | 8 | cfg 8 + loc 3 |
-| Kopernicus | cfg+IL | 21 | 8085 | 0 | 1 | cfg 1 + loc 3 |
+| Kopernicus | cfg+IL | 23 | 8507 | 0 | 1 | cfg 1 + loc 3 |
 | AJE | cfg | 20 | 6914 | 0 | 10 | cfg 26 + loc 4 |
 | TexturesUnlimited | IL | 20 | 2820 | 1 | 0 | unknown |
 | ReStockPlus | cfg | 19 | 4839 | 0 | 249 | cfg 249 + loc 19 |
@@ -118,13 +118,13 @@
 | TestFlightCore | IL | 18 | 3532 | 0 | 0 | unknown |
 | BurstPQS | cfg+IL | 16 | 3010 | 0 | 1 | loc 2 |
 | ClickThroughBlocker | IL | 16 | 3487 | 3 | 0 | unknown |
+| AtmosphereAutopilot | IL | 15 | 1769 | 0 | 0 | unknown |
 | KSPWheel | IL | 15 | 1590 | 0 | 0 | unknown |
-| AtmosphereAutopilot | IL | 14 | 1660 | 0 | 0 | unknown |
 | LunarTransferPlanner | IL | 13 | 1940 | 1 | 0 | unknown |
+| AdvancedPQSTools | IL | 12 | 1505 | 0 | 0 | unknown |
 | Parallax_StockTerrainTextures | cfg | 12 | 1452 | 0 | 0 | cfg 12 |
 | Sol-Configs | cfg | 12 | 1311 | 0 | 521 | cfg 533 |
 | Telecom | IL | 12 | 1824 | 0 | 0 | unknown |
-| AdvancedPQSTools | IL | 11 | 1393 | 0 | 0 | unknown |
 | Parallax_StockPlanetTextures | cfg | 11 | 1330 | 0 | 0 | cfg 11 |
 | SmokeScreen | IL | 10 | 1370 | 0 | 0 | unknown |
 | 001_ToolbarControl | cfg | 8 | 1216 | 0 | 1 | cfg 9 |
@@ -150,28 +150,28 @@
 | Renamer | IL | 1 | 133 | 0 | 0 | unknown |
 | TestFlight | IL | 1 | 118 | 0 | 0 | unknown |
 | SquadExpansion | - | 0 | 0 | 0 | 177 | cfg 177 |
-| **合计** | **97 个包**（cfg 41 + IL 56） | **14954** | **5172317** | **1427** | **3395** | 83 个 mod |
+| **合计** | **97 个包**（cfg 41 + IL 56） | **14991** | **5176936** | **1434** | **3395** | 83 个 mod |
 
 ## 池外条目（packs 有、pool 没有）
 
-共 **5,557** 行：这些行有译文，但它们的英文原文不在当前 `packs/pool.jsonl` 里（多半来自上一轮抽取的池外来源或后续人工补录），因此**不计入覆盖率分子**——分母是 pool，池外条目不能算成池内覆盖。它们仍然会被运行时加载（按 `h` 索引，与 pool 无关）。
+共 **5,594** 行：这些行有译文，但它们的英文原文不在当前 `packs/pool.jsonl` 里（多半来自上一轮抽取的池外来源或后续人工补录），因此**不计入覆盖率分子**——分母是 pool，池外条目不能算成池内覆盖。它们仍然会被运行时加载（按 `h` 索引，与 pool 无关）。
 
 | mod | 池外行数 |
 | --- | ---: |
 | UI18n-ConfigCache | 2274 |
 | Squad | 907 |
-| Assembly-CSharp | 356 |
-| RP0 | 298 |
+| Assembly-CSharp | 362 |
+| RP0 | 299 |
 | UI18n-Unattributed | 251 |
 | KSPPerformanceProfiler | 213 |
-| MechJeb2 | 169 |
+| MechJeb2 | 170 |
 | TUFX | 155 |
-| Waterfall | 90 |
+| Waterfall | 101 |
 | Scatterer | 73 |
-| ModularFlightPanel | 60 |
+| ModularFlightPanel | 63 |
+| RealFuels | 60 |
 | FerramAerospaceResearch | 58 |
 | TransferWindowPlanner | 50 |
-| RealFuels | 49 |
 | ksp_plugin_adapter | 48 |
 | RealChute | 47 |
 | RCSBuildAid | 45 |
@@ -180,19 +180,19 @@
 | KSPTextureLoader | 28 |
 | ContractConfigurator | 26 |
 | KSPCommunityFixes | 20 |
+| Kopernicus | 20 |
 | TexturesUnlimited | 20 |
 | TextureReplacer | 19 |
-| Kopernicus | 18 |
 | ParallaxContinued | 18 |
 | TestFlightCore | 18 |
 | ClickThroughBlocker | 16 |
+| AtmosphereAutopilot | 15 |
 | BurstPQS | 15 |
 | KSPWheel | 15 |
-| AtmosphereAutopilot | 14 |
 | LunarTransferPlanner | 13 |
+| AdvancedPQSTools | 12 |
 | ROLib | 12 |
 | Telecom | 12 |
-| AdvancedPQSTools | 11 |
 | SmokeScreen | 10 |
 | Utils | 7 |
 | EditorExtensionsRedux | 6 |
@@ -229,11 +229,11 @@
 | --- | ---: |
 | 包文件数 | 97（cfg 41 + IL 56） |
 | mod 数 | 82（同 mod 的 cfg 包与 IL 包算一个） |
-| 包总行数 | 14954 |
-| 包总字节数 | 5172317 |
-| `t == s` 直通行 | 1427 |
+| 包总行数 | 14991 |
+| 包总字节数 | 5176936 |
+| `t == s` 直通行 | 1434 |
 | pool 待译串 | 12792 |
 | 已覆盖 pool 行 | 9397 |
 | **覆盖率** | **73.46%**（9397 / 12792） |
-| 池外条目 | 5557 |
+| 池外条目 | 5594 |
 
