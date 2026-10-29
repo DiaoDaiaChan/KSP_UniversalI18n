@@ -1,0 +1,9 @@
+{
+  "schema": "ui18n-display-names/1",
+  "_comment": "面板显示名（Fix-2：从 PackFilter 的硬编码 if 搬出来的数据）。键是 modId（稳定键，见 docs/10 §8），值是给玩家看的名字。这张表不是 .jsonl，因此不会被当成语言包。缺这张表时面板显示 modId，不影响功能。",
+  "names": {
+    "Squad": "本体",
+    "UI18n-Unattributed": "未归属文本",
+    "UI18n-ConfigCache": "配置缓存"
+  }
+}

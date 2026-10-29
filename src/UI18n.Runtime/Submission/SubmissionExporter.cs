@@ -40,6 +40,12 @@ namespace UI18n.Runtime
         internal string Id = string.Empty;
         internal string FilePath = string.Empty;
 
+        /// <summary>
+        /// 这次构建出的 bundle（预览与导出都有）。面板的「上报到 GitHub」要用它拼 Issue 正文，
+        /// 不必把刚写好的 json 再读回来解析一遍。
+        /// </summary>
+        internal SubmissionBundle Bundle;
+
         internal int Input;
         internal int Mods;
         internal int Entries;
@@ -166,6 +172,7 @@ namespace UI18n.Runtime
 
                 SubmissionBundle bundle = built.Bundle;
                 result.Id = bundle.Id;
+                result.Bundle = bundle;
 
                 if (!write)
                 {

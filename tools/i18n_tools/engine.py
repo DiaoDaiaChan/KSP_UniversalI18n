@@ -13,6 +13,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
+from . import conventions as convention_data
 from . import mask as masklib
 from .fnv import hash_text
 from .llm import LlmClient
@@ -57,35 +58,10 @@ class GateResult:
 class GateRules:
     """通用门禁配置与校验集合。"""
 
-    CONVENTIONS: Tuple[Tuple[str, str], ...] = (
-        ("Booster", "助推器"),
-        ("Oxidizer", "氧化剂"),
-        ("Throttle", "节流阀"),
-        ("Gimbal", "万向节"),
-        ("Specific Impulse", "比冲"),
-        ("Apoapsis", "远地点"),
-        ("Periapsis", "近地点"),
-        ("Delta-V", "Δv"),
-        ("Center of Mass", "质心"),
-        ("Center of Pressure", "压心"),
-        ("Reaction Wheel", "动量轮"),
-        ("Monopropellant", "单组元推进剂"),
-    )
-
-    CONVENTION_ALIASES: Dict[str, Tuple[str, ...]] = {
-        "Booster": ("助推",),
-        "Oxidizer": ("富氧", "氧化"),
-        "Throttle": ("节流", "油门"),
-        "Gimbal": ("万向",),
-        "Apoapsis": ("远拱点",),
-        "Periapsis": ("近拱点",),
-        "Delta-V": ("ΔV", "速度增量"),
-        "Center of Mass": ("重心",),
-        "Center of Pressure": ("压力中心",),
-        "Reaction Wheel": ("反作用轮",),
-        "Monopropellant": ("单组元", "单元推进剂"),
-    }
-
+    #: 12 条约定术语与合法别名都读数据（packs/conventions.jsonl / packs/convention-aliases.jsonl），
+    #: 代码里不留副本 —— translate.py 拼 prompt 用的是同一份数据，改数据即两边同时生效。
+    CONVENTIONS: Tuple[Tuple[str, str], ...] = convention_data.convention_pairs()
+    CONVENTION_ALIASES: Dict[str, Tuple[str, ...]] = convention_data.load_aliases()
     def __init__(self,
                  enabled_gates: Optional[Set[str]] = None,
                  conventions: Optional[Tuple[Tuple[str, str], ...]] = None,

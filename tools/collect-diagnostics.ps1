@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     一把收走 UI18n 的现场：KSP.log 里的 [UI18n] 段、配置、语言包清单、捕获文件、更新状态 → 一个 zip。
 
@@ -17,7 +17,8 @@
     单个附件超过 -MaxFileMB 时只记大小与 sha256，不复制内容（并在 summary.txt 里标 skipped: too large）。
 
 .PARAMETER KspRoot
-    KSP 安装目录（含 KSP.log 与 GameData）。默认 D:\Kerbal Space Program_newmod。
+    KSP 安装目录（含 KSP.log 与 GameData）。默认取环境变量 KSP_ROOT；两者都没有就报错（脚本不再内置
+    某台机器的安装路径 —— 那既不准也误导别人）。
 
 .PARAMETER OutDir
     zip 的输出目录。默认 <KspRoot>\_diag（不存在则创建）。
@@ -38,7 +39,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string] $KspRoot = 'D:\Kerbal Space Program_newmod',
+    [string] $KspRoot = $env:KSP_ROOT,
     [string] $OutDir = '',
     [string] $Tag = '',
     [int] $MaxFileMB = 32,
@@ -86,6 +87,10 @@ function Copy-Capped([string] $Path, [string] $DestinationDir) {
     $target = Join-Path $DestinationDir $item.Name
     Copy-Item -LiteralPath $item.FullName -Destination $target -Force
     return ('copied ' + $item.Length + ' B')
+}
+
+if ([string]::IsNullOrWhiteSpace($KspRoot)) {
+    throw 'KSP root 未指定：用 -KspRoot <path> 或设环境变量 KSP_ROOT（如 $env:KSP_ROOT = ''<KSP 安装目录>''）'
 }
 
 if (-not (Test-Path -LiteralPath $KspRoot)) {
@@ -229,14 +234,19 @@ else {
     $summary.Add('plugins=missing')
 }
 
-$harmonyDir = Join-Path $gameData '000_Harmony'
-if (Test-Path -LiteralPath $harmonyDir) {
-    foreach ($dll in (Get-ChildItem -LiteralPath $harmonyDir -Filter '*.dll' -File | Sort-Object Name)) {
-        $summary.Add('harmony/' + $dll.Name + '=' + $dll.Length + ' B')
+# Harmony 是 UI18n 的唯一硬依赖，但它落到哪个目录名由作者的发布包决定（000_Harmony / Harmony / 000_Harmony2 …），
+# 所以按「谁带着 0Harmony.dll」认，不写死目录名 —— 换个目录名也照样能收到指纹，不会静默变成 missing。
+$harmonyDlls = @(Get-ChildItem -LiteralPath $gameData -Recurse -Filter '0Harmony.dll' -File -ErrorAction SilentlyContinue)
+if ($harmonyDlls.Count -gt 0) {
+    # 目录名本身就是「这份 Harmony 装在哪」的答案，不做 Substring 求相对路径 —— 玩家可能给 8.3 短名或
+    # 相对路径，字符串截断会错位（实测会把 GameData 截成 eData）。
+    foreach ($dll in ($harmonyDlls | Sort-Object FullName)) {
+        $summary.Add('harmony/' + $dll.Directory.Name + '/' + $dll.Name + '=' + $dll.Length + ' B, sha256 ' + (Get-Sha256 $dll.FullName))
     }
+    $summary.Add('harmony.count=' + $harmonyDlls.Count)
 }
 else {
-    $summary.Add('harmony=missing')
+    $summary.Add('harmony=missing (GameData 下没找到 0Harmony.dll)')
 }
 
 # ---------------------------------------------------------------- 4) 语言包指纹
@@ -315,13 +325,16 @@ $modCount = @(Get-ChildItem -LiteralPath $gameData -Directory).Count
 $dllCount = @(Get-ChildItem -LiteralPath $gameData -Recurse -Filter '*.dll' -File -ErrorAction SilentlyContinue).Count
 $summary.Add('gameData.dirs=' + $modCount)
 $summary.Add('gameData.dlls=' + $dllCount)
-$mmCache = Join-Path $gameData 'ModuleManager.ConfigCache'
-if (Test-Path -LiteralPath $mmCache) {
-    $mmItem = Get-Item -LiteralPath $mmCache
-    $summary.Add('moduleManager.configCache=' + $mmItem.Length + ' B, ' + $mmItem.LastWriteTimeUtc.ToString('yyyy-MM-ddTHH:mm:ssZ', $Invariant))
+# 配置缓存的文件名由产生它的 mod 决定（ModuleManager.ConfigCache 只是一例），所以按名字形态认，
+# 不写死具体文件名 —— 任何一个 *ConfigCache* 都能收到大小与时间，缺了也只是缺这一行。
+$cacheFiles = @(Get-ChildItem -LiteralPath $gameData -File -Filter '*ConfigCache*' -ErrorAction SilentlyContinue | Sort-Object Name)
+if ($cacheFiles.Count -gt 0) {
+    foreach ($cache in $cacheFiles) {
+        $summary.Add('configCache/' + $cache.Name + '=' + $cache.Length + ' B, ' + $cache.LastWriteTimeUtc.ToString('yyyy-MM-ddTHH:mm:ssZ', $Invariant))
+    }
 }
 else {
-    $summary.Add('moduleManager.configCache=missing')
+    $summary.Add('configCache=missing (GameData 根下没有 *ConfigCache*)')
 }
 
 Set-Content -LiteralPath (Join-Path $stage 'summary.txt') -Value $summary -Encoding utf8

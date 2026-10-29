@@ -51,11 +51,22 @@ namespace UI18n.Core.Config
         public FontMode FontMode { get; set; } = global::UI18n.Core.Config.FontMode.OsFont;
 
         /// <summary>
-        /// 候选系统字体名（配置键 <c>OsFontName</c>，默认 <c>Microsoft YaHei</c>）。只是<b>首选</b>：
-        /// Runtime 会先与 <c>Font.GetOSInstalledFontNames()</c> 精确比对，不在列表里就按内置候选顺序继续找，
+        /// 首选系统字体名（配置键 <c>OsFontName</c>，默认 <see cref="FontDefaults.OsFontName"/>）。只是<b>首选</b>：
+        /// Runtime 会先与 <c>Font.GetOSInstalledFontNames()</c> 精确比对，不在本机就按 <see cref="OsFonts"/> 的顺序继续找，
         /// 建出来的字面还要 <c>HasCharacter('中')</c> 实测通过才会用（不用注册表家族名，D 系列决策见 README §9）。
         /// </summary>
-        public string OsFontName { get; set; } = "Microsoft YaHei";
+        public string OsFontName { get; set; } = FontDefaults.OsFontName;
+
+        /// <summary>
+        /// 首选字体不在本机时的回退顺序（配置键 <c>OsFonts</c>，逗号或分号分隔；默认 = <see cref="FontDefaults.OsFontCandidates"/>）。
+        /// <para>
+        /// 这张表以前是两份副本（Runtime 的 <c>FontResolver.DefaultOsFontCandidates</c> 常量 + <c>Config.cfg</c> 注释里的散文列表），
+        /// 两边各改各的迟早对不上。现在出厂值只有 <see cref="FontDefaults"/> 一份，玩家在 Config.cfg 里写
+        /// <c>OsFonts = 字体A, 字体B</c> 就能整表覆盖（Linux / macOS 填本机实际装的中文字面名，不用改代码）。
+        /// </para>
+        /// <para>空 / 全是分隔符 = 保留内置顺序（配置写错只降级，不关掉字体功能）。</para>
+        /// </summary>
+        public string[] OsFonts { get; set; } = FontDefaults.NewOsFontCandidates();
 
         /// <summary>
         /// <c>FontMode=Bundled</c> 时载入的 AssetBundle 绝对或相对路径（配置键 <c>BundledFontPath</c>）。

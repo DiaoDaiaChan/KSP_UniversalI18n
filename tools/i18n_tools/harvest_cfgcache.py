@@ -52,6 +52,7 @@ _PURE_PUNCT_RE = re.compile(r"^[^0-9A-Za-z]+$")
 # 运行时这些值会被 KSP Localizer 解析成**别的**字符串，按 key 原文建字典永远命中不了，
 # 还会白占翻译量。整串匹配（不容空格/标点），所以「#」开头但带空格的真正文不会被误伤。
 _KEYREF_RE = re.compile(r"^#[A-Za-z0-9_]+$")
+_PARENT_URL_RE = re.compile(r"^[ 	]*parentUrl[ 	]*=[ 	]*(.*)$", re.I)
 
 # 报告里列多少条 keyref 样例
 KEYREF_SAMPLE_LIMIT = 5
@@ -64,19 +65,41 @@ def _repo_root():
 
 
 def default_cache_path(gamedata):
-    return os.path.join(gamedata, "ModuleManager.ConfigCache")
+    """GameData 根下的 ConfigCache 文件，按**名字形态**认，不写死产生它的 mod。
+
+    ConfigCache 由 ModuleManager 写出，但文件名前缀属于实现细节（换实现 / 加壳就会变），
+    写死 "ModuleManager.ConfigCache" 等于「换个文件名就静默不认」。多个候选时取 mtime 最新的
+    （缓存每次打补丁都会重写）。找不到返回空串，由调用方给出明确的报错。
+    """
+    try:
+        names = os.listdir(gamedata)
+    except OSError:
+        return ""
+    candidates = [os.path.join(gamedata, name) for name in names
+                  if "configcache" in name.lower() and os.path.isfile(os.path.join(gamedata, name))]
+    if not candidates:
+        return ""
+    return max(candidates, key=os.path.getmtime)
 
 
 def iter_fields(path, fields=None, stats=None):
-    """流式读 ConfigCache，产出 (field, raw_value)。
+    """流式读 ConfigCache，产出 (field, raw_value, mod)。
 
     不做完整 ConfigNode 解析：这份文件 2,700 万字符、600 万行以上，
     而我们要的四个文本字段都是**叶子键值**，逐行正则既快又不会因格式怪异整棵树失败。
+    同时提取 parentUrl 定位其所属 mod。
     """
     fields = tuple(fields or FIELDS)
+    current_mod = ""
     with open(path, encoding="utf-8", errors="replace") as handle:
         for line in handle:
             if "=" not in line:
+                continue
+            p_match = _PARENT_URL_RE.match(line.rstrip(chr(10)))
+            if p_match is not None:
+                parent_val = p_match.group(1).replace("\\", "/").strip()
+                if parent_val:
+                    current_mod = parent_val.split("/")[0]
                 continue
             match = _KV_RE.match(line.rstrip(chr(10)))
             if match is None:
@@ -88,7 +111,7 @@ def iter_fields(path, fields=None, stats=None):
             if stats is not None:
                 stats["assign"][key] = stats["assign"].get(key, 0) + 1
             if value:
-                yield key, value
+                yield key, value, current_mod
 
 
 def classify(field, raw, seen, opts):
@@ -153,7 +176,7 @@ def collect(cache_path, opts, pack_hashes=None, stats=None):
     stats.setdefault("lines", 0)
     rows = {}
     order = []
-    for field, raw in iter_fields(cache_path, FIELDS, stats):
+    for field, raw, mod in iter_fields(cache_path, FIELDS, stats):
         stats["lines"] += 1
         reason, norm = classify(field, raw, rows, opts)
         if reason is not None:
@@ -169,9 +192,12 @@ def collect(cache_path, opts, pack_hashes=None, stats=None):
             row = rows[h]
             if label not in row["fields"]:
                 row["fields"].append(label)
+            if mod and mod not in row["mods"]:
+                row["mods"].append(mod)
             row["assigns"] += 1
             continue
-        rows[h] = {"h": h, "n": norm, "s": raw, "fields": [label], "assigns": 1}
+        mods_list = [mod] if mod else []
+        rows[h] = {"h": h, "n": norm, "s": raw, "fields": [label], "mods": mods_list, "assigns": 1}
         order.append(h)
     items = [rows[h] for h in order]
     stats["unique"] = len(items)
@@ -187,6 +213,9 @@ def to_candidate_rows(items, mod_label=MOD_LABEL):
     rows = []
     for item in items:
         field = item["fields"][0].lower()
+        mods = sorted(item.get("mods") or [])
+        if not mods:
+            mods = [mod_label]
         rows.append({
             "h": item["h"],
             "n": item["n"],
@@ -200,7 +229,7 @@ def to_candidate_rows(items, mod_label=MOD_LABEL):
             "callers": 1,
             "bucket": "candidate",
             "reason": "",
-            "mods": [mod_label],
+            "mods": mods,
             "field": field,
             "fields": item["fields"],
         })
@@ -310,7 +339,7 @@ def build_report(path, cache_path, items, stats, covered_total=None):
     add("")
     add("```")
     add("cd tools")
-    add("python -m i18n_tools.harvest_cfgcache --gamedata " + chr(34) + "D:/Kerbal Space Program_newmod/GameData" + chr(34))
+    add("python -m i18n_tools.harvest_cfgcache --gamedata " + chr(34) + "<KSP>/GameData" + chr(34))
     add("```")
     add("")
     os.makedirs(os.path.dirname(os.path.abspath(path)) or ".", exist_ok=True)
@@ -379,11 +408,32 @@ def selftest():
         rows = to_candidate_rows(items)
         eq("产物 bucket 都是 candidate", sorted({row["bucket"] for row in rows}), ["candidate"])
         eq("产物带 capture schema 的 s/caller/sink", (sorted(rows[0].keys())[:2], rows[0]["sink"]), (["bucket", "caller"], "configcache"))
+        eq("无 parentUrl 时 mods 退回默认 label", rows[0]["mods"], [MOD_LABEL])
         pack = {items[0]["h"]}
         missing = collect(handle.name, opts, pack, {})
         eq("已被字典覆盖的文本不再排队", len(missing), len(items) - 1)
     finally:
         os.unlink(handle.name)
+
+    # 测试 parentUrl 提取 mod 归属
+    mod_handle = tempfile.NamedTemporaryFile("w", suffix=".ConfigCache", delete=False, encoding="utf-8", newline=chr(10))
+    mod_handle.write(chr(10).join([
+        "UrlConfig",
+        "{",
+        chr(9) + "parentUrl = RealismOverhaul/Parts/Engine/Apollo",
+        chr(9) + "PART",
+        chr(9) + "{",
+        chr(9) + chr(9) + "title = Apollo Engine",
+        chr(9) + "}",
+        "}"
+    ]))
+    mod_handle.close()
+    try:
+        mod_items = collect(mod_handle.name, opts)
+        mod_rows = to_candidate_rows(mod_items)
+        eq("parentUrl 成功解析出具体 mod 归属", mod_rows[0]["mods"], ["RealismOverhaul"])
+    finally:
+        os.unlink(mod_handle.name)
 
     failed = [row for row in checks if not row[1]]
     for name, ok, detail in checks:
@@ -396,7 +446,7 @@ def main(argv=None):
     global FIELDS
     ensure_stdout()
     parser = argparse.ArgumentParser(description="cong ModuleManager.ConfigCache chou yun xing shi zui zhong wen ben")
-    parser.add_argument("--cache", help="ModuleManager.ConfigCache path")
+    parser.add_argument("--cache", help="config cache file path (default: glob *ConfigCache under GameData)")
     parser.add_argument("--gamedata", help="GameData path")
     parser.add_argument("--packs-dir", default=None, help="language pack dir (default <repo>/packs/zh-cn)")
     parser.add_argument("--out", default=None, help="output jsonl (default <repo>/packs/cfgcache-candidates.jsonl)")
@@ -418,6 +468,9 @@ def main(argv=None):
     cache_path = args.cache
     if not cache_path and args.gamedata:
         cache_path = default_cache_path(args.gamedata)
+        if not cache_path:
+            parser.error("--gamedata 下没有 *ConfigCache* 文件（它由 ModuleManager 在 GameData 根下写出）："
+                         + args.gamedata)
     if not cache_path:
         parser.error("need --cache or --gamedata (file lives in the game dir, not in repo)")
     if not os.path.isfile(cache_path):

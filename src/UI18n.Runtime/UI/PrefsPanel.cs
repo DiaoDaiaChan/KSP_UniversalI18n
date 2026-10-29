@@ -84,6 +84,24 @@ namespace UI18n.Runtime.UI
 
         private GUIStyle _right;
 
+        // ---- 每帧字符串的缓存（IMGUI 一帧要跑 Layout / Repaint / 若干事件趟，见 FillRowText / Summary）----
+        /// <summary>汇总行的缓存文本；<c>null</c> 表示下次调用要重算。</summary>
+        private string _summary;
+        private float _summaryAt;
+
+        /// <summary>显示名表已经读过哪个目录（<c>null</c> = 一次都没读过）。</summary>
+        private string _displayNamesLoadedFor;
+
+        /// <summary>per-mod 策略表（M5-a）。同一个包目录只读一次；读不到就是 null（= 全是非 NATIVE）。</summary>
+        private ModPolicies _policies;
+
+        /// <summary>上面那份策略表是按哪个目录读的（换了语言目录就重读）。</summary>
+        private string _policiesLoadedFor;
+
+        /// <summary>「已关闭 N 个」那行的缓存（N 变才重拼）。</summary>
+        private int _disabledCountCached = -1;
+        private string _disabledLabel = string.Empty;
+
         // ---- 投稿区块状态（全部只在主线程读写）----
         private string _submissionConsent = SubmissionPolicy.ConsentNone;
         private bool _allowLongSingletons;
@@ -91,6 +109,12 @@ namespace UI18n.Runtime.UI
         private bool _submissionReady;
         private string _submissionPath = string.Empty;
         private string _submissionInfo = string.Empty;
+
+        /// <summary>刚构建出的 bundle（预览或导出都会填）；「上报到 GitHub」用它拼 Issue 正文。</summary>
+        private SubmissionBundle _submissionBundle;
+
+        /// <summary>本会话是否已经点过「上报到 GitHub」（只影响状态行文案）。</summary>
+        private bool _submissionReported;
 
         /// <summary>由 <c>UI18nAddon.Run</c> 调用；<b>不装任何 patch</b>，与语言门禁无关。</summary>
         /// <param name="config">
@@ -254,6 +278,15 @@ namespace UI18n.Runtime.UI
             internal int Entries;
             internal long Miss;
             internal bool Enabled;
+
+            /// <summary>策略表把它归到 NATIVE 档：游戏自己能显示中文，这一局没有加载它的包（M5-a）。</summary>
+            internal bool Native;
+
+            /// <summary>左侧那列已经拼好的文字（建表时算一次，见 <see cref="FillRowText"/>）。</summary>
+            internal string Label;
+
+            /// <summary>右侧那列已经拼好的文字（同上）。</summary>
+            internal string Counts;
         }
 
         /// <summary>
@@ -265,6 +298,8 @@ namespace UI18n.Runtime.UI
         {
             _rows.Clear();
             _prefixes.Clear();
+            LoadDisplayNames();
+            LoadPolicies();
 
             List<string> ids = new List<string>(128);
             HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -298,12 +333,14 @@ namespace UI18n.Runtime.UI
                 string modId = ids[i];
                 Row row = new Row();
                 row.ModId = modId;
-                row.Display = PackFilter.DisplayName(modId);
+                row.Display = DescribeMod(modId);
                 row.Entries = PackStats.Get(modId);
                 long miss;
                 missByMod.TryGetValue(modId, out miss);
                 row.Miss = miss;
                 row.Enabled = _prefs == null || _prefs.IsEnabled(modId);
+                row.Native = _policies != null && _policies.IsNative(modId);
+                FillRowText(row);
                 _rows.Add(row);
             }
 
@@ -322,6 +359,7 @@ namespace UI18n.Runtime.UI
                 other.Entries = 0;
                 other.Miss = otherMiss;
                 other.Enabled = true;
+                FillRowText(other);
                 _rows.Add(other);
             }
 
@@ -336,7 +374,136 @@ namespace UI18n.Runtime.UI
                 });
             }
 
+            _summary = null;                                // 行集合变了，汇总行跟着重算
             _built = true;
+        }
+
+        /// <summary>
+        /// 把一行里两段要显示的文字<b>在建表时</b>拼好。
+        /// <para>
+        /// IMGUI 一帧要跑多趟（Layout / Repaint / 每个事件各一趟），在 <see cref="DrawRow"/> 里拼
+        /// 就等于每帧分配十几次；而这两段只依赖建表那一刻的快照（<c>row.Entries</c> / <c>row.Miss</c>
+        /// 本来就是快照），所以搬到建表时算一次，界面完全等价。
+        /// </para>
+        /// </summary>
+        private void FillRowText(Row row)
+        {
+            row.Label = row.ModId.Length == 0
+                ? row.Display
+                : row.Display + "  (" + row.ModId + ")";
+
+            // NATIVE 档的包这一局根本没加载（配置全部为 0），不标一句玩家会以为是漏翻
+            if (row.Native)
+            {
+                row.Label = row.Label + T("  · 原生（游戏自带中文）", "  · native (game localizes it)");
+            }
+
+            row.Counts = row.Entries <= 0 && row.Miss <= 0
+                ? "—"
+                : T("条目 " + row.Entries + " · 未命中 " + row.Miss, "entries " + row.Entries + " · miss " + row.Miss);
+        }
+
+        /// <summary>
+        /// 把语言包里的显示名表读进 <see cref="PackFilter"/> 的注册表。
+        /// <para>
+        /// <b>同一个目录只读一次</b>：面板每次重建行列表（刷新统计 / 切「只看未命中」/ 重读 prefs）都会走到这里，
+        /// 每趟都 <see cref="PackLocator.Resolve"/> + 读文件是白花的 I/O —— 表内容在进程内也不会变。
+        /// 换了语言 → 解析出的目录不同 → 自然会再读一次。
+        /// </para>
+        /// <para>缺文件 / 坏 JSON 都只是不注册 —— 面板退化成显示 modId，绝不抛。</para>
+        /// </summary>
+        private void LoadDisplayNames()
+        {
+            try
+            {
+                PackResolution packs = PackLocator.Resolve(ConfigLoader.PacksPath, _language);
+                if (packs == null || string.IsNullOrEmpty(packs.Directory))
+                {
+                    return;
+                }
+
+                if (string.Equals(_displayNamesLoadedFor, packs.Directory, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _displayNamesLoadedFor = packs.Directory;
+                int loaded = PackDisplayNames.LoadFromDirectory(packs.Directory);
+                if (loaded > 0)
+                {
+                    Log.Info("panel: display names loaded=" + loaded + " (" + PackDisplayNames.FileName + ")");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("panel: could not load display names (" + ex.GetType().Name + ": " + ex.Message + ")");
+            }
+        }
+
+        /// <summary>
+        /// 读语言包目录里的 per-mod 策略表（<c>policies.json</c>，M5-a），用于在行上标注「原生」——
+        /// 那一档的包<b>这一局根本没被加载</b>（<see cref="ConfigLoader"/> 在加载期就滤掉了），
+        /// 面板不标一句，玩家会以为是我们漏翻。
+        /// <para>同一个目录只读一次；缺文件 / 坏 JSON 都只是「全是非 NATIVE」，绝不抛。</para>
+        /// </summary>
+        private void LoadPolicies()
+        {
+            try
+            {
+                PackResolution packs = PackLocator.Resolve(ConfigLoader.PacksPath, _language);
+                if (packs == null || string.IsNullOrEmpty(packs.Directory))
+                {
+                    return;
+                }
+
+                if (string.Equals(_policiesLoadedFor, packs.Directory, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _policiesLoadedFor = packs.Directory;
+                string error;
+                ModPolicies policies = ModPolicies.LoadFromDirectory(packs.Directory, out error);
+                _policies = policies;
+                if (policies.Count > 0)
+                {
+                    Log.Info("panel: " + policies.Describe() + " (" + ModPolicies.FileName + ")");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("panel: could not load policies (" + ex.GetType().Name + ": " + ex.Message + ")");
+            }
+        }
+
+        /// <summary>
+        /// 一行 mod 的显示名：数据表（<see cref="PackFilter.DisplayName"/>）优先；数据里没登记时，
+        /// 本产品自造的伪 mod 用界面文案（**文案属于 UI 层，Core 里不留界面文字**），其余原样回 modId。
+        /// </summary>
+        private string DescribeMod(string modId)
+        {
+            string name = PackFilter.DisplayName(modId);
+            if (!string.Equals(name, modId, StringComparison.Ordinal))
+            {
+                return name;
+            }
+
+            if (!PackFilter.IsInternalPack(modId))
+            {
+                return name;
+            }
+
+            if (modId.EndsWith("-Unattributed", StringComparison.OrdinalIgnoreCase))
+            {
+                return T("未归属文本", "unattributed text");
+            }
+
+            if (modId.EndsWith("-ConfigCache", StringComparison.OrdinalIgnoreCase))
+            {
+                return T("配置缓存", "config cache");
+            }
+
+            return name;
         }
 
         private string[] DiscoverPackModIds()
@@ -469,8 +636,16 @@ namespace UI18n.Runtime.UI
                 SetAll(false);
             }
 
-            _onlyMiss = GUI.Toggle(new Rect(Pad + (buttonWidth + 6f) * 2f, y, buttonWidth, 22f), _onlyMiss,
-                                   T("只看未命中多的", "Only with misses"), GUI.skin.button);
+            bool onlyMiss = GUI.Toggle(new Rect(Pad + (buttonWidth + 6f) * 2f, y, buttonWidth, 22f), _onlyMiss,
+                                       T("只看未命中多的", "Only with misses"), GUI.skin.button);
+            if (onlyMiss != _onlyMiss)
+            {
+                // 过滤是在 BuildRows 里做的（会真的把行从 _rows 里删掉），所以必须重建，
+                // 而且**不能在这里重建** —— 本趟已经开始画控件了，中途换掉行数会让 IMGUI 的控件序列错位。
+                // 标记「待重建」，下一趟 OnGUI 开头重建，玩家在这一帧内就能看到结果。
+                _onlyMiss = onlyMiss;
+                _built = false;
+            }
 
             if (GUI.Button(new Rect(Pad + (buttonWidth + 6f) * 3f, y, buttonWidth, 22f), T("刷新统计", "Refresh")))
             {
@@ -523,8 +698,15 @@ namespace UI18n.Runtime.UI
             }
             else if (_prefs.DisabledCount > 0)
             {
-                GUI.Label(new Rect(Pad + 356f, footerY + 4f, _windowRect.width - Pad * 2f - 356f, 20f),
-                          T("已关闭 " + _prefs.DisabledCount + " 个，重启后生效", _prefs.DisabledCount + " disabled, effective after restart"));
+                if (_disabledCountCached != _prefs.DisabledCount)
+                {
+                    // 只有数字变才重拼（这行原先每趟 OnGUI 都拼两串）。
+                    _disabledCountCached = _prefs.DisabledCount;
+                    _disabledLabel = T("已关闭 " + _prefs.DisabledCount + " 个，重启后生效",
+                                       _prefs.DisabledCount + " disabled, effective after restart");
+                }
+
+                GUI.Label(new Rect(Pad + 356f, footerY + 4f, _windowRect.width - Pad * 2f - 356f, 20f), _disabledLabel);
             }
 
             GUI.DragWindow(new Rect(0f, 0f, _windowRect.width, 22f));
@@ -542,17 +724,8 @@ namespace UI18n.Runtime.UI
                 }
             }
 
-            string label = row.ModId.Length == 0
-                ? row.Display
-                : row.Display + "  (" + row.ModId + ")";
-
-            GUI.Label(new Rect(26f, y, width - 26f - 190f, 18f), label);
-
-            string counts = row.Entries <= 0 && row.Miss <= 0
-                ? "—"
-                : T("条目 " + row.Entries + " · 未命中 " + row.Miss, "entries " + row.Entries + " · miss " + row.Miss);
-
-            GUI.Label(new Rect(width - 188f, y, 184f, 18f), counts, RightStyle());
+            GUI.Label(new Rect(26f, y, width - 26f - 190f, 18f), row.Label);
+            GUI.Label(new Rect(width - 188f, y, 184f, 18f), row.Counts, RightStyle());
         }
 
         private void SetAll(bool enabled)
@@ -634,6 +807,17 @@ namespace UI18n.Runtime.UI
                 OpenSubmissionPage();
             }
 
+            // M4-b：把已导出的 bundle 变成一条预填 Issue。没导出过就先禁用，免得玩家以为已经提交了。
+            bool reportable = _submissionBundle != null;
+            bool previousEnabled = GUI.enabled;
+            GUI.enabled = reportable;
+            if (GUI.Button(new Rect(Pad + 458f, y + 44f, 150f, 22f), T("上报到 GitHub", "Report on GitHub")))
+            {
+                ReportSubmission();
+            }
+
+            GUI.enabled = previousEnabled;
+
             if (_submissionInfo.Length > 0)
             {
                 GUI.Label(new Rect(Pad, y + 68f, width, 18f), _submissionInfo);
@@ -646,6 +830,11 @@ namespace UI18n.Runtime.UI
             if (_prefs == null || _prefs.Submission == null || !_prefs.Submission.Granted)
             {
                 return T("未同意 · 默认不投", "off (default)");
+            }
+
+            if (_submissionReported)
+            {
+                return T("已打开上报页", "report page opened");
             }
 
             if (_submissionPath.Length > 0)
@@ -679,6 +868,7 @@ namespace UI18n.Runtime.UI
 
             _submissionConfirm = false;
             _submissionReady = false;
+            _submissionReported = false;
 
             string error;
             if (PrefsRuntime.Save(out error))
@@ -708,6 +898,8 @@ namespace UI18n.Runtime.UI
             _submissionConfirm = true;
             _submissionReady = true;
             _submissionPath = string.Empty;
+            _submissionBundle = result.Bundle;
+            _submissionReported = false;
             _submissionInfo = T(
                 "将导出 " + result.Mods + " 个 mod / " + result.Entries + " 条原文；丢弃 " + result.Dropped
                 + " 条（路径 " + result.DroppedPath + "、私有 " + result.DroppedPrivate + "、单次长文本 " + result.DroppedSingleton + "）",
@@ -729,6 +921,7 @@ namespace UI18n.Runtime.UI
 
             _submissionReady = false;
             _submissionPath = result.FilePath;
+            _submissionBundle = result.Bundle;
             _submissionInfo = T(
                 "已导出 " + result.Entries + " 条原文（" + result.Mods + " 个 mod）到 PluginData/UI18n/submissions/，点「打开文件夹」取出后贴到投稿页面",
                 "Exported " + result.Entries + " string(s) (" + result.Mods + " mods) to PluginData/UI18n/submissions/");
@@ -755,6 +948,7 @@ namespace UI18n.Runtime.UI
         {
             _submissionConfirm = false;
             _submissionReady = false;
+            _submissionBundle = null;
 
             string message;
             if (string.Equals(result.Outcome, SubmissionExportResult.OutcomeNotConsented, StringComparison.Ordinal))
@@ -815,6 +1009,53 @@ namespace UI18n.Runtime.UI
             }
         }
 
+        /// <summary>
+        /// M4-b：把刚导出的 bundle 变成一条预填好的 GitHub Issue。
+        /// <para>
+        /// 只打开浏览器（<b>零服务器、零请求</b>）；bundle 文件已经在文件夹里，玩家把它拖进表单的
+        /// <c>bundle</c> 字段即可 —— 接收侧脚本只认 user-attachments 链接，所以正文里绝不放 JSON。
+        /// </para>
+        /// </summary>
+        private void ReportSubmission()
+        {
+            if (_submissionBundle == null)
+            {
+                _submissionInfo = T("请先导出投稿包，再点上报", "export the bundle first, then report");
+                SetStatus(_submissionInfo);
+                return;
+            }
+
+            SubmissionReport report = SubmissionIssue.Build(_submissionBundle);
+            if (!report.CanReport)
+            {
+                _submissionInfo = T("这次没有可上报的内容（" + report.Reason + "）",
+                                    "nothing to report (" + report.Reason + ")");
+                SetStatus(_submissionInfo);
+                return;
+            }
+
+            if (!SubmissionIssue.Open(report))
+            {
+                _submissionInfo = T("打不开浏览器，请打开投稿页面手动提交", "cannot open browser, submit manually");
+                SetStatus(_submissionInfo);
+                return;
+            }
+
+            _submissionReported = true;
+            _submissionInfo = report.NeedsFileFallback
+                ? T("已在浏览器打开上报页；正文太长塞不进 URL，请把 " + report.FileName + " 拖进表单的 bundle 字段",
+                    "opened the issue page; body too long for the URL, drag " + report.FileName + " into the bundle field")
+                : T("已在浏览器打开上报页；请把 " + report.FileName + " 拖进表单的 bundle 字段",
+                    "opened the issue page; drag " + report.FileName + " into the bundle field");
+            SetStatus(T("已备好上报页", "issue page ready"));
+
+            if (report.Truncated)
+            {
+                Log.Info("submission: report trimmed to " + report.EntryCount + "/" + report.TotalEntries
+                         + " (" + report.Remaining + " left for the next one)");
+            }
+        }
+
         private void SavePrefs()
         {
             string error;
@@ -836,19 +1077,30 @@ namespace UI18n.Runtime.UI
             _statusUntil = Time.realtimeSinceStartup + 6f;
         }
 
+        /// <summary>汇总行最短刷新间隔（秒）。这些是调试读数，没必要每帧重拼。</summary>
+        private const float SummaryRefreshSeconds = 0.5f;
+
         private string Summary()
         {
+            float now = Time.realtimeSinceStartup;
+            if (_summary != null && now - _summaryAt < SummaryRefreshSeconds)
+            {
+                return _summary;
+            }
+
             long miss = 0;
             for (int i = 0; i < _rows.Count; i++)
             {
                 miss += _rows[i].Miss;
             }
 
-            return T(
+            _summary = T(
                 "mods=" + _prefs.ModCount + "（关闭 " + _prefs.DisabledCount + "） · 本局已装条目=" + PackStats.TotalEntries
                 + " · 未命中=" + miss + " · render ratio=" + RenderCoverage.Ratio,
                 "mods=" + _prefs.ModCount + " (disabled " + _prefs.DisabledCount + ") · loaded entries=" + PackStats.TotalEntries
                 + " · miss=" + miss + " · render ratio=" + RenderCoverage.Ratio);
+            _summaryAt = now;
+            return _summary;
         }
 
         private GUIStyle RightStyle()

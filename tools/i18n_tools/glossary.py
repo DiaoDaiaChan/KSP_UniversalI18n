@@ -67,14 +67,23 @@ def default_out() -> str:
     return harvest.default_pack("glossary.jsonl")
 
 
-def dictionary_path(gamedata: str) -> str:
-    return os.path.join(gamedata, "Squad", "Localization", "dictionary.cfg")
+def dictionary_path(gamedata: str, mod: str = "Squad") -> str:
+    path = os.path.join(gamedata, mod, "Localization", "dictionary.cfg")
+    if os.path.isfile(path):
+        return path
+    loc_dir = os.path.join(gamedata, mod, "Localization")
+    if os.path.isdir(loc_dir):
+        for root, _, files in os.walk(loc_dir):
+            for f in files:
+                if f.endswith(".cfg"):
+                    return os.path.join(root, f)
+    return path
 
 
-def collect_en(gamedata: str) -> tuple[dict, dict]:
-    """扫 Squad 非 Localization 目录的 cfg，返回 (en, stats)。en 按首次出现定序。"""
-    squad_dir = os.path.join(gamedata, "Squad")
-    groups, n_files = harvest.discover(squad_dir)
+def collect_en(gamedata: str, mod: str = "Squad") -> tuple[dict, dict]:
+    """扫指定 mod（默认 Squad）非 Localization 目录的 cfg，返回 (en, stats)。en 按首次出现定序。"""
+    mod_dir = os.path.join(gamedata, mod)
+    groups, n_files = harvest.discover(mod_dir)
     en: dict[str, str] = {}
     hits = 0
     conflicts = 0
@@ -98,6 +107,7 @@ def collect_en(gamedata: str) -> tuple[dict, dict]:
                 elif old != value:
                     conflicts += 1
     stats = {
+        "modCfgFiles": n_files,
         "squadCfgFiles": n_files,
         "cfgWithComment": scanned,
         "commentHits": hits,
@@ -185,6 +195,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="抽 Squad 官方双语术语表 -> packs/glossary.jsonl",
     )
     p.add_argument("--gamedata", default=None, help="GameData 根目录（默认 UI18N_GAMEDATA / 仓库同级 / 本机安装目录）")
+    p.add_argument("--mod", default="Squad", help="要抽取术语的 mod 目录名（默认 Squad，支持任意 mod）")
+    p.add_argument("--dict-path", default=None, help="显式指定字典 cfg 文件路径（默认 <GameData>/<mod>/Localization/dictionary.cfg）")
     p.add_argument("--out", default=None, help="输出文件（默认 packs/glossary.jsonl）")
     p.add_argument("--include-zh-only", action="store_true", help="同时导出只有中文、没有英文注释的字典键（en 为空串）")
     p.add_argument("--short-max-words", type=int, default=SHORT_MAX_WORDS, help="short 判据：最大词数（默认 5）")
@@ -198,7 +210,7 @@ def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
     gamedata = os.path.abspath(args.gamedata or default_gamedata())
     out = os.path.abspath(args.out or default_out())
-    dict_path = dictionary_path(gamedata)
+    dict_path = os.path.abspath(args.dict_path) if args.dict_path else dictionary_path(gamedata, mod=args.mod)
     if not os.path.isdir(gamedata):
         print("[ERR] GameData 不存在: %s" % gamedata)
         return 2
@@ -207,7 +219,7 @@ def main(argv=None) -> int:
         return 2
 
     t0 = time.perf_counter()
-    en, en_stats = collect_en(gamedata)
+    en, en_stats = collect_en(gamedata, mod=args.mod)
     t1 = time.perf_counter()
     zh = collect_zh(dict_path)
     t2 = time.perf_counter()
@@ -227,7 +239,7 @@ def main(argv=None) -> int:
         return 0
     print("[glossary] GameData = %s" % gamedata)
     print("[glossary] 字典    %s" % dict_path)
-    print("[glossary] Squad cfg 文件 %d，其中有英文注释的 %d 个" % (en_stats["squadCfgFiles"], en_stats["cfgWithComment"]))
+    print("[glossary] %s cfg 文件 %d，其中有英文注释的 %d 个" % (args.mod, en_stats["modCfgFiles"], en_stats["cfgWithComment"]))
     print("[glossary] 注释命中 %d 处 -> 唯一英文键 %d（同键不同英文 %d 处，取首次出现）" % (
           en_stats["commentHits"], en_stats["commentUniqueKeys"], en_stats["commentConflicts"]))
     print("[glossary] 字典键 %d（zh-cn 单语言节点）" % st["dictKeys"])

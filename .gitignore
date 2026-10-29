@@ -11,6 +11,9 @@ dist/
 _scratch/
 _audit/
 
+# 更新矩阵的 fixture 发布物（一份 ZIP + 六个场景 manifest，可由 makefixtures.py 重跑再生）
+tests/UpdateMatrix/fixtures/root/
+
 # 机密与本地覆盖
 .env
 .env.local

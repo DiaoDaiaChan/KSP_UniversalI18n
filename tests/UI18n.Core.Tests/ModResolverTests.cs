@@ -93,5 +93,34 @@ namespace UI18n.Core.Tests
             ModResolver resolver = new ModResolver(new List<string> { "Squad", "squad", "SQUAD" });
             Assert.Equal(1, resolver.Count);
         }
+
+        [Fact]
+        public void AliasMapping_ResolvesDifferentNamespaceToTargetMod()
+        {
+            var aliases = new Dictionary<string, string>
+            {
+                { "MuMech", "MechJeb2" },
+                { "KSPDev", "KAS" }
+            };
+            var modIds = new List<string> { "MechJeb2", "KAS", "Squad" };
+            ModResolver resolver = new ModResolver(modIds, aliases);
+
+            // MuMech.MechJebCore.Update -> alias targets MechJeb2
+            Assert.Equal("MechJeb2", resolver.Resolve("MuMech.MechJebCore.Update"));
+            Assert.Equal("KAS", resolver.Resolve("KSPDev.GUI.OnGUI"));
+            // Static overload
+            Assert.Equal("MechJeb2", ModResolver.Resolve("MuMech.MechJebCore.Update", modIds, aliases));
+        }
+
+        [Fact]
+        public void AliasMapping_ReturnsAliasTargetEvenIfNotExplicitlyInModIds()
+        {
+            var aliases = new Dictionary<string, string>
+            {
+                { "MuMech", "MechJeb2" }
+            };
+            ModResolver resolver = new ModResolver(Known, aliases);
+            Assert.Equal("MechJeb2", resolver.Resolve("MuMech.SomeClass.Foo"));
+        }
     }
 }

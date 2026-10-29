@@ -193,10 +193,64 @@ namespace UI18n.Core.Tests
             Assert.False(TextSkeleton.TryBuild("no digits here", out skeleton, out numbers));
             Assert.False(TextSkeleton.TryBuild("   ", out skeleton, out numbers));
 
+            // 数字只在 TMP 标签里（色值）时同样不是模板：前置判据会放它进完整路径，结果必须仍是 false。
+            Assert.False(TextSkeleton.TryBuild("<color=#FF00AA>Low power</color>", out skeleton, out numbers));
+            Assert.Null(skeleton);
+            Assert.Empty(numbers);
+
             // 空白与 <<1>> 原样保留（占比符号不是数字段）
             Assert.True(TextSkeleton.TryBuild("Toggle <<1>> on part 3", out skeleton, out numbers));
             Assert.Equal("Toggle <<#>> on part #", skeleton);
             Assert.Equal(new[] { "1", "3" }, numbers);
+        }
+
+        /// <summary>
+        /// 「没有数字」这条快路径不许分配。
+        /// <para>
+        /// 它是运行期未命中路径上<b>唯一</b>必过的一道：早先是先把 StringBuilder + 槽位数组建起来，
+        /// 扫完才发现 <c>count == 0</c> 再整批丢弃（实测 344~912 B/次，见 <c>_audit/perf/性能与GC调研.md</c>）。
+        /// 现在改成先 <see cref="TextSkeleton.HasDigits"/> 判一次，只多一趟字符扫描、结果逐字不变。
+        /// </para>
+        /// <para>
+        /// 断言给的是 1 KB 的余量而不是严格 0：分层 JIT 可能在测量区间里重新编译被测方法，
+        /// 那点分配与被测代码无关；而一旦退回旧实现，1536 次调用会白扔 ~528 KB，余量远小于回归幅度。
+        /// </para>
+        /// </summary>
+        [Fact]
+        public void NonTemplates_AllocateNothing()
+        {
+            string[] samples =
+            {
+                "Mass Flow: ton/s",
+                "Electrical Charge",
+                "No signal",
+                "\u03b4v budget spent",          // 非 ASCII 也不算
+                "   ",
+                string.Empty,
+            };
+
+            string skeleton;
+            string[] numbers;
+
+            for (int warm = 0; warm < 64; warm++)              // 预热：别把 JIT 的分配算进账
+            {
+                for (int i = 0; i < samples.Length; i++)
+                {
+                    TextSkeleton.TryBuild(samples[i], out skeleton, out numbers);
+                }
+            }
+
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            for (int round = 0; round < 256; round++)
+            {
+                for (int i = 0; i < samples.Length; i++)
+                {
+                    TextSkeleton.TryBuild(samples[i], out skeleton, out numbers);
+                }
+            }
+
+            long delta = GC.GetAllocatedBytesForCurrentThread() - before;
+            Assert.True(delta <= 1024, "无数字的 TryBuild 不该分配，实测 " + delta + " B / 1536 次调用");
         }
 
         /// <summary>FillBack 的三种失败都必须返回 null：半成品译文绝不能显示出去。</summary>

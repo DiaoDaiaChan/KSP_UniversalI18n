@@ -54,6 +54,10 @@ namespace UI18n.Core.Submission
         public IDictionary<string, string> ModFileNames { get; set; } =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>caller 第一段前缀别名映射（例如 MuMech → MechJeb2）。</summary>
+        public IDictionary<string, string> ModAliases { get; set; } =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary>玩家私有标识（存档名 / 飞行器名 / Kerbal 名 / 玩家目录名），§6.3 第二步替换掉。</summary>
         public IList<SubmissionPrivateValue> PrivateValues { get; set; } = new List<SubmissionPrivateValue>();
 
@@ -172,7 +176,7 @@ namespace UI18n.Core.Submission
                 grantedAt = createdAt;
             }
 
-            ModResolver resolver = new ModResolver(options.ModIds);
+            ModResolver resolver = new ModResolver(options.ModIds, options.ModAliases);
 
             List<SubmissionEntry> raw = new List<SubmissionEntry>(64);
             if (jsonLines != null)

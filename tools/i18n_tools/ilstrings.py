@@ -163,7 +163,7 @@ class Resolver:
     # 但 il-candidates.jsonl 因此仍可逐字节复现）。iltranslatable.py 扫描前置 True，
     # 用来让 KSPWheel 的 KSPWheelWearSettings 之类正确连到
     # GameParameters+CustomParameterNode 这条基类链上。
-    NESTED_TYPEREF = False
+    NESTED_TYPEREF = True
 
     def __init__(self, img):
         self.img = img

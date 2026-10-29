@@ -20,10 +20,26 @@
     <RepoRoot>$(MSBuildThisFileDirectory)..\..\</RepoRoot>
     <OutputPath>$(RepoRoot)build\bin\$(Configuration)\</OutputPath>
 
-    <!-- 机器相关路径，可用 -p:KspManagedDir=... 覆盖 -->
-    <KspManagedDir Condition="'$(KspManagedDir)' == ''">D:\Kerbal Space Program_newmod\KSP_x64_Data\Managed</KspManagedDir>
-    <HarmonyDir Condition="'$(HarmonyDir)' == ''">D:\Kerbal Space Program_newmod\GameData\000_Harmony</HarmonyDir>
+    <!-- 机器相关路径：**不写默认值**（写死了换机器就静默指向不存在的目录，报错还指着别人的路径）。
+         取值顺序：-p:KspManagedDir=... / -p:HarmonyDir=... → 环境变量 KSP_MANAGED_DIR / KSP_HARMONY_DIR
+         → 环境变量 KSP_ROOT 推出 Managed 目录。
+         Harmony 装在哪由发布包决定（000_Harmony / Harmony / 000_Harmony2 …），所以**没有**从 KSP_ROOT 猜的默认值，
+         必须用 -p:HarmonyDir 或 KSP_HARMONY_DIR 指明；缺了由下面的 ValidateKspPaths 报错，不让 MSBuild 报一串 CS0246。 -->
+    <KspManagedDir Condition="'$(KspManagedDir)' == '' and '$(KSP_MANAGED_DIR)' != ''">$(KSP_MANAGED_DIR)</KspManagedDir>
+    <KspManagedDir Condition="'$(KspManagedDir)' == '' and '$(KSP_ROOT)' != ''">$(KSP_ROOT)\KSP_x64_Data\Managed</KspManagedDir>
+    <HarmonyDir Condition="'$(HarmonyDir)' == '' and '$(KSP_HARMONY_DIR)' != ''">$(KSP_HARMONY_DIR)</HarmonyDir>
   </PropertyGroup>
+
+  <Target Name="ValidateKspPaths" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(KspManagedDir)' == ''"
+           Text="KspManagedDir 未指定。用 -p:KspManagedDir=&lt;KSP&gt;\KSP_x64_Data\Managed，或设环境变量 KSP_ROOT / KSP_MANAGED_DIR。" />
+    <Error Condition="'$(HarmonyDir)' == ''"
+           Text="HarmonyDir 未指定。Harmony 的安装目录名由发布包决定（000_Harmony / Harmony / 000_Harmony2 …），用 -p:HarmonyDir=&lt;GameData&gt;\&lt;Harmony 目录&gt; 或环境变量 KSP_HARMONY_DIR 指明。" />
+    <Error Condition="!Exists('$(KspManagedDir)\Assembly-CSharp.dll')"
+           Text="$(KspManagedDir) 下没有 Assembly-CSharp.dll —— 这个目录不是 KSP 的 Managed 目录。" />
+    <Error Condition="!Exists('$(HarmonyDir)\0Harmony.dll')"
+           Text="$(HarmonyDir) 下没有 0Harmony.dll —— 这个目录不是 Harmony 的安装目录。" />
+  </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\UI18n.Core\UI18n.Core.csproj" />

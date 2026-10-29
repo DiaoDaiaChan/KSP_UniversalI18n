@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     UI18n.Core 单元测试执行入口（本机唯一可靠路径）。
 
@@ -83,7 +83,7 @@ Write-Host "[run-tests] project : $project"
 # ---- 2. 构建（dotnet build 不受影响；受影响的只有 VSTest testhost 那条运行路径） ----
 if (-not $NoBuild) {
     Write-Host "[run-tests] building ($Configuration) ..."
-    & dotnet build $project -c $Configuration --nologo
+    & dotnet build $project -c $Configuration --nologo --no-restore
     if ($LASTEXITCODE -ne 0) {
         Write-Host "[run-tests] BUILD FAILED (exit $LASTEXITCODE)" -ForegroundColor Red
         exit $LASTEXITCODE
@@ -153,6 +153,55 @@ if (-not $python) {
     } else {
         Write-Host "[run-tests] journal: FAIL (exit $journalCode) —— packs 里的改动没有 journal 事件背书；用 api 重做，别手改" -ForegroundColor Red
         if ($code -eq 0) { $code = $journalCode }
+    }
+}
+
+# ---- 4c. Runtime 影子语义编译（M5-d）：真工程要真实 KSP 的 Managed 程序集，本机没有也编不了；
+#          影子工程（tests/runtime-compile/）用最小桩把 src/UI18n.Runtime 的 8,000 行在 net10.0 上真编一遍，
+#          成员名/参数类型这类语义错当场红。它还会做一次反向对照（故意写错一句 Unity API，必须编红），
+#          再断言 Runtime 的每一个 .cs 都参与了编译（少一个 = glob 被改窄，等于门禁悄悄失效）。
+#          退出码：0 全过 / 1 有失败 / 2 SKIP（本机没有 dotnet）。这里把 2 当**失败**：
+#          上面刚用 dotnet 编过单测，dotnet 必然在；这时报 SKIP 说明是环境坏了，不是「无事可做」。
+$shadowCode = 0
+if (-not $python) {
+    Write-Host '[run-tests] shadow : SKIP（找不到 python，跳过影子语义编译）' -ForegroundColor Yellow
+} else {
+    Push-Location -LiteralPath $root
+    try {
+        & python (Join-Path $root 'tests\runtime-compile\test-shadow-compile.py')
+        $shadowCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($shadowCode -eq 0) {
+        Write-Host '[run-tests] shadow : PASS (exit 0) —— Runtime 语义编译 0 错误，反向对照已编红'
+    } else {
+        Write-Host "[run-tests] shadow : FAIL (exit $shadowCode) —— Runtime 源码或桩有问题；这是真语义编译，不是纯语法校验" -ForegroundColor Red
+        if ($code -eq 0) { $code = $shadowCode }
+    }
+}
+
+# ---- 4d. Runtime 行为场景（R13）：4c 只证明那 29 个 .cs 编得过 —— 它们一行都没被执行过。
+#          这一步把同一批源码 + 同样的桩 + 真 Core 编成 Exe 真跑：包加载 → 三层优先级（ctx>site>global）
+#          → 骨架填回 → keep 行 → per-mod 策略（NATIVE 包加载期跳过）→ 缺命中捕获 → 开关短路 → 条目上限。
+#          场景数据是磁盘上的真 JSONL（h 用产品自己的 Fnv1a 算），KSP 根指向临时目录。
+#          退出码：0 全过 / 1 有失败 / 2 SKIP。同 4c，2 在这里也按失败算（dotnet 刚用过，SKIP 说明环境坏了）。
+$behaviorCode = 0
+if (-not $python) {
+    Write-Host '[run-tests] behavior: SKIP（找不到 python，跳过 Runtime 行为场景）' -ForegroundColor Yellow
+} else {
+    Push-Location -LiteralPath $root
+    try {
+        & python (Join-Path $root 'tests/runtime-behavior/test-runtime-behavior.py')
+        $behaviorCode = $LASTEXITCODE
+    } finally {
+        Pop-Location
+    }
+    if ($behaviorCode -eq 0) {
+        Write-Host '[run-tests] behavior: PASS (exit 0) —— 9 个场景 / 75 条断言全过，反向对照已跑红'
+    } else {
+        Write-Host "[run-tests] behavior: FAIL (exit $behaviorCode) —— Runtime 胶水层行为不对（包加载 / 优先级 / 骨架 / 策略 / 捕获），详见 tests/runtime-behavior/README.md" -ForegroundColor Red
+        if ($code -eq 0) { $code = $behaviorCode }
     }
 }
 

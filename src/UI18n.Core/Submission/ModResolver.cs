@@ -26,11 +26,31 @@ namespace UI18n.Core.Submission
         private readonly Dictionary<string, string> _exact =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        private readonly Dictionary<string, string> _aliases =
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
         private readonly List<string> _byLength = new List<string>();
 
         /// <summary>构造：吃一批 modId（已装语言包文件名派生出来的那些）。</summary>
         public ModResolver(IEnumerable<string> modIds)
+            : this(modIds, null)
         {
+        }
+
+        /// <summary>构造：吃一批 modId 与可选的前缀别名映射（如 MuMech → MechJeb2）。</summary>
+        public ModResolver(IEnumerable<string> modIds, IDictionary<string, string> aliases)
+        {
+            if (aliases != null)
+            {
+                foreach (KeyValuePair<string, string> kv in aliases)
+                {
+                    if (!string.IsNullOrEmpty(kv.Key) && !string.IsNullOrEmpty(kv.Value))
+                    {
+                        _aliases[kv.Key] = kv.Value;
+                    }
+                }
+            }
+
             if (modIds == null)
             {
                 return;
@@ -80,6 +100,16 @@ namespace UI18n.Core.Submission
                 return exact;
             }
 
+            string aliasTarget;
+            if (_aliases.TryGetValue(segment, out aliasTarget))
+            {
+                if (_exact.TryGetValue(aliasTarget, out exact))
+                {
+                    return exact;
+                }
+                segment = aliasTarget;
+            }
+
             for (int i = 0; i < _byLength.Count; i++)
             {
                 string modId = _byLength[i];
@@ -99,6 +129,11 @@ namespace UI18n.Core.Submission
                 }
             }
 
+            if (!string.IsNullOrEmpty(aliasTarget))
+            {
+                return aliasTarget;
+            }
+
             return Unattributed;
         }
 
@@ -106,6 +141,12 @@ namespace UI18n.Core.Submission
         public static string Resolve(string caller, IList<string> modIds)
         {
             return new ModResolver(modIds).Resolve(caller);
+        }
+
+        /// <summary>便捷：带别名的一次性解析。</summary>
+        public static string Resolve(string caller, IList<string> modIds, IDictionary<string, string> aliases)
+        {
+            return new ModResolver(modIds, aliases).Resolve(caller);
         }
 
         /// <summary>caller 的第一段（第一个 <c>.</c> 之前；没有点就是整串）。</summary>

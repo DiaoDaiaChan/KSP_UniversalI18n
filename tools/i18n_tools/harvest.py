@@ -12,7 +12,7 @@ r"""P0 抽取 + P1 归一化 + P2 过滤：产出翻译候选池 packs/pool.json
 
 用法（在 UniversalI18n\tools 下）：
     python -m i18n_tools.harvest
-    python -m i18n_tools.harvest --gamedata "D:\Kerbal Space Program_newmod\GameData"
+    python -m i18n_tools.harvest --gamedata "<KSP 根>\GameData"
     python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl   # 与既有产物逐行比对
     python -m i18n_tools.harvest --quiet
 """
@@ -63,33 +63,36 @@ def repo_root() -> str:
     return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-# 仓库搬出游戏根之后，“仓库上一级 = 游戏根”的推断会失效（会指向一个不存在的 GameData），
-# 所以默认解析加一级回退：本机已知的 KSP 安装目录（只在目录真实存在时生效）。
-# 换机器 / 换安装位置时请用 --gamedata 或环境变量 UI18N_GAMEDATA 指定，不要改这张表。
-KSP_GAMEDATA_FALLBACKS = (r"D:\Kerbal Space Program_newmod\GameData",)
+# 仓库搬出游戏根之后，“仓库上一级 = 游戏根”的推断会失效（会指向一个不存在的 GameData）。
+# 处置方式是**让调用方显式指明**（--gamedata / UI18N_GAMEDATA / KSP_GAMEDATA / KSP_ROOT），
+# 而不是在代码里放一张「本机已知安装目录」表：那种表换机器就失效，而且失效时不报错 ——
+# 它只是安静地解析出一个不存在的目录，报错信息还指向一个别人机器上的路径。
 
 
 def default_gamedata() -> str:
     r"""默认 GameData，按优先级解析：
 
-    ① 环境变量 UI18N_GAMEDATA（显式指定，永远最高优先）
-    ② <仓库上一级>\GameData —— 仓库还放在游戏根里时的传统布局
-    ③ KSP_GAMEDATA_FALLBACKS 里第一个真实存在的目录（本机安装位置）
+    ① 环境变量 UI18N_GAMEDATA 或 KSP_GAMEDATA（显式指定，永远最高优先）
+    ② 环境变量 KSP_ROOT 下的 GameData 目录
+    ③ <仓库上一级>\GameData —— 仓库还放在游戏根里时的传统布局
 
-    历史：仓库原先在 <游戏根>\UniversalI18n 下，② 恒成立；2026-10 仓库迁到
-    C:\Users\43701\Documents\github\UniversalI18n 后 ② 会得到 C:\Users\43701\Documents\github\GameData
-    （不存在），因此必须有 ③，否则所有不带 --gamedata 的命令都会报找不到 GameData。
-    解析不出来时返回 ②，让上层照常打印“找不到 GameData 目录”的错误。
+    历史：仓库原先在 <游戏根>\UniversalI18n 下，③ 恒成立；仓库独立出去之后 ③ 通常不成立，
+    于是**必须由调用方指明**（①/② 或 --gamedata）。这里刻意不再放“本机常见安装目录”的回退表：
+    换机器时它只会静默指向一个不存在的路径，比直接报错更难查。
+    都解析不出来时返回 ③，让上层照常打印“找不到 GameData 目录”的错误。
     """
-    from_env = os.environ.get("UI18N_GAMEDATA")
-    if from_env:
-        return os.path.abspath(from_env)
+    for env_var in ("UI18N_GAMEDATA", "KSP_GAMEDATA"):
+        from_env = os.environ.get(env_var)
+        if from_env:
+            return os.path.abspath(from_env)
+    ksp_root = os.environ.get("KSP_ROOT")
+    if ksp_root:
+        candidate = os.path.join(os.path.abspath(ksp_root), "GameData")
+        if os.path.isdir(candidate):
+            return candidate
     beside_repo = os.path.join(os.path.dirname(repo_root()), "GameData")
     if os.path.isdir(beside_repo):
         return beside_repo
-    for cand in KSP_GAMEDATA_FALLBACKS:
-        if os.path.isdir(cand):
-            return cand
     return beside_repo
 
 
@@ -165,7 +168,7 @@ def discover(gamedata: str):
 # ---------------------------------------------------------------------------
 # 源一：Localization 语言并集
 # ---------------------------------------------------------------------------
-def collect_localization(mod_names, groups, parse_stats):
+def collect_localization(mod_names, groups, parse_stats, allow_paren_keys=False):
     """按 mod 求语言并集，返回差集候选与统计。
 
     返回 (cands, mod_table, counters, zh_values)：
@@ -212,7 +215,7 @@ def collect_localization(mod_names, groups, parse_stats):
                         if _ASCII_KEY_RE.match(key) is None:
                             non_ascii_keys += 1
                             continue
-                        if _PAREN_KEY_RE.search(key) is not None:
+                        if not allow_paren_keys and _PAREN_KEY_RE.search(key) is not None:
                             paren_keys += 1
                             continue
                         if lname == LANG_ZH:
@@ -541,6 +544,7 @@ def main(argv=None) -> int:
     ap.add_argument("--verify", default=None, help="与一份既有 pool.jsonl 逐行比对")
     ap.add_argument("--limit", type=int, default=10, help="--verify 时最多打印几条差异")
     ap.add_argument("--quiet", action="store_true", help="只写文件，不打印统计")
+    ap.add_argument("--allow-paren-keys", action="store_true", help="允许带圆括号的键进入本地化候选（默认按既有口径过滤）")
     args = ap.parse_args(argv)
 
     gamedata = args.gamedata or default_gamedata()
@@ -563,7 +567,8 @@ def main(argv=None) -> int:
     parse_stats = cfgparse.ParseStats()
 
     t1 = time.perf_counter()
-    loc_cands, mod_table, counters, zh_values = collect_localization(mod_names, groups, parse_stats)
+    loc_cands, mod_table, counters, zh_values = collect_localization(
+        mod_names, groups, parse_stats, allow_paren_keys=args.allow_paren_keys)
     t_loc = time.perf_counter() - t1
 
     t2 = time.perf_counter()

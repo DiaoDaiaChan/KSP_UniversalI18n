@@ -154,7 +154,7 @@ drop/packindex/audit（删冗余键行、生成清单与覆盖率、审计 97 �
 packs/<lang>/<mod>.jsonl  ──►  GitHub Actions 六道门禁 ──►  发行包
 ```
 
-CI 见 `.github/workflows/i18n.yml`：push / 每周 schedule 跑 `gates`（python 侧六道门禁：selftest + audit --selftest + audit + packindex + golden + journal，不联网不写仓库）与 `code`（Core 编译 + 897 例单测；Runtime 要真实 KSP 安装，进不了 CI）两个 job；`translate`（LLM 批量翻译 + 回写）只在 `workflow_dispatch` 且勾选 translate 时跑。
+CI 见 `.github/workflows/i18n.yml`：push / 每周 schedule 跑 `gates`（python 侧八道门禁：selftest + audit --selftest + audit --strict-terms + packindex --check + mmgen --stats + netkan --template + policy --check + golden/journal，不联网不写仓库）与 `code`（Core 编译 + 1005 例单测；Runtime 要真实 KSP 安装，进不了 CI）两个 job；`translate`（LLM 批量翻译 + 直接回写 main）只在 `workflow_dispatch` 且勾选 translate 时跑；`refresh`（每周自动送翻 → 出包 → 门禁 → **开 PR 让人审**，不碰 main）默认关，仓库变量 `UI18N_WEEKLY_TRANSLATE=on` 才跑；`release-check`（核对已发布资产的 CKAN 元数据）手动触发。
 
 ## 你也可以投稿（把你这台机器上的英文串交回来）
 

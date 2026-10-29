@@ -1,14 +1,15 @@
 {
+  "spec_version": "v1.34",
   "identifier": "UI18n",
   "name": "UI18n",
+  "version": "@VERSION@",
   "abstract": "Runtime i18n layer for KSP mods: Harmony render-layer interception plus a JSONL data dictionary (zh-cn first). No original mod is modified.",
   "author": "@AUTHOR@",
   "license": "@LICENSE@",
   "release_status": "testing",
   "ksp_version": "@KSP_VERSION@",
   "depends": [
-    { "name": "Harmony2" },
-    { "name": "ModuleManager" }
+    { "name": "Harmony2" }
   ],
   "install": [
     { "file": "GameData", "install_to": "GameData" }

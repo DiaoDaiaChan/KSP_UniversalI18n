@@ -39,21 +39,16 @@ namespace UI18n.Runtime.Fonts
         /// <summary>「推」：第二个样本，避免某些字面只带少量汉字却恰好含「中」。</summary>
         private static readonly char ProbeChar2 = '\u63A8';
 
-        /// <summary>内置候选顺序（Lead 指定；<c>OsFontName</c> 配的值排在它们前面）。</summary>
-        private static readonly string[] DefaultOsFontCandidates =
-        {
-            "Microsoft YaHei",
-            "Microsoft YaHei UI",
-            "SimHei",
-            "Noto Sans SC",
-            "DengXian",
-            "SimSun",
-            "Microsoft JhengHei",
-        };
+        /// <summary>
+        /// 回退候选顺序（配置键 <c>OsFonts</c>；出厂默认在 Core 的 <see cref="FontDefaults"/> 里）。
+        /// <b>这里不再抄一份名单</b>：以前代码里一份、Config.cfg 注释里一份，改一边忘一边就会出现
+        /// 「文档说会试 SimHei，实际根本没试」。首选 <c>OsFontName</c> 会被排到这张表前面（去重后）。
+        /// </summary>
+        private static string[] _osFontCandidates = FontDefaults.NewOsFontCandidates();
 
         private static FontMode _mode = FontMode.OsFont;
         private static TmpMode _tmpMode = TmpMode.Auto;
-        private static string _preferredOsFont = "Microsoft YaHei";
+        private static string _preferredOsFont = FontDefaults.OsFontName;
         private static string _bundledPath = string.Empty;
 
         private static string[] _installedOsFonts;
@@ -90,7 +85,10 @@ namespace UI18n.Runtime.Fonts
 
             _mode = c.FontMode;
             _tmpMode = c.TmpMode;
-            _preferredOsFont = string.IsNullOrEmpty(c.OsFontName) ? "Microsoft YaHei" : c.OsFontName.Trim();
+            _preferredOsFont = string.IsNullOrEmpty(c.OsFontName) ? FontDefaults.OsFontName : c.OsFontName.Trim();
+            _osFontCandidates = (c.OsFonts == null || c.OsFonts.Length == 0)
+                ? FontDefaults.NewOsFontCandidates()
+                : c.OsFonts;
             _bundledPath = c.BundledFontPath == null ? string.Empty : c.BundledFontPath.Trim();
             _installedOsFonts = null;
             OsFontBySize.Clear();
@@ -117,7 +115,7 @@ namespace UI18n.Runtime.Fonts
             BundledFailed = 0;
 
             Log.Info("font mode=" + ConfigEnums.ToName(_mode) + ", tmp mode=" + ConfigEnums.ToName(_tmpMode)
-                     + ", os font=\"" + _preferredOsFont + "\""
+                     + ", os font=\"" + _preferredOsFont + "\", candidates=" + BuildCandidates().Length
                      + (_mode == FontMode.Bundled ? ", bundled path=\"" + _bundledPath + "\"" : string.Empty));
         }
 
@@ -283,17 +281,24 @@ namespace UI18n.Runtime.Fonts
 
         private static string[] BuildCandidates()
         {
-            var list = new List<string>(DefaultOsFontCandidates.Length + 1);
+            string[] configured = _osFontCandidates ?? new string[0];
+            var list = new List<string>(configured.Length + 1);
             if (!string.IsNullOrEmpty(_preferredOsFont))
             {
                 list.Add(_preferredOsFont);
             }
 
-            for (int i = 0; i < DefaultOsFontCandidates.Length; i++)
+            for (int i = 0; i < configured.Length; i++)
             {
-                if (!list.Contains(DefaultOsFontCandidates[i]))
+                string name = configured[i];
+                if (string.IsNullOrEmpty(name))
                 {
-                    list.Add(DefaultOsFontCandidates[i]);
+                    continue;
+                }
+
+                if (!list.Contains(name))
+                {
+                    list.Add(name);
                 }
             }
 
@@ -371,6 +376,40 @@ namespace UI18n.Runtime.Fonts
                     BundledFailed++;
                     Log.Warn("font: bundled font not found: " + path + " → falling back to OsFont");
                     return null;
+                }
+
+                // 完整性校验（M5-b）：同目录的 fonts.json 登记了文件名/字节数/sha256。
+                // 清单在但内容对不上 ⇒ 不载入（被换过的 AssetBundle 载入后只会是满屏方框或莫名崩溃）；
+                // 清单不在 ⇒ 老配置照旧载入，只记一次警告（红线 6：配置/数据缺失只降级不阻断）。
+                string bundleDir = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(bundleDir))
+                {
+                    string manifestError;
+                    FontBundleManifest manifest = FontBundle.LoadManifest(bundleDir, out manifestError);
+                    if (manifest == null)
+                    {
+                        Log.Warn("font: bundled font manifest missing (" + manifestError
+                                 + ") → loading without integrity check: " + path);
+                    }
+                    else if (!string.Equals(manifest.FileName, Path.GetFileName(path), StringComparison.Ordinal))
+                    {
+                        BundledFailed++;
+                        Log.Warn("font: bundled manifest points to \"" + manifest.FileName + "\" but BundledFontPath is \""
+                                 + Path.GetFileName(path) + "\" → falling back to OsFont");
+                        return null;
+                    }
+                    else
+                    {
+                        FontBundleCheck check = FontBundle.Check(bundleDir, false);
+                        if (!check.Ok)
+                        {
+                            BundledFailed++;
+                            Log.Warn("font: bundled font rejected: " + check.Describe() + " → falling back to OsFont");
+                            return null;
+                        }
+
+                        Log.Info("font: bundled font verified (" + check.Describe() + ")");
+                    }
                 }
 
                 AssetBundle bundle = AssetBundle.LoadFromFile(path);

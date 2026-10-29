@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     收一份来自 GitHub Issue 的玩家投稿（下载附件 → api submit accept → 可选回评论）。
 

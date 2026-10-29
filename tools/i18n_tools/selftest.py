@@ -33,9 +33,9 @@ import sys
 import tempfile
 
 from . import (api, audit, backend, candidates, capture_ingest, cfgparse, check_overrides, engine,
-                ensure_stdout, fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta,
-                ilstrings, journal_gate, merge_overrides, packindex, render_coverage, submission,
-                textnorm)
+                ensure_stdout, feedback, fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta,
+                fontbundle, fontcov, ilstrings, journal_gate, merge_overrides, mmgen, modmap, netkan, packindex, policy,
+                render_coverage, submission, textnorm)
 
 _CHECKED = 0
 _FAILED: list[str] = []
@@ -791,8 +791,63 @@ def test_capture_real():
           not raw.startswith(b"\xef\xbb\xbf") and b"\r" not in raw and raw.endswith(b"\n"))
 
 
+def test_conventions_single_source():
+    """12 条约定术语 + 11 条别名必须**只有一份数据源**（packs/conventions.jsonl、packs/convention-aliases.jsonl）。
+
+    为什么单列一条自检：这两张表曾经在 translate.py（拼 prompt 用）和 engine.py（G7 判定用）
+    各抄一份字面量，两份副本会漂 —— 而漂了不会报错，只会让「模型被教成一个译法、门禁按另一个
+    译法判」这种自相矛盾的状态静默存在（实测撞过 Apoapsis 远地点 / 远拱点）。所以除了核对
+    "读到的表与数据一致"，还要把「代码里不许再出现成对字面量」钉住。
+    """
+    print("[conventions] 约定术语与别名：单一数据源")
+    from . import conventions as conv
+    from . import translate
+
+    pairs = conv.convention_pairs()
+    eq("约定术语条数", len(pairs), 12)
+    eq("translate.CONVENTIONS 与数据一致", dict(translate.CONVENTIONS), dict(pairs))
+    eq("GateRules.CONVENTIONS 与数据一致", dict(engine.GateRules.CONVENTIONS), dict(pairs))
+    aliases = conv.load_aliases()
+    eq("translate.CONVENTION_ALIASES 与数据一致", dict(translate.CONVENTION_ALIASES), dict(aliases))
+    eq("GateRules.CONVENTION_ALIASES 与数据一致", dict(engine.GateRules.CONVENTION_ALIASES), dict(aliases))
+    check("别名的 key 都是约定术语", set(aliases) <= set(dict(pairs)),
+          str(sorted(set(aliases) - set(dict(pairs)))))
+    check("约定表与别名表都非空（空表 = G7 静默失效）", bool(pairs) and bool(aliases))
+
+    # 代码里不许再有 ("Booster", "助推器") 这种成对字面量 —— 否则下次改数据又只有一边生效
+    here = os.path.dirname(os.path.abspath(__file__))
+    offenders = []
+    # 只扫「必须由数据驱动」的那两处，且只扫 production 段：translate.py 自己的 selftest
+    # 里还有 Glossary([("Apoapsis", "远地点"), ...]) 这种夹具行，那是测试数据，不算副本。
+    for name, stop_marker in (("translate.py", "def selftest("), ("engine.py", "def selftest(")):
+        with open(os.path.join(here, name), encoding="utf-8") as fh:
+            text = fh.read()
+        cut = text.find(stop_marker)
+        if cut > 0:
+            text = text[:cut]
+        for en, zh in pairs:
+            if ('"' + en + '", "' + zh + '"') in text:
+                offenders.append(name + ":" + en)
+    eq("代码里没有约定术语字面量副本", offenders, [])
+    prompt = translate.system_prompt(None)
+    missing_pairs = [en for en, zh in pairs if "{}={}".format(en, zh) not in prompt]
+    eq("system prompt 的约定段由数据生成（12 条一条不少）", missing_pairs, [])
+
+    # 缺表要说清楚，不能静默空跑；translate_il 的 G6 豁免另走 missing_ok=True
+    missing = os.path.join(tempfile.gettempdir(), "ui18n_no_such_conventions.jsonl")
+    if os.path.exists(missing):
+        os.remove(missing)
+    try:
+        conv.load_conventions(missing)
+        raised = False
+    except FileNotFoundError:
+        raised = True
+    check("约定表缺失时直接报错（不静默空跑）", raised)
+    eq("missing_ok=True 时返回空表", conv.load_conventions(missing, missing_ok=True), {})
+
+
 def test_extra_tools():
-    """把后加的 python 工具的 selftest 并进门禁（check_overrides / harvest_cfgcache / merge_overrides / golden_gate / candidates / render_coverage / api / journal_gate）。
+    """把后加的 python 工具的 selftest 并进门禁（check_overrides / harvest_cfgcache / merge_overrides / golden_gate / candidates / render_coverage / api / journal_gate / mmgen）。
 
     为什么放在这里：CI 只跑 `python -m i18n_tools.selftest`。新工具各自的 --selftest 若没人调用，
     逻辑坏了也永远绿着——v1.4 的译文门禁（check_overrides）与 ConfigCache 通道（harvest_cfgcache）
@@ -812,7 +867,14 @@ def test_extra_tools():
                ("backend", backend.selftest),
                ("api", api.selftest),
                ("journal_gate", journal_gate.selftest),
-               ("submission", submission.selftest))
+               ("submission", submission.selftest),
+               ("mmgen", mmgen.selftest),
+               ("policy", policy.selftest),
+               ("modmap", modmap.selftest),
+               ("feedback", feedback.selftest),
+               ("fontbundle", fontbundle.selftest),
+               ("fontcov", fontcov.selftest),
+               ("netkan", netkan.selftest))
     for name, runner in runners:
         buffer = io.StringIO()
         try:
@@ -846,6 +908,7 @@ def main(argv=None) -> int:
         test_terms(os.path.join(base, "terms_selftest"))
     finally:
         shutil.rmtree(base, ignore_errors=True)
+    test_conventions_single_source()
     test_extra_tools()
     test_artifacts()
     test_packindex_real()

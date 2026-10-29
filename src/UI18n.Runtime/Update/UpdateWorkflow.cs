@@ -32,7 +32,8 @@ namespace UI18n.Runtime.Update
     /// 1) 任何失败只 Warn + 保留旧包，<b>绝不抛异常</b>（异常在 <see cref="Run"/> 全部兜住）；
     /// 2) <b>先全量校验再写盘</b>：zip 里所有要装的包先在内存里按 manifest 的 bytes + sha256 验完，
     ///    任何一条不过就一个字节都不写；
-    /// 3) 单个文件写入是原子替换（先写 <c>.tmp</c> 再 rename），不会出现半个文件；
+    /// 3) 整批写盘走 <see cref="PackInstallTransaction"/>：所有内容先落 <c>.ui18n-new</c>，再逐条替换（旧文件留 <c>.ui18n-bak</c>），
+    ///    回读校验通过才删备份；**任何一步失败按逆序回滚**，所以不会出现「一半新版一半旧版」的包目录；
     /// 4) 只装 <c>Packs/&lt;lang&gt;/&lt;modId&gt;.jsonl</c>，绝不碰 Plugins / dll / 配置。
     /// </para>
     /// </summary>
@@ -322,85 +323,39 @@ namespace UI18n.Runtime.Update
             return false;
         }
 
-        /// <summary>逐个文件写盘；返回写入个数，失败返回 -1（已成功写入的保留，日志会说明）。</summary>
+        /// <summary>
+        /// 用 <see cref="PackInstallTransaction"/> 把整批文件写进包目录：**要么全装、要么一个字节都不动**。
+        /// 返回写入个数，失败返回 -1（此时事务已把磁盘恢复成安装前的样子）。
+        /// </summary>
         private static int InstallFiles(UpdateEnvironment env, string packsDirectory, List<PlannedFile> planned)
         {
-            string fullRoot;
-            try
+            // 上一次被打断（关机 / 杀进程）留下的临时物先收拾：有备份且目标缺失就还原，其余删掉。
+            int restoredStale;
+            int removedStale = PackInstallTransaction.CleanStale(packsDirectory, out restoredStale);
+            if (removedStale > 0 || restoredStale > 0)
             {
-                Directory.CreateDirectory(packsDirectory);
-                fullRoot = Path.GetFullPath(packsDirectory);
+                UpdateLog.Info("update: cleaned " + removedStale.ToString(CultureInfo.InvariantCulture)
+                    + " stale temporary file(s), restored " + restoredStale.ToString(CultureInfo.InvariantCulture) + " backup(s)");
             }
-            catch (Exception ex)
+
+            List<InstallPlanFile> files = new List<InstallPlanFile>(planned.Count);
+            for (int i = 0; i < planned.Count; i++)
             {
-                UpdateLog.Warn("update: cannot prepare packs directory ("
-                    + ex.GetType().Name + ": " + ex.Message + ") -> keeping existing packs");
+                files.Add(new InstallPlanFile(planned[i].FileName, planned[i].Content));
+            }
+
+            InstallTransactionResult result = PackInstallTransaction.Commit(packsDirectory, files);
+            if (!result.Ok)
+            {
+                UpdateLog.Warn("update: install failed (" + result.Reason + ") -> "
+                    + (result.RolledBack
+                        ? result.Restored.ToString(CultureInfo.InvariantCulture) + " file(s) were restored, packs are exactly as before"
+                        : "no file was touched"));
                 return -1;
             }
 
-            int installed = 0;
-            for (int i = 0; i < planned.Count; i++)
-            {
-                PlannedFile file = planned[i];
-                string target = Path.Combine(fullRoot, file.FileName);
-                string targetFull = Path.GetFullPath(target);
-
-                // 双保险：文件名已过 ZipSafety 校验，这里再确认落点确实在包目录里
-                if (!targetFull.StartsWith(fullRoot, StringComparison.OrdinalIgnoreCase))
-                {
-                    UpdateLog.Warn("update: refusing to write outside the packs directory (" + file.FileName + ") -> keeping existing packs");
-                    return -1;
-                }
-
-                string temp = targetFull + ".tmp";
-                try
-                {
-                    File.WriteAllBytes(temp, file.Content);
-                    if (File.Exists(targetFull))
-                    {
-                        try
-                        {
-                            File.Replace(temp, targetFull, null);
-                        }
-                        catch (Exception replaceEx)
-                        {
-                            // 某些文件系统不支持 Replace：退化到「先删再移」，仍然只暴露完整文件
-                            UpdateLog.Info("update: File.Replace unsupported (" + replaceEx.GetType().Name + "), falling back to delete+move");
-                            File.Delete(targetFull);
-                            File.Move(temp, targetFull);
-                        }
-                    }
-                    else
-                    {
-                        File.Move(temp, targetFull);
-                    }
-
-                    installed++;
-                }
-                catch (Exception ex)
-                {
-                    TryDelete(temp);
-                    UpdateLog.Warn("update: write failed (" + file.FileName + ": " + ex.GetType().Name + ": " + ex.Message
-                        + ") -> " + installed.ToString(CultureInfo.InvariantCulture) + " of " + planned.Count.ToString(CultureInfo.InvariantCulture) + " file(s) were installed");
-                    return -1;
-                }
-            }
-
-            return installed;
-        }
-
-        private static void TryDelete(string path)
-        {
-            try
-            {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-            }
-            catch
-            {
-            }
+            UpdateLog.Info("update: " + result.Describe());
+            return result.Installed;
         }
 
         /// <summary>把 zip 存到 downloads/ 留证据（失败只 Warn，不影响安装结果）。</summary>

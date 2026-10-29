@@ -1,0 +1,19 @@
+{
+  "_comment": "capture_ingest 的噪声骨架规则（数据，非代码）。代码里只保留形态类默认值（loading / profiler）；",
+  "_comment2": "具体某个 mod 的诊断、遥测串一律登记在这里 —— 加一条就够，不需要改 .py。",
+  "_comment3": "label 会出现在分诊报告里；desc 是报告正文的展示名；regex 按 re.I 编译。",
+  "rules": [
+    {
+      "label": "ModuleManager",
+      "regex": "modulemanager",
+      "desc": "ModuleManager 的补丁统计 / 日志行",
+      "why": "\"ModuleManager: 8448 patches applied\" 这类诊断串；翻了没有观感收益。"
+    },
+    {
+      "label": "RDR",
+      "regex": "\\bRDR\\b",
+      "desc": "仪表读数标签（RDR 遥测）",
+      "why": "实测来自 ModularFlightPanel 的仪表标签（packs/zh-cn/ModularFlightPanel.il.jsonl 有 RDR {ALT:AGL:DIST}），不是一句可译的话。"
+    }
+  ]
+}

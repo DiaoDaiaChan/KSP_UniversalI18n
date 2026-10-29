@@ -115,7 +115,8 @@ namespace UI18n.Core.Dict
                 translation,
                 Get(map, "mod"),
                 Get(map, "ctx"),
-                IsPatternFlag(Get(map, PatternKey)));
+                IsPatternFlag(Get(map, PatternKey)),
+                Get(map, "src"));
 
             return Status.Ok;
         }

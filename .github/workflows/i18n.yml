@@ -5,10 +5,12 @@
 #   * 翻译 / 门禁 / 清单 / 覆盖报告全部是纯 python 标准库，跑得进 CI —— 所以 CI 只做这一段。
 #   * 分发：packs/index.json 是发布清单（每包 sha256），游戏内联网更新读它（v1.2，见 src/UI18n.Runtime/Update/）。
 #
-# 三个触发器：
+# 四个入口：
 #   push      → 只跑门禁（不联网、不写仓库）：谁改了字典或工具，立刻知道有没有把包改坏。
-#   schedule  → 每周一次门禁（防依赖或数据静默漂移）。
-#   dispatch  → 手工确认后真调用 LLM 翻译，回写 packs/ 并 commit（translate=true）。
+#   schedule  → 每周一次门禁（防依赖或数据静默漂移）；仓库变量 UI18N_WEEKLY_TRANSLATE=on 时
+#               额外跑 refresh：送翻 → 出包 → 门禁 → 开 PR（不直写 main，要人审）。
+#   dispatch  → 手工确认后真调用 LLM 翻译，回写 packs/ 并 commit（translate=true）；
+#               填 version 则跑 release-check 核对已发布资产的 CKAN 元数据。
 name: i18n
 
 on:
@@ -18,6 +20,10 @@ on:
         description: "真调用 LLM 翻译并回写 packs（取消勾选则只跑门禁）"
         type: boolean
         default: false
+      version:
+        description: "release-check 用：要核对的已发布版本号（例如 1.7.0）。门禁与翻译不需要它"
+        type: string
+        required: false
   push:
     branches: [main]
     paths:
@@ -89,6 +95,60 @@ jobs:
         working-directory: tools
         run: python -m i18n_tools.packindex --check
 
+      # 原生语言节点（docs/11 M1-a）：池里的 #LOC_* 键靠记忆表桥到中文，生成
+      # GameData/UI18n/Packs/<lang>/Native/<Mod>.cfg。产物不入库，这里只守一件事：
+      # 桥接比例没有塌。阈值 0.85 是余量（当前 88.1%），掉下来说明池与记忆表的
+      # 连接坏了，而不是「今天没翻译」——后者只影响新增行，不会让整体比例掉 3 个点。
+      - name: 原生语言节点桥接率（mmgen --stats --min-cover 0.85）
+        working-directory: tools
+        run: python -m i18n_tools.mmgen --stats --min-cover 0.85
+
+      # CKAN 元数据模板（docs/11 M3-a）：模板字段缺了 / 占位符拼错 / depends 混进
+      # ModuleManager，都要在提交 CKAN-meta PR 之前红，而不是等 CKAN 索引报错。
+      - name: netkan 模板校验（check-netkan --template）
+        working-directory: tools
+        run: python -m i18n_tools.netkan --template
+
+      # per-mod 仲裁 policy（docs/00 §8.3）是派生物：packs/policies.json 由 tools/i18n_tools/policy.py 重算。
+      # 派生数据一旦过期，后面所有「按 policy 决定要不要翻」的判断都建立在错的分类上，所以和 packindex --check 一样当门。
+      - name: per-mod 策略数据最新（policy --check）
+        working-directory: tools
+        run: python -m i18n_tools.policy --check
+
+      # 随包字体（docs/11 M5-b）：fonts.json 登记的 sha256 / 字节数 / 许可证必须与盘上文件一致。
+      # 还没发布随包字体时（默认 FontMode=OsFont）工具只打一行提示并 exit 0 —— 缺资产不是失败，
+      # 只有「清单在但内容对不上」才判红（换过字库的 AssetBundle 载入后是满屏方框，比不载更糟）。
+      - name: 随包字体清单（fontbundle --check）
+        working-directory: tools
+        run: python -m i18n_tools.fontbundle --check
+
+      # 字库覆盖的字符集（docs/11 M5-e）：packs/charset-zh-cn.txt 是「译文实际用到哪些字」的
+      # 派生产物。新译文引入新字、产物没重算，随包子集字库就会缺字 —— 那是玩家眼里的零星方框，
+      # 而 fontbundle 的 sha256 校验对此一无所知（文件本身没问题，是覆盖不够）。
+      # 这一步只在「包变了、产物没跟上」时红；真验一份字体用 fontcov --probe <字体文件>（要字体，进不了 CI）。
+      - name: 字库字符集最新（fontcov --check）
+        working-directory: tools
+        run: python -m i18n_tools.fontcov --check
+
+      # 编码卫生：Windows PowerShell 5.1 的 -File 按系统 ANSI 码页解码脚本，.ps1 没有
+      # UTF-8 BOM 时中文串可能吃掉后面的引号，整份文件 parse 失败（本仓库踩过两次：
+      # release-checks.ps1 建库起就没 BOM；tools.edit 每次改脚本都会剥掉 BOM）。
+      - name: .ps1 编码卫生（全部带 UTF-8 BOM）
+        run: python tests/encoding/test-ps1-bom.py
+
+      # 通用性门禁：本仓库是「给任何 KSP mod 加中文」的 mod，不是给某一个 mod 写的。
+      # 2026-10 的硬编码审计（_audit/hardcode/）结论是 P0/P1 清零、src/ 非注释代码里一个
+      # mod 名都不剩；但没有门禁就只干净一次。这里把那次审计的不变量钉成可重复执行的检查：
+      #   A  src/ 代码（去注释后）不许出现任何已知 modId / 知名 mod 名
+      #   A2 tools/ 的 if/elif 分支与 add_argument 默认值里不许出现 mod 名
+      #   B  代码里不许写死装机路径（C:\Users\... / D:\Kerbal Space Program / D:\Games\...）
+      #   C  src 的 new Regex(...) 必须落在 static 字段上（否则每次文本出口都分配一个 Regex）
+      # 先跑 --self-test：它会合成一棵违规树，证明这条门禁真的会红（不会红的门禁等于没有）。
+      - name: 通用性门禁（不许写死某个 mod / 装机路径 / 每次 new Regex）
+        run: |
+          python tests/hardcode/test-no-mod-hardcode.py --self-test
+          python tests/hardcode/test-no-mod-hardcode.py
+
       # 用户报过的每一条原文（tests/golden/rendered-strings.txt）都要过三步：
       #   ① capture_ingest 判出的 bucket 可留档（candidate/template/never，被丢才算挂）
       #   ② packs/candidates.jsonl 里有它的 h
@@ -135,18 +195,22 @@ jobs:
           {
             echo "### i18n 门禁"
             echo ""
-            echo "六道门按顺序执行：selftest（含 golden_gate / api / journal_gate / backend 自检）→ audit --selftest（1 正例 + 8 负例 + 术语负例）→ audit --strict-terms（包内容 + packs/terms.jsonl 消歧术语）→ packindex --check（清单与磁盘一致）→ golden（用户报过的原文三步判定；缺 packs/candidates.jsonl 时记 SKIP，不算红）→ journal（packs 改动必须有 journal 事件背书；没有父提交时记 SKIP，不算红）。"
+            echo "门禁按顺序执行：selftest（含 golden_gate / api / journal_gate / backend / mmgen 自检）→ audit --selftest（1 正例 + 8 负例 + 术语负例）→ audit --strict-terms（包内容 + packs/terms.jsonl 消歧术语）→ packindex --check（清单与磁盘一致）→ mmgen --stats --min-cover（原生语言节点桥接率）→ netkan --template（CKAN 模板）→ policy --check（per-mod 策略数据最新）→ fontbundle --check（随包字体清单与文件一致）→ fontcov --check（字库字符集产物与包内容一致）→ ps1-bom（全部 .ps1 带 UTF-8 BOM）→ 通用性（不许写死某个 mod / 装机路径 / 每次 new Regex）→ golden（用户报过的原文三步判定；缺 packs/candidates.jsonl 时记 SKIP，不算红）→ journal（packs 改动必须有 journal 事件背书；没有父提交时记 SKIP，不算红）。"
             echo ""
             echo "任何一步红都表示「字典被改坏了」，不要把红当环境问题。详细输出见各步骤日志。"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # Core 与单测能进 CI；Runtime 不能 —— 它引用真实 KSP 安装的 Managed/*.dll
+  # Core 与单测能进 CI；真实的 Runtime 工程不能 —— 它引用真实 KSP 安装的 Managed/*.dll
   # （Assembly-CSharp.dll / UnityEngine.*.dll），CI 里没有那份 10.8 MB 的程序集，
-  # 也没有 .NET Framework 4.7.2 目标包（Runtime 只 net472）。所以这里只校验
-  # 「能进 CI 的那半」：Core（net10.0）+ 811 例单测。Runtime 的编译门禁只能在本地跑
-  # （docs/06 §构建契约）。这不是遗漏，是 KSP mod 的物理约束。
+  # 也没有 .NET Framework 4.7.2 目标包（Runtime 只 net472）。
+  # 从 M5-d 起多一层：tests/runtime-compile/ 用一组最小桩把 Unity / KSP / Harmony 里
+  # **我们真正用到的那部分形状**顶住，于是在 ubuntu 上用 net10.0 也能把 8,000 行 Runtime
+  # 源码真编一遍 —— 成员名写错、参数类型不匹配（CS0117 / CS1503 / CS1061）当场红，
+  # 而不是像过去那样只做 csc 纯语法校验、等真机编译才发现。
+  # 桩不是真实签名：它证明「我们自己这套代码内部自洽」，最终仍以真机编译为准
+  # （docs/06 §构建契约、tests/runtime-compile/README.md）。
   code:
-    name: 代码门禁（Core net10.0 + 单测；Runtime 需真实 KSP，见注释）
+    name: 代码门禁（Core net10.0 + 单测 + Runtime 影子语义编译 + 行为场景）
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -166,13 +230,30 @@ jobs:
       - name: 跑单测（直接执行 dll）
         run: dotnet tests/UI18n.Core.Tests/bin/Release/net10.0/UI18n.Core.Tests.dll
 
+      # Runtime 的语义编译（M5-d）：真工程要真实 KSP 的 Managed 程序集，CI 编不了；
+      # 影子工程（tests/runtime-compile/）用 stubs/ 下的最小桩把同一个 src/UI18n.Runtime
+      # 在 net10.0 上编一遍。脚本自己会先做一次反向对照（故意写错一句 Unity API，必须编红），
+      # 证明「不会红的门禁」这件事没发生，然后再断言 29 个 .cs 一个不漏地参与了编译。
+      - name: Runtime 影子语义编译（桩 + 真实 Runtime 源码，含反向对照）
+        run: python3 tests/runtime-compile/test-shadow-compile.py
+
+      # Runtime 的行为门禁（R13，docs/11 §12）：影子编译只证明「能编」，一行都没被执行过。
+      # 这一步把同一批源码编成 Exe 真跑一遍 —— 包加载 → 三层优先级 → 骨架填回 → keep →
+      # per-mod 策略（NATIVE 加载期跳过）→ 缺命中捕获 → 开关短路 → 条目上限，9 个场景落在磁盘上的
+      # 真 JSONL 数据上。脚本自带反向对照（把一句期望译文改错，必须跑红），
+      # 并断言产品侧没有为测试开 InternalsVisibleTo 后门。
+      - name: Runtime 行为场景（桩 + 真实 Runtime + 真 Core，含反向对照）
+        run: python3 tests/runtime-behavior/test-runtime-behavior.py
+
       - name: 汇总
         if: always()
         run: |
           {
             echo "### 代码门禁"
             echo ""
-            echo "Core（net10.0）+ xunit 单测。Runtime 只 net472 且引用真实 KSP 的 Managed 程序集，CI 里不可能构建——它的编译门禁在本地（cw dotnet build UI18n.sln -c Release）。"
+            echo "Core（net10.0）→ 单测工程 → xunit 单测（直接跑 dll）→ Runtime 影子语义编译（stubs + src/UI18n.Runtime 全量源码，net10.0，含一次「故意编错必须红」的反向对照）→ Runtime 行为场景（同一批源码编成 Exe 真跑：包加载 / 三层优先级 / 骨架填回 / keep / per-mod 策略 / 缺命中捕获 / 开关 / 条目上限，含一次「把期望译文改错必须跑红」的反向对照）。"
+            echo ""
+            echo "Runtime 的真工程仍只在本地编：它引用真实 KSP 的 Managed/*.dll（有版权，不能进仓库）且只 net472。桩不是真实签名，真机编译仍是最终裁判。"
           } >> "$GITHUB_STEP_SUMMARY"
 
   translate:
@@ -228,3 +309,153 @@ jobs:
           fi
           git commit -m "i18n: 自动翻译回写 $(date -u +%Y-%m-%dT%H:%MZ)"
           git push
+
+  # M4-e（docs/11）：每周自动「候选 → 送翻 → 出包 → 门禁 → 人审 PR」。
+  #
+  # 与 translate 的区别是**不直接写 main**：定时任务无人值守，回写必须经过 PR 的人眼。
+  # 默认关闭：只有仓库变量 UI18N_WEEKLY_TRANSLATE=on 时才跑（Settings → Variables → Actions），
+  # 因为这一步会真花 LLM 额度；变量没开时这个 job 直接 skip（status 是 skipped，不是失败）。
+  refresh:
+    name: 每周刷新并开 PR（需 vars.UI18N_WEEKLY_TRANSLATE=on）
+    if: ${{ github.event_name == 'schedule' && vars.UI18N_WEEKLY_TRANSLATE == 'on' }}
+    needs: [gates, code]
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      UI18N_LLM_BASE: ${{ secrets.UI18N_LLM_BASE }}
+      UI18N_LLM_KEY: ${{ secrets.UI18N_LLM_KEY }}
+      UI18N_LLM_MODEL: ${{ secrets.UI18N_LLM_MODEL }}
+      UI18N_LLM_REASONING: ${{ vars.UI18N_LLM_REASONING || 'none' }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: 检查密钥存在
+        run: |
+          if [ -z "$UI18N_LLM_KEY" ]; then
+            echo "::error::缺少 secrets.UI18N_LLM_KEY —— 定时刷新需要与手工 translate 相同的三项密钥"
+            exit 1
+          fi
+
+      - name: cfg/字典流水线（translate --keyref-rescue → resolve_keyrefs）
+        working-directory: tools
+        run: |
+          python -m i18n_tools.translate --keyref-rescue
+          python -m i18n_tools.resolve_keyrefs
+
+      - name: IL 流水线（il-translatable → <asm>.il.jsonl）
+        working-directory: tools
+        run: |
+          python -m i18n_tools.translate_il
+
+      - name: 清单与覆盖报告（packs/index.json + reports/coverage.md）
+        working-directory: tools
+        run: |
+          python -m i18n_tools.packindex
+
+      # 回写后必须仍然 PASS：机翻最容易在这里把占位符 / 富文本 / 术语改坏。
+      - name: 回写后复审（audit --strict-terms，必须仍然 PASS）
+        working-directory: tools
+        run: |
+          python -m i18n_tools.audit --strict-terms
+
+      # 只开 PR，不碰 main：分支名按日期，同一天重跑就 force push 同一分支并更新已有 PR 的正文。
+      - name: 有变更才开 PR（人审合并）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name  "ui18n-bot"
+          git config user.email "ui18n-bot@users.noreply.github.com"
+          git add packs reports
+          if git diff --cached --quiet; then
+            echo "::notice::本周没有新译文（全部命中翻译缓存），不开 PR。"
+            exit 0
+          fi
+          branch="bot/weekly-$(date -u +%Y%m%d)"
+          git switch -c "$branch"
+          git commit -m "i18n: 每周自动翻译回写 $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f origin "$branch"
+          {
+            echo "定时任务跑完 translate --keyref-rescue → resolve_keyrefs → translate_il → packindex → audit --strict-terms，全部 exit 0。"
+            echo ""
+            echo "改动规模（`git diff --stat HEAD~1`）："
+            echo ""
+            echo "```"
+            git diff --stat HEAD~1 HEAD -- packs reports | tail -5
+            echo "```"
+            echo ""
+            echo "合并前请人工过一遍："
+            echo "1. 新增/改动的译文有没有机翻腔（门禁只查形状，不查好不好读）；"
+            echo "2. `packs/journal/` 是否同步记账；"
+            echo "3. 本次改动是否只碰了 `packs/` 与 `reports/`。"
+            echo ""
+            echo "别把「门禁绿」当成「译文对」：这一步只保证形状，可读性仍要人眼。"
+          } > pr-body.md
+          if gh pr list --head "$branch" --state open --json number --jq '.[0].number' | grep -q .; then
+            gh pr edit "$branch" --body-file pr-body.md
+            gh pr comment "$branch" --body "本周刷新已更新（$(date -u +%Y-%m-%d)）。"
+          else
+            gh pr create --base main --head "$branch" --title "i18n: 每周自动翻译回写 $(date -u +%Y-%m-%d)" --body-file pr-body.md
+          fi
+
+  # M3-c（docs/11）：核对一个**已经发布**的 Release 资产能不能交给 CKAN。
+  #
+  # 为什么 CI 不自己构建发布包：Runtime 需要 KSP 的 Managed/*.dll（Assembly-CSharp.dll 等，
+  # 有版权，不能进仓库），所以发布包只能在本地用 build-release.ps1 构建。这里只做
+  # 「拿到资产之后」那段：下载 → 算 sha256 → 用模板渲染 .netkan → 校验字段/install/依赖/zip 内版本。
+  # 它不创建也不修改任何 Release，只读资产 + 上传核对结果。
+  release-check:
+    name: CKAN 资产核对（手动触发，只读 Release）
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.version != '' }}
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: 下载 Release 资产
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          gh release download "v$env:VERSION" --pattern "UI18n-$env:VERSION.zip" --dir dist
+          Get-ChildItem dist | ForEach-Object { Write-Host ("  " + $_.Name + "  " + $_.Length + " B") }
+
+      - name: 渲染 .netkan（真实版本 + 真实 sha256）
+        env:
+          PYTHONPATH: tools
+          VERSION: ${{ inputs.version }}
+        run: |
+          $zip = "dist/UI18n-$env:VERSION.zip"
+          if (-not (Test-Path -LiteralPath $zip)) { throw "缺资产: $zip" }
+          $sha = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          python -m i18n_tools.netkan --render "dist/UI18n-$env:VERSION.netkan" --version $env:VERSION --sha256 $sha
+          "SHA256=$sha" | Out-File -FilePath "dist/sha256.txt" -Encoding utf8
+
+      - name: 校验 .netkan 与 zip 自洽
+        env:
+          PYTHONPATH: tools
+          VERSION: ${{ inputs.version }}
+        run: |
+          $zip = "dist/UI18n-$env:VERSION.zip"
+          $sha = ((Get-Content -LiteralPath "dist/sha256.txt" -Raw) -replace "SHA256=", "").Trim()
+          python -m i18n_tools.netkan "dist/UI18n-$env:VERSION.netkan" --version $env:VERSION --sha256 $sha --zip $zip
+
+      - name: 上传核对结果
+        uses: actions/upload-artifact@v4
+        with:
+          name: ckan-netkan
+          path: |
+            dist/UI18n-*.netkan
+            dist/sha256.txt
+          if-no-files-found: error

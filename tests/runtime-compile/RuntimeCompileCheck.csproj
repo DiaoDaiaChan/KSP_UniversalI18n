@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    影子语义编译工程（M5-d，见 docs/11 §12 与 tests/runtime-compile/README.md）。
+
+    为什么存在：src/UI18n.Runtime 只 net472 且引用真实 KSP 安装的 Managed/*.dll，
+    没有 KSP 的机器上编译不了，于是它长期只受 csc 的「纯语法」校验 —— 成员名写错、
+    参数类型不匹配这类语义错一律漏过。这里用 stubs/ 下的一组最小桩把 Unity / KSP /
+    Harmony 的**我们用到的那些形状**顶住，再编真实的 Runtime 源码，从而在没有游戏、
+    没有 Unity 的机器上也能抓 CS0117 / CS1503 / CS1061。
+
+    它证明什么：我们自己的 8,000 行 Runtime 代码内部自洽（成员名、参数类型、返回类型、
+    调用关系、分支可达性）。
+    它不证明什么：桩不是 Unity/KSP 的真实签名 —— 桩与真机 API 不符时以真机编译为准。
+
+    TFM：Windows 上同时编 net472（与真实 Runtime 同 TFM，权威）与 net10.0（给 CI 用，
+    ubuntu-latest 没有 .NET Framework 参考程序集）。非 Windows 只编 net10.0，
+    此时 src/UI18n.Runtime/Update/UpdateHttp.cs 的 #if NET472 块不参与编译（只有那段
+    TLS 1.2 兜底），其余代码全量覆盖。
+  -->
+  <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">net472;net10.0</TargetFrameworks>
+    <AssemblyName>UI18n.Runtime.StubCompile</AssemblyName>
+    <RootNamespace>UI18n.Runtime</RootNamespace>
+    <OutputType>Library</OutputType>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!-- net472 需要显式指向本机 .NET Framework 参考程序集（KSP mod 的物理 TFM）。
+       这个路径只在 Windows 上生效；非 Windows 不编 net472。 -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <FrameworkPathOverride Condition="'$(FrameworkPathOverride)' == ''">C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2</FrameworkPathOverride>
+  </PropertyGroup>
+
+  <!-- 路径一律用 / 与 $(MSBuildThisFileDirectory)：这个工程 CI 里要在 ubuntu 上跑，
+       反斜杠通配在非 Windows 的 MSBuild 上不保证被归一化。 -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)stubs/**/*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)../../src/UI18n.Runtime/**/*.cs"
+             Exclude="$(MSBuildThisFileDirectory)../../src/UI18n.Runtime/obj/**;$(MSBuildThisFileDirectory)../../src/UI18n.Runtime/bin/**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../src/UI18n.Core/UI18n.Core.csproj" />
+  </ItemGroup>
+
+</Project>

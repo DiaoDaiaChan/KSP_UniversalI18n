@@ -106,7 +106,7 @@ content.text = ...
 ```
 [UI18n] v1.0.0+9238f1acc43f8249be734ceb2e2dccf2d6920ad0 starting (harmony id com.universali18n.runtime)
 [UI18n] language=zh-cn, enabled=True, forceOverride=False
-[UI18n] font mode=OsFont, tmp mode=Auto, os font="Microsoft YaHei"
+[UI18n] font mode=OsFont, tmp mode=Auto, os font="Microsoft YaHei", candidates=7
 [UI18n] packs: lang=zh-cn, dir=zh-cn, files=42
 [UI18n] pack loaded: zh-cn/KSP.jsonl, entries=+3120, 41 ms
 [UI18n] pack loaded: zh-cn/RP-1.jsonl, entries=+5407, 63 ms
@@ -121,6 +121,18 @@ content.text = ...
 > `version=` 后面是**程序集自带的完整版本串**（`AssemblyInformationalVersion`），格式 `<发布版本>+<构建时 HEAD 的 commit>`，
 > 由 `UI18nAddon.Version` 从程序集读出来，不再硬编码 —— 玩家贴一行日志就能定位到确切 commit（见 10.8）。
 > 本机联调从 `build\bin` 直接构建时，`+` 后就是当时 HEAD；正式发布包由 `build-release.ps1 -Version 1.0.0` 构建。
+
+**v1.7 起 `files=` 那行前后可能多两行（per-mod 策略表，M5-a）**：`Packs/<lang>/policies.json` 存在时先报一条摘要，
+按 `NATIVE` 档滤掉的包再报一条（那些 mod 游戏自己能显示中文，见 `docs/11` §7 M5-a）：
+
+```
+[UI18n] policies: mods=82 (native=0, native-partial=0, partial=20, legacy=62) (policies.json)
+[UI18n] packs: skipped 2 native pack(s) (policy NATIVE, the game localizes them itself): [AJE, Foo]
+```
+
+> 没有 `policies.json`（没生成、或玩家装的是老包）时这两行都不出现，等同老行为：全部加载。
+> 文件坏了只打一条 `packs: policies.json ignored (bad-json: …), every pack is loaded` —— 数据非法属于降级，绝不阻断启动。
+> 全部包都是 `NATIVE` 时报 `packs: every pack is NATIVE (N file(s)); …` 且用 INFO 而不是 WARN（那不是故障）。
 
 **v1.3 起多两行 `diag:`（不改任何既有行，见 §9.10）**：一行在`language=`之后、**语言门禁之前**，
 一行在`ready:`之后。前者是唯一在「装了但没翻译」时也会出现的自检行：
@@ -344,18 +356,56 @@ ScreenMessages.PostScreenMessage(…) ×10 → PostMessage 5 参 → PostMessage
 | 值 | 行为 | 适用场景 |
 | --- | --- | --- |
 | `OsFont`（默认） | 从系统已装字体里挑一个含汉字的**动态字面**（`Font.CreateDynamicFontFromOSFont`），注入到 `UnityEngine.UI.Text.font`；拿不到就**保留原文** | 绝大多数玩家的正解 |
-| `Bundled` | 先按 `BundledFontPath` 加载 AssetBundle 取 `Font`（或含汉字的 `TMP_FontAsset`）；路径不存在 / 加载失败 → 记 Warn 并**回落 `OsFont`** | 想做「自带字体」的整合包 |
+| `Bundled` | 先按 `BundledFontPath` 加载 AssetBundle 取 `Font`（或含汉字的 `TMP_FontAsset`）；**加载前按 `Fonts/fonts.json` 校验 sha256/字节数**（清单缺失只 Warn 后照旧加载，校验不过则回落）；路径不存在 / 加载失败 → 记 Warn 并**回落 `OsFont`** | 想做「自带字体」的整合包 |
 | `Off` | 完全不碰字体，译文照常写入（缺字就是 □，玩家自担） | 玩家自己装了字库 / 只想看 IMGUI 以外的东西 |
 
 字体可用性判据（**不赌**）：先 `Font.GetOSInstalledFontNames()` **精确名匹配**（不用注册表家族名，避免别名/本地化名对不上），
 再 `CreateDynamicFontFromOSFont` 建出来，最后 `HasCharacter('中') && HasCharacter('推')` **实测**；三步任一失败就换下一个候选。
-候选顺序：`OsFontName` → `Microsoft YaHei` → `Microsoft YaHei UI` → `SimHei` → `Noto Sans SC` → `DengXian` → `SimSun` → `Microsoft JhengHei`。
+候选顺序：`OsFontName` 排在最前，其后是配置键 `OsFonts` 给出的回退顺序（去重后）。
+`OsFonts` 留空 = 用出厂默认表 `UI18n.Core.Config.FontDefaults.OsFontCandidates`（雅黑 / 雅黑 UI / 黑体 / Noto Sans SC / 等线 / 宋体 / 微软正黑）。
+**这张表只在 Core 里有一份**：代码和 `Config.cfg` 注释都不再各自抄名单（抄两份的下场是文档说会试 SimHei、代码其实没试），
+Linux / macOS 玩家填自己的字面名即可。
 每个 `fontSize` 单独缓存一个 `Font` 实例（不同字号不共用）。全部失败时只记一条 Warn：
 
 ```
 [UI18n] font: no usable CJK OS font (tried: …) → uGUI translations will be kept in English (set FontMode=Off to translate anyway)
 ```
 
+#### 9.1.1 随包字体不是「信就行」（v1.7）
+
+`FontMode=Bundled` 加载的是别人（整合包作者、玩家自己）放进 `GameData/UI18n/Fonts/` 的 AssetBundle。
+被换过的 AssetBundle 在游戏里的表现是**满屏方框或莫名崩溃**，比不加载更糟，所以加载前先按清单校验：
+
+```
+Fonts/
+├─ <Name>.bundle     AssetBundle（FontMode=Bundled 时加载）
+├─ fonts.json        清单：schema / file / bytes / sha256 / license / licenseFile
+└─ OFL.txt           许可证全文（OFL 要求分发随附）
+```
+
+`fonts.json` 最小形态（`{"fonts":[ … ]}` 也认，取第一条）：
+
+```json
+{ "schema": "ui18n-font-bundle/1", "file": "NotoSansSC.bundle",
+  "bytes": 4201184, "sha256": "<64 位大写 hex>",
+  "fontName": "Noto Sans SC", "license": "OFL-1.1", "licenseFile": "OFL.txt",
+  "subset": "CJK 常用 + 拉丁 + 标点", "source": "Noto Sans SC 2.004" }
+```
+
+判定顺序（`UI18n.Core.Config.FontBundle.Check`）：清单 → 文件名安全 → 存在 → 6 MB 预算 → 字节数 → sha256 → 许可证。日志三态：
+
+```
+[UI18n] font: bundled font manifest missing (no-manifest: …) -> loading without integrity check: …
+[UI18n] font: bundled font rejected: font bundle rejected (sha256-mismatch): … -> falling back to OsFont
+[UI18n] font: bundled font verified (font bundle ok: NotoSansSC.bundle, 4201184 bytes, sha256=…, license=OFL-1.1)
+```
+
+**清单缺失只降级不阻断**（红线 6：配置/数据非法只降级）：老玩家把字体包按老办法丢进 `Fonts/` 而没写清单，照样能加载，只是少一层校验。
+校验不过（sha256 / 字节数 / 文件名 / 体积）才算坏包，此时回退 `OsFont` 并在 `font stats` 里 `bundledFailed` 计数。
+
+生成清单不用手写：`python -m i18n_tools.fontbundle --pack <font.bundle> --license OFL.txt --name "Noto Sans SC"`
+会把字库、许可证、`fonts.json` 一起摆进 `Fonts/`；`--check` 在出包/CI 里核对（清单在而内容不符才 exit 4）。
+出包侧还有第 16 条硬断言（§10.3），两边用的是同一套规则。
 ### 9.2 TmpMode（TMP 这条线）
 
 KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasCharacter` / `AddGlyphInfo` / `ReadFontDefinition` 这类方法，
@@ -383,7 +433,8 @@ KSP 1.12 用的是 **TMP 1.2 位图图集版**：`TMP_FontAsset` 只有 `HasChar
 | `ReportOptIn` | `False` | 匿名上报未翻译文本（默认不上报任何东西） |
 | `MaxEntries` | `60000` | 字典条目上限，防异常语言包吃光内存 |
 | `FontMode` | `OsFont` | `Off` / `OsFont` / `Bundled`（§9.1）。非法值记 Warn 后用默认 |
-| `OsFontName` | `Microsoft YaHei` | 首选系统字体名，精确匹配；不存在按内置候选回退 |
+| `OsFontName` | `Microsoft YaHei` | 首选系统字体名，精确匹配；本机没有就按 `OsFonts` 的顺序回退 |
+| `OsFonts` | 空（= 内置默认表） | 回退候选顺序，逗号分隔；留空 = `FontDefaults.OsFontCandidates`。整表覆盖，换平台不必改代码 |
 | `BundledFontPath` | 空 | `FontMode=Bundled` 的字体包路径，相对路径按 `GameData/UI18n` 解析 |
 | `TmpMode` | `Auto` | `Auto` / `KeepSource` / `Force`（§9.2）。非法值记 Warn 后用默认 |
 | `LogLevel` | `Info` | 日志级别 `Error` / `Warn` / `Info` / `Verbose`（§9.10）。**只影响日志、不影响翻译**；非法值记 Warn 后回落 `Info`（写错一个词绝不等于「把日志全关掉」） |
@@ -870,8 +921,22 @@ GameData/UI18n/
 | 10a | staging 的 `UI18n.cfg` 里版本行必须**恰好 1 行**，形如 `Version = <version>`，且值等于 `-Version` | 版本号必须与 zip 名 / manifest / DLL 一致 |
 | 10b | 不许出现「只有裸版本号、键名丢失」的畸形行（`^\s*[0-9]+\.[0-9]+\.[0-9]+\s*$`） | 2026-10-23 事故：改写把 `Version = 1.0.0` 写成了 `11.0.0`，KSP 的 ConfigNode 解析器会当畸形行（见 10.9） |
 | 11 | staging 的 `UI18n.version`（KSP-AVC）里 `VERSION` 必须等于 `-Version` | 该文件由 `-Version` 生成，不许留模板默认值 |
+| 13 | `Packs/<lang>/Native/*.cfg` 括号必须平衡 | KSP 的 cfg 解析器遇到不平衡会**整份丢弃**，日志里看不出来（只是「某段没翻译」） |
+| 14 | 同一个 `#键` 不许出现在两个 Native 文件里 | KSP 合并顺序不确定，后加载的会覆盖前面的 |
+| 15 | 单个 Native cfg ≤ 256 KB | 超过说明把整份字典塞进一个文件，加载期会卡 |
+| 16 | `Fonts/` 里一旦有 `*.bundle`，就必须有 `fonts.json`，且 schema / 纯文件名 / 字节数 / sha256 / `licenseFile` 与磁盘一致，字库 ≤ 6 MB | 运行时拿它做完整性校验；「换了子集却没重算 sha256、也没改清单」是最常见的坏包形态，那种包在玩家机器上是满屏方框 + 一条 Warn |
 
-抽成独立文件是为了能在**不出包**的前提下用合成 stage 树逐条验证（见 `_scratch` 里的 relcheck 脚本）。
+抽成独立文件是为了能在**不出包**的前提下用合成 stage 树逐条验证。回归已进版本控制：
+
+```bash
+powershell -NoProfile -ExecutionPolicy Bypass -File tests/powershell/test-release-native-checks.ps1   # 第 13-15 条，8 例
+powershell -NoProfile -ExecutionPolicy Bypass -File tests/powershell/test-release-font-checks.ps1     # 第 16 条，14 例
+```
+
+> 这两个脚本 `dot-source` 的就是 `release-checks.ps1` 本身（不是副本），所以规则改坏会立刻变红。
+> 另外注意：`release-checks.ps1` **必须带 UTF-8 BOM** —— 没有 BOM 时 `powershell -File` 按 ANSI 解码，
+> 中文串里出现畸形字节会让整份文件 parse 失败（2026-10-29 加第 16 条时就踩到了，症状是一大片
+> `Unexpected token '^\s*Version\s*=\s*'` + 中文变 mojibake）。
 
 ### 10.4 manifest.json
 
@@ -892,7 +957,7 @@ GameData/UI18n/
 | `resources.homepage` / `repository` / `download` | `https://github.com/DiaoDaiaChan/KSP_UniversalI18n`（`-RepoSlug` 可覆盖） | 已填（仓库已创建） |
 | `author` | `DiaoDaiaChan`（`-Author` 可覆盖） | 已填 |
 | `ksp_version` | `1.12` | 按 KSP 1.12.5 实测环境填 |
-| `depends` | `Harmony2`、`ModuleManager` | 已按本机 CKAN 元数据（`identifier`）核对，不是猜的 |
+| `depends` | `Harmony2`（只此一个） | 已按本机 CKAN 元数据（`identifier`）核对；MM 不进 depends —— 出包没有任何 MM patch，代码也不引用它，列上只会让玩家多装一个用不到的 mod |
 | `release_status` | `testing` | 首发可改 `stable` |
 
 ### 10.6 一次真实出包的数字（1.0.0，2026-10-23）
@@ -1003,7 +1068,8 @@ Select-String -Path build\release\UI18n-1.0.0\GameData\UI18n\UI18n.cfg -Pattern 
 | 10 | 版本不更新 | `update: up to date (local 1.1.0, remote 1.1.0)` | 结束 |
 | 11 | 有新版但 AutoDownload=False | `update: download skipped (AutoDownload=False); set AutoDownload=True to install automatically` | 只记状态 |
 | 12 | zip 大小/哈希不符 | `update: zip verification failed (size-mismatch (expected 331851 B, got 331850 B)) -> keeping existing packs` | 保留旧包 |
-| 13 | 装机成功 | `update: installed 3 file(s), version 1.2.0` | 原子替换 |
+| 13 | 装机成功 | `update: install: 3 written, 0 unchanged, verified=true, rolledBack=false` 然后 `update: installed 3 file(s), version 1.2.0` | 整批事务提交 |
+| 14 | 装到一半失败（落点被同名目录占 / 权限 / 磁盘满） | `update: install failed (commit-failed …) -> N file(s) were restored, packs are exactly as before` | **整批回滚**，包目录与装前逐字节相同 |
 
 任何一步抛异常都被 `UpdateWorkflow.Run` 兜住，只 Warn（`update: failed (…), existing packs were left untouched`），绝不让异常冒到 KSP（红线 6）。
 
@@ -1034,12 +1100,18 @@ Select-String -Path build\release\UI18n-1.0.0\GameData\UI18n\UI18n.cfg -Pattern 
 - HTTP 用 `HttpWebRequest` 跑在自己的线程里，外层套 `Thread.Join(timeout)` 硬超时，到点 `Abort()`；超时也只 Warn。
 - net472 分支显式打开 TLS 1.2（`ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12`），否则 Mono 的旧默认会让公网 https 握手失败。
 
-### 11.5 原子性：绝不半写
+### 11.5 原子性：要么全装、要么一个字节都不动
 
 1. 先把 zip 里所有 `Packs/<lang>/*.jsonl` 解到内存，逐个对 manifest 做 bytes + sha256 校验；
-2. 全部通过后逐文件写 `<target>.tmp` 再 `File.Replace`（不支持时退 `Delete + Move`）；
-3. 写盘中途失败 → `update: write failed (<file>: …) -> N of M file(s) were installed`，已写的都是完整文件（不是半个），下次启动会重试；
-4. `update-state.json` 只在成功（或明确判定 up-to-date / update-available）之后写。
+2. 整批交给 `src/UI18n.Core/Update/PackInstallTransaction.cs` 的两段式事务：
+   - **staging**：每条内容先落 `<target>.ui18n-new`；与磁盘现有文件逐字节相同的记 `unchanged` 跳过（不白写、不改 mtime）；
+   - **提交**：逐条 `File.Replace`（旧文件留 `<target>.ui18n-bak`；不支持时退 `Move + Move`），回读尺寸校验通过后才删备份；
+3. 任一步失败 → **按逆序回滚**（有备份的还原、本次新装的删掉），日志 `update: install failed (<reason>) -> N file(s) were restored, packs are exactly as before`；回滚不全会把原因写成 `rollback-incomplete (N file(s) could not be restored; …)`，并把清单留在盘上供人工处理；
+4. 进程在提交中途被杀（断电 / 强杀）→ 下次启动 `CleanStale()` 收尸：目标缺失时把 `.ui18n-bak` 还原、目标在则删备份、`.ui18n-new` 一律删掉；
+5. 后缀刻意**不以 `.jsonl` 结尾**，所以 `PackLocator` 的 `*.jsonl` 扫描不会把半成品当包读；
+6. `update-state.json` 只在成功（或明确判定 up-to-date / update-available）之后写。
+
+对应回归：`tests/UpdateMatrix`（14 用例，直接编译 `src/UI18n.Runtime/Update/*.cs` 真实源码；用例 13 用同名目录挡住第 3 个包文件，断言整批回滚 + 树 sha256 全同 + 零 `.ui18n-*` 残留）。
 
 ### 11.6 为什么自己写 inflate + zip 解析
 

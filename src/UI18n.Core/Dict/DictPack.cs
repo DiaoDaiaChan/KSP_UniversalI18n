@@ -28,6 +28,12 @@ namespace UI18n.Core.Dict
         private int _keeps;
         private int _parseErrors;
 
+        /// <summary>已载入条目只读视图。</summary>
+        public IReadOnlyList<DictEntry> AllEntries
+        {
+            get { return _entries; }
+        }
+
         /// <summary>已载入条目数。</summary>
         public int Entries
         {
@@ -222,6 +228,56 @@ namespace UI18n.Core.Dict
             }
 
             _misses++;
+            return false;
+        }
+
+        /// <summary>
+        /// 查找匹配条目并返回完整的 <see cref="DictEntry"/> 供调用方获取条目元数据（例如 <see cref="DictEntry.Src"/> 或 <see cref="DictEntry.Source"/>）。
+        /// 语义与 <see cref="TryGet(ulong, string, string, out string, out KeyLevel)"/> 相同。
+        /// </summary>
+        public bool TryGetEntry(ulong hash, string source, string context, out DictEntry entry)
+        {
+            entry = null;
+
+            int[] bucket;
+            if (!TryGetBucket(hash, out bucket))
+            {
+                return false;
+            }
+
+            bool hasContext = !string.IsNullOrEmpty(context);
+
+            for (int i = 0; i < bucket.Length; i++)
+            {
+                DictEntry candidate = _entries[bucket[i]];
+
+                if (candidate.Level == KeyLevel.Ctx)
+                {
+                    if (!hasContext)
+                    {
+                        continue;
+                    }
+
+                    if (!string.Equals(candidate.Context, context, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+                }
+
+                if (!SourceMatches(candidate, source))
+                {
+                    continue;
+                }
+
+                if (candidate.IsKeep)
+                {
+                    return false;
+                }
+
+                entry = candidate;
+                return true;
+            }
+
             return false;
         }
 

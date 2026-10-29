@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     构建 UI18n.Runtime 并 staging 到仓库内的 build\ 目录（**默认不动 KSP 的 GameData**）。
 
@@ -32,7 +32,8 @@ param(
     [switch]$AllowProbe,
     [string]$Lang = 'zh-cn',
     [string]$Configuration = 'Release',
-    [string]$KspRoot = 'D:\Kerbal Space Program_newmod',
+    # KSP 根：-KspRoot 或环境变量 KSP_ROOT。**脚本里不留本机默认路径**——写死了换机器就静默指错目录。
+    [string]$KspRoot = $env:KSP_ROOT,
     # 发布版本戳。给了就按 -p:Version 构建，使部署的 DLL 与 build-release.ps1 出的包逐字节一致；
     # 不给则用 Directory.Build.props 的默认版本（联调用）。缺了它，deploy 会静默把 build\bin 里
     # 带发布版本戳的产物覆盖成默认版本，于是「验的 DLL」与「发的 DLL」不是同一份字节。
@@ -48,6 +49,11 @@ $binOut = Join-Path $repoRoot ("build\bin\{0}\net472" -f $Configuration)
 $stage = Join-Path $repoRoot 'build\GameData\UI18n'
 $templates = Join-Path $scriptDir 'GameData\UI18n'
 $langNorm = $Lang.Trim().Replace('_', '-').ToLowerInvariant()
+
+# 只有真的写 KSP 目录（-Install / -Smoke）才要求 KSP 根；纯构建（staging）不需要。
+if (($Install -or $Smoke) -and [string]::IsNullOrWhiteSpace($KspRoot)) {
+    throw '[deploy] 需要 KSP 根：用 -KspRoot <path> 或设环境变量 KSP_ROOT（当前两者都为空；脚本不再内置本机路径）'
+}
 
 Write-Host "[deploy] repo    : $repoRoot"
 Write-Host "[deploy] project : $project"
@@ -174,6 +180,30 @@ if (Test-Path $packSource) {
     }
     else {
         Write-Host "[deploy] no *.jsonl under packs\$langNorm\, dictionary will be empty until a pack ships"
+    }
+
+    # 显示名数据表（per-language，故意不是 .jsonl）：有就一起装 —— 它是 Packs\<lang>\ 下的
+    # 普通数据文件，缺了运行时只是把面板里的 modId 原样显示，不影响任何翻译
+    $displayNames = Join-Path $packSource 'display-names.json'
+    if (Test-Path $displayNames) {
+        New-Item -ItemType Directory -Path $packDest -Force | Out-Null
+        Copy-Item $displayNames $packDest -Force
+        Write-Host ("[deploy] staged  : Packs\{0}\display-names.json ({1:N0} B)" -f $langNorm, (Get-Item $displayNames).Length)
+    }
+
+    # 原生语言节点（docs/11 M1-b）：build\native\<lang>\*.cfg 由 mmgen.py 生成，
+    # KSP 加载 GameData 时会把它们并进本地化表；缺了只是这批键退回 Harmony 运行时翻译
+    $nativeSource = Join-Path (Join-Path $repoRoot 'build\native') $langNorm
+    if (Test-Path -LiteralPath $nativeSource) {
+        $nativeFiles = @(Get-ChildItem -LiteralPath $nativeSource -Filter *.cfg -File -ErrorAction SilentlyContinue | Sort-Object Name)
+        if ($nativeFiles.Count -gt 0) {
+            $nativeDest = Join-Path $packDest 'Native'
+            New-Item -ItemType Directory -Path $nativeDest -Force | Out-Null
+            foreach ($f in $nativeFiles) {
+                Copy-Item $f.FullName $nativeDest -Force
+                Write-Host ("[deploy] staged  : Packs\{0}\Native\{1} ({2:N0} B)" -f $langNorm, $f.Name, $f.Length)
+            }
+        }
     }
 }
 else {

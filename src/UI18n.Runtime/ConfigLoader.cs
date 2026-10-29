@@ -20,7 +20,11 @@ namespace UI18n.Runtime
     /// </summary>
     internal static class ConfigLoader
     {
-        internal const string ModFolder = "GameData/UI18n";
+        /// <summary>
+        /// 安装目录（正斜杠、不带结尾斜杠）。唯一真源在 Core 的 <c>UI18n.Core.ProductInfo.FolderPath</c>，
+        /// 这里只是给 Runtime 用的别名 —— 以前两边各写一遍字面量（硬编码审计存疑项）。
+        /// </summary>
+        internal const string ModFolder = UI18n.Core.ProductInfo.FolderPath;
         internal const string ConfigFileName = "Config.cfg";
 
         internal static string ModPath
@@ -115,6 +119,22 @@ namespace UI18n.Runtime
                 if (!string.IsNullOrEmpty(osFontName))
                 {
                     config.OsFontName = osFontName;
+                }
+
+                // 回退候选顺序（逗号或分号分隔）：出厂默认在 Core 的 FontDefaults 里，
+                // 这里只认「玩家显式写的非空表」—— 写了就整表覆盖，没写/写空就保留内置顺序。
+                string osFonts = ReadString(node, "OsFonts", null);
+                if (!string.IsNullOrEmpty(osFonts))
+                {
+                    string[] parsedOsFonts = FontDefaults.ParseFontList(osFonts);
+                    if (parsedOsFonts.Length == 0)
+                    {
+                        Log.Warn("config key OsFonts=\"" + osFonts + "\" has no usable font name, keeping the built-in order");
+                    }
+                    else
+                    {
+                        config.OsFonts = parsedOsFonts;
+                    }
                 }
 
                 string bundledPath = ReadString(node, "BundledFontPath", null);
@@ -265,7 +285,14 @@ namespace UI18n.Runtime
                 }
 
                 int disabledCount;
-                string[] files = PackFilter.SelectEnabled(packs.Files, prefs, out disabledCount);
+                string[] afterPrefs = PackFilter.SelectEnabled(packs.Files, prefs, out disabledCount);
+
+                // 策略表（M5-a）：NATIVE 档的 mod 自带 Localization/zh-cn，游戏自己能显示中文 ——
+                // 它们的包在**加载期**就滤掉，运行期热路径不再为它们查表（docs/00 §8.3）。
+                // 表缺失 / 损坏一律退化成「照旧全部加载」：这是优化项，不是启动前置条件（红线 6）。
+                ModPolicies policies = LoadPolicies(packs.Directory);
+                int nativeCount;
+                string[] files = PackFilter.SelectByPolicy(afterPrefs, policies, out nativeCount);
 
                 // 一行里同时给出总数 / 启用 / 关闭：装错 prefs 时一眼能对账（task-71 验收要求）。
                 Log.Info("packs: lang=" + PrintableLanguage(language) + ", dir=" + packs.SelectedLanguage
@@ -276,8 +303,22 @@ namespace UI18n.Runtime
                     Log.Info("packs: disabled by prefs: [" + JoinDisabledModIds(packs.Files, prefs) + "]");
                 }
 
+                if (nativeCount > 0)
+                {
+                    Log.Info("packs: skipped " + nativeCount + " native pack(s) (policy " + ModPolicies.PolicyNative
+                             + ", the game localizes them itself): [" + JoinNativeModIds(afterPrefs, policies) + "]");
+                }
+
                 if (files.Length == 0)
                 {
+                    if (nativeCount > 0 && disabledCount == 0)
+                    {
+                        // 不是坏配置，是策略表把全部包都判成原生档了 —— 别报 WARN 让玩家以为装坏了。
+                        Log.Info("packs: every pack is " + ModPolicies.PolicyNative + " (" + nativeCount
+                                 + " file(s)); the game shows their text natively, dictionary is empty");
+                        return pack;
+                    }
+
                     Log.Warn("all packs disabled by prefs.json (" + disabledCount
                              + " file(s)), dictionary is empty; edit " + PrefsFile.FileName + " to re-enable");
                     return pack;
@@ -335,6 +376,90 @@ namespace UI18n.Runtime
         private static string PrintableLanguage(string language)
         {
             return string.IsNullOrEmpty(language) ? "<null>" : language;
+        }
+
+        /// <summary>
+        /// 读 <c>Packs/&lt;lang&gt;/policies.json</c>（M5-a 策略表）。<b>永不抛</b>：
+        /// 文件不存在是最正常的情况（还没生成过策略表），此时返回空表 = 所有包照旧加载。
+        /// 文件在但读不动 / schema 不对，只记一条 WARN 后按空表跑 —— 绝不让字典少加载。
+        /// </summary>
+        private static ModPolicies LoadPolicies(string packsDirectory)
+        {
+            if (string.IsNullOrEmpty(packsDirectory))
+            {
+                return ModPolicies.Empty;
+            }
+
+            try
+            {
+                string error;
+                ModPolicies policies = ModPolicies.LoadFromDirectory(packsDirectory, out error);
+                if (policies.Count > 0)
+                {
+                    Log.Info(policies.Describe() + " (" + ModPolicies.FileName + ")");
+                    return policies;
+                }
+
+                if (!string.IsNullOrEmpty(error)
+                    && !error.StartsWith(ModPolicies.ErrorNoFile, StringComparison.Ordinal))
+                {
+                    Log.Warn("packs: " + ModPolicies.FileName + " ignored (" + error + "), every pack is loaded");
+                }
+
+                return ModPolicies.Empty;
+            }
+            catch (Exception ex)
+            {
+                Log.Warn("packs: " + ModPolicies.FileName + " load failed (" + ex.GetType().Name + ": " + ex.Message
+                         + "), every pack is loaded");
+                return ModPolicies.Empty;
+            }
+        }
+
+        /// <summary>
+        /// 被策略表判成 <c>NATIVE</c> 而跳过的 modId 列表（ordinal 去重排序，最多 8 个 + <c>…</c>）。
+        /// 玩家问「这个 mod 的翻译怎么没生效」时，日志里要能看出它是被哪一档策略跳过的。
+        /// </summary>
+        private static string JoinNativeModIds(string[] files, ModPolicies policies)
+        {
+            if (files == null || files.Length == 0 || policies == null || policies.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            var seen = new System.Collections.Generic.Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+            var ids = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < files.Length; i++)
+            {
+                string modId = PackFilter.ModIdFromPath(files[i]);
+                if (modId.Length == 0 || !policies.IsNative(modId) || seen.ContainsKey(modId))
+                {
+                    continue;
+                }
+
+                seen[modId] = true;
+                ids.Add(modId);
+            }
+
+            ids.Sort(StringComparer.Ordinal);
+            var sb = new System.Text.StringBuilder(96);
+            int shown = ids.Count > 8 ? 8 : ids.Count;
+            for (int i = 0; i < shown; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+
+                sb.Append(ids[i]);
+            }
+
+            if (ids.Count > shown)
+            {
+                sb.Append(", …(+").Append(ids.Count - shown).Append(')');
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

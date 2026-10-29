@@ -18,8 +18,12 @@ namespace UI18n.Core.Update
     /// </summary>
     public static class ZipSafety
     {
-        /// <summary>发布包内 mod 根目录前缀（带结尾斜杠）。</summary>
-        public const string ModRootPrefix = "GameData/UI18n/";
+        /// <summary>
+        /// 发布包内 mod 根目录前缀（带结尾斜杠）。值来自 <see cref="UI18n.Core.ProductInfo.RootPrefix"/> ——
+        /// 安装目录名只在那一处定义（硬编码审计存疑项：以前它与 Runtime 的
+        /// <c>ConfigLoader.ModFolder</c> 各写一遍，漂移会出现「装到不读的目录」）。
+        /// </summary>
+        public const string ModRootPrefix = UI18n.Core.ProductInfo.RootPrefix;
 
         /// <summary>语言包目录段名。</summary>
         public const string PacksSegment = "Packs";

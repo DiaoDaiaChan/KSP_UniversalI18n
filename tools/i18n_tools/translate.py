@@ -32,6 +32,7 @@ import traceback
 from pathlib import Path
 
 from . import ensure_stdout
+from . import conventions as convention_data
 from . import mask as masklib
 from .fnv import hash_text
 from .llm import LlmClient, LlmConfigError, load_config, redact
@@ -64,45 +65,23 @@ BUCKET_LIMITS = (
     ("short", 200),
 )
 
-#: 04 §8.2 的十二条专有约定。**优先级高于 glossary**（官方字典里 Apoapsis 记的是"远拱点"，
-#: 与我们的约定冲突，所以 G7 判定时这 12 条覆盖 glossary 的同名项）。
-CONVENTIONS = (
-    ("Booster", "助推器"),
-    ("Oxidizer", "氧化剂"),
-    ("Throttle", "节流阀"),
-    ("Gimbal", "万向节"),
-    ("Specific Impulse", "比冲"),
-    ("Apoapsis", "远地点"),
-    ("Periapsis", "近地点"),
-    ("Delta-V", "Δv"),
-    ("Center of Mass", "质心"),
-    ("Center of Pressure", "压心"),
-    ("Reaction Wheel", "动量轮"),
-    ("Monopropellant", "单组元推进剂"),
-)
+#: 04 §8.2 的十二条专有约定。**数据在 packs/conventions.jsonl，代码里不留副本**。
+#: 为什么优先级高于 glossary：官方字典里 Apoapsis 记的是"远拱点"，与我们的约定冲突，
+#: 所以 G7 判定时这 12 条覆盖 glossary 的同名项。
+#: 与 engine.GateRules 共用一个加载器（tools/i18n_tools/conventions.py），改数据即两边同时生效。
+CONVENTIONS = convention_data.convention_pairs()
 
-#: G7 的"合法同义译法"白名单：只给中文里确实存在标准复合/简称写法的少数几条。
-#: 实测教训（dry-run --limit 200）："2014-2018 Oxidizer-Rich Staged Combustion Engines"
-#: 被译成"富氧分级燃烧发动机"（航天界标准译法），但 G7 只看"氧化剂"三个字 → 判死 →
-#: 单条重试再烧一次 token，模型原样再答一遍。这类假失败必须靠白名单消掉。
+#: G7 的"合法同义译法"白名单（**数据在 packs/convention-aliases.jsonl**）：只给中文里
+#: 确实存在标准复合/简称写法的少数几条。实测教训（dry-run --limit 200）：
+#: "2014-2018 Oxidizer-Rich Staged Combustion Engines" 被译成"富氧分级燃烧发动机"
+#: （航天界标准译法），但 G7 只看"氧化剂"三个字 → 判死 → 单条重试再烧一次 token，
+#: 模型原样再答一遍。这类假失败必须靠白名单消掉。
 #:
-#: 这张表只收 12 条约定，**不要为某条短语级术语单独加别名**：那样每遇到一个新术语
+#: 这张表只收 12 条约定的别名，**不要为某条短语级术语单独加别名**：那样每遇到一个新术语
 #: 就要补一条，本质是把门禁的错误编码成白名单（2026-10-28 试过一轮，36 行里 25 行
 #: 都能靠加别名"修好"，然后发现还要继续加）。短语级术语的 G7 漂移改由 backend.sync_pack
 #: 记 `term_drift` 放行（见那里的注释），门禁只对 12 条约定硬拦。
-CONVENTION_ALIASES = {
-    "Booster": ("助推",),
-    "Oxidizer": ("富氧", "氧化"),
-    "Throttle": ("节流", "油门"),
-    "Gimbal": ("万向",),
-    "Apoapsis": ("远拱点",),
-    "Periapsis": ("近拱点",),
-    "Delta-V": ("ΔV", "速度增量"),
-    "Center of Mass": ("重心",),
-    "Center of Pressure": ("压力中心",),
-    "Reaction Wheel": ("反作用轮",),
-    "Monopropellant": ("单组元", "单元推进剂"),
-}
+CONVENTION_ALIASES = convention_data.load_aliases()
 
 #: 遮蔽后"只剩不可翻译物"的判定用（04 §5.5：只剩哨兵 → 直接标 keep，不送翻）
 _UNTOUCHABLE_KEEP_RE = re.compile(r"[^0-9A-Za-z\u4e00-\u9fff]+")
@@ -1748,7 +1727,7 @@ def main(argv=None):
     parser.add_argument("--only-bucket", default=None, choices=["short", "mid", "long", "rt", "ph"],
                         help="只跑某个桶（用于定向抽检，如 ph 占位符桶）")
     parser.add_argument("--mods", default=None,
-                        help="只跑指定 mod（逗号分隔，单 mod 试点用，如 --mods RP-1）")
+                        help="只跑指定 mod（逗号分隔，单 mod 试点用，如 --mods SomeMod）")
     parser.add_argument("--sample-out", default=None,
                         help="把本次逐条结果写成 jsonl（审计用，默认 reports/sample-<ts>.jsonl）")
     parser.add_argument("--only-ids", default=None,
@@ -1958,7 +1937,7 @@ _ASCII_OK = {
     "eva", "iva", "ksc", "vab", "sph", "rcs", "sas", "twr", "rtg", "apu", "ec", "kpa",
     "dps", "isp", "dx", "science", "kerbal", "kerbin", "mun", "duna", "eve", "jool",
     "moho", "ike", "gilly", "laythe", "vall", "tylo", "bop", "pol", "eeloo", "dres",
-    # 04 §8.2 要求单位保留原文；rpm/hp 等实测在 AJE 的发动机参数里成片出现
+    # 04 §8.2 要求单位保留原文；rpm/hp/ps 这类单位在发动机参数面板里成片出现（任何 mod 都可能）
     "rpm", "hp", "ps", "kw", "mw", "km", "kg", "mm", "cm", "mpa", "kn", "atm", "min",
     "sec", "hz", "kgf", "kgs", "ton", "tons", "mps", "dbi", "db", "wt", "mm2",
 }

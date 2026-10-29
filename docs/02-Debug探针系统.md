@@ -179,7 +179,7 @@ DoLabel(GUIContent.Temp(text), GUI.skin.label, options);
 |---|---|
 | `GUI.TextField` / `GUILayout.DoTextField` | 输入框，玩家正在打的字。采集价值低、隐私风险高。L3 之外一律跳过。 |
 | `UnityEngine.UI.InputField.set_text` | 同上。 |
-| `Contract.Save` / `KCT_GUI` / 任何玩法类型 | RP1GUIZh 的四个玩法 hack。绝对红线。 |
+| 任何玩法 / 存档 / 部件加载类型（`Contract.Save`、场景主控 GUI 之类） | 只翻文本、不碰玩法：这类 hack 会改变游戏行为。绝对红线。 |
 | `OnGUI` 本身 | 粒度太粗，拿不到具体文本。 |
 | `Localizer.Format` / `GetString` | 那是**已经支持 i18n 的 mod** 走的路径，属于"优先原生"分支，不是探针目标。 |
 

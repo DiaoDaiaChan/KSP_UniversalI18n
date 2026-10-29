@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     打发布包：dist\UI18n-<version>.zip + dist\manifest.json + dist\UI18n.netkan
 
@@ -78,8 +78,8 @@ if ($License -eq 'MIT') {
 #    -Version 必须传进编译（-p:Version=），否则 DLL 里永远是默认版本号，
 #    来源断言第 9 条的「发布版本 == DLL 版本」就永远过不了（见 README §10.8）。
 if (-not $SkipBuild) {
-    Write-Host ("[release] build     : dotnet build -c {0} -p:Version={1}" -f $Configuration, $Version)
-    & dotnet build $sln -c $Configuration -p:Version=$Version
+    Write-Host ("[release] build     : dotnet build -c {0} -p:Version={1} --no-restore" -f $Configuration, $Version)
+    & dotnet build $sln -c $Configuration -p:Version=$Version --no-restore
     if ($LASTEXITCODE -ne 0) { throw "[release] dotnet build failed (exit $LASTEXITCODE)" }
 }
 
@@ -154,6 +154,46 @@ foreach ($f in $packFiles) {
 }
 Write-Host ("[release] staged  : Packs\{0}\ ({1} file(s), {2:N0} B)" -f $langNorm, $packFiles.Count, (($packFiles | Measure-Object -Property Length -Sum).Sum))
 
+# 显示名数据表（per-language，故意不是 .jsonl，所以不在上面的 *.jsonl 循环里）：
+# 有就一起装 —— 缺它运行时只是把面板里的 modId 原样显示，不影响功能
+$displayNames = Join-Path $packSource 'display-names.json'
+if (Test-Path $displayNames) {
+    Copy-Item $displayNames $packDest -Force
+    Write-Host ("[release] staged  : Packs\{0}\display-names.json ({1:N0} B)" -f $langNorm, (Get-Item $displayNames).Length)
+}
+
+# per-mod 策略表（docs/11 M5-a）：packs\policies.json 由 tools/i18n_tools/policy.py 生成，
+# 与 display-names.json 同放 Packs\<lang>\。运行期读它把 NATIVE 档的包在加载期滤掉
+# （那些 mod 游戏自己能显示中文）。故意不是 .jsonl，所以不在上面的包循环里；
+# 缺它或内容坏了都只让运行时退化成「全部加载」，不影响功能。
+$policies = Join-Path (Join-Path $repoRoot 'packs') 'policies.json'
+if (Test-Path -LiteralPath $policies) {
+    Copy-Item -LiteralPath $policies -Destination $packDest -Force
+    Write-Host ("[release] staged  : Packs\{0}\policies.json ({1:N0} B)" -f $langNorm, (Get-Item -LiteralPath $policies).Length)
+}
+else {
+    Write-Host ("[release] warn    : 没有策略表（{0}）—— 先跑 python -m i18n_tools.policy；运行时将不做 NATIVE 档过滤" -f $policies)
+}
+
+# 原生语言节点（docs/11 M1-b）：build\native\<lang>\*.cfg 由 tools/i18n_tools/mmgen.py 从
+# packs/pool.jsonl 的 #LOC_* 键生成，落进 Packs\<lang>\Native\。KSP 会把这些 Localization 节点
+# 并进本地化表，于是「自己带 Localization 目录」的那批 mod 不需要 ModuleManager 也能显示中文。
+# 生成物不入库（build\ 在 .gitignore 里）：没生成就只告警，不出包失败 —— 语言包本身仍然可用，
+# 缺的原生条目会退回 Harmony 运行时翻译路径。
+$nativeSource = Join-Path (Join-Path $repoRoot 'build\native') $langNorm
+if (Test-Path -LiteralPath $nativeSource) {
+    $nativeFiles = @(Get-ChildItem -LiteralPath $nativeSource -Filter *.cfg -File -ErrorAction SilentlyContinue | Sort-Object Name)
+    if ($nativeFiles.Count -gt 0) {
+        $nativeDest = Join-Path $packDest 'Native'
+        New-Item -ItemType Directory -Path $nativeDest -Force | Out-Null
+        foreach ($f in $nativeFiles) { Copy-Item $f.FullName $nativeDest -Force }
+        Write-Host ("[release] staged  : Packs\{0}\Native\ ({1} file(s), {2:N0} B)" -f $langNorm, $nativeFiles.Count, (($nativeFiles | Measure-Object -Property Length -Sum).Sum))
+    }
+}
+else {
+    Write-Host ("[release] warn    : 没有原生语言节点生成物（{0}）—— 先跑 python -m i18n_tools.mmgen；包里将不含 Native\" -f $nativeSource)
+}
+
 # 3) 硬断言：命中即 throw（规则在 release-checks.ps1 里，便于单测每一条）
 . (Join-Path $scriptDir 'release-checks.ps1')
 
@@ -188,10 +228,21 @@ foreach ($f in $stagedFiles) {
 }
 $fileEntries = @($fileEntries | Sort-Object path)
 
-$packStaged = @($stagedFiles | Where-Object { $_.FullName -match '\\Packs\\' })
+# packFiles / packBytes / packRows 的口径是「语言包」= Packs 下的 *.jsonl；
+# display-names.json 仍进 files[]（玩家要能校验它），但不该被算成包、更不该被当 JSONL 数行
+$packStaged = @($stagedFiles | Where-Object { $_.FullName -match '\\Packs\\' -and $_.Extension -eq '.jsonl' })
 $packRows = 0
 foreach ($f in $packStaged) {
     $packRows += @(Get-Content -LiteralPath $f.FullName | Where-Object { $_.Trim().Length -gt 0 }).Count
+}
+
+# nativeFiles / nativeKeys 的口径是「原生语言节点」= Packs\<lang>\Native\*.cfg 与里面的键数
+# （只数 `#键 = 值` 那种行）。它与 packFiles 相加不等于 files[] 的总数：files[] 里还有 DLL、
+# 配置、显示名表。读取器只认自己认识的键，多出来的字段会被忽略（UpdateManifest.Parse）。
+$nativeStaged = @($stagedFiles | Where-Object { $_.FullName -match '\\Packs\\[^\\]+\\Native\\' -and $_.Extension -eq '.cfg' })
+$nativeKeys = 0
+foreach ($f in $nativeStaged) {
+    $nativeKeys += @(Get-Content -LiteralPath $f.FullName | Where-Object { $_.Trim() -match '^#\S+\s*=' }).Count
 }
 
 $manifest = [ordered]@{
@@ -204,11 +255,13 @@ $manifest = [ordered]@{
     packFiles  = $packStaged.Count
     packRows   = $packRows
     packBytes  = [int](($packStaged | Measure-Object -Property Length -Sum).Sum)
+    nativeFiles = $nativeStaged.Count
+    nativeKeys  = $nativeKeys
 }
 $manifestPath = Join-Path $distOut 'manifest.json'
 ($manifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $manifestPath -Encoding UTF8
 
-# 6) netkan（从模板生成，填版本 / sha256 / download；depends 的 identifier 已按本机 CKAN 元数据核对：Harmony2 / ModuleManager）
+# 6) netkan（从模板生成，填版本 / sha256 / download；depends 只有 Harmony2 —— UI18n 不改 cfg、不写 MM patch，运行期只靠 Harmony）
 $netkanTemplate = Join-Path $scriptDir 'ckan\UI18n.netkan.template'
 if (-not (Test-Path $netkanTemplate)) { throw "[release] 缺少模板: $netkanTemplate" }
 # 注意：这个 download 指向 GitHub Release 资产。仓库当前**没有任何 Release**（2026-10-26 按维护者判断删除了 v1.0.0–v1.5.0 全部 Release/tag），
@@ -229,8 +282,10 @@ $ghCmd = Get-Command gh -ErrorAction SilentlyContinue
 if ($null -eq $ghCmd) {
     Write-Warning "[release] 未找到 gh，跳过校验：.netkan 的 download 指向 Release 资产（仓库当前无任何 Release）。"
 } else {
-    & gh release view ('v' + $Version) --json url *> $null
-    if (-not $?) {
+    try {
+        $null = & gh release view ('v' + $Version) --json url 2>&1
+    } catch {}
+    if ($LASTEXITCODE -ne 0) {
         Write-Warning ("[release] 没有 v{0} 的 GitHub Release ⇒ .netkan 的 download 现在就是 404，先发版再交给 CKAN。" -f $Version)
     }
 }

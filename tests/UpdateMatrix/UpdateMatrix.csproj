@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <!-- 根 Directory.Build.props 把 LangVersion 定成 9.0；本工具允许用新语法 -->
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>UpdateMatrix</AssemblyName>
+    <RootNamespace>UpdCheck</RootNamespace>
+    <NoWarn>$(NoWarn);SYSLIB0014</NoWarn>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\UI18n.Core\UI18n.Core.csproj" />
+  </ItemGroup>
+
+  <!-- 关键：直接编译 Runtime/Update 下**真实源码**（它们刻意写成 Unity-free），
+       所以矩阵跑的是生产代码本身，不是复制品。 -->
+  <ItemGroup>
+    <Compile Include="..\..\src\UI18n.Runtime\Update\*.cs" Link="Runtime\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

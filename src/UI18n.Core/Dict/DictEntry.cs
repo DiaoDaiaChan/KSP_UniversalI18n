@@ -20,7 +20,7 @@ namespace UI18n.Core.Dict
         /// 追加成可选参数是为了不破坏既有调用与单测。
         /// </para>
         /// </summary>
-        public DictEntry(ulong hash, string normalized, string source, string translation, string mod, string ctx, bool isPattern = false)
+        public DictEntry(ulong hash, string normalized, string source, string translation, string mod, string ctx, bool isPattern = false, string src = null)
         {
             Hash = hash;
             Normalized = normalized ?? string.Empty;
@@ -29,6 +29,7 @@ namespace UI18n.Core.Dict
             Mod = mod ?? string.Empty;
             Context = ctx ?? string.Empty;
             IsPattern = isPattern;
+            Src = src ?? string.Empty;
 
             if (Context.Length > 0)
             {
@@ -77,6 +78,11 @@ namespace UI18n.Core.Dict
         /// 精确 <see cref="DictPack.TryGet"/> 永远不命中它，<see cref="DictPack.TryGetPattern"/> 也永远不命中精确行。
         /// </summary>
         public bool IsPattern { get; private set; }
+
+        /// <summary>
+        /// 翻译来源标记（如 <c>"human"</c>、<c>"machine"</c>），可选。
+        /// </summary>
+        public string Src { get; private set; }
 
         /// <inheritdoc />
         public override string ToString()

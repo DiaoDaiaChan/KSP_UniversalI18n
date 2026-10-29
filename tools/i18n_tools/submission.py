@@ -162,8 +162,12 @@ def _check_redactions(bundle, warnings):
     return out
 
 
-def _check_entries(entries, declared, warnings):
-    """逐行校验 + 同 (mod, h) 去重（count 相加）；返回规范化后的行列表。"""
+def _check_entries(entries, declared, warnings, known_mods=None):
+    """逐行校验 + 同 (mod, h) 去重（count 相加）；返回规范化后的行列表。
+
+    known_mods：仓库已知 modId 集合（packs/mods.json）。给了就要求每一行的 mod 都在里面
+    —— 拼错一个字母的 modId 会让候选记到别人头上，只能整条拒。None 表示不查（纯函数自检用）。
+    """
     rows, seen, h_index = [], {}, {}
     for index, item in enumerate(entries, 1):
         path = "entries[%d]." % index
@@ -196,10 +200,18 @@ def _check_entries(entries, declared, warnings):
         if not _is_int(count) or count < 0:
             raise BundleError("schema", "SUBMISSION_FIELD_INVALID",
                               path + "count 必须是非负整数（收到 %r）" % (count,))
+        if known_mods is not None and mod not in known_mods:
+            raise BundleError("gate", "submission-mod-unknown",
+                              path + "mod=%s 在 packs/mods.json 里查不到（拼错的 modId 会把候选"
+                              "记到别人头上，整条拒）" % mod)
         expect = hash_text(normalize(text))
         if expect != h:
-            warnings.append("entries[%d] 的 h=%s 与原文重算的 %s 不一致（按投稿给的值收录，"
-                            "候选表可能因此出现两行同文）" % (index, h, expect))
+            # docs/12 §12.3：h 必须等于 fnv.hash_text(normalize(s))，接收侧重算校验。
+            # 不一致只可能是手改过或客户端归一化契约破裂，两种都不该进候选表。
+            raise BundleError("gate", "submission-hash-mismatch",
+                              path + "h=%s 与原文重算的 %s 不一致（h 是内容派生值，"
+                              "对不上说明这份投稿被手工改过或者客户端归一化不是 NFKC）"
+                              % (h, expect), [h, expect])
         key = (mod, h)
         if key in seen:
             rows[seen[key]]["count"] += int(count)
@@ -222,8 +234,12 @@ def _check_entries(entries, declared, warnings):
     return rows
 
 
-def validate(bundle):
-    """全量校验，返回规范化后的 dict（不改入参）；任何问题抛 BundleError。"""
+def validate(bundle, known_mods=None):
+    """全量校验，返回规范化后的 dict（不改入参）；任何问题抛 BundleError。
+
+    known_mods：仓库已知 modId 集合（packs/mods.json ∪ 现有包文件名）。
+    None = 只做自洽校验（纯函数层的自检），接受侧一定传真实集合。
+    """
     if not isinstance(bundle, dict):
         raise BundleError("schema", "SUBMISSION_FIELD_INVALID", "投稿顶层必须是 JSON 对象")
     warnings = []
@@ -279,7 +295,7 @@ def validate(bundle):
     if not entries:
         # §6.6：entries 为空是"内容不合格"，不是"格式坏"
         raise BundleError("gate", "submission-empty-entries", "entries 是空的，没有任何原文可收")
-    rows = _check_entries(entries, declared, warnings)
+    rows = _check_entries(entries, declared, warnings, known_mods)
     expect = bundle_id(bundle)
     if expect != sid:
         raise BundleError("schema", "submission-id-mismatch",
@@ -481,13 +497,13 @@ def merge_candidates(existing_raw, entries, covered_h, submission_id, accepted_a
 # ---------------------------------------------------------------------------
 
 def plan(bundle, covered_h, existing_candidates_raw, existing_index_raw,
-         accepted_at, actor=None):
+         accepted_at, actor=None, known_mods=None):
     """校验 + 拆文件 + 归并 candidates，返回"要写什么"的完整描述（不碰磁盘）。
 
     返回 dict：id / rows / mods / files（按写入顺序）/ event（journal 载荷）/ meta /
     indexEntry / stats / warnings。
     """
-    info = validate(bundle)
+    info = validate(bundle, known_mods)
     sid = info["id"]
     base = "%s/%s" % (SUBMISSION_DIR, sid)
     grouped = split_by_mod(info["entries"])
@@ -629,9 +645,9 @@ def selftest():
         if not condition:
             failures.append((name, str(detail)))
 
-    def rejected(name, bundle, kind, code):
+    def rejected(name, bundle, kind, code, known_mods=None):
         try:
-            validate(bundle)
+            validate(bundle, known_mods)
         except BundleError as exc:
             check(name, (exc.kind, exc.code) == (kind, code), (exc.kind, exc.code, exc.message))
             return
@@ -665,6 +681,8 @@ def selftest():
              "schema", "submission-schema-invalid")
     tampered = _bundle(entries)
     tampered["entries"][0]["s"] = "Blue Paint (edited)"
+    # 只改 id 相关字段：h 也跟着改，否则先撞上 h 重算（那条由下面的负例专门覆盖）。
+    tampered["entries"][0]["h"] = _h("Blue Paint (edited)")
     rejected("id 与内容不符拒收", tampered, "schema", "submission-id-mismatch")
     rejected("entries 为空是门禁拒绝",
              _bundle([]), "gate", "submission-empty-entries")
@@ -694,10 +712,14 @@ def selftest():
     check("同 mod 同 h 去重且 count 相加",
           len(dup_info["entries"]) == 1 and dup_info["entries"][0]["count"] == 5,
           dup_info["entries"])
-    wrong_h = validate(_bundle([{"h": "0000000000000000", "s": "Blue Paint",
-                                "mod": "TUFX"}]))
-    check("h 与原文不一致只 warning 不拒收",
-          any("重算" in item for item in wrong_h["warnings"]), wrong_h["warnings"])
+    rejected("h 与原文不一致拒收（h 是内容派生值，docs/12 §12.3）",
+             _bundle([{"h": "0000000000000000", "s": "Blue Paint", "mod": "TUFX"}]),
+             "gate", "submission-hash-mismatch")
+    registered = validate(good, {"TUFX", "FAR"})
+    check("known_mods 覆盖全部 mod 时照常通过", len(registered["entries"]) == 2,
+          len(registered["entries"]))
+    rejected("mod 不在 packs/mods.json 里整条拒（拼错 modId）",
+             good, "gate", "submission-mod-unknown", known_mods={"TUFX"})
 
     grouped = split_by_mod(info["entries"])
     check("按 mod 拆文件", sorted(grouped) == ["FAR", "TUFX"], sorted(grouped))

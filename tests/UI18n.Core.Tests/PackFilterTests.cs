@@ -11,8 +11,13 @@ namespace UI18n.Core.Tests
     /// 陷阱：<c>AtmosphereAutopilot.UI.il.jsonl</c> 的 modId 是 <c>AtmosphereAutopilot.UI</c> ——
     /// modId 可以含点号，所以「剥掉最后一个点号段」是错的。
     /// </summary>
+    // 与 PackDisplayNamesTests 共用静态注册表 _customDisplayNames，串行跑（同一个 collection）
+    [Collection(PackFilterTests.RegistryCollection)]
     public class PackFilterTests
     {
+        /// <summary>显示名注册表相关用例的 collection 名（与 PackDisplayNamesTests 共用）。</summary>
+        public const string RegistryCollection = "PackFilterDisplayNames";
+
         [Theory]
         [InlineData("Squad.jsonl", "Squad")]
         [InlineData("Squad.il.jsonl", "Squad")]
@@ -93,21 +98,60 @@ namespace UI18n.Core.Tests
             Assert.False(PackFilter.IsValidModId(modId));
         }
 
+        // 显示名只有数据来源（Packs/<lang>/display-names.json 或 RegisterDisplayName）：
+        // Core 里不许内置 mod 名、也不许内置界面文案，没登记就原样回 modId（连大小写都不动）。
+        // 这三行正是 v1.7 之前被写死成「未归属文本」/「配置缓存」/「本体」的三个 id。
         [Theory]
-        [InlineData("UI18n-Unattributed", "未归属文本")]
-        [InlineData("UI18n-ConfigCache", "配置缓存")]
-        [InlineData("Squad", "本体")]
-        [InlineData("squad", "本体")]
-        [InlineData("RealFuels", "RealFuels")]
-        [InlineData(null, "")]
-        [InlineData("", "")]
-        public void DisplayName_TranslatesPseudoMods(string modId, string expected)
+        [InlineData("UI18n-Unattributed")]
+        [InlineData("UI18n-ConfigCache")]
+        [InlineData("Squad")]
+        [InlineData("RealFuels")]
+        public void DisplayName_FallsBackToModIdWithoutData(string modId)
         {
-            Assert.Equal(expected, PackFilter.DisplayName(modId));
+            Assert.Equal(modId, PackFilter.DisplayName(modId));
+            Assert.Equal(modId.ToLowerInvariant(), PackFilter.DisplayName(modId.ToLowerInvariant()));
+            Assert.Equal(modId.ToUpperInvariant(), PackFilter.DisplayName(modId.ToUpperInvariant()));
+        }
+
+        [Fact]
+        public void DisplayName_NullOrEmpty_ReturnsEmpty()
+        {
+            Assert.Equal(string.Empty, PackFilter.DisplayName(null));
+            Assert.Equal(string.Empty, PackFilter.DisplayName(string.Empty));
+        }
+
+        [Theory]
+        [InlineData("UI18n-Unattributed", true)]
+        [InlineData("ui18n-configcache", true)]
+        [InlineData("UI18n-Foo", true)]
+        [InlineData("UI18n-", false)]
+        [InlineData("Squad", false)]
+        [InlineData("UI18n", false)]
+        [InlineData(null, false)]
+        [InlineData("", false)]
+        public void IsInternalPack_MatchesOnlyProductOwnPacks(string modId, bool expected)
+        {
+            Assert.Equal(expected, PackFilter.IsInternalPack(modId));
         }
 
         // 同一个 mod 的两个 channel（BurstPQS.il.jsonl + BurstPQS.jsonl）必须共享一个开关，
         // 否则面板上会出现两行、玩家关掉一行另一行还在翻译。
+        [Fact]
+        public void RegisterDisplayName_OverridesOrProvidesCustomName()
+        {
+            try
+            {
+                PackFilter.RegisterDisplayName("MechJeb2", "机巧杰布2");
+                Assert.Equal("机巧杰布2", PackFilter.DisplayName("MechJeb2"));
+                Assert.Equal("机巧杰布2", PackFilter.DisplayName("mechjeb2"));
+            }
+            finally
+            {
+                PackFilter.ClearCustomDisplayNames();
+            }
+            Assert.Equal("MechJeb2", PackFilter.DisplayName("MechJeb2"));
+        }
+
         [Fact]
         public void TwoChannelsOfSameMod_ShareOneSwitch()
         {

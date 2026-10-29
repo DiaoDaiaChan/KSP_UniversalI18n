@@ -1,4 +1,4 @@
-# UI18n 发布包的硬断言（被 build-release.ps1 点源加载）。
+﻿# UI18n 发布包的硬断言（被 build-release.ps1 点源加载）。
 # 单独抽成文件是为了能在不真正出包的前提下，用合成的 stage 树验证每一条规则。
 #
 # 两个入口：
@@ -16,6 +16,12 @@
 #  10. UI18n.cfg 的版本行必须是完整的一行「Version = <version>」（恰好 1 行、值等于 -Version），
 #      且不许出现「裸版本号」这种畸形行（键名丢失）
 #  11. UI18n.version（KSP-AVC）的 VERSION 必须等于 -Version
+#  13. Packs\<lang>\Native\*.cfg 的括号必须平衡（KSP 的 cfg 解析器遇到不平衡会整份丢弃，
+#      而丢弃只体现在「某些文本没翻译」，日志里看不出来）
+#  14. 同一个 #键 不许出现在两个 Native 文件里（KSP 合并顺序不确定，后加载的会覆盖前面的）
+#  15. 单个 Native cfg 不超过 256 KB（超过说明有人把整份字典塞进一个文件，加载期会卡）
+#  16. Fonts\ 里一旦有 *.bundle，就必须有 fonts.json，且 schema/文件名/字节数/sha256/许可证
+#      与磁盘一致（运行时 FontResolver 拿它做完整性校验；清单与文件「一起错」的包只能在这里挡住）
 #
 # 下面两条由 Assert-ReleaseProvenance 执行，顺序在最前面（脏树/来源不对就没必要看内容）：
 #   8. 工作树必须干净（git status --porcelain 为空；-AllowDirty 显式放行并打 WARN）
@@ -130,6 +136,134 @@ function Assert-ReleaseTree {
             if ($dllText.IndexOf($ReaderContract, [System.StringComparison]::Ordinal) -lt 0) {
                 $violations.Add(("reader contract: 包里的 UI18n.Core.dll 没有 '" + $ReaderContract + "' 标记（这份 DLL 比出包脚本旧，" +
                                  "它读不懂现在发出去的清单形状 —— 1.6.0 事故）"))
+            }
+        }
+    }
+
+    # 第 13-15 条：原生语言节点（docs/11 M1-b）。这些 .cfg 是直接交给 KSP 的 Localization
+    # 节点，出错的表现是「某段文本变成别人的译文」或「整份文件被 GameDatabase 静默丢掉」——
+    # 两种都不会在 KSP.log 里留下能对上的错误行，所以只能在出包前查形状。
+    $packsRoot = Join-Path $StageMod 'Packs'
+    $nativeKeyOwner = @{}
+    $nativeDirs = @()
+    if (Test-Path -LiteralPath $packsRoot) {
+        $nativeDirs = @(Get-ChildItem -LiteralPath $packsRoot -Directory -ErrorAction SilentlyContinue |
+                        ForEach-Object { Join-Path $_.FullName 'Native' } |
+                        Where-Object { Test-Path -LiteralPath $_ })
+    }
+    foreach ($nativeDir in $nativeDirs) {
+        $relDir = $nativeDir.Substring($StageRoot.Length + 1)
+        $nativeFiles = @(Get-ChildItem -LiteralPath $nativeDir -Filter *.cfg -File -ErrorAction SilentlyContinue)
+        if ($nativeFiles.Count -eq 0) {
+            # 空目录说明生成步骤跑了一半（比如 --out 指到别的语言），比缺目录更可疑
+            $violations.Add("native empty: $relDir 存在但没有任何 *.cfg（要么别建这个目录，要么把生成物补齐）")
+            continue
+        }
+        foreach ($f in $nativeFiles) {
+            $rel = $f.FullName.Substring($StageRoot.Length + 1)
+            if ($f.Length -gt 262144) {
+                $violations.Add(("native size: {0} 有 {1:N0} B，超过 256 KB（按 mod 拆开，别把整份字典塞进一个 cfg）" -f $rel, $f.Length))
+            }
+            $depth = 0
+            $lineNo = 0
+            foreach ($line in [System.IO.File]::ReadAllLines($f.FullName, [System.Text.Encoding]::UTF8)) {
+                $lineNo++
+                # 注释里可能有花括号（生成器在头三行写了命令与 mod 名），按 // 截掉再数
+                $code = $line
+                $commentAt = $code.IndexOf('//')
+                if ($commentAt -ge 0) { $code = $code.Substring(0, $commentAt) }
+                foreach ($ch in $code.ToCharArray()) {
+                    if ($ch -eq '{') { $depth++ }
+                    elseif ($ch -eq '}') {
+                        $depth--
+                        if ($depth -lt 0) {
+                            $violations.Add("native brace: $rel 第 $lineNo 行的 } 多余（括号不平衡）")
+                            $depth = 0
+                        }
+                    }
+                }
+                # 深度 2 = 已经在 Localization { zh-cn { 里面，此时的 #键 = 值 才是真正的条目
+                if ($depth -eq 2) {
+                    $eq = $code.IndexOf('=')
+                    if ($eq -gt 0) {
+                        $key = $code.Substring(0, $eq).Trim()
+                        if ($key.StartsWith('#')) {
+                            if ($nativeKeyOwner.ContainsKey($key)) {
+                                if ($nativeKeyOwner[$key] -ne $f.Name) {
+                                    $violations.Add(("native dup: {0} 同时出现在 {1} 和 {2}（同一个键只能有一个来源）" -f $key, $nativeKeyOwner[$key], $f.Name))
+                                }
+                            }
+                            else { $nativeKeyOwner[$key] = $f.Name }
+                        }
+                    }
+                }
+            }
+            if ($depth -ne 0) {
+                $violations.Add("native brace: $rel 括号不平衡（文件结尾还剩 $depth 层没关）")
+            }
+        }
+    }
+
+    # 第 16 条：随包字体（docs/11 M5-b）。Fonts\ 里一旦出现 *.bundle，就必须有 fonts.json，
+    # 且 schema、文件名、字节数、sha256、许可证文件都与磁盘一致。
+    # 为什么在这查而不是只靠运行时：运行时 FontResolver 会在加载前比对 sha256 并回退 OsFont，
+    # 那种包在玩家机器上的表现是「满屏方框 + 一条 Warn」；而「换了子集却没重算 sha256 / 忘了改清单」
+    # 恰恰是最常见的形态，只能在出包前拦住。
+    $fontsDir = Join-Path $StageMod 'Fonts'
+    if (Test-Path -LiteralPath $fontsDir) {
+        $fontManifestPath = Join-Path $fontsDir 'fonts.json'
+        $fontBundles = @(Get-ChildItem -LiteralPath $fontsDir -Filter *.bundle -File -ErrorAction SilentlyContinue)
+        $fontRel = $fontManifestPath.Substring($StageRoot.Length + 1)
+        if (($fontBundles.Count -gt 0) -and -not (Test-Path -LiteralPath $fontManifestPath)) {
+            $violations.Add("font manifest: Fonts\ 里有 $($fontBundles.Count) 个 *.bundle 却没有 fonts.json（运行时只能整份信任这份字库）")
+        }
+        elseif (Test-Path -LiteralPath $fontManifestPath) {
+            $fontManifest = $null
+            try {
+                $fontManifest = (Get-Content -LiteralPath $fontManifestPath -Raw -Encoding UTF8) | ConvertFrom-Json
+                if ($fontManifest.PSObject.Properties.Name -contains 'fonts' -and $fontManifest.fonts) { $fontManifest = $fontManifest.fonts[0] }
+            }
+            catch {
+                $violations.Add("font manifest: $fontRel 不是合法 JSON（$($_.Exception.Message)）")
+            }
+
+            if ($null -ne $fontManifest) {
+                if ([string]$fontManifest.schema -ne 'ui18n-font-bundle/1') {
+                    $violations.Add("font manifest: $fontRel 的 schema 应为 ui18n-font-bundle/1，实际 [$([string]$fontManifest.schema)]")
+                }
+                $fontName = [string]$fontManifest.file
+                if (-not $fontName) {
+                    $violations.Add("font manifest: $fontRel 没有 file 字段（不知道要校验哪个字库文件）")
+                }
+                elseif ($fontName -match '[\\/:*?"<>|]' -or $fontName -eq '.' -or $fontName -eq '..') {
+                    $violations.Add("font manifest: $fontRel 的 file 字段 [$fontName] 不是纯文件名（运行时会按不安全名拒绝加载）")
+                }
+                else {
+                    $fontPath = Join-Path $fontsDir $fontName
+                    if (-not (Test-Path -LiteralPath $fontPath)) {
+                        $violations.Add("font manifest: $fontRel 指向的 $fontName 不在包里")
+                    }
+                    else {
+                        $fontFile = Get-Item -LiteralPath $fontPath
+                        if ($fontFile.Length -gt (6 * 1024 * 1024)) {
+                            $violations.Add(("font size: Fonts\{0} 有 {1:N0} B，超过 6 MB 预算（取更小的子集，别整份 CJK 字体进包）" -f $fontName, $fontFile.Length))
+                        }
+                        if ([long]$fontManifest.bytes -ne $fontFile.Length) {
+                            $violations.Add(("font bytes: $fontRel 写的是 {0} B，磁盘上是 {1:N0} B（清单与字库不是同一份）" -f ([long]$fontManifest.bytes), $fontFile.Length))
+                        }
+                        $fontSha = (Get-FileHash -LiteralPath $fontPath -Algorithm SHA256).Hash.ToUpperInvariant()
+                        if ($fontSha -ne ([string]$fontManifest.sha256).ToUpperInvariant()) {
+                            $violations.Add("font sha256: $fontRel 写的是 [$([string]$fontManifest.sha256)]，磁盘算出来是 [$fontSha]")
+                        }
+                        $fontLicense = [string]$fontManifest.licenseFile
+                        if (-not $fontLicense) {
+                            $violations.Add("font license: $fontRel 没有 licenseFile 字段（OFL 要求分发时随附许可证全文）")
+                        }
+                        elseif (-not (Test-Path -LiteralPath (Join-Path $fontsDir $fontLicense))) {
+                            $violations.Add("font license: $fontRel 指向的许可证文件 Fonts\$fontLicense 不在包里")
+                        }
+                    }
+                }
             }
         }
     }

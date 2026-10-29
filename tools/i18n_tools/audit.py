@@ -112,12 +112,51 @@ def load_terms(path):
     return rules, errors
 
 
+_MOD_METADATA_CACHE: dict[str, set[str]] | None = None
+
+
+def get_mod_domains(mod: str) -> set[str]:
+    """从 packs/mods.json 加载并缓存 mod 的领域与别名元数据（解耦具体 mod 硬编码）。"""
+    global _MOD_METADATA_CACHE
+    if _MOD_METADATA_CACHE is None:
+        _MOD_METADATA_CACHE = {}
+        candidate_paths = [
+            os.path.join("packs", "mods.json"),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "packs", "mods.json"),
+        ]
+        for p in candidate_paths:
+            if os.path.isfile(p):
+                try:
+                    with open(p, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    for item in data.get("mods") or []:
+                        m_id = str(item.get("modId") or "").strip().lower()
+                        if not m_id:
+                            continue
+                        known = {m_id}
+                        disp = str(item.get("displayName") or "").strip().lower()
+                        if disp:
+                            known.add(disp)
+                        for key in ("domains", "tags", "categories", "aliases", "assemblies", "folders"):
+                            for val in item.get(key) or []:
+                                v = str(val).strip().lower()
+                                if v:
+                                    known.add(v)
+                        _MOD_METADATA_CACHE[m_id] = known
+                    break
+                except Exception:
+                    pass
+    return _MOD_METADATA_CACHE.get(str(mod).strip().lower(), set())
+
+
 def _domain_matches(rule: dict, mod: str) -> bool:
     """术语规则是否覆盖这个 mod。
 
     domain 里可以写概念领域（Parachute / Rendering）或具体 modId（RealChute / MechJeb2）。
-    包行里没有领域字段，唯一可靠的归属信号就是包文件名推出的 modId，所以这里按
-    「domain 与 modId 互相包含」匹配；domain 缺省或写 General 表示对所有包生效。
+    判定规则：
+    1. domain 缺省或包含 general -> 对所有包生效；
+    2. domain 与 modId 互相包含（原样兼容）；
+    3. mod 在 packs/mods.json 中登记的 domains/tags/categories/aliases 命中 rule domain。
     """
     domains = rule.get("domain") or []
     if isinstance(domains, str):
@@ -126,7 +165,12 @@ def _domain_matches(rule: dict, mod: str) -> bool:
     if not names or "general" in names:
         return True
     current = str(mod).lower()
-    return any(name == current or name in current or current in name for name in names)
+    if any(name == current or name in current or current in name for name in names):
+        return True
+    meta = get_mod_domains(mod)
+    if meta and any(name in meta for name in names):
+        return True
+    return False
 
 
 def _term_pattern(term: str):

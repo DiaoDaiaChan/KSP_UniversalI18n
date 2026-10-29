@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Runtime 行为门禁（R13，见同目录 README.md 与 docs/11 §12）。
+
+    为什么存在：tests/runtime-compile 只证明 src/UI18n.Runtime 那 29 个 .cs **能被编译**，
+    它们一行都没被执行过。没有 KSP 的机器上，翻译主链（包加载 → 三层优先级 → 骨架填回 →
+    keep → per-mod 策略 → 缺命中捕获）的正确性只能靠 Core 单测间接覆盖，Runtime 那层的
+    胶水（ConfigLoader.LoadPacks / Translator / MissCapture）没有任何行为断言。
+
+    做法：把 stubs/ 的桩与 src/UI18n.Runtime 的真实源码**编进同一个程序集**（Exe），
+    于是 internal 成员可以直接调用，产品侧不需要 InternalsVisibleTo。
+
+    只编 net10.0：这是「能在任何机器上跑」的语义验证，不追求与 KSP 同 TFM。
+    net472 的签名权威性由 tests/runtime-compile（双 TFM 语义编译）负责。
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>UI18n.Runtime.Behavior</AssemblyName>
+    <RootNamespace>UI18n.Runtime</RootNamespace>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <!-- 路径一律用 / 与 $(MSBuildThisFileDirectory)：与 runtime-compile 同口径（CI 在 ubuntu 上跑）。 -->
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)../runtime-compile/stubs/**/*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)../../src/UI18n.Runtime/**/*.cs"
+             Exclude="$(MSBuildThisFileDirectory)../../src/UI18n.Runtime/obj/**;$(MSBuildThisFileDirectory)../../src/UI18n.Runtime/bin/**" />
+    <Compile Include="$(MSBuildThisFileDirectory)*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)../../src/UI18n.Core/UI18n.Core.csproj" />
+  </ItemGroup>
+
+</Project>

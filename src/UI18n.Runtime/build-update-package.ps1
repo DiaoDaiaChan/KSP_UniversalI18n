@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     打 packs-only 更新包（游戏内联网更新用）。
 
@@ -456,7 +456,13 @@ else {
     else {
         $probeCode = -1
         try {
-            $probeOut = @(& dotnet run --project $probeProj -c Release -- $manifestPath 2>&1)
+            $probeDll = Join-Path $repoRoot "tools\manifest-roundtrip\bin\Release\net10.0\ManifestRoundtrip.dll"
+            if (Test-Path -LiteralPath $probeDll) {
+                $probeOut = @(& dotnet $probeDll $manifestPath 2>&1)
+            }
+            else {
+                $probeOut = @(& dotnet run --project $probeProj -c Release --no-restore -- $manifestPath 2>&1)
+            }
             $probeCode = $LASTEXITCODE
             foreach ($ln in $probeOut) { Write-Host ("[update] reader    : " + $ln) }
         }

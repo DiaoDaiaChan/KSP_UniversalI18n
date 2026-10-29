@@ -41,11 +41,18 @@ namespace UI18n.Runtime.Patches
         /// </summary>
         internal void Touch()
         {
-            Calls++;
-            if (!_firstCallLogged)
+            try
             {
-                _firstCallLogged = true;
-                Log.Info("first call: " + Target);
+                Calls++;
+                if (!_firstCallLogged)
+                {
+                    _firstCallLogged = true;
+                    Log.Info("first call: " + Target);
+                }
+            }
+            catch
+            {
+                // 计数与首调日志绝不冒泡打断游戏绘制流程（红线 6）
             }
         }
 

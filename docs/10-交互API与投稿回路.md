@@ -314,6 +314,7 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 
 - `modId` 是**稳定键**（包文件名、`mod` 字段、开关状态都用它），一旦发布不许改名（改名 = 迁移脚本 + journal 事件）。
 - `displayName` 是给玩家看的名字，可改。
+- **运行时不读这张表**：`packs/mods.json` 是生产端输入，不随包发布（见 docs/06）。包里那份显示名在 `Packs/<lang>/display-names.json`（`{"schema":"ui18n-display-names/1","names":{"<modId>":"…"}}`，故意不是 `.jsonl`，所以不会被当成语言包），由 `PackDisplayNames.LoadFromDirectory` 读进 `PackFilter` 的注册表；面板（`PrefsPanel.DescribeMod`）数据优先、没有就原样显示 `modId`。**代码里不再写死任何 mod 名或界面文案**（v1.7 去硬编码：原来 `PackFilter.DisplayName` 里钉着「`UI18n-Unattributed` → 未归属文本」「`Squad` → 本体」三条 `if`）。
 - 解析优先级：程序集名 → 文件夹名 → 别名 → CKAN id。采集端（`CaptureCaller.CleanTypeName`）拿到的类型全名 → 程序集 → `modId` 就靠这张表；表里没有的新 mod 先落 `modId = 程序集名去扩展名`，并在报告里列「未登记 mod」，等 `session` 里人工补 displayName。
 
 ## 9. 分发：按 mod 推送（manifest v2）
@@ -363,7 +364,8 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 
 - 开关在**加载期过滤**：关掉的 mod 的包文件不进内存字典，运行期零额外开销（不进 per-call 路径）。
 - 同一 `h` 出现在多个包里时，选择顺序：(1) ctx 层 > site 层 > global 层；(2) 同层按 `modId` 字典序。**因此「关掉 A」不等于「A 的这句话一定变回英文」**——如果 B 也提供同一句，仍显示中文。这是共享文本的固有语义，不是 bug。
-- `UI18n-Unattributed` / `UI18n-ConfigCache` / `Squad` 作为 pseudo-mod 出现在列表里（显示名「未归属文本」「配置缓存」「本体」），也可单独关。
+- **「原生」标记（v1.7 M5-a）**：`Packs/<lang>/policies.json` 把某些 mod 归到 `NATIVE` 档（它自带 `Localization/zh-cn`，游戏自己能显示中文），这一档的包**在加载期就被滤掉**，所以面板里它的条目全是 0 —— 行尾会标一句「原生（游戏自带中文）」，否则玩家会以为是我们漏翻。标错也无害：策略表缺失/损坏时一行都不标（= 全部加载，老行为）。
+- `UI18n-Unattributed` / `UI18n-ConfigCache` / `Squad` 作为 pseudo-mod 出现在列表里，也可单独关。显示名来自数据：`Packs/<lang>/display-names.json`（`Squad` → 「本体」等）+ UI 层的 `T()` 文案（两个 `UI18n-*` 伪包由 `PackFilter.IsInternalPack` 按前缀识别，文案不进 Core）。数据表缺失 / 损坏时显示 `modId`，翻译功能不受影响。
 - 进游戏后第一次打开开关面板时，用 render 覆盖率的 `byCaller` 给出每个 mod 的命中/未命中数，让玩家知道关掉会损失什么。
 
 ## 11. 里程碑

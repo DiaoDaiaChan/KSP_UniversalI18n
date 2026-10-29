@@ -189,6 +189,26 @@ namespace UI18n.Core.Update
             return _members.TryGetValue(name, out value) ? value : null;
         }
 
+        /// <summary>
+        /// 对象的全部成员（<b>不排序</b>；不是对象返回空集合）。
+        /// <para>
+        /// 有些数据文件的「键本身就是数据」，例如 <c>packs/&lt;lang&gt;/policies.json</c> 的
+        /// <c>mods</c> 是 <c>{modId: {...}}</c> 形态，只有 <see cref="Get"/> 取不到 —— 这个口子就是给它留的。
+        /// </para>
+        /// </summary>
+        public IEnumerable<KeyValuePair<string, JsonValue>> Members
+        {
+            get
+            {
+                if (_kind != JsonKind.Object)
+                {
+                    return new KeyValuePair<string, JsonValue>[0];
+                }
+
+                return _members;
+            }
+        }
+
         /// <summary>取成员并当字符串用；不是字符串时返回 <paramref name="fallback"/>。</summary>
         public string GetString(string name, string fallback)
         {

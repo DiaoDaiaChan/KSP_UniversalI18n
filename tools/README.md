@@ -40,7 +40,7 @@ KSP.log 里含 `[UI18n]` 的行 + 末 400 行、`GameData/UI18n` 的配置与版
 **只读 KSP 目录、不联网、不上传**；不收 DLL/语言包本体（哈希足以定位版本）。
 
 ```powershell
-pwsh tools\collect-diagnostics.ps1                       # 默认 KSP 根 D:\Kerbal Space Program_newmod，输出到 <KSP>\_diag
+pwsh tools\collect-diagnostics.ps1 -KspRoot "D:\Games\KSP"   # KSP 根必填（或设环境变量 KSP_ROOT），输出到 <KSP>\_diag
 pwsh tools\collect-diagnostics.ps1 -Tag after-update -MaxRuntimeFiles 10
 ```
 **本机不要用 `dotnet test`**——VSTest testhost 启动即崩 `Win32Exception (5): 拒绝访问`（parent-exit 监视打不开父进程句柄），
@@ -222,24 +222,60 @@ title = #autoLOC_500460 //#autoLOC_500460 = S1 SRB-KD25k "Kickback" Solid Fuel B
 
 ```
 cd C:\Users\43701\Documents\github\UniversalI18n\tools
-python -m i18n_tools.selftest                      # 279 项全绿，退出码 0，约 0.4 s
+python -m i18n_tools.selftest                      # 340 项全绿，退出码 0，约 6 s
 python -m i18n_tools.harvest --verify ..\_scratch\corpus\pool.jsonl   # 完全一致，退出码 0，约 3 s
 python -m i18n_tools.glossary                      # 2,126 行 / 467,238 字节，退出码 0
 ```
 
-**四道 CI 门禁**（与 `.github/workflows/i18n.yml` 的 `gates` job 逐条对应，本地跑同样四条即可复现 CI 结论）：
+**CI 门禁**（与 `.github/workflows/i18n.yml` 的 `gates` job 逐条对应；本地按同样顺序跑即可复现 CI 结论）：
 
 ```
 cd tools
-python -m i18n_tools.selftest            # 工具链自检 279 项
-python -m i18n_tools.audit --selftest    # 审计器自检 12 项（1 正例 + 8 负例）
-python -m i18n_tools.audit               # 真审计 packs/zh-cn：h 契约 / 占位符 / 富文本 / 格式串 / 跨文件同 h 同 t
-python -m i18n_tools.packindex --check   # packs/index.json 与磁盘逐文件 sha256 一致
+python -m i18n_tools.selftest                       # 工具链自检（含 api / backend / mmgen / netkan / policy / feedback / fontbundle / fontcov 等模块自检）
+python -m i18n_tools.audit --selftest               # 审计器自检（1 正例 + 8 负例）
+python -m i18n_tools.audit --strict-terms           # 真审计 packs/zh-cn + packs/terms.jsonl 消歧术语
+python -m i18n_tools.packindex --check              # packs/index.json 与磁盘逐文件 sha256 一致
+python -m i18n_tools.mmgen --stats --min-cover 0.85 # 原生语言节点桥接率不低于 85%（现值 88.1%）
+python -m i18n_tools.netkan --template              # CKAN 模板字段 / 占位符 / depends
+python -m i18n_tools.policy --check                 # packs/policies.json 与池数据一致
+#   ↑ 产物会被 build-release.ps1 装进 Packs/<lang>/policies.json；运行时按它把 NATIVE 档的包在加载期跳过
+python -m i18n_tools.fontbundle --check             # 随包字体清单与字库一致（还没随包字库时打 no bundled font shipped 并 exit 0）
+python -m i18n_tools.fontcov --check                # packs/charset-zh-cn.txt 与包内容一致（产物过期 exit 4；缺字面另见 --probe）
+python -m i18n_tools.golden_gate                    # 用户报过的原文三步判定（缺 candidates 时 exit 2 = SKIP）
+python -m i18n_tools.journal_gate --base --base-rev HEAD~1  # packs 改动必须有 journal 背书
 ```
 
-四条的期望输出末尾分别是 `[selftest] 全部通过（279 项）`、`[audit] selftest: 12 检查，失败 0 项`、
+仓库根还有五道（与 `tools/` 无关；前三道在 CI 的 `gates` job 里，排在 `fontbundle --check` 之后、`golden_gate` 之前；
+第四、五道在 `code` job 里，排在「跑单测」之后）：
+
+```
+python tests/encoding/test-ps1-bom.py                        # 全部 .ps1 带 UTF-8 BOM（13 项；PS 5.1 按 ANSI 读脚本，缺 BOM 会吃掉引号）
+python tests/hardcode/test-no-mod-hardcode.py --self-test    # 先证明门禁真会红：合成违规树 exit 1 / 干净树 exit 0（15 项）
+python tests/hardcode/test-no-mod-hardcode.py                # 通用性：不许写死某个 mod / 装机路径 / 每次 new Regex / 未登记的 UI18n-* 桶名（checks≈152,176）
+python tests/runtime-compile/test-shadow-compile.py          # Runtime 影子语义编译：桩 + src/UI18n.Runtime 全量源码，7 项
+python tests/runtime-behavior/test-runtime-behavior.py        # Runtime 行为场景：9 个场景 / 75 条断言真跑 + 反向对照，13 项
+```
+
+第四条值得多说一句：`src/UI18n.Runtime` 的真工程只 `net472` 且引用真实 KSP 的 `Managed/*.dll`，
+在没有游戏的机器上编不了，过去只能 `csc` 做纯语法校验（成员名写错、参数类型不匹配全漏）。
+`tests/runtime-compile/` 用一组最小桩把 Unity/KSP/Harmony 里我们用到的形状顶住，
+在 `net10.0`（CI）或 `net472`（Windows 本机，权威）上把 8,000 行 Runtime 真编一遍，
+并且先做一次「故意写错一句 Unity API，必须编红」的反向对照 —— 不会红的门禁等于没有。
+桩不是真实签名，边界与已知存疑项见 `tests/runtime-compile/README.md`。
+
+第五条（`tests/runtime-behavior/`）更进一步：影子编译只证明「能编」，行为门禁把同一批源码编成 Exe 真跑一遍，断言包加载、三层优先级、骨架填回、keep、NATIVE 策略加载期跳过、缺命中捕获等 9 个场景（75 条断言），脚本同样带反向对照（改坏一句期望译文必须跑红），详见 `tests/runtime-behavior/README.md`。
+
+各条的期望输出末尾分别是 `[selftest] 全部通过（340 项）`、`[audit] selftest: 12 检查，失败 0 项`、
 `VERDICT: PASS (bad_total=0)`、`[check] mod 数 74（cfg 41 + IL 48），全部 mod 都能从 file 推导`，退出码全 0。
 **任何一条红都表示字典被改坏了，不要当环境问题跳过。**
+
+装机机器上还有一条（**进不了 CI**：仓库不该带装机路径，没 GameData 时它自己打 skip 并 exit 0）：
+
+```
+python -m i18n_tools.modmap --gamedata "…/GameData" --report reports/mod-mapping.md
+#   从真实 GameData 推导 packs/mods.json 的 folders / assemblies（写盘一律走 api mod put）
+#   确认报告里的 unmatched 列表后再加 --apply；--check 在有缺口时 exit 4
+```
 
 `selftest` 只在 `tempfile.mkdtemp()` 造出的临时 GameData 里做测试，**不写仓库**；若存在
 `..\_scratch\corpus\pool.jsonl`，还会断言 `packs\pool.jsonl` 与它 **sha256 相同**（真值缺失时打印 `[skip]` 跳过）。
@@ -251,6 +287,8 @@ python -m i18n_tools.packindex --check   # packs/index.json 与磁盘逐文件 s
 ```
 tools/
   README.md                 ← 本文件
+  publish-ckan.ps1          离线校验 zip/manifest/netkan 自洽 → 摆 CKAN-meta 目录 → 出 PR 正文
+  collect-diagnostics.ps1   收集玩家现场（KSP.log / 包指纹 / Harmony 与 ConfigCache 是否存在）
   i18n_tools/
     __init__.py             包说明、__version__、ensure_stdout()
     fnv.py                  FNV-1a64（UTF-8 字节输入，16 位小写 hex）
@@ -269,7 +307,15 @@ tools/
     resolve_keyrefs.py      键引用解析 + --prefer-official + --drop-keyrefs（+--ambiguous-guard）
     translate.py            主翻译流水线（缓存/门禁/断点续跑）
     audit.py                产物审计（h 契约 / 占位符 / 富文本 / 格式串 / 跨文件一致性），CI 门禁与本地都用它
-    selftest.py             279 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
+    selftest.py             340 项自测（FNV/归一化/cfg 解析/假 GameData 流水线/术语表/包索引/IL/捕获/产物校验、含 audit 的 12 项）
+    policy.py               per-mod 策略表推导（磁盘有 Localization + 中文 → NATIVE 档）→ packs/policies.json（--check）
+    mmgen.py                池 loc 行 → KSP 原生 Localization 节点（不用 MM 的 @ 语法；--stats/--check/--selftest）
+    modmap.py               GameData → packs/mods.json 的 folders / assemblies（写盘走 api；无 GameData 则 SKIP）
+    netkan.py               .netkan 字段 / 占位符 / depends 校验（--template/--render）
+    feedback.py             译名回馈原 mod：LOC 键往返（--selftest 16 项）
+    fontbundle.py           随包字体清单校验 / 打包（--check/--pack）
+    fontcov.py              字库字符集：产物 packs/charset-zh-cn.txt（--write/--check）+ 字体覆盖探测（--probe）+ 缺字定位（--find）
+    conventions.py          专有约定的单源读取（translate / translate_il / engine 共用，不再各存一份）
 packs/
   pool.jsonl                12,792 行候选池（sha256 FEF515EA…D4C）
   inventory.json            统计清单

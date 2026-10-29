@@ -111,22 +111,31 @@ class GateUsage(Exception):
 
 def _git(root, args, check=False):
     """跑一条 git 命令，返回 (退出码, stdout 字节, stderr 文本)。"""
+    cmd = ["git"] + [str(item) for item in args]
     try:
-        done = subprocess.run(
-            ["git"] + [str(item) for item in args],
-            cwd=str(root),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        done = subprocess.run(cmd, cwd=str(root), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out = done.stdout or b""
+        err = (done.stderr or b"").decode("utf-8", "replace")
+        rc = done.returncode
+    except PermissionError:
+        # Windows restricted sandbox / AppContainer token blocks CreatePipe(None, 0)
+        try:
+            with tempfile.TemporaryFile() as f_out, tempfile.TemporaryFile() as f_err:
+                proc = subprocess.Popen(cmd, cwd=str(root), stdout=f_out, stderr=f_err)
+                rc = proc.wait()
+                f_out.seek(0)
+                f_err.seek(0)
+                out = f_out.read()
+                err = f_err.read().decode("utf-8", "replace")
+        except Exception as exc:
+            raise GateUsage("调用 git 失败：%s" % exc)
     except FileNotFoundError:
         raise GateUsage("找不到 git 命令：请先装 git（或把 git 放进 PATH）")
     except OSError as exc:
         raise GateUsage("调用 git 失败：%s" % exc)
-    out = done.stdout or b""
-    err = (done.stderr or b"").decode("utf-8", "replace")
-    if check and done.returncode != 0:
+    if check and rc != 0:
         raise GateUsage("git %s 失败：%s" % (" ".join(str(item) for item in args), err.strip()))
-    return done.returncode, out, err
+    return rc, out, err
 
 
 def repo_root_of(start=None):

@@ -22,6 +22,17 @@ __all__ = ["fnv", "cfgparse", "textnorm", "harvest", "glossary", "ensure_stdout"
 __version__ = "0.1.0"
 
 
+if sys.platform == "win32":
+    import os as _os
+    _orig_mkdir = _os.mkdir
+    def _win_safe_mkdir(path, mode=0o777, *args, **kwargs):
+        # Python 3.12+ Windows: 0o700 causes WinError 5 when creating child dirs in tempfile
+        if mode == 0o700:
+            mode = 0o777
+        return _orig_mkdir(path, mode, *args, **kwargs)
+    _os.mkdir = _win_safe_mkdir
+
+
 def ensure_stdout() -> None:
     """Windows 控制台默认 GBK，打印中文/emoji 会 UnicodeEncodeError：统一改成 utf-8。"""
     for stream in (sys.stdout, sys.stderr):

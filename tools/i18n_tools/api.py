@@ -1862,8 +1862,33 @@ def submission_index(ctx):
     return doc
 
 
+def known_mod_ids(ctx):
+    """投稿接收的 mod 白名单 = packs/mods.json 登记过的 ∪ 现有包文件名里出现过的。
+
+    只来自数据文件，代码里不点名任何 mod（审计 Fix-2 的口径）。不在集合里的 modId 会被
+    SUB.validate 以 gate/submission-mod-unknown 整条拒收 —— 拼错一个字母就会把候选记到
+    别人头上，宁可让投稿人重投。
+    """
+    ids = set()
+    for item in load_mods(ctx, required=False).get("mods") or []:
+        mod_id = item.get("modId") if isinstance(item, dict) else None
+        if isinstance(mod_id, str) and mod_id:
+            ids.add(mod_id)
+    try:
+        for entry in scan(ctx, ctx.lang):
+            ids.add(entry["mod"])
+    except ApiError:
+        pass
+    return ids
+
+
 def cmd_submit_accept(ctx, args):
-    """收一份玩家投稿：校验 -> 算 id -> 幂等/冲突 -> 按 mod 拆 -> 归并 candidates。"""
+    """收一份玩家投稿：校验 -> 算 id -> 幂等/冲突 -> 按 mod 拆 -> 归并 candidates。
+
+    docs/12 §12.6 的四项接收侧校验：h 重算（submission-hash-mismatch）/ mod 必须在
+    packs/mods.json（submission-mod-unknown）/ 与包去重（pack_hashes -> covered）/
+    同 bundle id 重复投递（existing_state -> already 或 submission-id-conflict）。
+    """
     actor = need_actor(args)
     bundle_arg = getattr(args, "bundle", None)
     use_stdin = bool(getattr(args, "stdin", False))
@@ -1894,7 +1919,7 @@ def cmd_submit_accept(ctx, args):
     try:
         built = SUB.plan(bundle, pack_hashes(ctx, ctx.lang),
                          read_bytes_or_empty(ctx.root / CANDIDATES_REL),
-                         index_raw, accepted_at, actor)
+                         index_raw, accepted_at, actor, known_mod_ids(ctx))
     except SUB.BundleError as exc:
         raise ApiError(exc.kind, exc.message, exc.details, code=exc.code) from None
     for message in built["warnings"]:
@@ -2293,7 +2318,8 @@ def _h(text):
     return hash_text(normalize(text))
 
 
-def _row(source, zh, mod="TUFX", pattern=False):
+def _row(source, zh, mod, pattern=False):
+    """造一行字典条目。mod 必须由调用点显式给：以前这里默认 'TUFX'，读起来像是「产品默认 mod」。"""
     row = {"h": _h(source), "n": normalize(source), "s": source, "t": zh, "mod": mod}
     if pattern:
         row["p"] = True
@@ -2317,11 +2343,11 @@ def _fixture(root):
     lang_dir = packs / "zh-cn"
     lang_dir.mkdir(parents=True, exist_ok=True)
     _put_text(lang_dir / "TUFX.jsonl", _pack_text([
-        _row("Blue Paint", "蓝色涂装"),
-        _row("Throttle Valve Assembly For The Engine", "发动机节流阀组件"),
+        _row("Blue Paint", "蓝色涂装", mod="TUFX"),
+        _row("Throttle Valve Assembly For The Engine", "发动机节流阀组件", mod="TUFX"),
     ], spaced=True))
     _put_text(lang_dir / "TUFX.il.jsonl", _pack_text([
-        _row("Frame Rate", "帧率"),
+        _row("Frame Rate", "帧率", mod="TUFX"),
     ], spaced=False))
     _put_text(lang_dir / "AtmosphereAutopilot.UI.il.jsonl", _pack_text([
         _row("Target Attitude", "目标姿态", mod="AtmosphereAutopilot.UI"),
@@ -2707,7 +2733,7 @@ def selftest():
         code, payload, _err = _call(root, ["validate", "--strict"])
         check("validate --strict 也过（G2/G4/G9）", code == 0, (code, payload))
         good_cfg = cfg_path.read_bytes()
-        broken = _pack_text([_row("Blue Paint", "蓝色涂装"),
+        broken = _pack_text([_row("Blue Paint", "蓝色涂装", mod="TUFX"),
                              {"h": "0" * 16, "n": "Blue Paint", "s": "Blue Paint",
                               "t": "蓝色涂装", "mod": "TUFX"}], spaced=True)
         _put_text(cfg_path, broken)
@@ -2798,6 +2824,14 @@ def selftest():
         # ---- 16) 投稿回路（M3）：收一次 + 二次幂等 + 七类反例 ----
         sample_path = Path(__file__).with_name("fixtures") / "submission-sample.json"
         sample = json.loads(sample_path.read_text(encoding="utf-8"))
+
+        # M4-d：接受侧要求每个 mod 都能在 packs/mods.json 里查到（gate/submission-mod-unknown），
+        # 所以先把夹具里的 mod 用 mod put 登记上 —— 这也就顺带覆盖了登记幂等这条路。
+        for mod_id in sorted({item.get("modId") for item in sample.get("mods") or []
+                              if isinstance(item, dict) and item.get("modId")}):
+            code_m, payload_m, err_m = _call(root, ["mod", "put", "--mod", mod_id,
+                                                    "--actor", "pipeline:selftest"])
+            check("投稿夹具的 mod 已登记：" + mod_id, code_m == 0, (code_m, payload_m, err_m))
         cand_path = packs / "candidates.jsonl"
         seed_h = _h("Vessel Integrity Check")
         seed = json.dumps({"h": seed_h, "s": "Vessel Integrity Check",
@@ -2952,10 +2986,33 @@ def selftest():
 
         bad_id = json.loads(json.dumps(sample))
         bad_id["entries"][0]["s"] = "Blue Paint (edited)"
+        # h 跟着一起改，否则先撞上 h 重算（那条下面单独覆盖）
+        bad_id["entries"][0]["h"] = _h("Blue Paint (edited)")
         code, payload, _err = accept(bad_id, dry=True)
         check("id 与内容不符 exit 5",
               code == 5 and ((payload or {}).get("error") or {}).get("code")
               == "submission-id-mismatch", (code, payload))
+
+        # M4-d：接收侧重算 h（docs/12 §12.3），对不上整条拒
+        bad_h = json.loads(json.dumps(sample))
+        bad_h["entries"][0]["h"] = "0" * 16
+        code, payload, _err = accept(bad_h, dry=True)
+        check("h 与原文重算不一致 exit 4",
+              code == 4 and ((payload or {}).get("error") or {}).get("code")
+              == "submission-hash-mismatch", (code, payload))
+
+        # M4-d：mod 必须能查到（拼错 modId 会把候选记到别人头上）
+        unknown = json.loads(json.dumps(sample))
+        victim = next(index for index, item in enumerate(unknown["entries"])
+                      if item.get("mod") == "TUFX")  # 硬编码豁免: 自检夹具固定样本
+        unknown["entries"][victim]["mod"] = "TUFX-typo"
+        for item in unknown["mods"]:
+            if item.get("modId") == "TUFX":  # 硬编码豁免: 自检夹具固定样本
+                item["modId"] = "TUFX-typo"
+        code, payload, _err = accept(with_id(unknown), dry=True)
+        check("mod 没登记 exit 4",
+              code == 4 and ((payload or {}).get("error") or {}).get("code")
+              == "submission-mod-unknown", (code, payload))
 
         stray = json.loads(json.dumps(sample))
         stray["entries"].append({"h": _h("Stray Line"), "s": "Stray Line", "mod": "NotDeclared"})
@@ -2978,7 +3035,7 @@ def selftest():
         code, payload, _err = accept(bad_schema, dry=True)
         check("schema 版本不对 exit 5", code == 5, (code, payload))
 
-        check("六个反例都没写盘", _snapshot(packs) == shot_1,
+        check("八个反例都没写盘", _snapshot(packs) == shot_1,
               sorted(set(shot_1) ^ set(_snapshot(packs)))[:5])
 
         code, payload, _err = _call(root, ["submit", "list"])

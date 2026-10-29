@@ -37,6 +37,7 @@ from . import llm as llmlib
 from . import mask as masklib
 from . import skeleton as SK
 from . import translate as T
+from . import conventions as conventions_data
 from .fnv import hash_text
 from .textnorm import has_cjk, is_key_like, is_pure_number, is_url_only, normalize
 from .report import write_report
@@ -45,7 +46,7 @@ REPO = Path(__file__).resolve().parents[2]
 PACKS_ROOT = REPO / "packs"
 OUT_DIR = PACKS_ROOT / "zh-cn"
 GLOSSARY_PATH = PACKS_ROOT / "glossary.jsonl"
-CONVENTIONS_PATH = PACKS_ROOT / "conventions.jsonl"
+CONVENTIONS_PATH = conventions_data.CONVENTIONS_PATH
 OVERRIDES_PATH = PACKS_ROOT / "overrides.jsonl"
 IL_INPUT = PACKS_ROOT / "il-translatable.jsonl"
 CAPTURE_INPUT = PACKS_ROOT / "capture-candidates.jsonl"
@@ -510,18 +511,13 @@ def load_conventions(path=None) -> dict:
 
     这是 G6 下界豁免的**唯一依据**（lead 决定：只走机器可读数据）。
     不用 glossary（它不含 质心/比冲/压心，且 electric charge 有两个变体），
-    也不用 translate.py 里那份散文抄来的 CONVENTIONS（那是 prompt 用，不是判据）。
+    也不用 translate.py 拼 prompt 的那份 —— 现在两边读的是同一个文件、同一个加载器
+    （tools/i18n_tools/conventions.py），区别只在「怎么用」：那边喂模型，这边做判据。
     逐字节比较，不做归一化、不折叠大小写、不合并变体。
     """
-    path = Path(path or CONVENTIONS_PATH)
-    table = {}
-    if not path.is_file():
-        return table
-    for row in iter_jsonl(path):
-        en, zh = row.get("en"), row.get("zh")
-        if isinstance(en, str) and isinstance(zh, str) and en.strip() and zh.strip():
-            table[en] = zh
-    return table
+    # 唯一实现在 tools/i18n_tools/conventions.py（与 translate.py / engine.py 共用）。
+    # missing_ok=True：这里的语义是"没有表就永不豁免"，和 G7 那边"缺表即报错"不同。
+    return conventions_data.load_conventions(path, missing_ok=True)
 
 
 def g6_convention_exempt(item, restored, conventions, lower=0.15):

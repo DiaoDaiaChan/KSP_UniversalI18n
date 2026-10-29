@@ -61,7 +61,7 @@ candidate（运行时只看「要不要翻」，不区分句子和按钮词）�
 用法（在 tools 目录下）
 -----------------------
     python -m i18n_tools.capture_ingest
-    python -m i18n_tools.capture_ingest --all "D:\Kerbal Space Program_newmod\PluginData\UI18n"
+    python -m i18n_tools.capture_ingest --all "<KSP 根>\PluginData\UI18n"
     python -m i18n_tools.capture_ingest --dir <目录>        # --dir 与 --all 等价
     python -m i18n_tools.capture_ingest --all <目录> --report ..\reports\capture-triage.md
     python -m i18n_tools.capture_ingest --all <目录> --patterns ..\reports\capture-patterns.md
@@ -979,14 +979,55 @@ _TAG_STRIP_RE = re.compile(SKELETON_TAG_PATTERN)
 # 「英文词」= 2 个字母以上的 ASCII 词；单字母（单位 m/s 拆出来的 s、变量 i）不算词。
 _WORD_RE = re.compile(r"[A-Za-z][A-Za-z'\-]+")
 
-# 已知噪声骨架：加载屏 / ModuleManager / Profiler HUD / RDR 遥测。这些即使含英文单词也不该翻
-# （全是游戏内部诊断串，翻了没有观感收益，还会白占翻译配额）。
-NOISE_PATTERNS = (
+# 已知噪声骨架的**形态类**默认值：加载屏进度、Profiler HUD 这类通用诊断串。
+# 具体某个 mod 的诊断/遥测串**不写在这里**（那是数据不是代码）：放 packs/noise_patterns.json，
+# 由 load_noise_patterns() 追加，--noise-config 可指到别处。这样任何第三方 mod 的诊断串都能按配置
+# 过滤，而不是让本工具认识某几个 mod —— 内建 mod 别名/白黑名单是审计明令禁止的形态。
+DEFAULT_NOISE_PATTERNS = [
     ("LoadingScreen", re.compile(r"\bloading\b", re.I)),
-    ("ModuleManager", re.compile(r"modulemanager", re.I)),
     ("Profiler HUD", re.compile(r"profiler|\bfps\b|#\s*ms\b|\bframe\b", re.I)),
-    ("RDR", re.compile(r"\bRDR\b", re.I)),
-)
+]
+NOISE_PATTERNS = list(DEFAULT_NOISE_PATTERNS)
+# label -> 报告正文展示名（来自数据文件的 desc；不在这里枚举 mod 名）
+NOISE_RULE_NOTES = {}
+
+
+def register_noise_pattern(label: str, regex, note: str = ""):
+    """动态注册或追加自定义噪声正则规则（note 只用于报告正文展示）。"""
+    rx = regex if isinstance(regex, re.Pattern) else re.compile(str(regex), re.I)
+    if any(label == known for known, _ in NOISE_PATTERNS):
+        return NOISE_PATTERNS          # 同名重复注册（重复 load）不重复追加
+    NOISE_PATTERNS.append((label, rx))
+    if note:
+        NOISE_RULE_NOTES[label] = note
+    return NOISE_PATTERNS
+
+
+def noise_rule_labels():
+    """当前已装噪声规则的展示名（报告正文用，避免在代码里写死具体 mod 名）。"""
+    return [NOISE_RULE_NOTES.get(label, label) for label, _ in NOISE_PATTERNS]
+
+
+def load_noise_patterns(path: str = None) -> list:
+    """加载外部噪声规则文件，追加至 NOISE_PATTERNS。
+
+    文件格式：[{"label": "...", "regex": "...", "desc": "...（可选，展示用）"}, ...]
+    （也接受 {"rules": [...]} 包装）。regex 按 re.I 编译。
+    """
+    if not path or not os.path.isfile(path):
+        return NOISE_PATTERNS
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        items = data.get("rules") if isinstance(data, dict) else data
+        if isinstance(items, list):
+            for item in items:
+                if isinstance(item, dict) and "label" in item and "regex" in item:
+                    register_noise_pattern(str(item["label"]), str(item["regex"]),
+                                           str(item.get("desc") or ""))
+    except Exception as e:
+        print("[WARN] 加载噪声规则文件失败 %s: %s" % (path, e), file=sys.stderr)
+    return NOISE_PATTERNS
 
 
 def strip_tmp_tags(text):
@@ -1000,7 +1041,7 @@ def english_words(text):
 
 
 def noise_label(text):
-    """骨架是不是已知噪声类（LoadingScreen / ModuleManager / Profiler HUD / RDR）。
+    """骨架是不是已知噪声类（代码里的形态类 + packs/noise_patterns.json 的数据类）。
 
     返回噪声类名；不是噪声返回空串。只看剥掉 TMP 标签后的正文 —— 否则
     `<color=#FF><b># ms</b></color>` 里的十六进制色值会误伤判定。
@@ -1405,11 +1446,11 @@ def render_triage(stats, rows, tri, argv_note=""):
       "（~1,100 条 / 81k tokens）约需 %.0fk tokens。"
       % (cand["items"], pat["transl"],
          (cand["items"] + pat["transl"]) * 74.0 / 1000.0))
-    w("- 噪声骨架（%s）不建议送翻：加载屏进度、ModuleManager 诊断、Profiler HUD、RDR 遥测"
-      "这些即使有英文单词，翻了也没有观感收益，还白占配额。"
-      % (" / ".join("%s %d 个" % (k, v)
-                    for k, v in sorted(pat["noise"].items(), key=lambda kv: -kv[1]))
-         or "无"))
+    noise_hits = " / ".join("%s %d 个" % (k, v)
+                            for k, v in sorted(pat["noise"].items(), key=lambda kv: -kv[1]))
+    w("- 噪声骨架（%s）不建议送翻：当前噪声规则 %s，命中的那些即使有英文单词，翻了也没有"
+      "观感收益，还白占配额。"
+      % (noise_hits or "无", "、".join(noise_rule_labels()) or "无"))
     w("")
 
     w("## 7. mod 归属结论")
@@ -1611,8 +1652,9 @@ def build_patterns(stats, rows, tri, argv_note=""):
 
     w("## 2. 噪声骨架（不建议翻）")
     w("")
-    w("这些即使含英文单词也不该进包：加载屏进度、ModuleManager 诊断、Profiler HUD、"
-      "RDR 遥测 —— 全是游戏内部诊断串，翻了没有观感收益，还白占翻译配额。")
+    w("这些即使含英文单词也不该进包：命中当前噪声规则（%s）的诊断串 / 进度串，翻了没有"
+      "观感收益，还白占翻译配额。规则表是数据（packs/noise_patterns.json），代码里只留形态类。"
+      % ("、".join(noise_rule_labels()) or "无"))
     w("")
     table("", noise_rows, True)
 
@@ -1637,9 +1679,10 @@ def build_patterns(stats, rows, tri, argv_note=""):
       "覆盖它」；平票取字典序最小，保证重跑逐字节相同。")
     w("- **纯符号骨架**：骨架一个 ASCII 字母都不含（`−#`、`#` 后跟零宽空格这类）"
       "时丢弃，不进产物也不送翻；丢弃的骨架数与实例数在总览表里记账，不会无声消失。")
-    w("- **噪声类**：加载屏（`loading`）、ModuleManager、Profiler HUD"
-      "（`profiler`/`fps`/`# ms`/`frame`）、RDR。只看剥掉 TMP 标签后的正文 —— 否则"
-      "`<color=#FF0000>` 里的十六进制色值会误伤判定。")
+    w("- **噪声类**：代码里只有形态类默认值（`loading`、`profiler`/`fps`/`# ms`/`frame`），"
+      "具体 mod 的诊断/遥测串来自 packs/noise_patterns.json；当前生效 %s。只看剥掉 TMP"
+      "标签后的正文 —— 否则 `<color=#FF0000>` 里的十六进制色值会误伤判定。"
+      % ("、".join(noise_rule_labels()) or "无"))
     w("- 本文件全部数字由 `capture_ingest` 现算（读 capture 目录与产物行），无硬编码；"
       "骨架为 0 时本文件仍会生成，但表里会是「无」。")
     w("")
@@ -1685,6 +1728,8 @@ def main(argv=None):
                         help="写分诊报告 markdown（如 ..\\reports\\capture-triage.md）")
     parser.add_argument("--patterns", default=None,
                         help="写骨架清单 markdown（如 ..\\reports\\capture-patterns.md）")
+    parser.add_argument("--noise-config", default=None,
+                        help="外部噪声骨架规则 JSON 文件路径（扩展或覆盖默认诊断噪声过滤）")
     parser.add_argument("--gamedata", default=None,
                         help="GameData 目录（caller 反查 / 产物 mods 归属用；默认自动探测）")
     parser.add_argument("--managed", default=None,
@@ -1718,6 +1763,13 @@ def main(argv=None):
         files.extend(sorted(glob.glob(os.path.join(args.dir, "capture-*.jsonl"))))
     if not files:
         files = sorted(glob.glob(os.path.join(default_capture_dir(), "capture-*.jsonl")))
+    if args.noise_config:
+        load_noise_patterns(resolve_repo_path(args.noise_config))
+    else:
+        default_cfg = os.path.join(repo_root(), "packs", "noise_patterns.json")
+        if os.path.isfile(default_cfg):
+            load_noise_patterns(default_cfg)
+
     out_path = resolve_repo_path(args.out) or os.path.join(args.packs_dir, "capture-candidates.jsonl")
     report_path = resolve_repo_path(args.report)
     patterns_path = resolve_repo_path(args.patterns)
@@ -2095,6 +2147,37 @@ def selftest_cases(base):
       is_translatable_pattern("Engine thrust: # kN")
       and not is_translatable_pattern("Loading texture asset #/# (buffer=#MB)")
       and not is_translatable_pattern("# m/s"))
+
+    # --- 噪声规则必须留在数据里：代码默认表点名 mod 是审计明令禁止的（回归钉子）---
+    _mod_ids = set()
+    try:
+        with open(os.path.join(repo_root(), "packs", "mods.json"), "r", encoding="utf-8") as fh:
+            for _m in (json.load(fh).get("mods") or []):
+                if isinstance(_m, dict) and _m.get("modId"):
+                    _mod_ids.add(str(_m["modId"]).lower())
+    except Exception:
+        _mod_ids = set()
+    a("噪声规则: 代码默认表不点名任何已登记的 mod",
+      not [lb for lb, rx in DEFAULT_NOISE_PATTERNS
+           if any(mid in rx.pattern.lower() or mid == lb.lower() for mid in _mod_ids)],
+      "labels=%r mods.json=%d 条" % ([lb for lb, _ in DEFAULT_NOISE_PATTERNS], len(_mod_ids)))
+    _snap_rules, _snap_notes = list(NOISE_PATTERNS), dict(NOISE_RULE_NOTES)
+    _cfg_path = os.path.join(repo_root(), "packs", "noise_patterns.json")
+    _n_before = len(NOISE_PATTERNS)
+    load_noise_patterns(_cfg_path)
+    _n_after = len(NOISE_PATTERNS)
+    a("噪声规则: packs/noise_patterns.json 可加载并追加规则",
+      os.path.isfile(_cfg_path) and _n_after > _n_before,
+      "path=%s before=%d after=%d" % (_cfg_path, _n_before, _n_after))
+    a("噪声规则: 同一文件重复加载不重复追加",
+      load_noise_patterns(_cfg_path) is not None and len(NOISE_PATTERNS) == _n_after,
+      "after=%d again=%d" % (_n_after, len(NOISE_PATTERNS)))
+    a("噪声规则: 报告正文的规则名来自数据（noise_rule_labels 覆盖全部生效规则）",
+      len(noise_rule_labels()) == len(NOISE_PATTERNS)
+      and not [lb for lb, _ in NOISE_PATTERNS if lb.lower() in _mod_ids and lb not in NOISE_RULE_NOTES])
+    NOISE_PATTERNS[:] = _snap_rules
+    NOISE_RULE_NOTES.clear()
+    NOISE_RULE_NOTES.update(_snap_notes)
 
     d3 = os.path.join(base, "cap3")
 

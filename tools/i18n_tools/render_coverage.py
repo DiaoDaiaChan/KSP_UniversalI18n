@@ -309,10 +309,14 @@ def pool_figures(coverage_path=None):
     match = re.search(r"可覆盖英文串\s*([\d,]+)\s*条[，,]\s*已被翻译包覆盖\s*([\d,]+)\s*条[，,]\s*覆盖率\s*([\d.]+)%", text)
     if not match:
         return None
+    try:
+        source_rel = os.path.relpath(path, repo_root())
+    except ValueError:
+        source_rel = path
     return {"total": int(match.group(1).replace(",", "")),
             "covered": int(match.group(2).replace(",", "")),
             "percent": match.group(3),
-            "source": os.path.relpath(path, repo_root())}
+            "source": source_rel}
 
 
 def _table(headers, rows):

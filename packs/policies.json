@@ -1,0 +1,505 @@
+{
+  "schema": "ui18n-policies/1",
+  "lang": "zh-cn",
+  "derivedFrom": "pool",
+  "counts": {
+    "NATIVE": 0,
+    "NATIVE_PARTIAL": 0,
+    "PARTIAL": 20,
+    "LEGACY": 62
+  },
+  "mods": {
+    "000_TexturesUnlimited": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "001_ToolbarControl": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "AJE": {
+      "policy": "PARTIAL",
+      "locKeys": 4,
+      "languages": [],
+      "source": "pool"
+    },
+    "AdvancedPQSTools": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Assembly-CSharp": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "AtmosphereAutopilot": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "AtmosphereAutopilot.UI": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "B9-PWings-Fork": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "B9PartSwitch": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "B9_Aerospace_ProceduralWings": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "BurstPQS": {
+      "policy": "PARTIAL",
+      "locKeys": 2,
+      "languages": [],
+      "source": "pool"
+    },
+    "ClickThroughBlocker": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "CommunityResourcePack": {
+      "policy": "PARTIAL",
+      "locKeys": 2,
+      "languages": [],
+      "source": "pool"
+    },
+    "ConformalDecals": {
+      "policy": "PARTIAL",
+      "locKeys": 127,
+      "languages": [],
+      "source": "pool"
+    },
+    "ContractConfigurator": {
+      "policy": "PARTIAL",
+      "locKeys": 5,
+      "languages": [],
+      "source": "pool"
+    },
+    "EVEManager": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "EditorExtensionsRedux": {
+      "policy": "PARTIAL",
+      "locKeys": 159,
+      "languages": [],
+      "source": "pool"
+    },
+    "FerramAerospaceResearch": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Firespitter": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "HangerExtenderExtended": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "HarmonyInstallChecker": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KSCSwitcher": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KSPCommunityFixes": {
+      "policy": "PARTIAL",
+      "locKeys": 3,
+      "languages": [],
+      "source": "pool"
+    },
+    "KSPPerformanceProfiler": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KSPTextureLoader": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KSPWheel": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KerbalAlarmClock": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KerbalChangelog": {
+      "policy": "PARTIAL",
+      "locKeys": 37,
+      "languages": [],
+      "source": "pool"
+    },
+    "KerbalFoundries": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KerbalJointReinforcement": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Kerbalism": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "KerbalismConfig": {
+      "policy": "PARTIAL",
+      "locKeys": 3,
+      "languages": [],
+      "source": "pool"
+    },
+    "Kopernicus": {
+      "policy": "PARTIAL",
+      "locKeys": 3,
+      "languages": [],
+      "source": "pool"
+    },
+    "LunarTransferPlanner": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "MechJeb2": {
+      "policy": "PARTIAL",
+      "locKeys": 6,
+      "languages": [],
+      "source": "pool"
+    },
+    "ModularFlightPanel": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ModularLaunchPads": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ModuleManager": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ParallaxContinued": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Parallax_StockPlanetTextures": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Parallax_StockTerrainTextures": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Principia": {
+      "policy": "PARTIAL",
+      "locKeys": 5,
+      "languages": [],
+      "source": "pool"
+    },
+    "ProceduralFairings": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ProceduralParts": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "RCSBuildAid": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ROCapsules": {
+      "policy": "PARTIAL",
+      "locKeys": 159,
+      "languages": [],
+      "source": "pool"
+    },
+    "ROEngines": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ROHeatshields": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ROLib": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ROSolar": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ROTanks": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "RP-1": {
+      "policy": "PARTIAL",
+      "locKeys": 4,
+      "languages": [],
+      "source": "pool"
+    },
+    "RP0": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ReStock": {
+      "policy": "PARTIAL",
+      "locKeys": 2,
+      "languages": [],
+      "source": "pool"
+    },
+    "ReStockPlus": {
+      "policy": "PARTIAL",
+      "locKeys": 19,
+      "languages": [],
+      "source": "pool"
+    },
+    "RealAntennas": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "RealChute": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "RealFuels": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "RealismOverhaul": {
+      "policy": "PARTIAL",
+      "locKeys": 1126,
+      "languages": [],
+      "source": "pool"
+    },
+    "RealisticLaunchVisuals": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Renamer": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "SXT": {
+      "policy": "PARTIAL",
+      "locKeys": 523,
+      "languages": [],
+      "source": "pool"
+    },
+    "Scatterer": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "SmokeScreen": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Sol-Configs": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "SolverEngines": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Squad": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "TUFX": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Telecom": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "TestFlight": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "TestFlightCore": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "TextureReplacer": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "TexturesUnlimited": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ToolbarControl": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "TransferWindowPlanner": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "TriggerTech": {
+      "policy": "PARTIAL",
+      "locKeys": 527,
+      "languages": [],
+      "source": "pool"
+    },
+    "UI18n-ConfigCache": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "UI18n-Unattributed": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "Utils": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "VenStockRevamp": {
+      "policy": "PARTIAL",
+      "locKeys": 232,
+      "languages": [],
+      "source": "pool"
+    },
+    "Waterfall": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    },
+    "ksp_plugin_adapter": {
+      "policy": "LEGACY",
+      "locKeys": 0,
+      "languages": [],
+      "source": "none"
+    }
+  }
+}
