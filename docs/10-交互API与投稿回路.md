@@ -1,36 +1,41 @@
 # 10 · 交互 API 标准与投稿回路（v1.6 设计，含待拍板项）
 
-> 本文是**契约**，不是说明。两件事在这里被定死：
-> ① 任何人（人或 agent）改译文只能走 `python -m i18n_tools.api`，JSONL 是产物、不是工作面；
-> ② 玩家实例 → 投稿 → 自动翻译 → 按 mod 推送 → 玩家自选哪些 mod 用中文，这条回路的每一跳格式都写死。
-> 落地状态见 §11。数字与命令以仓库实际产物为准，改动前先 `cd tools && python -m i18n_tools.api pack list`。
+> 本文定义词典交互 API 规范与数据链路契约：
+> 1. 词典数据的维护与写入统一经由 `python -m i18n_tools.api` 处理，JSONL 作为最终存储文件，不进行直接手动编辑；
+> 2. 规定从客户端捕获、投稿导出、翻译批处理到按模组分发的完整数据结构与流转格式。
+> 落地状态见 §11。数字与命令以实际仓库产物为准，执行前可运行 `cd tools && python -m i18n_tools.api pack list` 检查。
 
-## 1. 为什么必须把「改 JSON」这条路封掉
+## 1. 统一数据写入入口的背景
 
-过去 40 多个提交里，`packs/zh-cn/*.jsonl` 是直接被文本编辑器和 agent 手写的。代价都真的发生过：
+直接通过文本编辑器修改 `packs/zh-cn/*.jsonl` 会引入以下问题：
 
-| 事故 | 现象 | 手改为什么防不住 |
+| 风险类别 | 异常现象 | 手动编辑的缺陷 |
 |---|---|---|
-| 哈希漂移 | 改 `s` 之后忘了重算 `h`，运行期永远匹配不上 | 无字段联动校验 |
-| 占位符丢失 | `<<1>>` 少一个，进游戏直接 `IndexOutOfRange` 崩 UI | 门禁在**生成**时才跑，手改绕过了生成 |
-| 重复行 | 同一 `h` 在同一包里出现两次，最后一行赢，行为不确定 | 无唯一性约束 |
-| 无审计 | 说不清哪条是模型译的、哪条是人改的、依据是什么 | 无写入口 = 无事件 |
-| 并发覆盖 | 两个 agent 各读整文件再写回，后写的吃掉前一个 | 无 revision 校验 |
-| 门禁绕过 | 报告说 PASS，实际文件被手改过 | 报告与文件不同源 |
+| 哈希漂移 | 修改 `s` 后未重算 `h`，导致运行时无法匹配 | 缺乏字段联动校验机制 |
+| 占位符丢失 | 遗漏 `<<1>>` 等占位符，运行时抛出 `IndexOutOfRange` 导致 UI 异常 | 格式门禁在生成期执行，直接修改绕过了门禁 |
+| 重复条目 | 同一 `h` 在包内重复出现，覆盖逻辑不确定 | 缺乏文件级唯一性约束 |
+| 缺乏审计记录 | 无法区分机器翻译与人工修订，缺失修改依据与来源 | 无写入审计事件记录 |
+| 并发覆盖冲突 | 多个修改方全量读写同一文件，后写入者覆盖前者改动 | 缺少 revision 乐观锁校验 |
+| 门禁绕过风险 | 校验报告显示通过，但实际文件已被手工修改 | 报告与文件内容脱节 |
 
-所以本层的原则只有一句：**只承认带审计事件的写入。**
+因此，所有词典写入均需经由带审计事件与校验逻辑的 API 统一处理。
 
 ## 2. 资源模型
 
 ### 2.1 冻结的运行时 schema（不许为了新功能动它）
 
-运行期字典行 = 6 个固定字段 + 1 个可选：
+运行期字典行 = 6 个固定字段 + 2 个可选：
 
 ```text
-{"h":"16 位小写 hex","n":"归一化原文","s":"原文","t":"译文","mod":"modId","ctx":"上下文（可选）","p":true（可选，骨架 pattern）}
+{"h":"16 位小写 hex","n":"归一化原文","s":"原文","t":"译文","mod":"modId","ctx":"上下文（可选）","p":true（可选，骨架 pattern）","k":"稳定键（可选）"}
 ```
 
 - `h = fnv1a64(normalize(s))`，唯一权威实现 `tools/i18n_tools/fnv.py`（C# 侧 `src/UI18n.Core/Hashing/Fnv1a.cs`，两边逐字节同结果）。
+- `k` 是**可选**稳定键（2026-11 / WP-A 加），给「按上游标识符索引」的译文用，例如 CKAN 模组元数据的 `ckan:<identifier>:<field>`（`ckan:StockLS:abstract`）。
+  - **形状**：`^[a-z][a-z0-9-]*:[^\s\x00-\x1f]+$`，长度 ≤ 200。namespace 段小写字母开头（`ckan` / `il` / `cfg` …），冒号后是标识符，不许空白与控制字符。
+  - **可选**：缺省完全合法 —— 游戏 cfg / IL 包一律不写 `k`，读取侧不依赖它。写了就必须合规；**空串按 schema 非法处理**（exit 5），要省略就把整个字段省掉，别写 `"k": ""`。
+  - **同包允许同 `k` 多行**：`k` 是「逻辑字段 id」，不是主键。上游原文改版（同一 CKAN 模组的多个 `module_version` 各自带一份 `abstract`）会产生同 `k` 不同 `h` 的历史译文，删旧版会丢已有译文、也要重烧 LLM 调用，因此 `api validate` **只计数不报错**（`stats.dupKeyRows` / `dupKeyNote`），实测 `CKANMeta` 为 72 行 / 61 个键。取舍规则在读取侧：同一个键有多条历史译文时**人工译文压过机翻，同类则后载入的胜**（`src/CkanUI.ModText/ModTextProvider.cs` 的 `BuildKeyIndex`）；按 `k` 查过期只在当前 `h` 未命中时报 `Stale`。
+  - **与 `n` 的分工**：`n` 仍然是 `normalize(s)`（必填、语义冻结、参与 `h` 计算），`k` 只是一把外部索引钥匙，不参与 `h`/`n` 计算。二者互不替代：`n` 回答「这行的原文是什么」，`k` 回答「上游是哪一条」。
 - 键层级由字段推出，不写进文件：有 `ctx` → ctx 层；否则有 `mod` → site 层；否则 global 层（`src/UI18n.Core/Dict/KeyLevel.cs`）。
 - `mod` = **modId**，见 §8 注册表；包文件名 `<modId>[.<channel>].jsonl`（`channel` ∈ `il` / `cfg` / 空）。
 - `p` 有**两种等值表示**：现行产物写整数 `"p":1`（`tools/i18n_tools/translate_il.py`，C# 侧 `JsonLineReader.IsPatternFlag` 按原始字符串判），契约的规范形式是布尔 `"p":true`。**读取一律接受 `true` / `1` / `"1"` / `"true"`，新写入一律布尔**；存量旧表示由 `api validate` 报 notice（不是 error），`api apply --normalize-p` 走 put-batch 一笔事务归一（幂等，只改表示不改 `h/s/t/mod`）。
@@ -76,9 +81,13 @@ validate         必需 —            可选 --lang --mod --strict --strict-p
 
 ```text
 entry put        必需 --mod        可选 --lang --h <h> --text "<原文>" --s "<用于校验 h 的原文>"
-                                   --t "<译文>" --ctx --p --note "<依据>" --expect-revision <rev> --dry-run
-entry put-batch  必需 —（读 stdin） 可选 --lang --note --expect-revision --dry-run --allow-term-drift
+                                   --t "<译文>" --ctx --key <k> --p --note "<依据>" --expect-revision <rev> --dry-run
+                                   # --key 写行内 k（<namespace>:<identifier>，如 ckan:StockLS:abstract）；
+                                   # 不给就不写 k；空串 / 形状非法 → exit 5
+entry put-batch  必需 —（读 stdin） 可选 --stdin --lang --note --expect-revision --dry-run --allow-term-drift
                                    # NDJSON，一文件一笔事务：全过才写，任一不过整批不写
+                                   # 行内允许字段：mod h text s t ctx p k note（k = 稳定键，同 put --key）
+                                   # --stdin 是显式声明开关：实现本来就无条件读 stdin，接受但无额外行为
                                    # --allow-term-drift 只跳过 G7（短语级官方术语未逐字命中），
                                    # 其余门禁照跑；只给译文流水线用，漂移由调用方记账
 entry delete     必需 --mod --h    可选 --lang --reason "<why>" --expect-revision --dry-run
@@ -315,6 +324,7 @@ apply              →  packs/index.json + reports/*.md + 覆盖率三口径刷�
 - `modId` 是**稳定键**（包文件名、`mod` 字段、开关状态都用它），一旦发布不许改名（改名 = 迁移脚本 + journal 事件）。
 - `displayName` 是给玩家看的名字，可改。
 - **运行时不读这张表**：`packs/mods.json` 是生产端输入，不随包发布（见 docs/06）。包里那份显示名在 `Packs/<lang>/display-names.json`（`{"schema":"ui18n-display-names/1","names":{"<modId>":"…"}}`，故意不是 `.jsonl`，所以不会被当成语言包），由 `PackDisplayNames.LoadFromDirectory` 读进 `PackFilter` 的注册表；面板（`PrefsPanel.DescribeMod`）数据优先、没有就原样显示 `modId`。**代码里不再写死任何 mod 名或界面文案**（v1.7 去硬编码：原来 `PackFilter.DisplayName` 里钉着「`UI18n-Unattributed` → 未归属文本」「`Squad` → 本体」三条 `if`）。
+- `ckan` = CKAN 的 identifier。`CKANMeta` 是**虚拟 mod**（`assemblies`/`folders`/`aliases` 都为空，只在 `mods.json` 里占一个 `modId`），承载 CKAN 模组元数据（abstract / description / license …）的译文：它的行里 `k = ckan:<identifier>:<field>` 才能把译文绑回上游条目（`n` 仍是原文、仍由 `hash_of` 冻结，见 §2.1），覆盖率口径见 `reports/coverage.md` 第 ④ 节。
 - 解析优先级：程序集名 → 文件夹名 → 别名 → CKAN id。采集端（`CaptureCaller.CleanTypeName`）拿到的类型全名 → 程序集 → `modId` 就靠这张表；表里没有的新 mod 先落 `modId = 程序集名去扩展名`，并在报告里列「未登记 mod」，等 `session` 里人工补 displayName。
 
 ## 9. 分发：按 mod 推送（manifest v2）

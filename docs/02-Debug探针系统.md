@@ -349,7 +349,7 @@ DoLabel(GUIContent.Temp(text), GUI.skin.label, options);
 
 ## 12. 探针产物怎么变成字典
 
-闭环的接口（对应 00 文档的字典三层键）：
+数据流向与接口映射（对应 00 文档的字典三层键）：
 
 ```
 L2 产物 (sites.jsonl + summary)
@@ -363,7 +363,7 @@ packs/pool.jsonl  →  LLM 翻译  →  packs/zh-cn/<modId>.jsonl
 CI 八条门禁  →  publish  →  GameData/UI18n/Packs/zh-cn/*.jsonl（游戏内加载，D34/D35）
 ```
 
-关键点：**探针的 `textHash` 必须和运行时字典的键是同一个算法**。否则采集到的和运行时查的不是一个键，闭环断在中间。这就是 §5.1 选 FNV-1a 而不是 `GetHashCode()` 的原因。
+关键点：**探针的 `textHash` 必须和运行时字典的键使用完全一致的生成算法**。否则采集端与查表端哈希不对应，无法正常命中。这就是 §5.1 选 FNV-1a 而不是 `GetHashCode()` 的原因。
 
 一个必须记住的例外：如果字面量本身就是键引用（`#autoLOC_500832` 这种），它在运行时会被 KSP 先解析成当前语言的显示文本再送进 UI，
 所以「`s` = 键」的那一行**永远匹配不到**。这不是 bug、是 harvest 阶段拿不到解析后文本的结构性限制；
