@@ -63,6 +63,7 @@ namespace UI18n.Runtime.Fonts
         private static TMP_FontAsset _cjkTmpAsset;
         private static bool _tmpAssetSearched;
         private static readonly HashSet<int> TmpFallbackAppended = new HashSet<int>();
+        private static readonly List<WeakReference> ModifiedTmpFonts = new List<WeakReference>();
 
         private static readonly HashSet<string> ReportedOnce = new HashSet<string>(StringComparer.Ordinal);
 
@@ -81,6 +82,7 @@ namespace UI18n.Runtime.Fonts
         /// <summary>把配置灌进来并清空所有缓存/计数（只在启动时调用一次）。</summary>
         internal static void Configure(UI18nConfig config)
         {
+            Teardown();
             UI18nConfig c = config ?? UI18nConfig.Default;
 
             _mode = c.FontMode;
@@ -509,11 +511,19 @@ namespace UI18n.Runtime.Fonts
                     {
                         current.fallbackFontAssets = new List<TMP_FontAsset>(1);
                     }
+                    else
+                    {
+                        current.fallbackFontAssets.RemoveAll(f => f == null);
+                    }
 
-                    current.fallbackFontAssets.Add(cjk);
-                    TmpInjected++;
-                    Log.Info("font: TMP fallback appended \"" + cjk.name + "\" → \"" + current.name + "\""
-                             + " (HasCharacter('中', searchFallbacks)=" + current.HasCharacter(ProbeChar, true) + ")");
+                    if (!current.fallbackFontAssets.Contains(cjk))
+                    {
+                        current.fallbackFontAssets.Add(cjk);
+                        ModifiedTmpFonts.Add(new WeakReference(current));
+                        TmpInjected++;
+                        Log.Info("font: TMP fallback appended \"" + cjk.name + "\" → \"" + current.name + "\""
+                                 + " (HasCharacter('中', searchFallbacks)=" + current.HasCharacter(ProbeChar, true) + ")");
+                    }
                 }
 
                 if (current.HasCharacter(ProbeChar, true))
@@ -657,6 +667,38 @@ namespace UI18n.Runtime.Fonts
             }
 
             Log.Error("font: " + key + " failed → " + exception.GetType().Name + ": " + exception.Message);
+        }
+
+        /// <summary>卸载清理：将注入的 CJK fallback 从原版 TMP 字体中逆向移除，避免残留 null 引发 NRE 崩溃。</summary>
+        internal static void Teardown()
+        {
+            try
+            {
+                for (int i = 0; i < ModifiedTmpFonts.Count; i++)
+                {
+                    try
+                    {
+                        var target = ModifiedTmpFonts[i].Target as TMP_FontAsset;
+                        if (target != null && target.fallbackFontAssets != null)
+                        {
+                            target.fallbackFontAssets.RemoveAll(f => f == null || (_cjkTmpAsset != null && ReferenceEquals(f, _cjkTmpAsset)));
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            catch
+            {
+            }
+            finally
+            {
+                ModifiedTmpFonts.Clear();
+                TmpFallbackAppended.Clear();
+                _cjkTmpAsset = null;
+                _tmpAssetSearched = false;
+            }
         }
     }
 }

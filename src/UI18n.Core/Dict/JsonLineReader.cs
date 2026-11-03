@@ -50,6 +50,14 @@ namespace UI18n.Core.Dict
         private const string PatternKey = "p";
 
         /// <summary>
+        /// 稳定键字段名（v1.4）：<c>{"k":"ckan:&lt;identifier&gt;:&lt;field&gt;"}</c>，可选。
+        /// 与 <c>p</c> 一样按「安全退化」处理——值不是字符串时当作该字段缺失，<b>不</b>把整行判成坏行：
+        /// 少一个稳定键最多让过期判定退化成漏报（报不出「译文已过期」），
+        /// 而丢一整行会把一条本来能用的译文一起扔掉，代价更大。
+        /// </summary>
+        private const string StableKeyKey = "k";
+
+        /// <summary>
         /// 解析一行。返回 <see cref="Status.Ok"/> 时 <paramref name="entry"/> 非 null；
         /// 返回 Blank 或 Error 时 <paramref name="entry"/> 为 null。
         /// </summary>
@@ -116,7 +124,8 @@ namespace UI18n.Core.Dict
                 Get(map, "mod"),
                 Get(map, "ctx"),
                 IsPatternFlag(Get(map, PatternKey)),
-                Get(map, "src"));
+                Get(map, "src"),
+                Get(map, StableKeyKey));
 
             return Status.Ok;
         }
@@ -285,6 +294,12 @@ namespace UI18n.Core.Dict
                     {
                         // v1.3：schema 里唯一的布尔字段 p（骨架行标记）。显式转换，绝不漏成字符串。
                         value = literal == JsonLiteral.True ? "true" : "false";
+                    }
+                    else if (string.Equals(key, StableKeyKey, StringComparison.Ordinal))
+                    {
+                        // v1.4：k 只接受字符串。这里来了 true / false 说明写入端写错了，
+                        // 按「字段缺失」退化（value = null → 不写进 map），整行照常保留。
+                        value = null;
                     }
                     else
                     {

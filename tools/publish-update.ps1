@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     一条命令发布语言包更新通道（build → update 分支 → 线上自检）。
 
@@ -19,7 +19,10 @@
 #>
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)][string]$Version,
+    [Parameter(Mandatory = $true)]
+    [ValidatePattern('^[0-9]+(\.[0-9]+){1,3}(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$')]
+    [string]$Version,
+    [ValidatePattern('^[a-z]{2,3}(-[a-zA-Z0-9]+)?$')]
     [string]$Lang = "zh-cn",
     [ValidateSet("stable", "beta")][string]$Channel = "stable",
     [string]$RawBase = "https://raw.githubusercontent.com/DiaoDaiaChan/KSP_UniversalI18n/update",

@@ -1,0 +1,42 @@
+{
+  "schema": "ui18n-submission/1",
+  "id": "654ee65668f2b793",
+  "createdAt": "2026-11-02T19:05:33+08:00",
+  "acceptedAt": "2026-11-02T19:06:15+08:00",
+  "language": "zh-cn",
+  "actor": {
+    "kind": "player",
+    "ui18nVersion": "1.8.0+e2e",
+    "kspVersion": "1.12.5"
+  },
+  "consent": {
+    "granted": true,
+    "policyVersion": 1,
+    "grantedAt": "2026-11-02T19:05:33+08:00"
+  },
+  "mods": [
+    {
+      "modId": "UI18n-Unattributed",
+      "fileName": "UI18n-Unattributed.jsonl",
+      "rows": 8
+    }
+  ],
+  "redactions": {
+    "paths": 340,
+    "userNames": 0,
+    "absolutePaths": 0,
+    "urls": 0
+  },
+  "note": "",
+  "bundleSha256": "654ee65668f2b793a6441d6bfc36b203d4e5df619f94df3fb9b2957dc670e718",
+  "rows": 8,
+  "files": [
+    {
+      "file": "UI18n-Unattributed.jsonl",
+      "rows": 8,
+      "bytes": 2333,
+      "sha256": "9152a86d630bb5d3921b483fc5a260d36e6f395aa0f27581407090e69f6f2db7"
+    }
+  ],
+  "acceptedBy": "pipeline:e2e"
+}

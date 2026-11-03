@@ -19,8 +19,15 @@ namespace UI18n.Core.Dict
         /// <see cref="DictPack.TryGetPattern"/> 的独立索引，精确查表永远看不到它（反之亦然）。
         /// 追加成可选参数是为了不破坏既有调用与单测。
         /// </para>
+        /// <para>
+        /// <paramref name="key"/> 是 <b>v1.4 可选字段</b> <c>k</c>（稳定键，形如 <c>ckan:&lt;identifier&gt;:&lt;field&gt;</c>），
+        /// 由上游管线写入、python 侧 api 校验形状。它与 <c>n</c> 的区别是本质的：<c>n</c> 是<b>归一化原文</b>，
+        /// 同一句话出现在 abstract 与 description 时 <c>n</c> 完全相同，拿它做过期判定的键会把 A 字段的译文贴到 B 字段上；
+        /// <c>k</c> 由 (identifier, field) 决定，与文本无关，才是过期判定该用的键。
+        /// 追加成<b>参数表末尾</b>的可选参数，保证既有调用点（含外部消费者）不改也能编译。
+        /// </para>
         /// </summary>
-        public DictEntry(ulong hash, string normalized, string source, string translation, string mod, string ctx, bool isPattern = false, string src = null)
+        public DictEntry(ulong hash, string normalized, string source, string translation, string mod, string ctx, bool isPattern = false, string src = null, string key = null)
         {
             Hash = hash;
             Normalized = normalized ?? string.Empty;
@@ -30,6 +37,7 @@ namespace UI18n.Core.Dict
             Context = ctx ?? string.Empty;
             IsPattern = isPattern;
             Src = src ?? string.Empty;
+            Key = key ?? string.Empty;
 
             if (Context.Length > 0)
             {
@@ -83,6 +91,12 @@ namespace UI18n.Core.Dict
         /// 翻译来源标记（如 <c>"human"</c>、<c>"machine"</c>），可选。
         /// </summary>
         public string Src { get; private set; }
+
+        /// <summary>
+        /// 稳定键（v1.4 可选字段 <c>k</c>），形如 <c>ckan:&lt;identifier&gt;:&lt;field&gt;</c>；缺省为空串。
+        /// 与 <see cref="Normalized"/>（归一化原文 <c>n</c>）无关：同一段原文出现在不同字段时 <c>n</c> 相同、<c>k</c> 不同。
+        /// </summary>
+        public string Key { get; private set; }
 
         /// <inheritdoc />
         public override string ToString()

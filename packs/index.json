@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "lang": "zh-cn",
-  "generatedAt": "2026-10-28T00:56:46Z",
-  "totalRows": 14991,
-  "totalBytes": 5176956,
-  "packCount": 97,
+  "generatedAt": "2026-11-02T06:58:57Z",
+  "totalRows": 19837,
+  "totalBytes": 6967719,
+  "packCount": 98,
   "packs": [
     {
       "mod": "000_TexturesUnlimited",
@@ -49,9 +49,9 @@
     {
       "mod": "AtmosphereAutopilot",
       "file": "zh-cn/AtmosphereAutopilot.il.jsonl",
-      "rows": 15,
-      "bytes": 1769,
-      "sha256": "fac20857f00ceb45ec3a271daaefdfbb4b65b4e3f4b2b61ab06db3ed98f22632",
+      "rows": 45,
+      "bytes": 5612,
+      "sha256": "301d8c5a9b4ab9779df90d2517a697b4d6a4135709f61198f407b7378bada7e3",
       "keepRows": 0
     },
     {
@@ -101,6 +101,14 @@
       "bytes": 1053,
       "sha256": "aece26de194a6339bfe6454cdb24b06b04aaa98645914d53e68999454011fd5f",
       "keepRows": 0
+    },
+    {
+      "mod": "CKANMeta",
+      "file": "zh-cn/CKANMeta.jsonl",
+      "rows": 4807,
+      "bytes": 1780151,
+      "sha256": "be8e3f25e588cac071b35cb95c87e4eb02107b30b04b7a239b2887337b96ece5",
+      "keepRows": 4
     },
     {
       "mod": "ClickThroughBlocker",
@@ -313,9 +321,9 @@
     {
       "mod": "Kopernicus",
       "file": "zh-cn/Kopernicus.jsonl",
-      "rows": 5,
-      "bytes": 1789,
-      "sha256": "731d87144699a0ac6f3cfcc40cf1c60a60c802f2c0548ce550f189d39ee3252c",
+      "rows": 9,
+      "bytes": 3152,
+      "sha256": "186bae1f66266c2b8a64d0ba8864dbfa39bb0090ee878a74944b572100f7e033",
       "keepRows": 0
     },
     {
@@ -441,9 +449,9 @@
     {
       "mod": "ROCapsules",
       "file": "zh-cn/ROCapsules.jsonl",
-      "rows": 362,
-      "bytes": 118038,
-      "sha256": "3e2e66d1d9794aca1936472a3ecb1807f4d355ec1b1a2d6f6a5920c9cd97781d",
+      "rows": 366,
+      "bytes": 122924,
+      "sha256": "9b186ca60c91edd022b9b91105767fbf8086a46769dd7e25555785096377afaa",
       "keepRows": 1
     },
     {
@@ -713,9 +721,9 @@
     {
       "mod": "TransferWindowPlanner",
       "file": "zh-cn/TransferWindowPlanner.il.jsonl",
-      "rows": 50,
-      "bytes": 9097,
-      "sha256": "965a7a7e5c0a46858847ac4ab5f29023b120e975c598eb9f20d682dc4e7e0827",
+      "rows": 51,
+      "bytes": 9617,
+      "sha256": "54686b0aa72a6600e589a940df2d26de5fc2713423f238bd443b2914dfd31317",
       "keepRows": 1
     },
     {

@@ -242,7 +242,7 @@ namespace UI18n.Runtime.Patches
                 Spec("ScreenMessages.PostMessage(ScreenMessage, string #1 msg, ScreenMessagesText, float, ScreenMessageStyle, Color)",
                     "ScreenMessages", "PostMessage",
                     new[] { typeof(ScreenMessage), typeof(string), typeof(ScreenMessagesText), typeof(float), typeof(ScreenMessageStyle), typeof(Color) },
-                    typeof(ScreenMessagesPatches), "MessagePrefix"),
+                    typeof(ScreenMessagesPatches), "MessagePrefix", "MessagePostfix"),
             };
         }
 

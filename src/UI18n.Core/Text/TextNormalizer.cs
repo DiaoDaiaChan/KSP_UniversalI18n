@@ -35,15 +35,32 @@ namespace UI18n.Core.Text
                 return string.Empty;
             }
 
-            string nfkc;
-            try
+            bool isAscii = true;
+            for (int i = 0; i < s.Length; i++)
             {
-                nfkc = s.Normalize(NormalizationForm.FormKC);
+                if (s[i] >= 0x80)
+                {
+                    isAscii = false;
+                    break;
+                }
             }
-            catch (ArgumentException)
+
+            string nfkc;
+            if (isAscii)
             {
-                // 孤立代理对等非法输入：放弃 NFKC，用原文继续走空白折叠
                 nfkc = s;
+            }
+            else
+            {
+                try
+                {
+                    nfkc = s.Normalize(NormalizationForm.FormKC);
+                }
+                catch (ArgumentException)
+                {
+                    // 孤立代理对等非法输入：放弃 NFKC，用原文继续走空白折叠
+                    nfkc = s;
+                }
             }
 
             if (nfkc.Length == 0)
@@ -90,6 +107,15 @@ namespace UI18n.Core.Text
                 || (c >= 0xFE10 && c <= 0xFE1F)   // Vertical Forms
                 || (c >= 0xFE30 && c <= 0xFE4F)   // CJK Compatibility Forms
                 || (c >= 0xFF00 && c <= 0xFFEF);  // Halfwidth and Fullwidth Forms（，！？Ａ-Ｚ等）
+        }
+
+        /// <summary>
+        /// 字符串里是否含 CJK 字符（<see cref="ContainsCjk(string)"/> 的别名）。
+        /// null / 空串返回 false。
+        /// </summary>
+        public static bool HasCjk(string s)
+        {
+            return ContainsCjk(s);
         }
 
         /// <summary>

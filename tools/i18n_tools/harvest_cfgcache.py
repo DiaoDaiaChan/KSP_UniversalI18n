@@ -54,6 +54,19 @@ _PURE_PUNCT_RE = re.compile(r"^[^0-9A-Za-z]+$")
 _KEYREF_RE = re.compile(r"^#[A-Za-z0-9_]+$")
 _PARENT_URL_RE = re.compile(r"^[ 	]*parentUrl[ 	]*=[ 	]*(.*)$", re.I)
 
+
+# 混合中英文（MM 补丁追加英文或未翻译英文段落）判定：
+# 剥除 HTML 标签 (<[^>]+>) 与括号内容 ((...)|（...）)
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+_PAREN_RE = re.compile(r"(?:\([^)]*\)|（[^）]*）)")
+# a) 连续 4 个或以上英文单词/标点序列
+_ENG_WORDS_SEQ_RE = re.compile(r"(?:[A-Za-z0-9.,/-]+\s+){3,}[A-Za-z0-9.,/-]+")
+# b) 已知 MM 补丁英文特征（例如 From ... mod, Plume and sound / Plume configured, Supports a crew of, Available at specLevel 等）
+_MM_PATCH_INDICATOR_RE = re.compile(
+    r"(?:From\s+.+\s+mod|Plume\s+(?:and\s+sound|configured)|Supports\s+a\s+crew\s+of|Available\s+at\s+specLevel)",
+    re.I
+)
+
 # 报告里列多少条 keyref 样例
 KEYREF_SAMPLE_LIMIT = 5
 
@@ -114,6 +127,20 @@ def iter_fields(path, fields=None, stats=None):
                 yield key, value, current_mod
 
 
+def is_hybrid_cjk(norm: str) -> bool:
+    """判定含 CJK 字符串是否含有未翻译英文段落或 ModuleManager 补丁附加信息（需入池翻译）。"""
+    cleaned = _HTML_TAG_RE.sub(" ", norm)
+    prev = ""
+    while prev != cleaned:
+        prev = cleaned
+        cleaned = _PAREN_RE.sub(" ", cleaned)
+    if _MM_PATCH_INDICATOR_RE.search(norm) or _MM_PATCH_INDICATOR_RE.search(cleaned):
+        return True
+    if _ENG_WORDS_SEQ_RE.search(cleaned):
+        return True
+    return False
+
+
 def classify(field, raw, seen, opts):
     """返回 (reason, normalized) —— reason 为 None 表示可入池。"""
     if not isinstance(raw, str):
@@ -126,14 +153,14 @@ def classify(field, raw, seen, opts):
     if _KEYREF_RE.match(norm):
         return "keyref", norm
     if textnorm.has_cjk(norm):
-        return "already-cjk", norm
+        if not is_hybrid_cjk(norm):
+            return "already-cjk", norm
     if len(norm) < opts["min_len"]:
         return "too-short", norm
     if len(norm) > opts["max_len"]:
         return "too-long", norm
     if not _LETTER_RE.search(norm):
         return "no-letter", norm
-    if _PURE_PUNCT_RE.match(norm):
         return "punct", norm
     if _URL_RE.search(norm):
         return "url", norm
@@ -402,6 +429,23 @@ def selftest():
            classify("title", "#1 " + chr(21495) + chr(32592) + chr(20307), {}, opts)[0], "already-cjk")
         eq("# 开头但含空格的英文正文照常入池",
            classify("title", "#1 fuel tank", {}, opts)[0], None)
+        # 测试混合中英/MM补丁文本判定
+        eq("混合中英MM补丁串不判 already-cjk（入池）",
+           classify("description", "双子座乘员舱。容纳两名宇航员。 Supports a crew of two for up to maximum 14 days of active operations but it will require fuel cells. <b><color=green>From ROCapsules mod</color></b>", {}, opts)[0], None)
+        eq("带 From mod 标记的混合串入池",
+           classify("description", "阿波罗服务舱推力器 <b><color=green>From ROCapsules mod</color></b>", {}, opts)[0], None)
+        eq("带 Plume 标记的混合串入池",
+           classify("description", "双子座设备段 <i>Plume and sound from Waterfall.</i>", {}, opts)[0], None)
+        eq("纯中文描述保持 already-cjk 跳过",
+           classify("description", "这里是纯中文描述", {}, opts)[0], "already-cjk")
+        eq("仅括号内含英文术语的中文描述保持 already-cjk 跳过",
+           classify("description", "通信中继天线(High Gain Antenna)", {}, opts)[0], "already-cjk")
+        eq("仅全角括号内含英文术语的中文描述保持 already-cjk 跳过",
+           classify("description", "通信中继天线（High Gain Antenna）", {}, opts)[0], "already-cjk")
+        eq("含孤立英文缩写的中文描述保持 already-cjk 跳过",
+           classify("description", "阿波罗 CSM 指令服务舱", {}, opts)[0], "already-cjk")
+        eq("含4个以上连续英文词的混合串入池",
+           classify("description", "天线系统 Supports high speed data transfer for deep space missions", {}, opts)[0], None)
         eq("keyref 计入跳过统计", stats["skip"].get("keyref"), 1)
         eq("keyref 跳过样例被记录", stats.get("keyref_samples"), ["#LOC_CRP_Long_Title"])
         eq("keyref 不进候选清单", any(item["s"].startswith("#") for item in items), False)
@@ -435,12 +479,37 @@ def selftest():
     finally:
         os.unlink(mod_handle.name)
 
+    # 测试 MM 补丁合成的中英混合文本入池与 mod 追踪（以双子座座舱为例）
+    hybrid_handle = tempfile.NamedTemporaryFile("w", suffix=".ConfigCache", delete=False, encoding="utf-8", newline=chr(10))
+    hybrid_handle.write(chr(10).join([
+        "UrlConfig",
+        "{",
+        chr(9) + "parentUrl = ROCapsules/PartConfigs/GeminiBDB/GeminiCM.cfg",
+        chr(9) + "PART",
+        chr(9) + "{",
+        chr(9) + chr(9) + "title = 双子座座舱",
+        chr(9) + chr(9) + "description = 双子座乘员舱。容纳两名宇航员。 Supports a crew of two for up to maximum 14 days of active operations but it will require fuel cells. <b><color=green>From ROCapsules mod</color></b>",
+        chr(9) + "}",
+        "}"
+    ]))
+    hybrid_handle.close()
+    try:
+        h_stats = {}
+        h_items = collect(hybrid_handle.name, opts, None, h_stats)
+        h_rows = to_candidate_rows(h_items)
+        eq("纯中文 title 被 already-cjk 跳过", h_stats["skip"].get("already-cjk"), 1)
+        eq("混合中英 description 成功入池", len(h_items), 1)
+        eq("混合串字段为 description", h_items[0]["fields"], ["description"])
+        eq("混合串准确归属 ROCapsules mod", h_rows[0]["mods"], ["ROCapsules"])
+        eq("混合串原文完整保留补丁内容", "From ROCapsules mod" in h_items[0]["s"], True)
+    finally:
+        os.unlink(hybrid_handle.name)
+
     failed = [row for row in checks if not row[1]]
     for name, ok, detail in checks:
         print(("  ok   " if ok else "  FAIL ") + name + ("" if ok else "  " + detail))
-    print("[selftest] " + str(len(checks)) + " " + chr(39033) + chr(65292) + chr(22833) + chr(36133) + " " + str(len(failed)))
+    print("[selftest] " + str(len(checks)) + " 项，失败 " + str(len(failed)))
     return 1 if failed else 0
-
 
 def main(argv=None):
     global FIELDS

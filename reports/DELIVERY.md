@@ -2,7 +2,7 @@
 
 > 状态：四步流水线跑完、连跑两遍字节一致。最终包 41 文件 / **9,990 行** / 3,504,392 字节，
 > `s` 以 `#` 开头的行 **22**（插入守卫拒绝的键行，故意保留，见 §9.2.1），契约校验 0 问题
-> （Lead 的 audit_packs + 本侧加严探针）。
+> （audit_packs 校验与加严探针）。
 > 本文件只记录"怎么跑、怎么算、哪些是已知边界"，细节见 reports/translation-<ts>.json。
 > §1–§10 是 41 包（translate.py）的口径；**§11 是 IL / 捕获候选流水线（translate_il.py）**，两条流水线产物不同、G6 口径暂时不同（见 §11.5）；
 > §12 是 task-32 捕获摄入，**§13 是 task-46 骨架（pattern）通道 + 捕获内容播种**。
@@ -37,7 +37,7 @@ python -m i18n_tools.resolve_keyrefs --drop-keyrefs                             
 ## 2. 输出契约（以 Core 为准，不是 docs/04 §11.2）
 
 每行 `{"h","n","s","t","mod"}`：
-- `h = hash_text(normalize(s))`（FNV-1a 64，16 位小写 hex，来自 data-engineer 的 `i18n_tools/fnv.py`）
+- `h = hash_text(normalize(s))`（FNV-1a 64，16 位小写 hex，实现位于 `i18n_tools/fnv.py`）
 - `n = normalize(s)`、`s` = 原文、`t` = 译文、`mod` = 站点层
 - keep 行写成 **t == s**（逐字节），运行时 `DictEntry.IsKeep` 命中后终止下沉
 - 同 mod 合并成**单文件**（ConfigLoader 只读 `*.jsonl` 顶层，一个 mod 拆两文件会被当两个包）

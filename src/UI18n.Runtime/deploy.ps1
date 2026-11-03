@@ -165,6 +165,18 @@ if (Test-Path $fontsTemplate) {
     Write-Host "[deploy] staged  : Fonts\"
 }
 
+# Textures：应用启动器图标（GameDatabase / Texture2D 加载）
+$texturesTemplate = Join-Path $templates 'Textures'
+if (Test-Path $texturesTemplate) {
+    Copy-Item $texturesTemplate (Join-Path $stage 'Textures') -Recurse -Force
+    Write-Host "[deploy] staged  : Textures\"
+}
+$iconTemplate = Join-Path $templates 'icon.png'
+if (Test-Path $iconTemplate) {
+    Copy-Item $iconTemplate (Join-Path $stage 'icon.png') -Force
+    Write-Host "[deploy] staged  : icon.png"
+}
+
 # 3) 语言包：只装 packs\<lang>\ 这一层（D35 布局；packs\ 根下的源产物不装）
 $packSource = Join-Path (Join-Path $repoRoot 'packs') $langNorm
 $packDest = Join-Path (Join-Path $stage 'Packs') $langNorm

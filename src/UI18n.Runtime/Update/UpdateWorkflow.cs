@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using UI18n.Core.Dict;
 using UI18n.Core.Update;
 
@@ -364,7 +365,17 @@ namespace UI18n.Runtime.Update
             try
             {
                 Directory.CreateDirectory(env.DownloadsDirectory);
-                string path = Path.Combine(env.DownloadsDirectory, manifest.ZipName);
+                string fullDownloads = Path.GetFullPath(env.DownloadsDirectory);
+                if (!fullDownloads.EndsWith(Path.DirectorySeparatorChar.ToString()) && !fullDownloads.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+                {
+                    fullDownloads += Path.DirectorySeparatorChar;
+                }
+                string path = Path.GetFullPath(Path.Combine(env.DownloadsDirectory, manifest.ZipName));
+                if (!path.StartsWith(fullDownloads, StringComparison.OrdinalIgnoreCase))
+                {
+                    UpdateLog.Warn("update: zip name escaped downloads directory: " + manifest.ZipName);
+                    return;
+                }
                 File.WriteAllBytes(path, body);
                 UpdateLog.Info("update: saved " + Sha256Hex.DescribeBytes(body.LongLength) + " to " + path);
             }
@@ -403,16 +414,50 @@ namespace UI18n.Runtime.Update
 
         private static void SaveState(UpdateEnvironment env, string version, string result, DateTime whenUtc)
         {
+            string tempPath = null;
             try
             {
                 Directory.CreateDirectory(env.PluginDataRoot);
                 UpdateState state = UpdateState.Empty.WithCheck(whenUtc, version, result);
-                File.WriteAllText(env.StateFilePath, state.ToJson());
+                string path = env.StateFilePath;
+                tempPath = path + "." + Guid.NewGuid().ToString("N").Substring(0, 8) + ".tmp";
+                File.WriteAllText(tempPath, state.ToJson(), Encoding.UTF8);
+
+                if (File.Exists(path))
+                {
+                    try
+                    {
+                        File.Replace(tempPath, path, null);
+                    }
+                    catch (Exception)
+                    {
+                        File.Delete(path);
+                        File.Move(tempPath, path);
+                    }
+                }
+                else
+                {
+                    File.Move(tempPath, path);
+                }
+
                 UpdateLog.Info("update: state " + state.ToString());
             }
             catch (Exception ex)
             {
                 UpdateLog.Warn("update: could not write state file (" + ex.GetType().Name + ": " + ex.Message + ")");
+                if (tempPath != null)
+                {
+                    try
+                    {
+                        if (File.Exists(tempPath))
+                        {
+                            File.Delete(tempPath);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     一把收走 UI18n 的现场：KSP.log 里的 [UI18n] 段、配置、语言包清单、捕获文件、更新状态 → 一个 zip。
 
@@ -138,28 +138,45 @@ $summary.Add('[log]')
 $kspLog = Join-Path $KspRoot 'KSP.log'
 if (Test-Path -LiteralPath $kspLog) {
     $logItem = Get-Item -LiteralPath $kspLog
-    $text = Read-SharedText $kspLog
-    $allLines = $text -split "`r?`n"
-    $hitIndexes = New-Object System.Collections.Generic.List[int]
-    for ($i = 0; $i -lt $allLines.Length; $i++) {
-        if ($allLines[$i].Contains('[UI18n]')) { $hitIndexes.Add($i) }
-    }
-
     $logDir = Join-Path $stage 'log'
     New-Item -ItemType Directory -Path $logDir -Force | Out-Null
 
-    $extracted = New-Object System.Collections.Generic.List[string]
-    $extracted.Add('# KSP.log lines containing [UI18n] — ' + $hitIndexes.Count + ' hit(s), source ' + $logItem.Length + ' B')
-    foreach ($i in $hitIndexes) {
-        $extracted.Add($allLines[$i])
+    $ui18nFile = Join-Path $logDir 'ksp-log-ui18n.txt'
+    $ui18nStream = [System.IO.File]::Open($ui18nFile, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+    $ui18nWriter = New-Object System.IO.StreamWriter($ui18nStream, [System.Text.Encoding]::UTF8)
+
+    $tailQueue = New-Object 'System.Collections.Generic.Queue[string]'
+    $hitCount = 0
+
+    $readStream = [System.IO.File]::Open($kspLog, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+    try {
+        $reader = New-Object System.IO.StreamReader($readStream, [System.Text.Encoding]::UTF8, $true)
+        try {
+            $ui18nWriter.WriteLine('# KSP.log lines containing [UI18n] — streaming scan, source ' + $logItem.Length + ' B')
+            while (($line = $reader.ReadLine()) -ne $null) {
+                if ($line.Contains('[UI18n]')) {
+                    $ui18nWriter.WriteLine($line)
+                    $hitCount++
+                }
+                $tailQueue.Enqueue($line)
+                if ($tailQueue.Count -gt 400) {
+                    [void]$tailQueue.Dequeue()
+                }
+            }
+        }
+        finally {
+            $reader.Dispose()
+        }
+    }
+    finally {
+        $readStream.Dispose()
+        $ui18nWriter.Dispose()
+        $ui18nStream.Dispose()
     }
 
-    Set-Content -LiteralPath (Join-Path $logDir 'ksp-log-ui18n.txt') -Value $extracted -Encoding utf8
-
     # 尾段原样保留：崩溃/异常栈的行不带前缀，只有整段尾部能看出「最后发生了什么」。
-    $tailCount = [Math]::Min(400, $allLines.Length)
-    $tail = $allLines[($allLines.Length - $tailCount)..($allLines.Length - 1)]
-    Set-Content -LiteralPath (Join-Path $logDir 'ksp-log-tail.txt') -Value $tail -Encoding utf8
+    $tailList = [System.Collections.Generic.List[string]]::new($tailQueue)
+    Set-Content -LiteralPath (Join-Path $logDir 'ksp-log-tail.txt') -Value $tailList -Encoding utf8
 
     $summary.Add('kspLog.bytes=' + $logItem.Length)
     $summary.Add('kspLog.modified=' + $logItem.LastWriteTimeUtc.ToString('yyyy-MM-ddTHH:mm:ssZ', $Invariant))

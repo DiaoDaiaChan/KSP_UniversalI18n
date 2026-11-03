@@ -10,6 +10,7 @@ dist/
 # 临时与审计产物（不进仓库）
 _scratch/
 _audit/
+/GameData/
 
 # 更新矩阵的 fixture 发布物（一份 ZIP + 六个场景 manifest，可由 makefixtures.py 重跑再生）
 tests/UpdateMatrix/fixtures/root/

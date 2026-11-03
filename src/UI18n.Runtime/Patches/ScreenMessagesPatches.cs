@@ -25,10 +25,13 @@ namespace UI18n.Runtime.Patches
     {
         /// <summary>
         /// 把屏幕消息文本换成译文；未命中/keep 时返回 null，原样放行。
+        /// 保存原实例中的英文 message 到 __state，防止 KSP 内部将静态/复用 ScreenMessage 的 message 字段永久污染为中文。
         /// 失败只记一次（<see cref="Translator.ReportPrefixFailure"/> 内部去重），绝不抛（红线 6）。
         /// </summary>
-        private static void MessagePrefix(ref string msg)
+        private static void MessagePrefix(ScreenMessage current, ref string msg, out string __state)
         {
+            __state = current != null ? current.message : null;
+
             PatchCounter counter = Counters.ScreenMessage;
             counter.Touch();
 
@@ -49,6 +52,18 @@ namespace UI18n.Runtime.Patches
             catch (Exception ex)
             {
                 Translator.ReportPrefixFailure(PatchNames.ScreenMessage, ex);
+            }
+        }
+
+        /// <summary>
+        /// 后缀恢复：若调用方传入了现成 ScreenMessage 实例，在显示后将其 message 字段还原为原英文，
+        /// 避免常驻或静态 ScreenMessage 对象被覆写导致后续显示无法再次命中翻译或无法切回英文。
+        /// </summary>
+        private static void MessagePostfix(ScreenMessage current, string __state)
+        {
+            if (current != null && __state != null)
+            {
+                current.message = __state;
             }
         }
     }

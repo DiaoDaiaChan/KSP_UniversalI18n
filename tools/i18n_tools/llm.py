@@ -19,6 +19,7 @@ import os
 import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -144,6 +145,12 @@ def load_config(env_file=None, timeout: float = DEFAULT_TIMEOUT) -> LlmConfig:
             "LLM 配置缺失：{}（应写在 {} 或环境变量里；文件名/内容均不入库）".format(
                 ", ".join(missing), path
             )
+        )
+
+    parsed = urllib.parse.urlparse(base)
+    if parsed.scheme.lower() not in ("http", "https") or not parsed.netloc:
+        raise LlmConfigError(
+            "UI18N_LLM_BASE 必须是以 http:// 或 https:// 开头的合法 URL（当前：{!r}）".format(base)
         )
 
     return LlmConfig(base=base, key=key, model=model, reasoning=reasoning,

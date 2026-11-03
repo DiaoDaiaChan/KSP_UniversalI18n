@@ -70,6 +70,9 @@ namespace UI18n.Core.Capture
         private bool _budgetNoticePending;
         private string _lastWriteError;
 
+        // 模板骨架采样：记录 (caller, skeleton) 出现的样本次数，防止高频遥测串打爆会话预算
+        private readonly Dictionary<TemplateKey, int> _templateSamples;
+
         /// <summary>用 <see cref="CaptureOptions.Default"/> 建一个聚合器。</summary>
         public CaptureStore()
             : this(null)
@@ -99,6 +102,7 @@ namespace UI18n.Core.Capture
             _index = new Dictionary<ulong, int>(256);
             _pending = new List<CaptureRecord>(256);
             _callers = new Dictionary<string, int>(16, StringComparer.Ordinal);
+            _templateSamples = new Dictionary<TemplateKey, int>(64);
         }
 
         /// <summary>生效的选项（只读快照，改它不会影响已建实例的判定）。</summary>
@@ -486,6 +490,80 @@ namespace UI18n.Core.Capture
             return "capture-" + timestampUtc.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture) + ".jsonl";
         }
 
+        private readonly struct TemplateKey : IEquatable<TemplateKey>
+        {
+            public readonly string Caller;
+            public readonly string Skeleton;
+
+            public TemplateKey(string caller, string skeleton)
+            {
+                Caller = caller ?? string.Empty;
+                Skeleton = skeleton ?? string.Empty;
+            }
+
+            public bool Equals(TemplateKey other)
+            {
+                return string.Equals(Caller, other.Caller, StringComparison.Ordinal)
+                    && string.Equals(Skeleton, other.Skeleton, StringComparison.Ordinal);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is TemplateKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = hash * 31 + StringComparer.Ordinal.GetHashCode(Caller);
+                    hash = hash * 31 + StringComparer.Ordinal.GetHashCode(Skeleton);
+                    return hash;
+                }
+            }
+        }
+
+        private static string ComputeSkeleton(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            StringBuilder sb = new StringBuilder(text.Length);
+            int i = 0;
+            int len = text.Length;
+            while (i < len)
+            {
+                char c = text[i];
+                if (c >= '0' && c <= '9')
+                {
+                    sb.Append('#');
+                    while (i < len && text[i] >= '0' && text[i] <= '9')
+                    {
+                        i++;
+                    }
+
+                    if (i + 1 < len && (text[i] == '.' || text[i] == ',') && text[i + 1] >= '0' && text[i + 1] <= '9')
+                    {
+                        i++;
+                        while (i < len && text[i] >= '0' && text[i] <= '9')
+                        {
+                            i++;
+                        }
+                    }
+                }
+                else
+                {
+                    sb.Append(c);
+                    i++;
+                }
+            }
+
+            return sb.ToString();
+        }
+
         private static int CompareCallers(KeyValuePair<string, int> left, KeyValuePair<string, int> right)
         {
             int byCount = right.Value.CompareTo(left.Value);
@@ -576,6 +654,12 @@ namespace UI18n.Core.Capture
                 return false;
             }
 
+            // CJK Secondary Pass Drop：如果原文或归一化文本包含中文字符，说明已经是已翻译文本二次进入 UI 钩子，不记录
+            if (Text.TextNormalizer.HasCjk(source) || Text.TextNormalizer.HasCjk(normalized))
+            {
+                return false;
+            }
+
             string callerValue = captureCaller ? CaptureCaller.FromStack(2) : (caller ?? string.Empty);
             string seen = firstSeen ?? DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture);
 
@@ -584,6 +668,28 @@ namespace UI18n.Core.Capture
             string keptSource = Truncate(source, out truncatedSource);
             string keptNormalized = Truncate(normalized, out truncatedNormalized);
             bool truncated = truncatedSource || truncatedNormalized;
+
+            // 模板骨架采样：对模板文本（含数字）按 (caller, skeleton) 限制样本数，防止高频遥测串打爆 64 MB 预算
+            string classifyText = string.IsNullOrEmpty(keptNormalized) ? (keptSource ?? string.Empty) : keptNormalized;
+            CaptureClassification classification = CaptureClassification.Of(classifyText);
+
+            int maxSamples = _options.MaxTemplateSamplesPerSkeleton;
+            if (maxSamples > 0 && classification.Bucket == CaptureClassify.BucketTemplate)
+            {
+                string skeleton = ComputeSkeleton(keptSource);
+                TemplateKey tKey = new TemplateKey(callerValue, skeleton);
+                int sampleCount;
+                _templateSamples.TryGetValue(tKey, out sampleCount);
+                _templateSamples[tKey] = sampleCount + 1;
+                if (sampleCount >= maxSamples)
+                {
+                    // 超额样本不写盘、不进 _pending，只记索引（防后续重复分配）并累加计数
+                    _index[hash] = IndexWritten;
+                    _lateRepeats++;
+                    TrackCaller(callerValue);
+                    return false;
+                }
+            }
 
             // D-T2 的第二类丢弃：预算用尽后不再留正文，只记「见过这条」+ 计数，日志由 ConsumeBudgetNotice 通报一次。
             if (IsBudgetExhausted())
@@ -595,7 +701,7 @@ namespace UI18n.Core.Capture
                 return false;
             }
 
-            CaptureRecord record = new CaptureRecord(hash, keptSource, keptNormalized, sink, callerValue, seen, truncated);
+            CaptureRecord record = new CaptureRecord(hash, keptSource, keptNormalized, sink, callerValue, seen, classification, truncated);
             _index[hash] = _pending.Count;
             _pending.Add(record);
 

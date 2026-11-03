@@ -79,5 +79,31 @@ namespace UI18n.Core.Tests
             // 这条断言只是让改动必须是有意的（改了这里就要在 docs/10 §9 与 build-update-package.ps1 同步）。
             Assert.Equal("ui18n-manifest-reader/2", UpdateManifest.ReaderContract);
         }
+
+        [Theory]
+        [InlineData("../evil.zip")]
+        [InlineData("C:/evil.zip")]
+        [InlineData("C:evil.zip")]
+        [InlineData("evil.tar.gz")]
+        [InlineData("CON.zip")]
+        [InlineData("NUL.zip")]
+        [InlineData("AUX.zip")]
+        [InlineData("COM1.zip")]
+        [InlineData("evil?.zip")]
+        [InlineData("evil*.zip")]
+        public void Manifest_WithInvalidZipName_IsRejected(string badZipName)
+        {
+            UpdateManifest manifest;
+            string error;
+            string json = "{"
+                + "\"version\":\"1.2.3\","
+                + "\"zip\":{\"name\":\"" + badZipName + "\",\"bytes\":123,\"sha256\":\"" + Sha + "\"},"
+                + "\"files\":[{\"path\":\"" + Pack + "\",\"bytes\":10,\"sha256\":\"" + Sha + "\"}],"
+                + "\"mods\":[{\"modId\":\"Squad\",\"files\":[\"" + Pack + "\"],\"bytes\":10}]"
+                + "}";
+            bool ok = UpdateManifest.TryParse(json, out manifest, out error);
+            Assert.False(ok);
+            Assert.Null(manifest);
+        }
     }
 }

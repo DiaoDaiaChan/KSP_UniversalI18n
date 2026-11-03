@@ -384,25 +384,70 @@ namespace UI18n.Runtime.Diagnostics
             var inactive = new List<string>();
             var assets = new List<string>();
 
-            UnityEngine.UI.Text[] legacyTexts = Resources.FindObjectsOfTypeAll<UnityEngine.UI.Text>();
-            for (int i = 0; i < legacyTexts.Length; i++)
+            var rootObjects = new List<GameObject>();
+            int sceneCount = UnityEngine.SceneManagement.SceneManager.sceneCount;
+            for (int sIndex = 0; sIndex < sceneCount; sIndex++)
             {
-                UnityEngine.UI.Text component = legacyTexts[i];
-                if (component != null)
+                UnityEngine.SceneManagement.Scene loadedScene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(sIndex);
+                if (loadedScene.isLoaded)
                 {
-                    BucketText(component.text, component.gameObject, component.isActiveAndEnabled, active, inactive, assets);
+                    rootObjects.AddRange(loadedScene.GetRootGameObjects());
                 }
             }
 
-            int legacyCount = legacyTexts.Length;
-
-            TMP_Text[] tmpTexts = Resources.FindObjectsOfTypeAll<TMP_Text>();
-            for (int i = 0; i < tmpTexts.Length; i++)
+            GameObject ddolProbe = new GameObject("UI18n_DdolProbe");
+            try
             {
-                TMP_Text component = tmpTexts[i];
-                if (component != null)
+                UnityEngine.Object.DontDestroyOnLoad(ddolProbe);
+                UnityEngine.SceneManagement.Scene ddolScene = ddolProbe.scene;
+                if (ddolScene.IsValid() && ddolScene.isLoaded)
                 {
-                    BucketText(component.text, component.gameObject, component.isActiveAndEnabled, active, inactive, assets);
+                    GameObject[] ddolRoots = ddolScene.GetRootGameObjects();
+                    for (int dIndex = 0; dIndex < ddolRoots.Length; dIndex++)
+                    {
+                        if (ddolRoots[dIndex] != ddolProbe)
+                        {
+                            rootObjects.Add(ddolRoots[dIndex]);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.Destroy(ddolProbe);
+            }
+
+            int legacyCount = 0;
+            int tmpCount = 0;
+
+            for (int rIndex = 0; rIndex < rootObjects.Count; rIndex++)
+            {
+                GameObject root = rootObjects[rIndex];
+                if (root == null)
+                {
+                    continue;
+                }
+
+                UnityEngine.UI.Text[] legacyTexts = root.GetComponentsInChildren<UnityEngine.UI.Text>(true);
+                for (int i = 0; i < legacyTexts.Length; i++)
+                {
+                    UnityEngine.UI.Text component = legacyTexts[i];
+                    if (component != null)
+                    {
+                        legacyCount++;
+                        BucketText(component.text, component.gameObject, component.isActiveAndEnabled, active, inactive, assets);
+                    }
+                }
+
+                TMP_Text[] tmpTexts = root.GetComponentsInChildren<TMP_Text>(true);
+                for (int i = 0; i < tmpTexts.Length; i++)
+                {
+                    TMP_Text component = tmpTexts[i];
+                    if (component != null)
+                    {
+                        tmpCount++;
+                        BucketText(component.text, component.gameObject, component.isActiveAndEnabled, active, inactive, assets);
+                    }
                 }
             }
 
@@ -410,7 +455,7 @@ namespace UI18n.Runtime.Diagnostics
             _prefabScans++;
 
             Log.Info("prefab gap: scanned scene=" + scene + ", Text=" + legacyCount.ToString(CultureInfo.InvariantCulture)
-                     + ", TMP_Text=" + tmpTexts.Length.ToString(CultureInfo.InvariantCulture)
+                     + ", TMP_Text=" + tmpCount.ToString(CultureInfo.InvariantCulture)
                      + ", " + report.Describe());
 
             string[] tiers = report.TierLines();

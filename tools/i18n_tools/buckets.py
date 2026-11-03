@@ -76,13 +76,16 @@ _TAG_RE = re.compile(
 _PLACEHOLDER_RE = re.compile(r"<<\d+>>|\{\d+(?:[:,][^{}]*)?\}|%\d*\$?[sdif]")
 
 _URL_RE = re.compile(r"(?i)https?://|www\.")
-_EXT_RE = re.compile(r"\.(?:cfg|dll|mu|dds|png|txt|json|ksp|asset|prefab|cs|xml|log)\b", re.I)
+_EXT_RE = re.compile(r"\.(?:cfg|dll|mu|dds|png|txt|json|ksp|asset|prefab|cs|xml|log)\b(?!\s+[A-Za-z])", re.I)
 _PATH_SEG_RE = re.compile(r"^[A-Za-z0-9_.\-]+(?:[/\\][A-Za-z0-9_.\-]+){2,}$")
 _IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_.]*$")
 _WORD_RE = re.compile(r"[A-Za-z]+")
+_PROGRESS_RE = re.compile(r"[0-9]+\s*/\s*[0-9]+")
 _DIGIT_RE = re.compile(r"[0-9]")
 _DOTTED_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+\Z")
 _CAMEL_RE = re.compile(r"[a-z][A-Z]")
+_SENTENCE_TERM_RE = re.compile(r"[.!?](?:[\"'\s]|$)")
+_ACRONYM_WHITELIST = frozenset({"GUI", "UI", "VAB", "SPH", "RCS", "SAS", "EVA"})
 
 _CJK_RE = re.compile(r"[\u2e80-\u9fff\uf900-\ufaff\uff00-\uffef\u3000-\u303f]")
 
@@ -141,6 +144,8 @@ def _looks_identifier(body):
     if _DOTTED_RE.match(body):
         return True
     if body.isupper() and len(body) >= 2:
+        if body in _ACRONYM_WHITELIST:
+            return False
         return True
     if _CAMEL_RE.search(body):
         return True
@@ -192,9 +197,14 @@ def classify(text):
     # 模板/进度串：带数字或占位符，且仍有 >= 2 个词或 >= 2 个字母词。
     # 这类串翻译时必须保留数字与占位符，不能当普通句子处理，所以单列一档；
     # 上游 il-translatable.jsonl 会照收（bucket != never），但下游可以只取 translate。
+    # 但若属于完整解释性句子（len >= 30 且词数 >= 4，或带句末标点），仍归 translate 档。
     if _PLACEHOLDER_RE.search(n) and len(letters) >= 2:
         return ("template", "template_format")
+    if _PROGRESS_RE.search(body) and len(letters) >= 2:
+        return ("template", "template_progress")
     if _DIGIT_RE.search(body) and len(letters) >= 2:
+        if len(body) >= 30 and (len(letters) >= 4 or (len(letters) >= 2 and _SENTENCE_TERM_RE.search(body))):
+            return ("translate", "sentence")
         return ("template", "template_progress")
     if len(letters) == 1 and len(body) <= 24:
         return ("short_label", "single_word")

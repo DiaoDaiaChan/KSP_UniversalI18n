@@ -48,3 +48,4 @@
 {"h":"e8efff4d2b9171e0","n":"Insertion Δv:","s":"Insertion Δv:","t":"捕获 Δv：","mod":"TransferWindowPlanner"}
 {"h":"f77119361c715a7a","n":"Instructions:","s":"Instructions:","t":"使用说明：","mod":"TransferWindowPlanner"}
 {"h":"fa72efc7e8de6ec1","n":"Total Δv:","s":"Total Δv:","t":"总 Δv：","mod":"TransferWindowPlanner"}
+{"h":"ccc865beed29e24e","n":"Enter the altitude of the orbit you wish to establish around your destination body. You can enter 0 if you intend to perform a fly-by or aerobraking maneuver.","s":"Enter the altitude of the orbit you wish to establish around your destination body. You can enter 0 if you intend to perform a fly-by or aerobraking maneuver.","t":"输入你希望在目标天体周围建立的轨道高度。如果你打算执行飞掠或气动减速机动，可以输入 0。","mod":"TransferWindowPlanner"}

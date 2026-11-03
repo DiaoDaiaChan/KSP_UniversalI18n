@@ -5,13 +5,13 @@
 | 项 | 值 |
 | --- | --- |
 | 输入 | `D:/Kerbal Space Program_newmod/GameData/ModuleManager.ConfigCache` |
-| 大小 | 27,734,643 B |
-| 修改时间 | 2026-10-26 13:25:19 |
+| 大小 | 28,030,240 B |
+| 修改时间 | 2026-10-31 16:44:53 |
 | 键值行（四个字段） | 14,526 |
-| 唯一文本 | 6,000 |
-| 已被字典覆盖 | 3,395 |
-| **本次要翻（缺）** | **2,605** |
-| 缺失总字符 | 355,139 |
+| 唯一文本 | 5,771 |
+| 已被字典覆盖 | 4,941 |
+| **本次要翻（缺）** | **830** |
+| 缺失总字符 | 122,860 |
 
 ## 1. 赋值分布（去重前）
 
@@ -26,25 +26,22 @@
 
 | 字段 | 条数 |
 | --- | --- |
-| `description` | 1,324 |
-| `title` | 1,171 |
-| `displayName` | 69 |
-| `manufacturer` | 41 |
+| `description` | 830 |
 
 ## 3. 缺失按长度
 
 | 长度 | 条数 |
 | --- | --- |
-| ≤40 | 1,240 |
-| 41-100 | 304 |
-| 101-300 | 660 |
-| >300 | 401 |
+| ≤40 | 1 |
+| 41-100 | 417 |
+| 101-300 | 361 |
+| >300 | 51 |
 
 ## 4. 跳过明细
 
 | 原因 | 次数 |
 | --- | --- |
-| `already-cjk` | 3,997 |
+| `already-cjk` | 4,688 |
 | `keyref` | 7 |
 
 ## 5. `keyref` 跳过（纯本地化 key 引用）
@@ -81,6 +78,6 @@ ModuleManager.ConfigCache 是 MM 打完所有补丁后写下的完整 ConfigNode
 
 ```
 cd tools
-python -m i18n_tools.harvest_cfgcache --gamedata "D:/Kerbal Space Program_newmod/GameData"
+python -m i18n_tools.harvest_cfgcache --gamedata "<KSP>/GameData"
 ```
 

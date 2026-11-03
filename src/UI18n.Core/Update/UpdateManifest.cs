@@ -702,6 +702,13 @@ namespace UI18n.Core.Update
             return true;
         }
 
+        private static readonly HashSet<string> ReservedDeviceNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "CON", "PRN", "AUX", "NUL",
+            "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+            "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
+        };
+
         private static string CheckZipName(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -714,7 +721,7 @@ namespace UI18n.Core.Update
                 return "bad-zip-name: too-long";
             }
 
-            if (name == "." || name == "..")
+            if (name == "." || name == ".." || !name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
             {
                 return "bad-zip-name: " + name;
             }
@@ -727,10 +734,26 @@ namespace UI18n.Core.Update
                     return "bad-zip-name: contains-separator";
                 }
 
+                if (c == ':')
+                {
+                    return "bad-zip-name: contains-colon";
+                }
+
                 if (c < ' ')
                 {
                     return "bad-zip-name: control-char";
                 }
+
+                if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.' || c == '_' || c == '-'))
+                {
+                    return "bad-zip-name: invalid-char";
+                }
+            }
+
+            string baseName = name.Substring(0, name.Length - 4);
+            if (ReservedDeviceNames.Contains(baseName))
+            {
+                return "bad-zip-name: reserved-device-name";
             }
 
             return null;

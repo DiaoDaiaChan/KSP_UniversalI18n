@@ -112,7 +112,7 @@ namespace UI18n.Core.Hashing
                 return h;
             }
 
-            if (offset < 0 || offset > utf8.Length || offset + count > utf8.Length)
+            if (offset < 0 || count < 0 || offset > utf8.Length - count)
             {
                 throw new ArgumentOutOfRangeException("count", "offset/count 越界");
             }

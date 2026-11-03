@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "submissions": {
+    "654ee65668f2b793": {
+      "files": [
+        {
+          "file": "UI18n-Unattributed.jsonl",
+          "rows": 8,
+          "bytes": 2333,
+          "sha256": "9152a86d630bb5d3921b483fc5a260d36e6f395aa0f27581407090e69f6f2db7"
+        }
+      ],
+      "rows": 8,
+      "bytes": 2333,
+      "sha256": "9152a86d630bb5d3921b483fc5a260d36e6f395aa0f27581407090e69f6f2db7",
+      "createdAt": "2026-11-02T19:05:33+08:00",
+      "language": "zh-cn",
+      "policyVersion": 1,
+      "mods": [
+        "UI18n-Unattributed"
+      ],
+      "bundleSha256": "654ee65668f2b793a6441d6bfc36b203d4e5df619f94df3fb9b2957dc670e718"
+    }
+  }
+}

@@ -27,9 +27,11 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import json
+import os
 import re
 import sys
 import time
+import uuid
 import traceback
 from pathlib import Path
 
@@ -1090,16 +1092,36 @@ def write_packs(entries, out_dir=None, dry_run=False, prune=False, merge=False):
                     added += 1
                 kept[row["h"]] = row
             ordered = [kept[key] for key in sorted(kept)]
-            with path.open("w", encoding="utf-8", newline="\n") as handle:
-                for row in ordered:
-                    handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+            tmp = path.with_name("{}.tmp.{}.{}".format(path.name, os.getpid(), uuid.uuid4().hex[:8]))
+            try:
+                with tmp.open("w", encoding="utf-8", newline="\n") as handle:
+                    for row in ordered:
+                        handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+                os.replace(tmp, path)
+            except Exception:
+                if tmp.is_file():
+                    try:
+                        tmp.unlink()
+                    except OSError:
+                        pass
+                raise
             summary["files"][mod] = len(ordered)
             summary["merged"][mod] = existing_rows
             summary["added"][mod] = added
         else:
-            with path.open("w", encoding="utf-8", newline="\n") as handle:
-                for row in rows:
-                    handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+            tmp = path.with_name("{}.tmp.{}.{}".format(path.name, os.getpid(), uuid.uuid4().hex[:8]))
+            try:
+                with tmp.open("w", encoding="utf-8", newline="\n") as handle:
+                    for row in rows:
+                        handle.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+                os.replace(tmp, path)
+            except Exception:
+                if tmp.is_file():
+                    try:
+                        tmp.unlink()
+                    except OSError:
+                        pass
+                raise
     if merge:
         summary["total"] = sum(summary["files"].values())
     if prune:

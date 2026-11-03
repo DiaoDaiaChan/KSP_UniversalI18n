@@ -443,6 +443,58 @@ namespace UI18n.Core.Tests
             Assert.Equal("S", translation);
         }
 
+        // ---------- v1.4 稳定键 k ----------
+
+        /// <summary>带 k 的行：Key 原样保留，查找行为与不带 k 完全一致。</summary>
+        [Fact]
+        public void StableKey_IsParsedFromKField_AndDoesNotChangeLookup()
+        {
+            DictPack pack = Pack(Line(Kerbin, "\"n\":\"Kerbin\",\"s\":\"Kerbin\",\"t\":\"G\",\"k\":\"ckan:SomeMod:abstract\""));
+            string translation;
+
+            Assert.Equal(1, pack.Entries);
+            Assert.Equal(0, pack.ParseErrors);
+            Assert.Equal("ckan:SomeMod:abstract", pack.GetEntries()[0].Key);
+            Assert.True(pack.TryGet(Kerbin, "Kerbin", out translation));
+            Assert.Equal("G", translation);
+        }
+
+        /// <summary>不带 k 的旧行：Key 为空串，查找照旧（向后兼容的硬要求）。</summary>
+        [Fact]
+        public void MissingStableKey_LeavesKeyEmpty_AndLookupStillWorks()
+        {
+            DictPack pack = Pack(Line(Kerbin, "\"n\":\"Kerbin\",\"s\":\"Kerbin\",\"t\":\"G\""));
+            string translation;
+
+            Assert.Equal(string.Empty, pack.GetEntries()[0].Key);
+            Assert.True(pack.TryGet(Kerbin, "Kerbin", out translation));
+            Assert.Equal("G", translation);
+        }
+
+        /// <summary>未知字段（例如给包行塞一个 zz）不产生坏行：未知键跳过是解析器的既定契约。</summary>
+        [Fact]
+        public void UnknownField_DoesNotMakeTheLineBad()
+        {
+            DictPack pack = Pack(Line(Kerbin, "\"t\":\"G\",\"k\":\"ckan:SomeMod:name\",\"zz\":\"ignored\""));
+
+            Assert.Equal(1, pack.Entries);
+            Assert.Equal(0, pack.ParseErrors);
+            Assert.Equal("ckan:SomeMod:name", pack.GetEntries()[0].Key);
+        }
+
+        /// <summary>k 不是字符串（这里是 true）按字段缺失退化，<b>不</b>丢整行——与 p 字段的安全退化一致。</summary>
+        [Fact]
+        public void NonStringStableKey_DegradesToEmpty_WithoutDroppingTheLine()
+        {
+            DictPack pack = Pack(Line(Kerbin, "\"t\":\"G\",\"k\":true"));
+            string translation;
+
+            Assert.Equal(1, pack.Entries);
+            Assert.Equal(0, pack.ParseErrors);
+            Assert.Equal(string.Empty, pack.GetEntries()[0].Key);
+            Assert.True(pack.TryGet(Kerbin, "Kerbin", out translation));
+        }
+
         [Fact]
         public void KeyLevel_NumericOrder_IsMostSpecificFirst()
         {

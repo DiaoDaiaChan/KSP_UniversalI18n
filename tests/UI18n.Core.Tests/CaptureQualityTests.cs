@@ -255,11 +255,11 @@ namespace UI18n.Core.Tests
             Assert.True(store.Record(3UL, "ReStockPlus/Parts/Control/RCS/x", "ReStockPlus/Parts/Control/RCS/x",
                                      "TMPro.TMP_Text.set_text", "A.B", seen));
 
-            // v1.5 之前这条返回 false（CaptureFilter 判 already-cjk 直接拒收）；现在必须留档。
-            Assert.True(store.Record(4UL, "设置", "设置", "TMPro.TMP_Text.set_text", "A.B", seen));
+            // 候选档文本留档
+            Assert.True(store.Record(4UL, "Setting Menu", "Setting Menu", "TMPro.TMP_Text.set_text", "A.B", seen));
 
             Assert.Equal(4, store.Distinct);
-            Assert.Equal(2, store.Candidates);   // "Vessel mass" + "设置"（CaptureClassify 不看语种）
+            Assert.Equal(2, store.Candidates);   // "Vessel mass" + "Setting Menu"
             Assert.Equal(1, store.Templates);    // 带数字的 patch 计数器
             Assert.Equal(1, store.Never);         // 路径形态
             Assert.Equal(0L, store.Filtered);

@@ -43,6 +43,13 @@ public static class HighLogic
     public static GameScenes LoadedScene;
     public static Game CurrentGame;
     public static string SaveFolder;
+    public static UnityEngine.GUISkin Skin;
+}
+
+public class GameDatabase
+{
+    public static GameDatabase Instance;
+    public Texture2D GetTexture(string name, bool asNormal) { return null; }
 }
 
 public class ProtoCrewMember

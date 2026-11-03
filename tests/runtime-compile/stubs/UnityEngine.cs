@@ -53,19 +53,13 @@ namespace UnityEngine
         public Transform transform;
         public bool activeSelf;
         public bool activeInHierarchy;
-        public Scene scene;
+        public UnityEngine.SceneManagement.Scene scene;
         public void SetActive(bool value) { }
         public T AddComponent<T>() where T : Component { return null; }
+        public T[] GetComponentsInChildren<T>(bool includeInactive = false) where T : Component { return new T[0]; }
     }
 
     public class Transform : Component { }
-
-    public struct Scene
-    {
-        public string name;
-        public int buildIndex;
-        public bool IsValid() { return false; }
-    }
 
     public struct Vector2
     {
@@ -268,6 +262,7 @@ namespace UnityEngine
         public KeyCode keyCode;
         public int button;
         public static Event current;
+        public void Use() { }
     }
 
     public enum EventType { MouseDown, MouseUp, MouseMove, KeyDown, KeyUp, ScrollWheel, Repaint, Layout, Ignore, Used }
@@ -401,15 +396,27 @@ namespace UnityEngine
         public static void EndClip() { }
         public static void DrawTexture(Rect position, Texture image) { }
         public static void ScrollTo(Rect position) { }
-        public static int Toolbar(int id, int selected, string[] texts) { return selected; }
-        public static int Toolbar(int id, int selected, GUIContent[] contents, GUIStyle style, ToolbarButtonSize buttonSize) { return selected; }
-        public static int SelectionGrid(int id, int selected, string[] texts, int xCount) { return selected; }
+        public static int Toolbar(Rect position, int selected, string[] texts) { return selected; }
+        public static int Toolbar(Rect position, int selected, string[] texts, GUIStyle style) { return selected; }
+        public static int Toolbar(Rect position, int selected, GUIContent[] contents, GUIStyle style) { return selected; }
+        public static int Toolbar(Rect position, int selected, GUIContent[] contents, GUIStyle style, ToolbarButtonSize buttonSize) { return selected; }
+        public static int SelectionGrid(Rect position, int selected, string[] texts, int xCount) { return selected; }
+        public static int SelectionGrid(Rect position, int selected, string[] texts, int xCount, GUIStyle style) { return selected; }
         public static float HorizontalSlider(Rect position, float value, float leftValue, float rightValue) { return value; }
         public static Vector2 BeginScrollView(Rect position, Vector2 scrollPosition, Rect viewRect) { return scrollPosition; }
         public static Vector2 BeginScrollView(Rect position, Vector2 scrollPosition, Rect viewRect, bool alwaysShowHorizontal, bool alwaysShowVertical) { return scrollPosition; }
         public static void EndScrollView() { }
         public static void EndScrollView(bool handleScrollWheel) { }
     }
+
+    public static class GUIUtility
+    {
+        public static string systemCopyBuffer;
+        public static int GetControlID(FocusType focus, Rect position) { return 0; }
+        public static int GetControlID(int hint, FocusType focus) { return 0; }
+    }
+
+    public enum FocusType { Native, Keyboard, Passive }
 
     public static class GUILayout
     {
@@ -452,7 +459,20 @@ namespace UnityEngine
     }
 }
 
-namespace UnityEngine
+namespace UnityEngine.SceneManagement
 {
-    // 仅用于影子编译：ApplicationRootPath 来自 KSP 的全局 KSPUtil，这里补一个最小面。
+    public struct Scene
+    {
+        public string name;
+        public int buildIndex;
+        public bool isLoaded;
+        public bool IsValid() { return false; }
+        public GameObject[] GetRootGameObjects() { return new GameObject[0]; }
+    }
+
+    public static class SceneManager
+    {
+        public static int sceneCount { get { return 0; } }
+        public static Scene GetSceneAt(int index) { return default(Scene); }
+    }
 }

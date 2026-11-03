@@ -66,6 +66,13 @@ namespace UI18n.Core.Capture
         /// </summary>
         public long MaxSessionBytes { get; set; } = 64L * 1024 * 1024;
 
+        /// <summary>
+        /// 每个 (caller, skeleton) 模板样本保留条数（默认 3）。
+        /// 限制高频遥测串（如 Principia、MFP、MechJeb 每帧产生的浮点数）打爆会话字节预算（64 MB）。
+        /// 小于等于 0 表示不限制。
+        /// </summary>
+        public int MaxTemplateSamplesPerSkeleton { get; set; } = 3;
+
         /// <summary>一份默认参数。<b>每次访问返回新实例</b>（与 <c>UI18nConfig.Default</c> 同一约定，避免共享可变状态）。</summary>
         public static CaptureOptions Default
         {
@@ -83,6 +90,7 @@ namespace UI18n.Core.Capture
             copy.MaxTextLength = MaxTextLength;
             copy.MinTextLength = MinTextLength;
             copy.MaxSessionBytes = MaxSessionBytes;
+            copy.MaxTemplateSamplesPerSkeleton = MaxTemplateSamplesPerSkeleton;
             return copy;
         }
     }

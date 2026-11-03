@@ -41,7 +41,8 @@ IndexOutOfRange 崩 UI）、同一包里同一个 h 出现两次（最后一行�
     python -m i18n_tools.api journal tail [--n 20]
     python -m i18n_tools.api validate [--lang zh-cn] [--mod TUFX] [--strict] [--strict-p]
     python -m i18n_tools.api entry put --mod TUFX --lang zh-cn --text "Blue Paint" --t "蓝色涂装" --actor human:me
-    python -m i18n_tools.api entry put-batch --actor pipeline:translate --stdin < batch.ndjson
+    python -m i18n_tools.api entry put --mod CKANMeta --s "<原文>" --t "<译文>" --key ckan:StockLS:abstract --actor human:me
+    python -m i18n_tools.api entry put-batch --actor pipeline:translate [--stdin] < batch.ndjson
     python -m i18n_tools.api entry delete --mod TUFX --lang zh-cn --h <h> --actor human:me [--reason why]
     python -m i18n_tools.api override put --en "<英文>" --zh "<中文>" --actor human:me [--note 依据]
     python -m i18n_tools.api glossary put --en "<英文>" --zh "<中文>" [--short] --actor human:me
@@ -85,6 +86,7 @@ import os
 import re
 import sys
 import tempfile
+import uuid
 from pathlib import Path
 
 from .fnv import hash_text
@@ -119,7 +121,9 @@ EXIT_MISSING = 6
 EXIT_INTERNAL = 7
 
 #: 行内字段（schema 冻结，docs/10 §2）：多一个字段就要 exit 5，不然半年后没人记得它是什么。
-ROW_KEYS = ("h", "n", "s", "t", "mod", "ctx", "p")
+#: k 是 2026-11 加的可选稳定键（WP-A）：给「按上游标识符索引」的译文用（CKAN 元数据这类）。
+#: 它只是索引线索，**不改 n 的冻结语义**（n 仍必须 == normalize(s)），缺席完全合法。
+ROW_KEYS = ("h", "n", "s", "t", "mod", "ctx", "p", "k")
 ROW_REQUIRED = ("h", "n", "s", "t", "mod")
 
 #: journal 事件字段顺序（docs/10 §5），ts 在前是为了人读起来顺。
@@ -136,6 +140,11 @@ ACTOR_KINDS = ("human", "llm", "pipeline")
 LANG = "zh-cn"
 
 _H_RE = re.compile(r"^[0-9a-f]{16}$")
+#: 行内可选字段 k 的形状：<namespace>:<identifier>，namespace 小写字母开头（ckan / il / cfg …），
+#: 冒号后半段不许有空白与控制字符（ASCII 0x00-0x1f 一律拒：它们会被 JSONL/journal 的行切分弄坏）。
+_K_RE = re.compile(r"^[a-z][a-z0-9-]*:[^\s\x00-\x1f]+$")
+#: k 的长度上限。200 是「一个上游标识符 + 字段名」的宽裕上界，再长基本是把正文塞进键里了。
+K_MAX_LEN = 200
 #: 两种包后缀（已知全集）。modId 的派生只剥这两个**精确**后缀，见 pack_mod 的注释。
 _IL_SUFFIX = ".il.jsonl"
 _CFG_SUFFIX = ".cfg.jsonl"
@@ -467,10 +476,10 @@ class DocFile(FileBase):
 
 
 def write_tmp(path, data):
-    """写 <file>.tmp（同目录，保证 os.replace 是原子改名而不是跨盘拷贝）。"""
+    """写 <file>.tmp.<pid>.<uuid>（同目录，保证 os.replace 是原子改名而不是跨盘拷贝）。"""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(path.name + ".tmp")
+    tmp = path.with_name("{}.tmp.{}.{}".format(path.name, os.getpid(), uuid.uuid4().hex[:8]))
     try:
         with open(tmp, "wb") as handle:
             handle.write(data)
@@ -495,6 +504,32 @@ def journal_path(ctx, ts):
     return ctx.journal_dir / ((ts or now_iso())[:10] + ".jsonl")
 
 
+def _lock_file(handle):
+    try:
+        import msvcrt
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+    except (ImportError, OSError):
+        try:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        except (ImportError, OSError):
+            pass
+
+
+def _unlock_file(handle):
+    try:
+        import msvcrt
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    except (ImportError, OSError):
+        try:
+            import fcntl
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        except (ImportError, OSError):
+            pass
+
+
 def journal_append(ctx, event):
     """追加一条事件，返回 packs/journal/<date>.jsonl#L<n>（行号 1 起）。
 
@@ -511,13 +546,19 @@ def journal_append(ctx, event):
     path.parent.mkdir(parents=True, exist_ok=True)
     line = json.dumps(ordered, ensure_ascii=False, separators=(",", ":"))
     before = 0
-    if path.exists():
-        before = nonempty_lines(path.read_bytes())
     try:
-        with open(path, "a", encoding="utf-8", newline="\n") as handle:
-            handle.write(line + "\n")
-            handle.flush()
-            os.fsync(handle.fileno())
+        with open(path, "a+", encoding="utf-8", newline="\n") as handle:
+            _lock_file(handle)
+            try:
+                handle.seek(0)
+                content = handle.read()
+                before = len([l for l in content.splitlines() if l.strip()])
+                handle.seek(0, 2)
+                handle.write(line + "\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            finally:
+                _unlock_file(handle)
     except OSError as exc:
         raise ApiError("internal", "journal 追加失败（journal 写不进去就整笔写失败）：%s" % exc)
     return "%s#L%d" % (ctx.rel(path), before + 1)
@@ -805,11 +846,41 @@ def pattern_is_legacy(value):
     return value is not None and not isinstance(value, bool)
 
 
+def check_key(value, label):
+    r"""校验行内可选字段 k（稳定键）的形状，返回原值；不合法 → exit 5。
+
+    k 是**可选**字段（2026-11 / WP-A 加）：给「按上游标识符索引」的译文用，例如 CKAN 元数据的
+    ckan:<identifier>:<field>。契约：
+      * 形状 ^[a-z][a-z0-9-]*:[^\s\x00-\x1f]+$（namespace 小写字母开头；冒号后是标识符）；
+      * 长度 ≤ K_MAX_LEN（200）；
+      * **空串按报错处理**，不当"缺省"：要省略就把 k 整个字段省掉。理由与本层其他字段一致——
+        "k": "" 到底是忘了填还是故意不填，事后没人分得清；而漏写字段是自证的；
+      * k 与 n 的分工：n 仍是 normalize(s)（语义不可改、仍必填），k 只是外部索引用的一把钥匙，
+        不参与 h/n 计算；没有 k 的行（游戏 cfg / IL 包）照旧完全合法。
+    """
+    if not isinstance(value, str):
+        raise ApiError("schema", "%s：k 必须是字符串（收到 %s）" % (label, type(value).__name__))
+    if not value:
+        raise ApiError("schema", "%s：k 不能是空串（要省略 k 就把整个字段省掉，别写 \"k\": \"\"）"
+                       % label)
+    if len(value) > K_MAX_LEN:
+        raise ApiError("schema", "%s：k 超长（%d 字符 > %d）：%r"
+                       % (label, len(value), K_MAX_LEN, value[:60] + "…"))
+    if not _K_RE.match(value):
+        raise ApiError("schema", "%s：k 形状非法 %r —— 必须是 <namespace>:<identifier>，"
+                                 "namespace 小写字母开头（[a-z][a-z0-9-]*），冒号后不许空白/控制字符"
+                       % (label, value))
+    return value
+
+
 def check_row_schema(row, label, notices=None):
     """一条包行的 schema（docs/10 §2 冻结）：字段集合、类型、h 与 n 的一致性。
 
     notices 传列表时，p 用旧表示（"p":1 / "1" / "true"）会往里记一条 —— validate 把它算
     notice 而不是 error（存量 486 行是历史写法，为了它把仓库判红挡住 apply 是本末倒置）。
+
+    k（可选，2026-11 加）在这里只校验**形状**（见 check_key）；「同包内 k 唯一」是文件级约束，
+    在 cmd_validate 里按文件建表检查 —— check_row_schema 只看一行，没有"包"的概念。
     """
     if not isinstance(row, dict):
         raise ApiError("schema", "%s 不是 JSON 对象" % label)
@@ -825,6 +896,8 @@ def check_row_schema(row, label, notices=None):
             raise ApiError("schema", "%s：字段 %s 必须是字符串" % (label, key))
     if "ctx" in row and not isinstance(row["ctx"], str):
         raise ApiError("schema", "%s：ctx 必须是字符串" % label)
+    if "k" in row:
+        check_key(row["k"], label)          # 空串 / 形状 / 超长 → exit 5
     if "p" in row:
         coerce_pattern(row["p"], label)          # 非法值 → exit 5（true / 1 / "1" / "true" 都收）
         if notices is not None and pattern_is_legacy(row["p"]):
@@ -1128,7 +1201,10 @@ def cmd_validate(ctx, args):
     strict_p = bool(getattr(args, "strict_p", False))
     problems = []
     notices = []             # p 用旧表示（"p":1）的行 —— 默认只是 notice，--strict-p 才当 error
-    stats = {"packs": 0, "rows": 0, "keepRows": 0, "unregistered": 0}
+    stats = {"packs": 0, "rows": 0, "keepRows": 0, "keyRows": 0, "dupKeyRows": 0,
+             "unregistered": 0}
+    all_keys = set()         # 全库不同键（跨包累计；报告里的"N 个不同键"用它）
+    all_dup_keys = set()     # 全库撞键的键（同上）
     mods = None
     if ctx.mods_path.exists():
         try:
@@ -1151,6 +1227,8 @@ def cmd_validate(ctx, args):
             if strict:
                 problems.append("%s：modId %s 没登记进 packs/mods.json" % (pack.rel, pack.mod))
         seen = {}
+        seen_k = {}          # 同包内统计 k 撞了几次：**允许撞**，见下面 dupKeyRows 的注释
+        dup_keys = {}        # k -> 出现过的行号；只用于报告，不进 problems
         for lineno, row in enumerate(pack.rows, 1):
             stats["rows"] += 1
             label = "%s 第 %d 行" % (pack.rel, lineno)
@@ -1166,6 +1244,19 @@ def cmd_validate(ctx, args):
                                 (label, seen[row["h"]]))
             else:
                 seen[row["h"]] = lineno
+            if row.get("k") is not None:
+                stats["keyRows"] += 1
+                # 同一个 k 允许多行，这是数据现实而不是错误：CKAN 的同一个 (identifier, field)
+                # 在元数据改版后会产出新原文，旧译文的 h 仍然精确对应旧原文，照样有人用得上；
+                # 「过期」只在 h 未命中时由键索引判定。读取侧的取舍规则见
+                # ModTextProvider.BuildKeyIndex：人工译文压过机翻，同类后载入的胜。
+                all_keys.add(row["k"])
+                if row["k"] in seen_k:
+                    stats["dupKeyRows"] += 1
+                    all_dup_keys.add(row["k"])
+                    dup_keys.setdefault(row["k"], [seen_k[row["k"]]]).append(lineno)
+                else:
+                    seen_k[row["k"]] = lineno
             if strict:
                 result = gates_for(ctx, row["s"], row["t"],
                                    pattern=coerce_pattern(row.get("p"), label),
@@ -1176,10 +1267,19 @@ def cmd_validate(ctx, args):
         problems.extend(notices)        # --strict-p：旧表示按 error 算（归一后拿它自证）
     payload = {"op": "validate", "ok": not problems, "lang": lang,
                "packs": stats["packs"], "rows": stats["rows"], "keepRows": stats["keepRows"],
+               "keyRows": stats["keyRows"], "dupKeyRows": stats["dupKeyRows"],
                "strict": strict, "strictP": strict_p, "pLegacy": len(notices),
                "problems": problems, "notices": notices}
+    if stats["dupKeyRows"]:
+        payload["dupKeyNote"] = ("同一 k 多行 %d 行 / %d 个键：上游原文改版后的历史译文，允许并存；"
+                                 "读取侧人工 > 机翻、同类后写胜" % (stats["dupKeyRows"], len(all_dup_keys)))
     lines = ["检查 %d 个包 / %d 行（keep %d）%s" % (stats["packs"], stats["rows"],
                                                  stats["keepRows"], "，含机械门禁" if strict else "")]
+    if stats["keyRows"]:
+        lines.append("带稳定键 k 的行：%d（%d 个不同键）" % (stats["keyRows"], len(all_keys)))
+    if stats["dupKeyRows"]:
+        lines.append("同一 k 多行：%d 行 / %d 个键（上游原文改版后的历史译文，允许并存；"
+                     "读取侧人工 > 机翻、同类后写胜）" % (stats["dupKeyRows"], len(all_dup_keys)))
     if notices:
         lines.append("notice: p 旧表示 %d 行（等值，可 apply --normalize-p 归一）" % len(notices))
     if problems:
@@ -1221,8 +1321,13 @@ def source_for(ctx, args, lang=None):
     return source, computed
 
 
-def build_row(ctx, mod, source, zh, h, ctx_note=None, pattern=False, subset=None):
-    """构造一行并跑门禁，返回 (row, keep, gates)；zh 为空串表示删除，返回 row=None。"""
+def build_row(ctx, mod, source, zh, h, ctx_note=None, pattern=False, subset=None,
+              key=None, label=None):
+    """构造一行并跑门禁，返回 (row, keep, gates)；zh 为空串表示删除，返回 row=None。
+
+    key 是可选稳定键（行内 k，见 check_key）：None 表示这条没有 k（游戏 cfg / IL 包就是这种），
+    空串 / 形状非法 → exit 5。label 只用于报错定位（put-batch 会传 "stdin 第 N 行"）。
+    """
     if zh == "":
         return None, False, []
     row = {"h": h, "n": normalize_source(source), "s": source, "t": zh, "mod": mod}
@@ -1230,6 +1335,8 @@ def build_row(ctx, mod, source, zh, h, ctx_note=None, pattern=False, subset=None
         row["ctx"] = ctx_note
     if pattern:
         row["p"] = True
+    if key is not None:
+        row["k"] = check_key(key, label or ("mod=%s" % mod))
     gates = gate_check(ctx, source, zh, pattern=pattern, subset=subset)
     keep = zh.strip() == source.strip() or _translate().echo_keep(source, zh)
     return row, keep, gates
@@ -1310,7 +1417,8 @@ def cmd_entry_put(ctx, args):
     source, h = source_for(ctx, args, lang)
     pattern = bool(getattr(args, "p", False))
     row, keep, gates = build_row(ctx, mod, source, args.t, h,
-                                 ctx_note=getattr(args, "ctx", None), pattern=pattern)
+                                 ctx_note=getattr(args, "ctx", None), pattern=pattern,
+                                 key=getattr(args, "key", None), label="--mod %s" % mod)
     target = choose_target(ctx, mod, h, lang)
     revision_check(target, getattr(args, "expect_revision", None))
     note = getattr(args, "note", "") or ""
@@ -1339,7 +1447,7 @@ def cmd_entry_put_batch(ctx, args):
     rows_in = [line for line in raw.splitlines() if line.strip()]
     if not rows_in:
         raise ApiError("usage", "put-batch 的 stdin 是空的（NDJSON：一行一条）")
-    allowed = ("mod", "h", "text", "s", "t", "ctx", "p", "note")
+    allowed = ("mod", "h", "text", "s", "t", "ctx", "p", "k", "note")
     # --allow-term-drift：整批跳过 G7（短语级官方术语未逐字命中），其余门禁照跑。
     # 给的是译文流水线（translate → backend.sync_pack）：G7 的判据来自官方译文记忆，
     # 那份记忆本身会错、中文同义写法也堵不完，所以术语漂移只记账不拦写。
@@ -1368,7 +1476,8 @@ def cmd_entry_put_batch(ctx, args):
                                      ctx_note=item.get("ctx"),
                                      pattern=coerce_pattern(item.get("p"),
                                                             "stdin 第 %d 行" % lineno),
-                                     subset=subset)
+                                     subset=subset, key=item.get("k"),
+                                     label="stdin 第 %d 行" % lineno)
         pack = choose_target_cached(ctx, cache, primary, mod, h, lang)
         note = item.get("note") or ""
         if keep:
@@ -2123,6 +2232,9 @@ def build_parser():
     item.add_argument("--s", default=None, help="英文原文（与 --text 等价，别名）")
     item.add_argument("--t", default=None, help="译文；空字符串 = 删掉这一行")
     item.add_argument("--ctx", default=None, help="上下文提示（可选，写进行里的 ctx）")
+    item.add_argument("--key", default=None, metavar="K",
+                      help="稳定键（可选，写进行里的 k）：<namespace>:<identifier>，"
+                           "如 ckan:StockLS:abstract；不给就不写 k")
     item.add_argument("--p", action="store_true", help="模板骨架行（写 p:true，G9 生效）")
     item.add_argument("--note", default=None)
     item.add_argument("--expect-revision", dest="expect_revision", default=None)
@@ -2130,6 +2242,9 @@ def build_parser():
     item.set_defaults(func=cmd_entry_put)
     item = entry_sub.add_parser("put-batch", parents=[parent], help="NDJSON 走 stdin，整批一笔事务")
     item.add_argument("--lang", default=None)
+    item.add_argument("--stdin", dest="stdin_flag", action="store_true",
+                      help="显式声明「从 stdin 读」（历史文档写过这个开关；实现本来就无条件读 stdin，"
+                           "此开关只为文档与实现对齐，接受但无额外行为）")
     item.add_argument("--note", default=None)
     item.add_argument("--expect-revision", dest="expect_revision", default=None)
     item.add_argument("--dry-run", dest="dry_run", action="store_true")
@@ -2318,11 +2433,16 @@ def _h(text):
     return hash_text(normalize(text))
 
 
-def _row(source, zh, mod, pattern=False):
-    """造一行字典条目。mod 必须由调用点显式给：以前这里默认 'TUFX'，读起来像是「产品默认 mod」。"""
+def _row(source, zh, mod, pattern=False, key=None):
+    """造一行字典条目。mod 必须由调用点显式给：以前这里默认 'TUFX'，读起来像是「产品默认 mod」。
+
+    key 给了就透传成行内 k（自检里用它造带稳定键的行）。
+    """
     row = {"h": _h(source), "n": normalize(source), "s": source, "t": zh, "mod": mod}
     if pattern:
         row["p"] = True
+    if key is not None:
+        row["k"] = key
     return row
 
 
@@ -2627,6 +2747,69 @@ def selftest():
         code, _payload, _err = _call(root, ["entry", "put-batch", "--actor", "pipeline:selftest"],
                                      stdin_text="  \n")
         check("put-batch 空 stdin exit 2", code == 2, code)
+
+        # ---- 11b) 可选稳定键 k：透传落盘 / 形状非法 exit 5 / 同包重复 k 被 validate 拒 ----
+        batch_key = json.dumps({"mod": "TUFX", "text": "Stable Key Row", "t": "稳定键行",
+                                "k": "ckan:Demo:abstract"}, ensure_ascii=False)
+        code, payload, _err = _call(root, ["entry", "put-batch", "--actor", "pipeline:selftest"],
+                                    stdin_text=batch_key)
+        check("put-batch 带 k exit 0", code == 0, (code, payload))
+        keyed = [row for row in rows_of_bytes(cfg_path.read_bytes())
+                 if row.get("s") == "Stable Key Row"]
+        check("k 透传落盘（行内 k == stdin 给的 k）",
+              bool(keyed) and keyed[0].get("k") == "ckan:Demo:abstract", keyed)
+        # n 的冻结语义不许被 k 改：n 仍必须 == normalize(s)
+        check("带 k 的行 n 仍等于 normalize(s)",
+              bool(keyed) and keyed[0].get("n") == normalize("Stable Key Row"), keyed)
+        code, payload, _err = _call(root, ["entry", "put", "--mod", "TUFX",
+                                           "--text", "Stable Key Two", "--t", "稳定键二",
+                                           "--key", "ckan:Demo:title",
+                                           "--actor", "human:selftest"])
+        check("entry put --key exit 0", code == 0, (code, payload))
+        check("entry put --key 落盘",
+              [row.get("k") for row in rows_of_bytes(cfg_path.read_bytes())
+               if row.get("s") == "Stable Key Two"] == ["ckan:Demo:title"],
+              rows_of_bytes(cfg_path.read_bytes()))
+        for name, bad in (("没有 namespace 冒号", "ckan.StockLS.abstract"),
+                          ("冒号前半段大写", "CKAN:StockLS:abstract"),
+                          ("标识符里有空格", "ckan:Stock LS:abstract"),
+                          ("空串", ""),
+                          ("超 200 字符", "ckan:" + "x" * 200)):
+            snap_k = _snapshot(packs)
+            code, _payload, _err = _call(root, ["entry", "put", "--mod", "TUFX",
+                                                "--text", "Stable Key Bad", "--t", "稳定键坏",
+                                                "--key", bad, "--actor", "human:selftest"])
+            check("非法 k 形状被拒 exit 5（%s）" % name, code == 5, code)
+            check("非法 k 不落盘（%s）" % name, _snapshot(packs) == snap_k)
+        code, _payload, _err = _call(root, ["entry", "put-batch", "--actor", "pipeline:selftest"],
+                                     stdin_text=json.dumps({"mod": "TUFX", "text": "Stable Key Bad",
+                                                            "t": "稳定键坏", "k": "bad key"},
+                                                           ensure_ascii=False))
+        check("put-batch 非法 k 形状 exit 5", code == 5, code)
+
+        # 清理：本小节写进去的两行要删掉，后面几节按固定行数断言（selftest 不许污染后续计数）
+        for text in ("Stable Key Row", "Stable Key Two"):
+            code, _payload, _err = _call(root, ["entry", "delete", "--mod", "TUFX",
+                                                "--h", _h(text), "--actor", "human:selftest"])
+            check("清理带 k 的临时行（%s）exit 0" % text, code == 0, code)
+        check("清理后包里没有带 k 的临时行",
+              not [row for row in rows_of_bytes(cfg_path.read_bytes())
+                   if row.get("s", "").startswith("Stable Key")])
+
+        dup_path = packs / "zh-cn" / "CKANDemo.jsonl"
+        _put_text(dup_path, _pack_text([
+            _row("Meta One", "元数据一", mod="CKANDemo", key="ckan:Demo:abstract"),
+            _row("Meta Two", "元数据二", mod="CKANDemo", key="ckan:Demo:abstract"),
+        ], spaced=True))
+        code, payload, _err = _call(root, ["validate"])
+        check("同包重复 k 不再当错误（历史原文改版后旧译文仍有效）exit 0", code == 0, code)
+        check("validate 统计出同一 k 多行（dupKeyRows=1）",
+              payload.get("dupKeyRows", -1) == 1, payload)
+        check("validate 的说明里点出「同一 k 多行」且不当问题",
+              "同一 k 多行" in str(payload.get("dupKeyNote") or ""), payload)
+        dup_path.unlink()
+        check("删掉重复 k 的包后 validate 仍 exit 0",
+              _call(root, ["validate"])[0] == 0)
 
         # ---- 12) override / glossary ----
         code, _p, _e = _call(root, ["override", "put", "--en", "Science", "--zh", "科学点",

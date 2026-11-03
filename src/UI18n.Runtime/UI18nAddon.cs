@@ -189,6 +189,7 @@ namespace UI18n.Runtime
             MissCapture.Shutdown();
             ShadowTracker.Shutdown();
             UpdateRunner.Shutdown();
+            FontResolver.Teardown();
         }
 
         private void OnDestroy()
@@ -198,6 +199,7 @@ namespace UI18n.Runtime
             MissCapture.Shutdown();
             ShadowTracker.Shutdown();
             UpdateRunner.Shutdown();
+            FontResolver.Teardown();
         }
 
         private void Run()

@@ -42,6 +42,7 @@ namespace UI18n.Runtime
 
         private static readonly Dictionary<string, CacheEntry> TextCache = new Dictionary<string, CacheEntry>(StringComparer.Ordinal);
         private static readonly Dictionary<string, GUIContent> ContentCache = new Dictionary<string, GUIContent>(StringComparer.Ordinal);
+        private static readonly Dictionary<ContentKey, GUIContent> ComplexContentCache = new Dictionary<ContentKey, GUIContent>();
         private static readonly HashSet<string> ReportedFailures = new HashSet<string>(StringComparer.Ordinal);
 
         /// <summary>首次命中样本（有上限，见 <c>UI18nConfig.HitSampleLimit</c>）。</summary>
@@ -77,6 +78,44 @@ namespace UI18n.Runtime
             internal string Source;
             internal string Translation;
             internal KeyLevel Level;
+        }
+
+        /// <summary>复合 GUIContent 缓存键：按文本、图片对象引用、tooltip 联合索引，杜绝带图标/提示的控件每帧重复分配。</summary>
+        private struct ContentKey : IEquatable<ContentKey>
+        {
+            internal readonly string Text;
+            internal readonly Texture Image;
+            internal readonly string Tooltip;
+
+            internal ContentKey(string text, Texture image, string tooltip)
+            {
+                Text = text ?? string.Empty;
+                Image = image;
+                Tooltip = tooltip ?? string.Empty;
+            }
+
+            public bool Equals(ContentKey other)
+            {
+                return string.Equals(Text, other.Text, StringComparison.Ordinal)
+                    && object.ReferenceEquals(Image, other.Image)
+                    && string.Equals(Tooltip, other.Tooltip, StringComparison.Ordinal);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ContentKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = (Text != null ? StringComparer.Ordinal.GetHashCode(Text) : 0);
+                    hash = (hash * 397) ^ (Image != null ? Image.GetHashCode() : 0);
+                    hash = (hash * 397) ^ (Tooltip != null ? StringComparer.Ordinal.GetHashCode(Tooltip) : 0);
+                    return hash;
+                }
+            }
         }
 
         /// <summary>语言 / 开关已过门禁且字典非空 —— patch 前缀的第一道短路（05 §6.2）。</summary>
@@ -139,6 +178,7 @@ namespace UI18n.Runtime
             _pack = pack;
             TextCache.Clear();
             ContentCache.Clear();
+            ComplexContentCache.Clear();
             ReportedFailures.Clear();
             Samples.Clear();
             HitSources.Clear();
@@ -235,6 +275,8 @@ namespace UI18n.Runtime
             {
                 TextCache.Clear();
                 ContentCache.Clear();
+                ComplexContentCache.Clear();
+                HitSources.Clear();
             }
 
             CacheEntry entry = new CacheEntry();
@@ -359,10 +401,24 @@ namespace UI18n.Runtime
                 return null;
             }
 
-            // 带图标 / tooltip 的控件很少，这类不进缓存：缓存按文本做 key，混用会串图标
+            // 带图标 / tooltip 的控件：按 (text, image, tooltip) 复合缓存，杜绝每帧 GC 分配
             if (content.image != null || !string.IsNullOrEmpty(content.tooltip))
             {
-                return new GUIContent(translation, content.image, content.tooltip);
+                ContentKey key = new ContentKey(text, content.image, content.tooltip);
+                GUIContent cachedComplex;
+                if (ComplexContentCache.TryGetValue(key, out cachedComplex))
+                {
+                    return cachedComplex;
+                }
+
+                if (ComplexContentCache.Count >= CacheLimit)
+                {
+                    ComplexContentCache.Clear();
+                }
+
+                cachedComplex = new GUIContent(translation, content.image, content.tooltip);
+                ComplexContentCache[key] = cachedComplex;
+                return cachedComplex;
             }
 
             GUIContent cached;
@@ -372,6 +428,10 @@ namespace UI18n.Runtime
             }
 
             // 只能是新对象：GUIContent.Temp(...) 返回共享实例，就地改写会污染工坊里所有同文本控件
+            if (ContentCache.Count >= CacheLimit)
+            {
+                ContentCache.Clear();
+            }
             cached = new GUIContent(translation);
             ContentCache[text] = cached;
             return cached;
@@ -415,6 +475,11 @@ namespace UI18n.Runtime
         /// <summary>记一条首次命中：distinct 计数 + 有上限的样本表。同一原文只记一次。</summary>
         private static void RecordHit(string patch, string source, string translation, KeyLevel level)
         {
+            if (HitSources.Count >= CacheLimit)
+            {
+                HitSources.Clear();
+            }
+
             if (!HitSources.Add(source))
             {
                 return;

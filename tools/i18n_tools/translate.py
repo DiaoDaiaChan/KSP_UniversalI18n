@@ -25,9 +25,11 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import json
+import os
 import re
 import sys
 import time
+import uuid
 import traceback
 from pathlib import Path
 
@@ -1323,6 +1325,10 @@ class Runner:
                     "src": source[:200], "zh": (restored or "")[:200],
                     "notes": {key: value for key, value in notes.items() if isinstance(value, str)},
                 })
+        # 稳定键（WP-A）：池行带 "key"（CKAN 池是 "ckan:<identifier>:<field>"）就透传成行内 k。
+        # 池里绝大多数行（游戏 cfg / IL）没有 key，那就一行都不写 k —— 缺省合法，别塞空串。
+        if entry is not None and row.get("key") is not None:
+            entry["k"] = row["key"]
         if not from_cache and not official and response is not None and status in ("ok", "keep"):
             key = cache_key(source, self.glossary.version, PROMPT_VERSION, self.config.model)
             # 存"哨兵态"译文：命中时还要再走一次 restore + 门禁，存还原态会被二次还原吃掉哨兵
@@ -1446,6 +1452,10 @@ def write_packs(results, out_dir=None, dry_run=False, prune=False, pool_hs=None,
         entry = result.get("entry")
         if not entry:
             continue
+        # 稳定键透传（WP-A）：_finish 已经把池行的 key 写进 entry["k"]；这里再兜一次
+        # 「只有 key 没有 k」的产物（别的产出路径 / 旧缓存），保证落盘的行一定带 k。
+        if entry.get("k") is None and result.get("key") is not None:
+            entry = dict(entry, k=result["key"])
         files.setdefault(safe_mod_name(result["mod"]), []).append(entry)
 
     if dry_run:
@@ -1479,10 +1489,20 @@ def write_packs(results, out_dir=None, dry_run=False, prune=False, pool_hs=None,
     for mod, rows in sorted(files.items()):
         rows.sort(key=lambda row: row["h"])
         path = out_dir / "{}.jsonl".format(mod)
-        with path.open("w", encoding="utf-8", newline="\n") as handle:
-            for row in rows:
-                handle.write(json.dumps(row, ensure_ascii=False) + "\n")
-                total += 1
+        tmp = path.with_name("{}.tmp.{}.{}".format(path.name, os.getpid(), uuid.uuid4().hex[:8]))
+        try:
+            with tmp.open("w", encoding="utf-8", newline="\n") as handle:
+                for row in rows:
+                    handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    total += 1
+            os.replace(tmp, path)
+        except Exception:
+            if tmp.is_file():
+                try:
+                    tmp.unlink()
+                except OSError:
+                    pass
+            raise
     return {"files": {mod: len(rows) for mod, rows in sorted(files.items())},
             "total": total, "written": True, "via": "file"}
 

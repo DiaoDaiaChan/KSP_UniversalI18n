@@ -161,6 +161,14 @@ class UI18nPackBackend(StorageBackend):
                 entry["ctx"] = row["ctx"]
             if row.get("p"):
                 entry["p"] = row["p"]
+            # 稳定键透传：条目里的 k（行内形状）或 key（池行形状，CKAN 池是
+            # "ckan:<identifier>:<field>"）都写进行内 k。两个都没有就不写 k —— 游戏
+            # cfg/IL 包本来就不带 k，别硬塞一个空值（schema 会判空串非法）。
+            key = row.get("k")
+            if key is None:
+                key = row.get("key")
+            if key is not None:
+                entry["k"] = key
 
             # 逐行预检 G2–G9。仓库里有一批历史行过不了 G7（旧路径直接写文件、绕过了门禁）。
             # 处置是结构性的，不是给每条术语补白名单：
@@ -238,6 +246,10 @@ class CkanModBackend(StorageBackend):
                      dry_run: bool = False) -> Dict[str, Any]:
         """按 mod 划分输出 <mod>.ckan-zh.jsonl（UTF-8、LF）。dry_run 只算不写。
 
+        条目的 key（池行形状 "ckan:<identifier>:<field>"）额外复制成行内 k：下游读这份文件时
+        不用再猜哪个字段是稳定键，与 packs 行的 k 是同一个名字、同一个含义。原字段 key 保留
+        （这份文件不是 pack 行，没有冻结 schema，删字段会让既有读者断掉）。
+
         expect_revision 仅为与基类接口兼容而保留：CKAN 输出没有 revision 概念。
         """
         if not isinstance(entries, (list, tuple)):
@@ -262,7 +274,10 @@ class CkanModBackend(StorageBackend):
             target = self.output_dir / ("%s.ckan-zh.jsonl" % mod)
             with target.open("a", encoding="utf-8", newline="\n") as handle:
                 for row in by_mod[mod]:
-                    handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    out = dict(row)
+                    if out.get("key") is not None and out.get("k") is None:
+                        out["k"] = out["key"]
+                    handle.write(json.dumps(out, ensure_ascii=False) + "\n")
                     written += 1
 
         return {"written": written, "mods": mods, "actor": actor}
@@ -434,6 +449,30 @@ def selftest() -> Tuple[List[str], int]:
         eq("sync merge 更新命中行", after.get("Alpha"), "阿尔法（改）")
         eq("sync merge 保留没跑到的行", after.get("Bravo"), "布拉沃")
         eq("sync 不碰 IL 包", il_path.read_bytes(), il_before)
+
+        # 稳定键透传：条目里的 k / 池行的 key 都要落成行内 k（独立 mod，不干扰上面 SYNCMOD 的断言）
+        keyed = sync_backend.sync_pack("KEYMOD", [
+            {"h": api.hash_of("Keyed One"), "s": "Keyed One", "t": "键一",
+             "k": "ckan:KeyDemo:abstract"},
+            {"h": api.hash_of("Keyed Two"), "s": "Keyed Two", "t": "键二",
+             "key": "ckan:KeyDemo:title"},
+        ], actor="pipeline:test")
+        eq("sync 带键的两行都写了", keyed["sync"]["rows"], 2)
+        key_rows = {r["s"]: r.get("k") for r in
+                    api.rows_of_bytes((lang_dir / "KEYMOD.jsonl").read_bytes())}
+        eq("sync 透传行内 k（条目 k）", key_rows.get("Keyed One"), "ckan:KeyDemo:abstract")
+        eq("sync 透传行内 k（池行 key）", key_rows.get("Keyed Two"), "ckan:KeyDemo:title")
+
+        # CkanModBackend：条目的 key 复制成行内 k（原 key 保留），文件名仍按 mod 分
+        ckan_key = CkanModBackend(root / "ckan-key")
+        ckan_key.save_entries([{"mod": "DemoMod", "t": "摘要",
+                                "key": "ckan:DemoMod:abstract"}], actor="ckan:test")
+        ckan_rows = [json.loads(line) for line in
+                     (root / "ckan-key" / "DemoMod.ckan-zh.jsonl")
+                     .read_text(encoding="utf-8").splitlines() if line.strip()]
+        eq("Ckan 输出行带行内 k", [r.get("k") for r in ckan_rows], ["ckan:DemoMod:abstract"])
+        eq("Ckan 输出保留原 key 字段", [r.get("key") for r in ckan_rows],
+           ["ckan:DemoMod:abstract"])
 
         # prune 的判据是「原文已从 pool 消失」：Bravo 还在 pool 里就必须活下来
         keep = sync_backend.sync_pack(

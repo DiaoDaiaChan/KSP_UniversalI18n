@@ -54,7 +54,7 @@ packs 顺序：按 **(mod, file) 两个键的 ordinal（码点）升序**，不�
   * 空文件（0 行）也是合法包，rows=0、keepRows=0，仍会登记；
   * --check 只比对 index 与文件，不重新生成、不写盘。
 
-reports/coverage.md 的结构（三节口径互不相加，报告正文里也写着这句）：
+reports/coverage.md 的结构（四节口径互不相加，报告正文里也写着这句）：
   ① 覆盖率            分母 = packs/pool.jsonl（harvest 从 GameData/**/*.cfg + loc 抽的待译串，
                       已剔除 empty/already-cjk/pure-number/too-short/search-tags/url-only/dup），
                       分子 = 这些行的 h 在 packs/<lang>/*.jsonl 里精确命中的行数；
@@ -65,7 +65,13 @@ reports/coverage.md 的结构（三节口径互不相加，报告正文里也写
   ③ 运行时捕获通道    packs/capture-candidates.jsonl 的现状（capture_ingest 从
                       <KSP 安装目录>/PluginData/UI18n/capture-*.jsonl 摄入）：行数、bucket、
                       caller、mod 归属、与 ①② 的交集。本轮不进包，只报告通道现状。
-  ②③ 的来源文件不存在时，对应小节打印"无法计算"并说明该跑哪个工具，不编造数字。
+  ④ CKAN 元数据覆盖率  分母 = packs/ckan_pool.jsonl 的 **distinct h**（CKAN 模组元数据抽取，
+                       每行带 key = "ckan:<identifier>:<field>"；该池由 ckan-ui 仓库的抽取器
+                       产出，本仓库 tools/ 下没有生成命令），分子 = 这些 h 在
+                       packs/<lang>/CKANMeta.jsonl 里精确命中的条数。CKANMeta 是登记在
+                       packs/mods.json 里的一等包（displayName「CKAN 元数据」，ckan= CKANMeta），
+                       行内 k 就是那把稳定键。**④ 与 ① 是两套来源，分子不能加进 ①**。
+  ②③④ 的来源文件不存在时，对应小节打印"无法计算"并说明该跑哪个工具，不编造数字。
 """
 
 from __future__ import annotations
@@ -89,6 +95,8 @@ IL_SUFFIX = ".il.jsonl"      # IL 包（DLL 字面量 / 运行时捕获）文件
 IL_MARK = ".il"              # 从 mod 身份里剥掉的尾部标记
 IL_CANDIDATES_NAME = "il-translatable.jsonl"      # IL 字面量候选（coverage ② 的分母来源）
 CAPTURE_CANDIDATES_NAME = "capture-candidates.jsonl"  # 运行时捕获候选（coverage ③ 的来源）
+CKAN_POOL_NAME = "ckan_pool.jsonl"        # CKAN 元数据待译池（coverage ④ 的分母来源）
+CKAN_MOD = "CKANMeta"                     # CKAN 元数据的 modId（一等包 packs/<lang>/CKANMeta.jsonl）
 COVERAGE_REL = ("reports", "coverage.md")
 ENTRY_FIELDS = ("mod", "file", "rows", "bytes", "sha256", "keepRows")
 TOP_FIELDS = ("schema", "lang", "generatedAt", "totalRows", "totalBytes", "packCount", "packs")
@@ -639,9 +647,94 @@ def _section_capture(capture_path: str, cfg_h: set, il_h: set, pool_h: set,
     return L
 
 
+def _section_ckan(packs_dir: str, lang: str = LANG, ckan_pool_path: str = None) -> list:
+    """coverage ④：CKAN 元数据覆盖率 —— 与 ①②③ 口径互不相加。
+
+    分母 = packs/ckan_pool.jsonl 的 **distinct h**（同一 h 多行只算一条：覆盖率问的是
+           「待译串覆盖了多少」，不是「池里有多少行」）；
+    分子 = 这些 h 在 packs/<lang>/CKANMeta.jsonl 里**精确命中**（同 h）的条数。
+    数据源缺失一律打印「无法计算」并说明该跑哪个工具，不编造数字（分母未知时算不出百分比）。
+    """
+    pool_path = ckan_pool_path or os.path.join(packs_dir, CKAN_POOL_NAME)
+    # 显示用正斜杠（与 index.json 的 file 字段、文档口径一致），读盘用 os.sep
+    pack_rel = lang + "/" + CKAN_MOD + ".jsonl"
+    pack_path = os.path.join(packs_dir, lang, CKAN_MOD + ".jsonl")
+
+    L = ["## ④ CKAN 元数据覆盖率（CKANMeta 包）", ""]
+    L.append("口径独立：本节分母来自 " + _c("packs/" + CKAN_POOL_NAME) + "（CKAN 模组元数据抽取），"
+             "与 ①（cfg 待译串）/ ②（DLL 字面量）/ ③（运行时捕获）**互不相加**，"
+             "也不计入任何总覆盖率。")
+    L.append("")
+
+    pool = _load_jsonl_opt(pool_path)
+    if pool is None:
+        L.append("**无法计算**：没找到 " + _c("packs/" + CKAN_POOL_NAME) + "。")
+        L.append("")
+        L.append("该跑哪个工具：本仓库 " + _c("tools/") + " 下没有 CKAN 元数据抽取命令 —— 这份池由 "
+                 + _c("ckan-ui") + " 仓库的抽取器产出（每行形如 "
+                 + _c('{"h": ..., "text": ..., "mod": "CKANMeta", '
+                      '"key": "ckan:<identifier>:<field>"}'))
+        L.append("把产出的文件放回 " + _c("packs/" + CKAN_POOL_NAME) + "，再重跑 "
+                 + _c("python -m i18n_tools.packindex") + " 生成本节。")
+        L.append("")
+        return L
+
+    distinct_h, dup_rows, no_h = [], 0, 0
+    seen = set()
+    for row in pool:
+        h = row.get("h") if isinstance(row, dict) else None
+        if not h:
+            no_h += 1
+            continue
+        if h in seen:
+            dup_rows += 1
+            continue
+        seen.add(h)
+        distinct_h.append(h)
+
+    pack_rows = _load_jsonl_opt(pack_path)
+    if pack_rows is None:
+        L.append("**无法计算**：池在（" + _c("packs/" + CKAN_POOL_NAME) + " " + _n(len(pool))
+                 + " 行 / distinct h " + _n(len(distinct_h)) + "），但 " + _c("packs/" + pack_rel)
+                 + " 不存在。")
+        L.append("")
+        L.append("该跑哪个工具：先用 " + _c("python -m i18n_tools.api mod put --mod " + CKAN_MOD
+                 + ' --display "CKAN 元数据" --ckan ' + CKAN_MOD + " --actor pipeline:packindex"))
+        L.append("把 " + _c(CKAN_MOD) + " 登记成一等包，再用 "
+                 + _c("python -m i18n_tools.api entry put-batch")
+                 + " 写译文（每行带 " + _c("k") + " = " + _c("ckan:<identifier>:<field>") + "）。")
+        L.append("")
+        return L
+
+    pack_h = {}
+    for row in pack_rows:
+        if isinstance(row, dict) and row.get("h"):
+            pack_h[row["h"]] = row
+    hit = [h for h in distinct_h if h in pack_h]
+    keyed = sum(1 for row in pack_rows
+                if isinstance(row, dict) and row.get("k") is not None)
+
+    L.append("**CKAN 元数据译文覆盖率 %s / %s = %s。**"
+             % (_n(len(hit)), _n(len(distinct_h)), _pct(len(hit), len(distinct_h))))
+    L.append("")
+    L.append("- 分母 = " + _c("packs/" + CKAN_POOL_NAME) + " 的 distinct " + _c("h") + "："
+             + _n(len(distinct_h)) + " 条（池共 " + _n(len(pool)) + " 行"
+             + ("，同 h 重复 " + _n(dup_rows) + " 行已去重" if dup_rows else "")
+             + ("，" + _n(no_h) + " 行缺 h 未计入" if no_h else "") + "）。")
+    L.append("- 分子 = 这些 " + _c("h") + " 在 " + _c("packs/" + pack_rel)
+             + " 里精确命中的条数：" + _n(len(hit)) + " 条（按 " + _c("h")
+             + " 配对，不做模糊匹配）。包内共 " + _n(len(pack_rows)) + " 行，其中带稳定键 "
+             + _c("k") + " 的 " + _n(keyed) + " 行。")
+    L.append("- 两个数字现场算，不读任何人手填的百分比。CKAN 池的行与 ① 的 " + _c("pool.jsonl")
+             + " 是两套来源，**不要**把本节分子加进 ① 的分子。")
+    L.append("")
+    return L
+
+
 def build_coverage(entries: list, packs_dir: str, lang: str = LANG,
                    pool_path: str = None, generated_at: str = None,
-                   il_path: str = None, capture_path: str = None) -> str:
+                   il_path: str = None, capture_path: str = None,
+                   ckan_pool_path: str = None) -> str:
     """生成 reports/coverage.md 全文。
 
     覆盖率口径（写进报告正文，也必须写进任何引用这个数字的地方）：
@@ -695,8 +788,9 @@ def build_coverage(entries: list, packs_dir: str, lang: str = LANG,
              + _c("mod") + " 聚合成一行表格）")
     L.append("- 清单：" + _c("packs/index.json") + "（schema %d，字段口径见 " % SCHEMA
              + _c("tools/i18n_tools/packindex.py") + " 模块 docstring）")
-    L.append("- 三节口径互不相加：① 是 " + _c("packs/pool.jsonl") + " 口径（cfg 包覆盖多少待译串）、"
-             "② 是 DLL 字面量口径（IL 包）、③ 是运行时捕获通道现状。")
+    L.append("- 四节口径互不相加：① 是 " + _c("packs/pool.jsonl") + " 口径（cfg 包覆盖多少待译串）、"
+             "② 是 DLL 字面量口径（IL 包）、③ 是运行时捕获通道现状、④ 是 CKAN 元数据口径（"
+             + _c("packs/" + CKAN_POOL_NAME) + " → " + _c("packs/" + lang + "/" + CKAN_MOD + ".jsonl") + "）。")
     L.append("- 本报告由 " + _c("python -m i18n_tools.packindex")
              + " 现场计算生成，不引用任何人手填的百分比。")
     L.append("")
@@ -704,6 +798,7 @@ def build_coverage(entries: list, packs_dir: str, lang: str = LANG,
     pool_h = set()      # ②③ 要拿 IL / capture 的 h 和 pool 求交集；pool 缺失时就是空集
     il_path = il_path or os.path.join(packs_dir, IL_CANDIDATES_NAME)
     capture_path = capture_path or os.path.join(packs_dir, CAPTURE_CANDIDATES_NAME)
+    ckan_pool_path = ckan_pool_path or os.path.join(packs_dir, CKAN_POOL_NAME)
 
     pool = None
     if pool_path and os.path.isfile(pool_path):
@@ -793,6 +888,7 @@ def build_coverage(entries: list, packs_dir: str, lang: str = LANG,
     il_cand_h.discard(None)
     L.extend(_section_il(entries, cfg_h, il_h, pool_h, il_path))
     L.extend(_section_capture(capture_path, cfg_h, il_h, pool_h, il_cand_h))
+    L.extend(_section_ckan(packs_dir, lang, ckan_pool_path))
 
     # ---- 逐 mod 表 ----
     L.append("## 逐 mod")
@@ -961,7 +1057,8 @@ def main(argv=None) -> int:
         print("[packindex] index    " + index_path)
     if not args.no_coverage:
         text = build_coverage(entries, packs_dir, lang=args.lang,
-                             pool_path=pool_path, generated_at=doc["generatedAt"])
+                             pool_path=pool_path, generated_at=doc["generatedAt"],
+                             ckan_pool_path=os.path.join(packs_dir, CKAN_POOL_NAME))
         write_coverage(coverage_path, text)
         if not args.quiet:
             print("[packindex] coverage " + coverage_path)

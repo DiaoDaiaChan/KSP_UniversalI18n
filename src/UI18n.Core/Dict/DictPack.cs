@@ -19,6 +19,7 @@ namespace UI18n.Core.Dict
     public sealed class DictPack
     {
         private readonly List<DictEntry> _entries = new List<DictEntry>();
+        private readonly object _indexLock = new object();
         private Dictionary<ulong, int[]> _index;
         private Dictionary<ulong, int[]> _patternIndex;
         private int _patternEntries;
@@ -88,11 +89,11 @@ namespace UI18n.Core.Dict
         /// <summary>把计数归零（载入新语言包后重新统计命中率用）。</summary>
         public void ResetCounters()
         {
-            _hits = 0;
-            _misses = 0;
-            _keeps = 0;
-            _parseErrors = 0;
-            _patternHits = 0;
+            System.Threading.Interlocked.Exchange(ref _hits, 0);
+            System.Threading.Interlocked.Exchange(ref _misses, 0);
+            System.Threading.Interlocked.Exchange(ref _keeps, 0);
+            System.Threading.Interlocked.Exchange(ref _parseErrors, 0);
+            System.Threading.Interlocked.Exchange(ref _patternHits, 0);
         }
 
         /// <summary>载入若干 JSONL 行。<paramref name="lines"/> 为 null 时返回空包。</summary>
@@ -133,7 +134,7 @@ namespace UI18n.Core.Dict
             }
             else if (status == JsonLineReader.Status.Error)
             {
-                _parseErrors++;
+                System.Threading.Interlocked.Increment(ref _parseErrors);
             }
         }
 
@@ -184,7 +185,7 @@ namespace UI18n.Core.Dict
             int[] bucket;
             if (!TryGetBucket(hash, out bucket))
             {
-                _misses++;
+                System.Threading.Interlocked.Increment(ref _misses);
                 return false;
             }
 
@@ -216,18 +217,18 @@ namespace UI18n.Core.Dict
                 if (entry.IsKeep)
                 {
                     // keep = 明确「不要翻」。它是最具体层级给出的结论，因此终止查找而不是继续下沉。
-                    _keeps++;
-                    _misses++;
+                    System.Threading.Interlocked.Increment(ref _keeps);
+                    System.Threading.Interlocked.Increment(ref _misses);
                     return false;
                 }
 
                 translation = entry.Translation;
                 level = entry.Level;
-                _hits++;
+                System.Threading.Interlocked.Increment(ref _hits);
                 return true;
             }
 
-            _misses++;
+            System.Threading.Interlocked.Increment(ref _misses);
             return false;
         }
 
@@ -300,7 +301,13 @@ namespace UI18n.Core.Dict
 
             if (_patternIndex == null)
             {
-                BuildIndex();
+                lock (_indexLock)
+                {
+                    if (_patternIndex == null)
+                    {
+                        BuildIndex();
+                    }
+                }
             }
 
             int[] bucket;
@@ -323,7 +330,7 @@ namespace UI18n.Core.Dict
                 }
 
                 translation = entry.Translation;
-                _patternHits++;
+                System.Threading.Interlocked.Increment(ref _patternHits);
                 return true;
             }
 
@@ -340,7 +347,13 @@ namespace UI18n.Core.Dict
         {
             if (_index == null)
             {
-                BuildIndex();
+                lock (_indexLock)
+                {
+                    if (_index == null)
+                    {
+                        BuildIndex();
+                    }
+                }
             }
 
             return _index.TryGetValue(hash, out bucket);

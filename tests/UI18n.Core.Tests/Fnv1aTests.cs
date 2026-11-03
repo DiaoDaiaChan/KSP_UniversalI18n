@@ -180,5 +180,13 @@ namespace UI18n.Core.Tests
 
             Assert.Equal(texts.Length, seen.Count);
         }
+
+        [Fact]
+        public void RangeOverload_IntegerOverflow_Throws()
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes("abc");
+            Assert.Throws<ArgumentOutOfRangeException>(delegate { Fnv1a.Hash(bytes, int.MaxValue, 1); });
+            Assert.Throws<ArgumentOutOfRangeException>(delegate { Fnv1a.Hash(bytes, 1, int.MaxValue); });
+        }
     }
 }

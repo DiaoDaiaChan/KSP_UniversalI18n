@@ -152,6 +152,8 @@ _UNDERSCORE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+$")
 _DOTTED_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+$")
 _CAMEL_RE = re.compile(r"^[a-z]+[A-Z][A-Za-z0-9]*$")
 _CAPS_RE = re.compile(r"^[A-Z][A-Z0-9]{1,7}$")
+_WORD_RE = re.compile(r"[A-Za-z]+")
+_SENTENCE_TERM_RE = re.compile(r"[.!?](?:[\"'\s]|$)")
 _PATCH_SUFFIX_RE = re.compile(r"_Patch[0-9]+$")
 # 日志行：mod 自己打的 Debug 输出（"[20:00:15][Debug] [AeroState] provider=Stock, M=0.000 ..."）
 # 永远不上 UI，翻它没有意义，还白占骨架位。两种形态都要认：原始捕获里是真实 [HH:MM:SS]，
@@ -212,6 +214,9 @@ def classify_capture(text):
     if _PROGRESS_RE.search(n):
         return ("template", "progress")
     if _DIGIT_RE.search(n):
+        words = _WORD_RE.findall(n)
+        if len(n) >= 30 and (len(words) >= 4 or (len(words) >= 2 and _SENTENCE_TERM_RE.search(n))):
+            return ("candidate", "")
         return ("template", "counter")
     if not _ALNUM_RE.search(n):
         return ("never", "punct")
@@ -1904,8 +1909,16 @@ def selftest_cases(base):
       classify_capture(u"正在加载...") == ("never", "already-cjk"))
     a("classify: 数字/数字 -> template/progress",
       classify_capture("Loading sound asset 0/234") == ("template", "progress"))
-    a("classify: 含数字 -> template/counter",
+    a("classify: 含数字短计数 -> template/counter",
       classify_capture("ModuleManager: 8448 patches applied") == ("template", "counter"))
+    a("classify: 含数字短遥测 -> template/counter",
+      classify_capture("Alt: 100m") == ("template", "counter"))
+    a("classify: 含数字短帧率 -> template/counter",
+      classify_capture("12.3 fps") == ("template", "counter"))
+    a("classify: 含数字的长解释性句子 (len>=30, words>=4) -> candidate",
+      classify_capture("Enter the altitude of the orbit you wish to establish around your destination body. You can enter 0 if you intend to perform a fly-by or aerobraking maneuver.") == ("candidate", ""))
+    a("classify: 含数字与句末标点的解释性句子 -> candidate",
+      classify_capture("UseOriginalKSC2: Whether or not to force the original, uncompacted KSC2 to load...") == ("candidate", ""))
     a("classify: 普通句子 -> candidate",
       classify_capture("Vessel mass") == ("candidate", ""))
     a("classify: 纯标点 -> never/punct",

@@ -32,7 +32,7 @@ import shutil
 import sys
 import tempfile
 
-from . import (api, audit, backend, candidates, capture_ingest, cfgparse, check_overrides, engine,
+from . import (api, audit, backend, buckets, candidates, capture_ingest, cfgparse, check_overrides, engine,
                 ensure_stdout, feedback, fnv, glossary, golden_gate, harvest, harvest_cfgcache, ilmeta,
                 fontbundle, fontcov, ilstrings, journal_gate, merge_overrides, mmgen, modmap, netkan, packindex, policy,
                 render_coverage, submission, textnorm)
@@ -528,21 +528,17 @@ def test_packindex_real():
     # 并同步这三个数字，否则本项失败——这是「清单不许与磁盘漂移」的最后一道提示。
     # 1.3 出包后（capture → 骨架 → 入包，含 overrides 人工通道）的真值。
     # 每次重跑 translate_il / packindex 之后都要同步这三行 —— 失败时把 got 抄回来，别改断言方向。
-    eq("真实 packCount == 97", doc["packCount"], 97)
-    eq("真实 totalRows == 14991", doc["totalRows"], 14991)
-    # 2026-10-27 入包 il-translatable 缺失的 31 条 IL：14960 -> 14991, 5172848 -> 5176936
-    # 2026-10-28 术语裁决修 4 条译文（Spinup stage / RealChute arm / TWP Insertion Burn /
-    #   Burn position）：5176936 -> 5176942，行数不变
-    # 2026-10-28 G7 清零（7 条译文贴合官方串 + Monopropellant/Delta-V 补译 +
-    #   Illuminator Mk 编号纠正）：5176942 -> 5176956，行数不变
-    eq("真实 totalBytes == 5176956", doc["totalBytes"], 5176956)
+    # 2026-11-02 入包 CKANMeta (4807 行) 及 AtmosphereAutopilot/Kopernicus/ROCapsules/TWP 增量: 98 包, 19837 行, 6967719 字节
+    eq("真实 packCount == 98", doc["packCount"], 98)
+    eq("真实 totalRows == 19837", doc["totalRows"], 19837)
+    eq("真实 totalBytes == 6967719", doc["totalBytes"], 6967719)
     eq("真实 schema / lang", (doc["schema"], doc["lang"]), (1, "zh-cn"))
     entries = packindex.scan_packs(os.path.join(repo, "packs"), "zh-cn")
     eq("清单条目与现场扫描逐项一致（清单不能与磁盘漂移）", doc["packs"], entries)
-    eq("cfg 包 41 / IL 包 56", (sum(1 for e in entries if not e["file"].endswith(".il.jsonl")),
-                              sum(1 for e in entries if e["file"].endswith(".il.jsonl"))), (41, 56))
-    eq("唯一 mod 数 82（同名 IL 包与 cfg 包合并成同一个 mod 身份）",
-       len({e["mod"] for e in entries}), 82)
+    eq("cfg 包 42 / IL 包 56", (sum(1 for e in entries if not e["file"].endswith(".il.jsonl")),
+                              sum(1 for e in entries if e["file"].endswith(".il.jsonl"))), (42, 56))
+    eq("唯一 mod 数 83（同名 IL 包与 cfg 包合并成同一个 mod 身份）",
+       len({e["mod"] for e in entries}), 83)
     eq("真实 --check 退出码 0", packindex.main(["--check", "--quiet"]), 0)
 
 
@@ -719,11 +715,39 @@ def test_ilstrings(base):
     eq("noise: URL", ilstrings.noise_class("https://example.com/a"), "URL")
     eq("noise: 句子 -> 其他（含待译句子）", ilstrings.noise_class("Load Vessel"),
        "其他（含待译句子）")
+    eq("noise: 扩展名后跟空格与单词是标题而非路径",
+       ilstrings.noise_class("Kopernicus_Config.cfg Editor"), "其他（含待译句子）")
+    eq("noise: 真正路径仍被拦截", ilstrings.noise_class("GameData/Mod/test.cfg"), "路径")
+    eq("noise: UI缩写白名单不被识别为标识符", ilstrings.noise_class("GUI"), "其他（含待译句子）")
+    eq("noise: RCS缩写白名单", ilstrings.noise_class("RCS"), "其他（含待译句子）")
+    eq("noise: 非白名单大写字母缩写仍为标识符", ilstrings.noise_class("XYZABC"), "标识符")
     funnel = ilstrings.funnel_stats(["", "ab", "A real sentence here", "123"])
     eq("漏斗: #US 去重计数", funnel["us_distinct"], 4)
     eq("漏斗: 过滤后只剩 2 条（空 / 纯数字被丢）", funnel["filtered"], 2)
     eq("漏斗: >=4 字符 1 条（ab 只有 2 字符）", funnel["ge4"], 1)
     eq("漏斗: 像 UI 文本 1 条", funnel["ui"], 1)
+
+    # --- buckets 分类（数字/进度/长句） ---
+    eq("buckets: 纹理加载进度串 -> template/template_progress",
+       buckets.classify("Loading texture asset 1950/5740 (buffer=45MB)"),
+       ("template", "template_progress"))
+    eq("buckets: 短计数遥测 -> template/template_progress",
+       buckets.classify("Alt: 100m"), ("template", "template_progress"))
+    eq("buckets: 补丁计数 -> template/template_progress",
+       buckets.classify("ModuleManager: 8448 patches applied"), ("template", "template_progress"))
+    eq("buckets: 含数字长解释句 -> translate/sentence",
+       buckets.classify("Enter the altitude of the orbit you wish to establish around your destination body. You can enter 0 if you intend to perform a fly-by or aerobraking maneuver."),
+       ("translate", "sentence"))
+    eq("buckets: Kopernicus 含数字和标点的长说明句 -> translate/sentence",
+       buckets.classify("UseOriginalKSC2: Whether or not to force the original, uncompacted KSC2 to load..."),
+       ("translate", "sentence"))
+    eq("buckets: Kopernicus 含1atm的长说明句 -> translate/sentence",
+       buckets.classify("HandleHomeworldAtmosphericUnitDisplay: This is for calculating 1atm unit at home world..."),
+       ("translate", "sentence"))
+    eq("buckets: 带拓展名的标题 -> translate/sentence",
+       buckets.classify("Kopernicus_Config.cfg Editor"), ("translate", "sentence"))
+    eq("buckets: 真正路径文件 -> never/path",
+       buckets.classify("GameData/Mod/test.cfg"), ("never", "path"))
 
 
 def test_ilstrings_real():

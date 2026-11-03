@@ -90,6 +90,14 @@
       "aliases": []
     },
     {
+      "modId": "CKANMeta",
+      "displayName": "CKAN 元数据",
+      "ckan": "CKANMeta",
+      "assemblies": [],
+      "folders": [],
+      "aliases": []
+    },
+    {
       "modId": "ClickThroughBlocker",
       "displayName": "ClickThroughBlocker",
       "ckan": null,

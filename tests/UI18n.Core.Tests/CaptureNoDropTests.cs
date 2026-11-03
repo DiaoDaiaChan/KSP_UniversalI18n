@@ -292,37 +292,103 @@ namespace UI18n.Core.Tests
 
         /// <summary>
         /// <c>CaptureFilter</c> 的判据还在、还能算（下游统计仍用它的 reason 词表），
-        /// 但<b>不再拦任何串</b>：判成 already-cjk / identifier 的照样建记录。
+        /// 判成 punctuation / identifier 的照样建记录（CJK 则由 CJK Secondary Pass Drop 专用闸门拦截）。
         /// </summary>
         [Fact]
         public void CaptureFilter_IsAdvisoryOnly()
         {
             var options = CaptureOptions.Default;
 
-            Assert.Equal("already-cjk", CaptureFilter.RejectReason("设置", "设置", options));
+            Assert.Equal("punctuation", CaptureFilter.RejectReason("---", "---", options));
             Assert.Equal("identifier", CaptureFilter.RejectReason("abc", "abc", options));
 
             var store = new CaptureStore(options);
-            Assert.True(store.Record(1UL, "设置", "设置", Sink, "A.B", Seen));
+            Assert.True(store.Record(1UL, "---", "---", Sink, "A.B", Seen));
             Assert.True(store.Record(2UL, "abc", "abc", Sink, "A.B", Seen));
             Assert.Equal(2, store.Distinct);
             Assert.Equal(0L, store.Filtered);
         }
 
-        /// <summary>v1.5 的两个新参数：默认值 + <c>Clone()</c> 复制 + 配置文件模型同步。</summary>
+        /// <summary>
+        /// 已翻译的中文二次流经 UI 钩子时不重复捕获，防止遥测刷屏吃满 64 MB 预算。
+        /// </summary>
+        [Fact]
+        public void AlreadyCjkText_IsRejectedFromCapture()
+        {
+            var store = new CaptureStore();
+            // 原文含中文或归一化含中文均应被直接拒收
+            Assert.False(store.Record(1UL, "14394 帧", "14394 帧", Sink, "FPS.Update", Seen));
+            Assert.False(store.Record(2UL, "7955 米/秒", "7955 米/秒", Sink, "Vessel.Speed", Seen));
+            Assert.False(store.Record(3UL, "任务时间: 1d, 2h, 3m, 4s", "任务时间: 1d, 2h, 3m, 4s", Sink, "MET.Update", Seen));
+            Assert.False(store.Record(4UL, "Setting", "设置", Sink, "UI.Show", Seen));
+            Assert.False(store.Record(5UL, "设置", "Setting", Sink, "UI.Show", Seen));
+
+            Assert.Equal(0, store.Distinct);
+            Assert.Equal(0, store.Pending);
+        }
+
+        /// <summary>
+        /// 高频模板遥测（同 caller + 同骨架）在记录 2~3 个样本后节流，不再写盘或膨胀待写列表。
+        /// </summary>
+        [Fact]
+        public void HighFrequencyTemplateTelemetry_ThrottledAfterSamples()
+        {
+            var store = new CaptureStore();
+            const string caller = "Telemetry.Update";
+
+            int accepted = 0;
+            for (ulong i = 1; i <= 1000; i++)
+            {
+                string text = (10.0 + (double)i * 0.01).ToString("F2", CultureInfo.InvariantCulture) + " ms";
+                if (store.Record(i, text, text, Sink, caller, Seen))
+                {
+                    accepted++;
+                }
+            }
+
+            // 默认限制为 3 个样本，超过 3 个后不再接收新记录进 pending，不写盘
+            Assert.Equal(3, accepted);
+            Assert.Equal(3, store.Pending);
+            Assert.Equal(1000, store.Distinct);
+            Assert.Equal(997L, store.LateRepeats);
+
+            // 落盘验证：1000 条高频遥测只有 3 条写盘，保存预算
+            string path = TempFile();
+            try
+            {
+                Assert.Equal(3, store.WritePending(path));
+                Assert.Equal(3, store.Written);
+                Assert.Equal(0, store.Pending);
+                Assert.Equal(3, File.ReadAllLines(path).Length);
+            }
+            finally
+            {
+                Delete(path);
+            }
+
+            // 不同骨架或不同 caller 仍可继续采样（各最多 3 个）
+            Assert.True(store.Record(2001UL, "Altitude: 1000 m", "Altitude: 1000 m", Sink, caller, Seen));
+            Assert.True(store.Record(2002UL, "12.34 ms", "12.34 ms", Sink, "OtherCaller", Seen));
+            Assert.Equal(2, store.Pending);
+        }
+
+        /// <summary>v1.5 的新参数：默认值 + <c>Clone()</c> 复制 + 配置文件模型同步。</summary>
         [Fact]
         public void NewOptions_HaveDefaults_AndCloneCopies()
         {
             Assert.Equal(8000, CaptureOptions.Default.MaxTextLength);
             Assert.Equal(64L * 1024 * 1024, CaptureOptions.Default.MaxSessionBytes);
+            Assert.Equal(3, CaptureOptions.Default.MaxTemplateSamplesPerSkeleton);
 
             var options = CaptureOptions.Default;
             options.MaxTextLength = 1234;
             options.MaxSessionBytes = 5678L;
+            options.MaxTemplateSamplesPerSkeleton = 2;
 
             CaptureOptions copy = options.Clone();
             Assert.Equal(1234, copy.MaxTextLength);
             Assert.Equal(5678L, copy.MaxSessionBytes);
+            Assert.Equal(2, copy.MaxTemplateSamplesPerSkeleton);
             Assert.NotSame(options, copy);
 
             var config = new UI18n.Core.Config.UI18nConfig();

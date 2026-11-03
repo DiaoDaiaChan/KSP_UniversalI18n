@@ -833,12 +833,13 @@ def scan_dll(path, asm, mod, analyzer_cls=None, need_no_ldstr=False):
 NOISE_ORDER = ("键引用", "URL", "路径", "XML/富文本", "纯数字/单位", "标识符", "日志/错误串",
                "其他（含待译句子）")
 
-_EXT_RE = re.compile(r"\.(?:cfg|dll|mu|dds|png|txt|json|ksp|asset|prefab)\b", re.I)
+_EXT_RE = re.compile(r"\.(?:cfg|dll|mu|dds|png|txt|json|ksp|asset|prefab)\b(?!\s+[A-Za-z])", re.I)
 _SEG_RE = re.compile(r"^[A-Za-z0-9_.\-]+(?:[/\\][A-Za-z0-9_.\-]+){2,}$")
 _TAG_RE = re.compile(r"</?[A-Za-z][^<>]*>|&#?\w+;")
 _IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_.]*$")
 _LOG_RE = re.compile(r"(?i)(exception|error[:：]|failed|failure|warning|stack ?trace|"
                      r"nullref|not found|traceback|assert)")
+_ACRONYM_WHITELIST = frozenset({"GUI", "UI", "VAB", "SPH", "RCS", "SAS", "EVA"})
 
 
 def noise_class(text):
@@ -855,7 +856,7 @@ def noise_class(text):
     if textnorm.is_pure_number(text):
         return "纯数字/单位"
     if _IDENT_RE.match(text) and ("_" in text or "." in text or text.islower()
-                                  or text.isupper()):
+                                  or (text.isupper() and text not in _ACRONYM_WHITELIST)):
         return "标识符"
     if _LOG_RE.search(text):
         return "日志/错误串"

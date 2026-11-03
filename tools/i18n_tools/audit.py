@@ -42,6 +42,7 @@ import tempfile
 from .fnv import hash_text
 from .textnorm import normalize
 from .resolve_keyrefs import _PLACEHOLDER_RE, _TMP_TAG_RE, is_key_ref
+from .harvest_cfgcache import is_hybrid_cjk
 
 _FORMAT_RE = re.compile(r"\{\d+\}|%[sdif]")
 _CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
@@ -345,7 +346,7 @@ def audit_dir(packs_dir: str, terms_path=None, strict_terms: bool = False) -> di
                     note("bad_richtext", where, "s=%s  t=%s" % (s[:40], t[:40]))
                 if _multiset(s, _FORMAT_RE) != _multiset(t, _FORMAT_RE):
                     note("bad_format", where, "s=%s  t=%s" % (s[:40], t[:40]))
-                if _CJK_RE.search(s) and not is_key_ref(s):
+                if _CJK_RE.search(s) and not is_key_ref(s) and not is_hybrid_cjk(s):
                     note("cjk_in_source", where, "s=%s" % s[:40])
                 for violation in check_row_terms(row, terms, _pack_mod(name), name, line_no):
                     term_counts[violation["violation"]] += 1

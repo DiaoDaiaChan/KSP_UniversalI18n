@@ -51,7 +51,7 @@ _URL_RE = re.compile(r"(?:https?://|www\.)[^\s<>\"'()\[\]{}]+", re.IGNORECASE)
 
 #: 2) 文件路径：以资源类扩展名收尾的最硬信号（cfg/dll/mu/dds/png/...）
 _PATH_RE = re.compile(
-    r"[A-Za-z0-9_.\-/\\]*[A-Za-z0-9_\-]\.(?:cfg|dll|mu|dds|png|txt|json|ksp|cs|log|craft|sav)\b",
+    r"(?:[A-Za-z0-9_.-]{1,128}[/\\]){0,12}[A-Za-z0-9_.-]{1,128}\.(?:cfg|dll|mu|dds|png|txt|json|ksp|cs|log|craft|sav)\b",
     re.IGNORECASE,
 )
 

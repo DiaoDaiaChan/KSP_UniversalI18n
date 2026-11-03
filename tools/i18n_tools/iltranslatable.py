@@ -55,19 +55,41 @@ EXTRA_SINKS = {
 }
 EXTRA_SINK_NAMES = frozenset(api for _, api in EXTRA_SINKS.values())
 
-# X4：KSP 对话框框架 DialogGUI* 的构造函数也是 UI 文本入口。
-# 依据：DifficultyOptionsMenu.CreateDifficultWindow 里
-#   ldloc node; callvirt GameParameters+CustomParameterNode::get_Title
-#   newobj DialogGUILabel::.ctor(string, ...)
-# 是 KSPWheel 的 "Basic Options" / "Damage Options" 上屏的真实路径；它们不在
-# PatchRegistry 的 16 个 sink 里，所以静态扫描全丢（运行时靠 TMP_Text.set_text 兜住）。
+# X4：KSP 对话框框架 DialogGUI* 与 UI 窗口/模块（GUIWindow、AutopilotModule 等）构造函数也是 UI 文本入口。
+# 依据：
+#   1) DifficultyOptionsMenu.CreateDifficultWindow 里 DialogGUILabel::.ctor 是 KSPWheel 上屏路径；
+#   2) AtmosphereAutopilot 里窗口标题/模块名称通过 GUIWindow..ctor、AutopilotModule..ctor 及其派生类构造函数传入。
 DIALOG_TEXT_METHODS = (".ctor",)
 
 
+def is_ui_window_type(tname, ridx=None):
+    """判定类型是否为 UI 窗口基类或其派生类（DialogGUI* / GUIWindow / AutopilotModule 等）。"""
+    short = tname.rsplit(".", 1)[-1].split("+")[-1]
+    if short.startswith("DialogGUI"):
+        return True
+    if short in ("GUIWindow", "AutopilotModule") or short.endswith("GUIWindow") or short.endswith("AutopilotModule"):
+        return True
+    if ridx is not None:
+        cur = tname
+        for _ in range(MAX_BASE_DEPTH):
+            nxt = ridx.bases.get(cur)
+            if not nxt:
+                break
+            nshort = nxt.rsplit(".", 1)[-1].split("+")[-1]
+            if nshort in ("GUIWindow", "AutopilotModule") or nshort.endswith("GUIWindow") or nshort.endswith("AutopilotModule"):
+                return True
+            cur = nxt
+    return False
+
+
 def _extra_classify(tname, mname):
-    short = tname.rsplit(".", 1)[-1]
+    short = tname.rsplit(".", 1)[-1].split("+")[-1]
     if short.startswith("DialogGUI") and mname in DIALOG_TEXT_METHODS:
         return ("A", "KSP." + short + "..ctor")
+    if mname == ".ctor" and is_ui_window_type(tname, RetAnalyzer.ridx):
+        return ("A", "UI." + short + "..ctor")
+    if RetAnalyzer.ridx and RetAnalyzer.ridx.is_virtual_sink(tname, mname):
+        return ("A", "Virtual." + short + "." + mname)
     return None
 
 MARK_BEGIN = "<!-- ILTRANS:BEGIN -->"
@@ -84,18 +106,21 @@ def install_extra_sinks():
 
 
 # ---------------------------------------------------------------------------
-# 字面量返回值 / 静态字段初值索引
+# 字面量返回值 / 静态字段初值 / 辅助转发 (Virtual Sink) 索引
 # ---------------------------------------------------------------------------
 class RetIndex:
-    """全局索引：谁的方法/属性返回一个字面量、哪个静态字段初值是字面量、谁继承谁。"""
+    """全局索引：谁的方法/属性返回一个字面量、哪个静态字段初值是字面量、谁继承谁、谁是虚拟Sink。"""
 
     def __init__(self):
         self.by_name = {}        # (方法名, 参数个数) -> [entry]
         self.fields = {}         # (asm, field token) -> entry
         self.bases = {}          # 类型全名 -> 基类全名
+        self.vsinks = {}         # (类型全名, 方法名, 参数个数) -> set(forwarded_arg_indices)
+        self.vsinks_by_name = {} # 方法名 -> [(类型全名, 参数个数, set(forwarded_arg_indices))]
         self.n_ret = 0
         self.n_field = 0
         self.n_types = 0
+        self.n_vsink = 0
 
     def add_ret(self, type_full, name, nparams, asm, method_label, lit, off):
         if not lit or not lit.strip():
@@ -117,6 +142,12 @@ class RetIndex:
             self.bases[type_full] = base_full
             self.n_types += 1
 
+    def add_virtual_sink(self, type_full, name, nparams, fwd_indices):
+        fwd_set = set(fwd_indices)
+        self.vsinks[(type_full, name, nparams)] = fwd_set
+        self.vsinks_by_name.setdefault(name, []).append((type_full, nparams, fwd_set))
+        self.n_vsink += 1
+
     def is_derived(self, tname, base):
         """tname 是否（沿基类链）派生自 base。"""
         cur = tname
@@ -128,6 +159,24 @@ class RetIndex:
                 return True
             cur = nxt
         return False
+
+    def is_virtual_sink(self, tname, mname):
+        cands = self.vsinks_by_name.get(mname)
+        if not cands:
+            return False
+        for t, _, _ in cands:
+            if t == tname or self.is_derived(tname, t):
+                return True
+        return False
+
+    def get_virtual_sink_fwd(self, tname, mname, nparams):
+        cands = self.vsinks_by_name.get(mname)
+        if not cands:
+            return None
+        for t, np, fwd in cands:
+            if np == nparams and (t == tname or self.is_derived(tname, t)):
+                return fwd
+        return None
 
     def lookup(self, tname, mname, nparams):
         """解析一次 callvirt/call：返回同族（自身 + override + 基类声明）的字面量条目。"""
@@ -169,8 +218,71 @@ def _field_owner_map(img, res):
     return owner
 
 
+class VirtualSinkFinder(ilstrings.Analyzer):
+    """扫描辅助转发方法 (Virtual Sinks)。
+    要求：非构造函数，拥有 1-2 个 string 参数，且方法体内将参数传递给 Group A sink。
+    """
+    def __init__(self, res, us, asm, mod, decl, method_label, stats, is_static, string_arg_indices):
+        super().__init__(res, us, asm, mod, decl, method_label, {}, [], stats)
+        self.is_static = is_static
+        self.string_arg_indices = set(string_arg_indices)
+        self.forwarded = set()
+
+    def _arg_index(self, name, operand):
+        if name == "ldarg.0":
+            idx = 0
+        elif name == "ldarg.1":
+            idx = 1
+        elif name == "ldarg.2":
+            idx = 2
+        elif name == "ldarg.3":
+            idx = 3
+        elif name in ("ldarg", "ldarg.s", "ldarga", "ldarga.s"):
+            idx = operand if operand is not None else 0
+        else:
+            return None
+        return idx if self.is_static else idx - 1
+
+    def _step(self, insns, i, ioff, name, operand, nxt, stack, locals_, work, by_off, nexts):
+        if name.startswith("ldarg"):
+            p_idx = self._arg_index(name, operand)
+            if p_idx is not None and p_idx in self.string_arg_indices:
+                stack.append(("arg", p_idx))
+                return True
+            stack.append(None)
+            return True
+        return super()._step(insns, i, ioff, name, operand, nxt, stack, locals_, work, by_off, nexts)
+
+    def _call(self, kind, token, stack):
+        target = self.res.resolve(token)
+        if target is None:
+            return None
+        params = target["params"]
+        nparams = len(params)
+        if len(stack) < nparams:
+            stack[:] = [None] * (nparams - len(stack)) + stack
+        args = stack[len(stack) - nparams:] if nparams else []
+        if nparams:
+            del stack[len(stack) - nparams:]
+        cls = ilstrings.classify(target["type"], target["name"])
+        if cls is not None:
+            group, api = cls
+            if group == "A" and not api.startswith("Virtual.") and not api.startswith("UI."):
+                for pi, pt in enumerate(params):
+                    if pt == "System.String" and pi < len(args):
+                        val = args[pi]
+                        if val and val[0] == "arg":
+                            self.forwarded.add(val[1])
+        if kind == "newobj":
+            stack.append(None)
+            return True
+        if target["ret"] != "System.Void":
+            stack.append(None)
+        return True
+
+
 def scan_returns(path, asm, ridx, stats):
-    """阶段 A：只解码「短方法体」与 .cctor/.ctor，收集返回值字面量与字段初值。"""
+    """阶段 A：解码「短方法体」与 .cctor/.ctor，收集返回值字面量与字段初值，并识别 Virtual Sinks。"""
     img = ilmeta.Image(path)
     res = ilstrings.Resolver(img)
     td = img.rows("TypeDef")
@@ -190,44 +302,101 @@ def scan_returns(path, asm, ridx, stats):
             code, _ = img.method_body(rva)
         except (ilmeta.IlError, IndexError):
             continue
-        # ldstr+ret 最多十几个字节；长方法体只有在 .cctor/.ctor 里才值得看字段初值
-        if len(code) > 40 and not is_cctor:
+        # 1) 返回值字面量收集（支持 Release 与 Debug 编译）
+        if len(code) <= 60 and not is_cctor:
+            try:
+                insns = ilmeta.decode_il(code)
+            except (ilmeta.IlError, IndexError):
+                insns = None
+            if insns:
+                seq = [(ioff, nm, op) for (ioff, nm, op) in insns if nm != "nop"]
+                is_ret_lit = False
+                if len(seq) == 2 and seq[0][1] == "ldstr" and seq[1][1] == "ret":
+                    is_ret_lit = True
+                elif len(seq) >= 2 and seq[0][1] == "ldstr" and seq[-1][1] == "ret":
+                    if all(nm.startswith("stloc") or nm.startswith("ldloc") or nm.startswith("br")
+                           for _, nm, _ in seq[1:-1]):
+                        is_ret_lit = True
+                if is_ret_lit:
+                    lit = res.us.get(seq[0][2] & 0xFFFFFF)
+                    params, _ = res.sig(img.blob_at(m["Signature"]))
+                    ridx.add_ret(res.type_of_method(rid), mname, len(params), asm,
+                                 _method_label(img, res, m), lit, seq[0][0])
+                    continue
+        # 2) 静态字段初值收集
+        if is_cctor:
+            try:
+                insns = ilmeta.decode_il(code)
+            except (ilmeta.IlError, IndexError):
+                insns = None
+            if insns:
+                seq = [(ioff, nm, op) for (ioff, nm, op) in insns if nm != "nop"]
+                for k in range(len(seq) - 1):
+                    if seq[k][1] != "ldstr":
+                        continue
+                    nxt = seq[k + 1]
+                    if nxt[1] not in ("stsfld", "stfld"):
+                        continue
+                    tok = nxt[2]
+                    if not isinstance(tok, int) or ((tok >> 24) & 0xFF) != 0x04:
+                        continue
+                    if owner is None:
+                        owner = _field_owner_map(img, res)
+                    lit = res.us.get(seq[k][2] & 0xFFFFFF)
+                    ridx.add_field(asm, tok, lit, seq[k][0],
+                                   owner.get(tok & 0xFFFFFF, res.type_of_method(rid)),
+                                   _method_label(img, res, m))
             continue
-        try:
-            insns = ilmeta.decode_il(code)
-        except (ilmeta.IlError, IndexError):
-            continue
-        seq = [(ioff, nm, op) for (ioff, nm, op) in insns if nm != "nop"]
-        if len(seq) == 2 and seq[0][1] == "ldstr" and seq[1][1] == "ret":
-            lit = res.us.get(seq[0][2] & 0xFFFFFF)
+        # 3) Virtual Sink 发现：非构造函数、有 1-2 个 string 参数、方法体 <= 600 字节
+        if not is_cctor and len(code) <= 600:
             params, _ = res.sig(img.blob_at(m["Signature"]))
-            ridx.add_ret(res.type_of_method(rid), mname, len(params), asm,
-                         _method_label(img, res, m), lit, seq[0][0])
-            continue
-        if not is_cctor:
-            continue
-        for k in range(len(seq) - 1):
-            if seq[k][1] != "ldstr":
-                continue
-            nxt = seq[k + 1]
-            if nxt[1] not in ("stsfld", "stfld"):
-                continue
-            tok = nxt[2]
-            if not isinstance(tok, int) or ((tok >> 24) & 0xFF) != 0x04:
-                continue
-            if owner is None:
-                owner = _field_owner_map(img, res)
-            lit = res.us.get(seq[k][2] & 0xFFFFFF)
-            ridx.add_field(asm, tok, lit, seq[k][0],
-                           owner.get(tok & 0xFFFFFF, res.type_of_method(rid)),
-                           _method_label(img, res, m))
+            str_indices = [i for i, pt in enumerate(params) if pt == "System.String"]
+            if 1 <= len(str_indices) <= 2:
+                try:
+                    insns = ilmeta.decode_il(code)
+                except (ilmeta.IlError, IndexError):
+                    insns = None
+                if insns:
+                    has_ldarg = any(nm.startswith("ldarg") for _, nm, _ in insns)
+                    if has_ldarg:
+                        has_a_sink = False
+                        for _, nm, op in insns:
+                            if nm in ("call", "callvirt"):
+                                tgt = res.resolve(op)
+                                if tgt:
+                                    c = ilstrings.classify(tgt["type"], tgt["name"])
+                                    if c and c[0] == "A" and not c[1].startswith("Virtual.") and not c[1].startswith("UI."):
+                                        has_a_sink = True
+                                        break
+                        if has_a_sink:
+                            is_static = bool(m["Flags"] & 0x0010)
+                            finder = VirtualSinkFinder(res, res.us, asm, "", res.type_of_method(rid),
+                                                       _method_label(img, res, m), stats, is_static, str_indices)
+                            finder.run(insns)
+                            fwd = finder.forwarded & set(str_indices)
+                            if fwd:
+                                ridx.add_virtual_sink(res.type_of_method(rid), mname, len(params), fwd)
     return ridx
 
 
 class RetAnalyzer(ilstrings.Analyzer):
-    """在 ilstrings.Analyzer 上加两个扩展点（X2 返回值、X3 静态字段）。"""
+    """在 ilstrings.Analyzer 上加扩展点（X2 返回值、X3 静态字段、X5 Virtual Sinks 参数过滤）。"""
 
     ridx = None          # 由 collect_all 在扫描前设置
+
+    def _call(self, kind, token, stack):
+        target = self.res.resolve(token)
+        orig_params = None
+        if target is not None and self.ridx is not None:
+            fwd = self.ridx.get_virtual_sink_fwd(target["type"], target["name"], len(target["params"]))
+            if fwd is not None:
+                orig_params = target["params"]
+                target["params"] = [pt if i in fwd else "NOT_FORWARDED" for i, pt in enumerate(orig_params)]
+        try:
+            return super()._call(kind, token, stack)
+        finally:
+            if orig_params is not None:
+                target["params"] = orig_params
 
     def _resolve_return_lit(self, target, kind, args):
         if kind == "newobj" or self.ridx is None:
@@ -279,8 +448,8 @@ def collect_all(gamedata, managed, only=None, limit=None, quiet=False):
                 print("  [skip-A] %-40s %s" % (asm, exc))
     t_a = time.time() - t0
     if not quiet:
-        print("[A] 完成：返回字面量的方法 %d 个 / 字段初值 %d 个 / 类型基类关系 %d 条 / %.2fs"
-              % (ridx.n_ret, ridx.n_field, ridx.n_types, t_a))
+        print("[A] 完成：返回字面量的方法 %d 个 / 字段初值 %d 个 / Virtual Sinks %d 个 / 类型基类关系 %d 条 / %.2fs"
+              % (ridx.n_ret, ridx.n_field, ridx.n_vsink, ridx.n_types, t_a))
     RetAnalyzer.ridx = ridx
     per_dll = []
     all_hits = []
@@ -328,11 +497,12 @@ def collect_all(gamedata, managed, only=None, limit=None, quiet=False):
 VIA_LABEL = {
     "base": "task-29 原有路径（ldstr 直接/拼接/Format/GUIContent + 16 个 sink）",
     "x1": "X1 sink 补齐：ScreenMessages.PostScreenMessage(string, float)",
-    "x2": "X2 返回值字面量：属性 getter / 单 return 方法（含同族 override）",
+    "x2": "X2 返回值字面量：属性 getter / 单 return 方法（含同族 override / Debug 编译）",
     "x3": "X3 静态字段初值：ldstr X; stsfld F 后 ldsfld",
-    "x4": "X4 KSP 对话框框架：DialogGUI* 构造函数（文本承载对象，不在 16 sink 里）",
+    "x4": "X4 UI 窗口/模块构造函数：DialogGUI* / GUIWindow / AutopilotModule 等",
+    "x5": "X5 辅助转发方法（Virtual Sink）：将字符串参数透传至 Group A sink 的方法",
 }
-VIA_ORDER = ("base", "x1", "x2", "x3", "x4")
+VIA_ORDER = ("base", "x1", "x2", "x3", "x4", "x5")
 
 
 def hit_need(hit):
@@ -341,8 +511,10 @@ def hit_need(hit):
     sink = hit["sink"]
     if sink in EXTRA_SINK_NAMES:
         need.add("x1")
-    elif sink.startswith("KSP.DialogGUI"):
+    elif sink.startswith("KSP.DialogGUI") or sink.startswith("UI."):
         need.add("x4")
+    elif sink.startswith("Virtual."):
+        need.add("x5")
     via = hit.get("via") or "direct"
     if via == "ret":
         need.add("x2")

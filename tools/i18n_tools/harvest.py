@@ -25,6 +25,7 @@ import os
 import re
 import sys
 import time
+import uuid
 from datetime import datetime, timezone
 
 from . import cfgparse, ensure_stdout, fnv, textnorm
@@ -469,20 +470,36 @@ def write_jsonl(path, rows):
     '"len":14}' 而不是 '\n'），差这一个字节 sha256 就对不上。
     """
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-    tmp = path + ".tmp"
+    tmp = "{}.tmp.{}.{}".format(path, os.getpid(), uuid.uuid4().hex[:8])
     body = "\n".join(json.dumps(row, ensure_ascii=False, separators=(",", ":")) for row in rows)
-    with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(body)
-    os.replace(tmp, path)
+    try:
+        with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(body)
+        os.replace(tmp, path)
+    except Exception:
+        if os.path.isfile(tmp):
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+        raise
 
 
 def write_json(path, obj):
     """indent=2 + LF + 无 BOM + 末尾无换行（与既有 inventory.json 逐字节一致）。"""
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-    tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
-        fh.write(json.dumps(obj, ensure_ascii=False, indent=2))
-    os.replace(tmp, path)
+    tmp = "{}.tmp.{}.{}".format(path, os.getpid(), uuid.uuid4().hex[:8])
+    try:
+        with open(tmp, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(json.dumps(obj, ensure_ascii=False, indent=2))
+        os.replace(tmp, path)
+    except Exception:
+        if os.path.isfile(tmp):
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+        raise
 
 
 # ---------------------------------------------------------------------------

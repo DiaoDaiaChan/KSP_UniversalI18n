@@ -36,6 +36,7 @@ namespace UI18n.Core.Tests
             // caller 额度（v1.3 新增，默认 60）同样退役，这里一并关掉：
             // 4,000 条噪声来自同一个 caller，若额度还在生效就测不到模板档这一层。
             options.MaxPerCaller = 0;
+            options.MaxTemplateSamplesPerSkeleton = 0;
             return new CaptureStore(options);
         }
 

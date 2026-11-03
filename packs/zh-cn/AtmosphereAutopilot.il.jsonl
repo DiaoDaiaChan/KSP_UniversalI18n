@@ -13,3 +13,33 @@
 {"h":"efdfb0253a06334f","n":"Moderate AoA","s":"Moderate AoA","t":"限制迎角","mod":"AtmosphereAutopilot"}
 {"h":"f17b4294081e7f45","n":"Moderate G","s":"Moderate G","t":"限制过载","mod":"AtmosphereAutopilot"}
 {"h":"0b3eabb4bcf772d5","n":"MASTER SWITCH","s":"MASTER SWITCH","t":"总开关","mod":"AtmosphereAutopilot"}
+{"h":"0e2622bcc9156ac3","n":"Autopilot module manager","s":"Autopilot module manager","t":"自动驾驶仪模块管理器","mod":"AtmosphereAutopilot"}
+{"h":"cfa67fb7bb895bb4","n":"Mouse Director","s":"Mouse Director","t":"鼠标导引","mod":"AtmosphereAutopilot"}
+{"h":"e5071692cf4b482c","n":"Cruise Flight controller","s":"Cruise Flight controller","t":"巡航飞行控制器","mod":"AtmosphereAutopilot"}
+{"h":"893940ab922f10ea","n":"AoA-hold controller","s":"AoA-hold controller","t":"迎角保持控制器","mod":"AtmosphereAutopilot"}
+{"h":"06da546e8f391b99","n":"Standard Fly-By-Wire","s":"Standard Fly-By-Wire","t":"标准电传操纵","mod":"AtmosphereAutopilot"}
+{"h":"8181e61fc0436767","n":"profiles","s":"profiles","t":"配置预设","mod":"AtmosphereAutopilot"}
+{"h":"096a5e18bf857c28","n":"save","s":"save","t":"保存","mod":"AtmosphereAutopilot"}
+{"h":"ca9a2418f461f5ca","n":"del","s":"del","t":"删除","mod":"AtmosphereAutopilot"}
+{"h":"eab5461998358f40","n":"GUI","s":"GUI","t":"界面","mod":"AtmosphereAutopilot"}
+{"h":"f6044e47ed21a42e","n":"Flight model","s":"Flight model","t":"飞行模型","mod":"AtmosphereAutopilot"}
+{"h":"9d7d3fec7b1fbfdf","n":"Director controller","s":"Director controller","t":"导引控制器","mod":"AtmosphereAutopilot"}
+{"h":"8b7b952416919e7f","n":"Hotkeys manager","s":"Hotkeys manager","t":"热键管理器","mod":"AtmosphereAutopilot"}
+{"h":"a24adbb6d0e686f5","n":"Master switch","s":"Master switch","t":"总开关","mod":"AtmosphereAutopilot.il"}
+{"h":"7f0b31f7548c6938","n":"Thrust balancing","s":"Thrust balancing","t":"推力平衡","mod":"AtmosphereAutopilot.il"}
+{"h":"d97381062cfe5e58","n":"Pitch ang acc controller","s":"Pitch ang acc controller","t":"俯仰角加速度控制器","mod":"AtmosphereAutopilot"}
+{"h":"3ee36d134e066e5f","n":"Yaw ang acc controller","s":"Yaw ang acc controller","t":"偏航角加速度控制器","mod":"AtmosphereAutopilot"}
+{"h":"c5aaf3cf2dde9b29","n":"Roll ang acc controller","s":"Roll ang acc controller","t":"滚转角加速度控制器","mod":"AtmosphereAutopilot"}
+{"h":"4d911d6a53a6089e","n":"Pitch ang vel controller","s":"Pitch ang vel controller","t":"俯仰角速度控制器","mod":"AtmosphereAutopilot"}
+{"h":"ec99995f1217b73b","n":"Roll ang vel controller","s":"Roll ang vel controller","t":"滚转角速度控制器","mod":"AtmosphereAutopilot"}
+{"h":"ba98b0564a42d43d","n":"Yaw ang vel controller","s":"Yaw ang vel controller","t":"偏航角速度控制器","mod":"AtmosphereAutopilot"}
+{"h":"f588bcde0eaca2d5","n":"Prograde thrust controller","s":"Prograde thrust controller","t":"顺向推力控制器","mod":"AtmosphereAutopilot"}
+{"h":"fea668c30b8b23c0","n":"Sideslip controller","s":"Sideslip controller","t":"侧滑控制器","mod":"AtmosphereAutopilot"}
+{"h":"e55591d678616850","n":"AoA controller","s":"AoA controller","t":"迎角控制器","mod":"AtmosphereAutopilot"}
+{"h":"c9fcfbe57080116f","n":"CF keys input mode","s":"CF keys input mode","t":"巡航飞行键位输入模式","mod":"AtmosphereAutopilot.il"}
+{"h":"e1868c26288c530f","n":"CF vertical control","s":"CF vertical control","t":"巡航飞行垂直控制","mod":"AtmosphereAutopilot.il"}
+{"h":"fdbf74f9f0213cb3","n":"CF altitude\\vertical speed","s":"CF altitude\\vertical speed","t":"巡航飞行高度\\垂直速度","mod":"AtmosphereAutopilot.il"}
+{"h":"cd65d04489cf9f93","n":"Speed control toggle","s":"Speed control toggle","t":"速度控制开关","mod":"AtmosphereAutopilot.il"}
+{"h":"428fb671c9eda596","n":"FBW moderation","s":"FBW moderation","t":"电传平缓度调整","mod":"AtmosphereAutopilot.il"}
+{"h":"a2b372bcd6cc00a1","n":"FBW rocket mode","s":"FBW rocket mode","t":"电传火箭模式","mod":"AtmosphereAutopilot.il"}
+{"h":"6a64ff28766b759e","n":"FBW coord turn","s":"FBW coord turn","t":"电传协调转弯","mod":"AtmosphereAutopilot.il"}

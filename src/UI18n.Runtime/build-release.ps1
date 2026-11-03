@@ -143,6 +143,18 @@ if (Test-Path $fontsTemplate) {
     Write-Host "[release] staged  : Fonts\"
 }
 
+# Textures：应用启动器图标（GameDatabase / Texture2D 加载）
+$texturesTemplate = Join-Path $templates 'Textures'
+if (Test-Path $texturesTemplate) {
+    Copy-Item $texturesTemplate (Join-Path $stageMod 'Textures') -Recurse -Force
+    Write-Host "[release] staged  : Textures\"
+}
+$iconTemplate = Join-Path $templates 'icon.png'
+if (Test-Path $iconTemplate) {
+    Copy-Item $iconTemplate (Join-Path $stageMod 'icon.png') -Force
+    Write-Host "[release] staged  : icon.png"
+}
+
 # Packs：只从 packs\<lang>\ 取（运行时字典）；packs\ 根下的 pool.jsonl / glossary.jsonl 是生产端输入，永不进包
 if (-not (Test-Path $packSource)) { throw "[release] 找不到语言包目录: $packSource" }
 $packFiles = @(Get-ChildItem $packSource -Filter *.jsonl -File | Sort-Object Name)
